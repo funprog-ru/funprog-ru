@@ -1,0 +1,701 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 3}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 21 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 3}\\
+{\green $\lambda$-calculus as a}\\
+{\green programming language}
+\end{tabular}}
+
+\vspace*{0.1cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item Computability and Turing completeness
+
+\item $\lambda$-calculus and programming languages
+
+\item Representing basic data types
+
+\item Recursive functions and fixpoint combinators
+
+\item Let expressions
+
+\item Steps to a declarative programming language
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Computability; Turing completeness}
+
+\vspace*{0.5cm}
+
+Before computers, stimulated by the {\em Entscheidungsproblem}, many equivalent
+definitions of `computable' were proposed.
+
+\begin{itemize}
+
+\item Turing machines
+
+\item Register machines
+
+\item $\mu$-recursive functions
+
+\item Markov algorithms
+
+\item \begin{red} $\lambda$-calculus \end{red}
+
+\end{itemize}
+
+Many of them correspond to programming methods, even though they came before
+computers! For example, Markov algorithms are related to SNOBOL, and {\em
+$\lambda$-calculus to functional programming}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The influence of $\lambda$-calculus}
+
+\vspace*{0.5cm}
+
+LISP took some ideas from $\lambda$-calculus, but was not really based on it.
+It was really with Landin that the influence of $\lambda$-calculus took off.
+
+Landin pointed out how $\lambda$-calculus could be used to explain features of
+some existing programming languages, e.g. the scoping of variables in Algol 60.
+
+He proposed a simple functional language ISWIM (`If you See What I Mean'),
+based on $\lambda$-calculus. Many of today's functional languages, including
+ML, are descended from ISWIM.
+
+ML started life as the metalanguage for the Edinburgh LCF theorem prover. It
+added to ISWIM an innovative type system, and {\em exceptions}. The narrow
+design focus resulted in a coherent language.
+
+We'll start with $\lambda$-calculus and work up!
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Booleans (1)}
+
+\vspace*{0.5cm}
+
+We can define the truth values as follows:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{true} & \defeq & \lamb{x\; y} x                   \\
+\mbox{false} & \defeq & \lamb{x\; y} y
+\end{eqnarray*}
+\end{red}
+Then we get conditional expressions, like C's `{\tt ?:}' construct:
+
+{\red $$ \mbox{if } E \mbox{ then } E_1 \mbox{ else } E_2 \defeq E\; E_1\; E_2
+$$}
+For example:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{if } \mbox{true} \mbox{ then } E_1 \mbox{ else } E_2
+  & = & \mbox{true}\; E_1\; E_2                 \\
+  & = & (\lamb{x\; y} x)\; E_1\; E_2            \\
+  & = & E_1
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Booleans (2)}
+
+\vspace*{0.5cm}
+
+and:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{if } \mbox{false} \mbox{ then } E_1 \mbox{ else } E_2
+  & = & \mbox{false}\; E_1\; E_2                \\
+  & = & (\lamb{x\; y} y)\; E_1\; E_2            \\
+  & = & E_2
+\end{eqnarray*}
+\end{red}
+Once we have the conditional, it is easy to define all the usual
+logical operations:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{not } p  & \defeq & \mbox{if } p \mbox{ then false else true}          \\
+p \mbox{ and } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
+p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Pairs}
+
+\vspace*{0.5cm}
+
+We can represent ordered pairs as follows:
+
+{\red $$ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 $$}
+Given this definition, the corresponding destructors for pairs can be
+defined as:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{fst } p & \defeq & p \mbox{ true}                                 \\
+\mbox{snd } p & \defeq & p \mbox{ false}
+\end{eqnarray*}
+\end{red}
+These work as required, e.g.
+\begin{red}
+\begin{eqnarray*}
+\mbox{fst}\; (p,q) & = & (p,q)\; \mbox{true}                            \\
+                   & = & (\lamb{f} f\; p\; q)\; \mbox{true}             \\
+                   & = & \mbox{true}\; p\; q                            \\
+                   & = & (\lamb{x\; y} x)\; p\; q                       \\
+                   & = & p
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Tuples}
+
+\vspace*{0.5cm}
+
+We get tuples by iterating the pairing operation:
+
+{\red $$ (E_1,E_2,\ldots,E_n) = (E_1,(E_2,\ldots E_n)) $$}
+
+We can then define general `projections':
+
+{\red $$ (p)_1 = \mbox{fst}\; p $$}
+
+and for {\red $i > 1$}:
+
+{\red $$ (p)_i = \mbox{fst}\; (\mbox{snd}^{i-1}\; p) $$}
+
+We have {\red $(E_1,E_2,\ldots,E_n)_i = E_i$} for {\red $i \leq n$}.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Uncurried functions}
+
+\vspace*{0.5cm}
+
+We can now define functions of multiple arguments that are non-curried. Here
+are functions to translate between curried and uncurried versions:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{CURRY}_n\; f  & \defeq & \lamb{x_1\; \cdots \; x_n} f(x_1,\ldots,x_n) \\
+\mbox{UNCURRY}_n\;g & \defeq & \lamb{p} g\; (p)_1 \; \cdots \; (p)_n
+\end{eqnarray*}
+\end{red}
+Now we can write {\red $\lamb{(x_1,\ldots,x_n)} t$} for:
+
+{\red $$\mbox{UNCURRY}_n\; (\lamb{x_1\; \cdots \; x_n} t)$$}
+Then we have generalized $\beta$-conversion:
+
+{\red $$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
+              t[t_1,\ldots,t_n]$$}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Natural numbers}
+
+\vspace*{0.5cm}
+
+We can encode numbers in many ways. The simplest seems to be as {\em Church
+numerals}:
+
+{\red $$ {\bf n} \defeq \lamb{f\; x} f^n\; x $$}
+
+This means:
+
+\begin{red}
+\begin{eqnarray*}
+{\bf 0} & = & \lamb{f\; x} x                    \\
+{\bf 1} & = & \lamb{f\; x} f\; x                \\
+{\bf 2} & = & \lamb{f\; x} f\;(f\; x)           \\
+{\bf 3} & = & \lamb{f\; x} f\;(f\; (f\; x))     \\
+{\bf 4} & = & \lamb{f\; x} f\;(f\; (f\; (f\; x)))
+\end{eqnarray*}
+\end{red}
+and so on.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Successor}
+
+\vspace*{0.5cm}
+
+The following operation adds one to a Church numeral:
+
+{\red $$ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) $$}
+Indeed:
+
+\begin{red}
+\begin{eqnarray*}
+\mbox{SUC}\; {\bf n} & = &
+(\lamb{n\; f\; x} n\; f\; (f\; x)) (\lamb{f\; x} f^n\; x) \\
+             & = & \lamb{f\; x} (\lamb{f\; x} f^n\; x) f\; (f\; x)          \\
+             & = & \lamb{f\; x} (\lamb{x} f^n\; x) (f\; x)                \\
+             & = & \lamb{f\; x} f^n\; (f\; x)                                \\
+             & = & \lamb{f\; x} f^{n + 1}\; x                               \\
+             & = & {\bf n + 1}
+\end{eqnarray*}
+\end{red}
+We can also test if a Church numeral is zero with:
+{\red $$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$}
+
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Addition}
+
+\vspace*{0.5cm}
+
+Here's addition of Church numerals:
+
+{\red $$m + n \defeq \lamb{f\; x} m\; f\; (n\; f\; x) $$}
+
+Indeed:
+
+\begin{red}
+\begin{eqnarray*}
+ m + n  & = & \lamb{f\; x} m\; f\; (n\; f\; x)        \\
+        & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; f\; (n\; f\; x)     \\
+        & = & \lamb{f\; x} (\lamb{x} f^m\; x)\; (n\; f\; x)     \\
+        & = & \lamb{f\; x} f^m\; (n\; f\; x)                    \\
+        & = & \lamb{f\; x} f^m\; ((\lamb{f\; x} f^n\; x)\; f\; x)   \\
+        & = & \lamb{f\; x} f^m\; ((\lamb{x} f^n\; x)\; x)               \\
+        & = & \lamb{f\; x} f^m\; (f^n\; x)                              \\
+        & = & \lamb{f\; x} f^{m + n} x
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Multiplication}
+
+\vspace*{0.5cm}
+
+and here's multiplication:
+
+{\red $$ m * n \defeq \lamb{f\; x} m\; (n\; f)\; x $$}
+
+Indeed:
+
+\begin{red}
+\begin{eqnarray*}
+ m * n  & = & \lamb{f\; x} m\; (n\; f)\; x                              \\
+        & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; (n\; f)\; x         \\
+        & = & \lamb{f\; x} (\lamb{x} (n\; f)^m\; x)\; x                 \\
+        & = & \lamb{f\; x} (n\; f)^m\; x                                \\
+        & = & \lamb{f\; x} ((\lamb{f\; x} f^n\; x)\; f)^m\; x           \\
+        & = & \lamb{f\; x} ((\lamb{x} f^n\; x)^m\; x                    \\
+        & = & \lamb{f\; x} (f^n)^m\; x                                  \\
+        & = & \lamb{f\; x} f^{m n} x
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Predecessor}
+
+\vspace*{0.5cm}
+
+This is much harder. First we define an auxiliary function on pairs:
+
+{\red $$ \mbox{PREFN} \defeq
+   \lamb{f\; p}
+      (\BA \mbox{false},\\
+           \mbox{if fst } p \mbox{ then snd } p \mbox{ else } f(\mbox{snd}\; p)
+       )\EA
+  $$}
+We have:
+\begin{red}
+\begin{eqnarray*}
+\mbox{PREFN}\; f\; (\mbox{true},x)  & = & (\mbox{false},x)       \\
+\mbox{PREFN}\; f\; (\mbox{false},x) & = & (\mbox{false},f\; x)
+\end{eqnarray*}
+\end{red}
+We can use this to `throw away' one of the applications of {\red $f$} in
+{\red $f^n\; x$}. This trick is due to Kleene. Now define:
+{\red $$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+   \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Recursive functions (1)}
+
+\vspace*{0.5cm}
+
+This looks difficult without using names for functions. We can do it though ---
+the key is to use {\em fixed point combinators}.
+
+A closed term {\red $Y$} is said to be a fixed point combinator if, when applied to a
+function {\red $f$}, it gives a fixed point {\red $x$} for {\red $f$}, i.e. an {\red $x$} with {\red $f(x) = x$}.
+Hence for all {\red $f$}:
+{\red $$ f(Y\; f) = Y\; f $$}
+We can get an idea how to produce such a combinator by recalling the Russell
+paradox. We defined {\red $R = \lamb{x} \Not (x\; x)$} and found {\red $R\; R =
+\Not (R\; R)$}. All we need to do is replace {\red $\Not$} with the
+function {\red $f$} concerned. Thus:
+{\red $$Y \defeq \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$$}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Recursive functions (2)}
+
+\vspace*{0.5cm}
+
+It is a simple matter to show that {\red $Y$} works as advertised:
+
+\begin{red}
+\begin{eqnarray*}
+Y f  & = & (\lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))\; f       \\
+     & = & (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))                      \\
+     & = & f((\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))                   \\
+     & = & f(Y\; f)
+\end{eqnarray*}
+\end{red}
+
+An alternative to $Y$ is given by:
+
+{\red $$ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\;
+y)) $$}
+
+This has the even better property that {\red $T\; f \goesto f(T\; f)$}.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Recursive functions (3)}
+
+\vspace*{0.5cm}
+
+How do we use a fixpoint combinator to define recursive functions? Consider the
+factorial function. We would like to define {\red $\mbox{fact}$} such that:
+{\red $$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+         \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+\noindent First transform it to:
+{\red $$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+\noindent so if we define:
+{\red $$F \defeq \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
+we find that {\red $\mbox{fact}$} is the fixpoint of {\red $F$}, i.e. {\red
+$\mbox{fact} = F\; \mbox{fact}$}. Therefore we define:
+{\red $$\mbox{fact} = Y\; F$$}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Let expressions}
+
+\vspace*{0.5cm}
+
+It's often useful to bind expressions to names, to avoid repeating the
+expression many times. We will allow the following syntactic sugar:
+{\red $$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$}
+We also allow multiple {\em parallel} bindings using the following:
+{\red $$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
+         \mbox{ in } t $$}
+which is syntactic sugar for:
+{\red $$ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) $$}
+Also, we may say {\red $\mbox{let } f\; x_1\; \cdots x_n = t$},
+which is a sugaring for
+{\red $$\mbox{let } f = \lamb{x_1\; \cdots \; x_n} t$$}
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Recursive let expressions}
+
+\vspace*{0.5cm}
+
+Normally {\red $\mbox{let}$} is interpreted nonrecursively. When we want to
+make a recursive definition, we add the word {\red $\mbox{rec}$}. For example:
+
+{\red $$ \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\; \mbox{then}\; 1\\
+                         \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) \EA $$}
+
+is a shorthand for
+
+{\red $$\mbox{let fact} = Y\; F$$}
+
+where as above:
+
+{\red $$F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+         \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Functional programs}
+
+\vspace*{0.5cm}
+
+We have said that a functional program is simply an expression.
+
+However, we normally extract certain common and interesting subexpressions as
+{\red \tt let} constructs, so the program has the form: a series of
+definitions, followed by the main expression, e.g.
+{\red $$\BA \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\; \mbox{then}\;1\\
+                                \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n)
+                        \mbox{ in } \EA \\
+       \cdots\\
+       fact(6)
+   \EA
+$$}
+Thus the program can be read `declaratively', as a set of mathematical
+equations giving some properties of the relevant notions. The computational
+information is all {\em implicit}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Computational interpretation}
+
+\vspace*{0.5cm}
+
+The computational interpretation {\em is} still there though!
+
+Roughly, all the equations are read left-to-right and used to expand away any
+instance of the relevant names. Then we repeatedly perform $\beta$-conversions.
+
+The main question is how to perform the series of $\beta$-conversions. We know
+that this can make a difference with respect to termination.
+
+Different functional languages make different choices, as we shall see.
+
+The next step, however, is to think about {\em types}.
+
+\end{slide*}
+
+
+\end{document}

@@ -1,0 +1,804 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 10}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 6 February 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 10}\\
+{\green ML examples II:}\\
+{\green Recursive Descent Parsing}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item The parsing problem
+
+\item Recursive descent
+
+\item Parsers in ML
+
+\item Higher order parser combinators
+
+\item Efficiency and limitations.
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Grammar for terms}
+
+\vspace*{0.5cm}
+
+We would like to have a parser for our terms, so that we don't have to write
+them in terms of type constructors.
+{\red
+\begin{eqnarray*}
+term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & {\verb!(!} term {\verb!)!}                 \\
+         & |       & numeral                                    \\
+         & |       & {\verb!-!} term                            \\
+         & |       & term {\verb! + !} term                     \\
+         & |       & term {\verb! * !} term                     \\
+termlist & \goesto & term {\verb!,!} termlist                   \\
+         & |       & term
+\end{eqnarray*}}
+
+Here we have a grammar for terms, defined by a set of production rules.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Ambiguity}
+
+\vspace*{0.5cm}
+
+The task of {\em parsing}, in general, is to reverse this, i.e. find a sequence
+of productions that could generate a given string.
+
+Unfortunately the above grammar is {\em ambiguous}, since certain strings can
+be produced in several ways, e.g.
+{\red
+\begin{eqnarray*}
+term     & \goesto & term {\verb! + !} term                             \\
+         & \goesto & term {\verb! + !} term {\verb! * !} term
+\end{eqnarray*}}
+\noindent and
+{\red
+\begin{eqnarray*}
+term     & \goesto & term {\verb! * !} term                             \\
+         & \goesto & term {\verb! + !} term {\verb! * !} term
+\end{eqnarray*}}
+These correspond to different `parse trees'. Effectively, we are free to
+interpret {\red $x {\verb! + !} y {\verb! * !} z$} either as {\red $x
+{\verb! + !} (y {\verb! * !} z)$} or {\red $(x {\verb! + !} y) {\verb! * !}
+z$}.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Encoding precedences}
+
+\vspace*{0.5cm}
+
+We can encode operator precedences by introducing extra categories, e.g.
+{\red
+\begin{eqnarray*}
+atom     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & numeral                                    \\
+         & |       & {\verb!(!} term {\verb!)!}                 \\
+         & |       & {\verb!-!} atom                            \\
+mulexp   & \goesto & atom {\verb! * !} mulexp                   \\
+         & |       & atom                                       \\
+term     & \goesto & mulexp {\verb! + !} term                   \\
+         & |       & mulexp                                     \\
+termlist & \goesto & term {\verb!,!} termlist                   \\
+         & |       & term
+\end{eqnarray*}}
+Now it's unambiguous. Multiplication has higher precedence and both infixes
+associate to the right.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Recursive descent}
+
+\vspace*{0.5cm}
+
+A {\em recursive descent} parser is a series of mutually recursive functions,
+one for each syntactic category ($term$, $mulexp$ etc.).
+
+The mutually recursive structure mirrors that in the grammar.
+
+This makes them quite easy and natural to write --- especially in ML, where
+recursion is the principal control mechanism.
+
+For example, the procedure for parsing terms, say {\black \verb!term!} will, on
+encountering a {\black \verb!-!} symbol, make a recursive call to itself to
+parse the subterm, and on encountering a name followed by an opening
+parenthesis, will make a recursive call to {\black \verb!termlist!}. This in
+itself will make at least one recursive call to {\black \verb!term!}, and so
+on.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Parsers in ML}
+
+\vspace*{0.5cm}
+
+We assume that a parser accepts a list of input characters or tokens of
+arbitrary type.
+
+It returns the result of parsing, which has some other arbitrary type, and also
+the list of input objects not yet processed. Therefore the type of a parser is:
+
+{\red $$ (\alpha)list \to \beta \times (\alpha)list $$}
+
+For example, when given the input characters {\black \verb!(x + y) * z!} the
+function {\black \verb!atom!} will process the characters {\black \verb!(x +
+y)!} and leave the remaining characters {\black \verb!* z!}. It might return a
+parse tree for the processed expression using our earlier recursive type, and
+hence we would have:
+
+\begin{black}\begin{verbatim}
+  atom "(x + y) * z" =
+    Fn("+",[Var "x"; Var "y"]),"* z"
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Parser combinators}
+
+\vspace*{0.5cm}
+
+In ML, we can define a series of {\em combinators} for plugging parsers
+together and creating new parsers from existing ones.
+
+By giving some of them infix status, we can make the ML parser program look
+quite similar in structure to the original grammar.
+
+First we declare an exception to be used where parsing fails:
+\begin{black}\begin{verbatim}
+  exception Noparse;;
+\end{verbatim}\end{black}
+{\black \verb!p1 ++ p2!} applies {\black \verb!p1!} first and then applies
+{\black \verb!p2!} to the remaining tokens; {\black \verb!many!} keeps applying
+the same parser as long as possible.
+
+{\black \verb!p >> f!} works like {\black \verb!p!} but then applies {\black
+\verb!f!} to the result of the parse.
+
+{\black \verb!p1 || p2!} tries {\black \verb!p1!} first, and if that fails,
+tries {\black \verb!p2!}. These are automatically infix, in decreasing order of
+precedence.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Definitions of the combinators}
+
+\vspace*{0.5cm}
+
+\begin{black}\begin{verbatim}
+let prefix ++ parser1 parser2 input =
+  let result1,rest1 = parser1 input in
+  let result2,rest2 = parser2 rest1 in
+  (result1,result2),rest2;;
+
+let rec many parser input =
+  try let result,next = parser input in
+      let results,rest = many parser next in
+      (result::results),rest
+  with Noparse -> [],input;;
+
+let prefix >> parser treatment input =
+  let result,rest = parser input in
+  treatment(result),rest;;
+
+let prefix || parser1 parser2 input =
+  try parser1 input
+  with Noparse -> parser2 input;;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Auxiliary functions}
+
+\vspace*{0.2cm}
+
+These are the general functions we will use:
+\begin{black}\begin{verbatim}
+let rec itlist f =
+     fun [] b -> b
+       | (h::t) b -> f h (itlist f t b);;
+
+let uncurry f(x,y) = f x y;;
+let K x y = x;;
+let C f x y = f y x;;
+
+let o f g x = f(g x);;
+#infix "o";;
+
+let explode s =
+  let rec exap n l =
+    if n < 0 then l else
+    exap (n - 1) ((sub_string s n 1)::l) in
+  exap (string_length s - 1) [];;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Atomic parsers}
+
+\vspace*{0.5cm}
+
+We need a few primitive parsers to get us started.
+
+\begin{black}\begin{verbatim}
+  let some p =
+    fun [] -> raise Noparse
+      | (h::t) -> if p h then (h,t)
+                  else raise Noparse;;
+
+  let a tok =
+    some (fun item -> item = tok);;
+
+  let finished input =
+    if input = [] then 0,input
+    else raise Noparse;;
+\end{verbatim}\end{black}
+
+The first two accept something satisfying {\black \verb!p!}, and something
+equal to {\black \verb!tok!}, respectively. The last one makes sure there is no
+unprocessed input.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Lexical analysis}
+
+\vspace*{0.5cm}
+
+First we want to do lexical analysis, i.e. split the input characters into
+tokens. This can also be done using our combinators, together with a few
+character discrimination functions. First we declare the type of tokens:
+
+\begin{black}\begin{verbatim}
+  type token = Name of string
+             | Num of string
+             | Other of string;;
+\end{verbatim}\end{black}
+
+We want the lexer to accept a string and produce a list of tokens, ignoring
+spaces, e.g.
+\begin{black}\begin{footnotesize}\begin{verbatim}
+  #lex "sin(x + y) * cos(2 * x + y)";;
+   - : token list =
+   [Name "sin"; Other "("; Name "x"; Other "+";
+    Name "y"; Other ")"; Other "*"; Name "cos";
+    Other "("; Num "2"; Other "*"; Name "x";
+    Other "+"; Name "y"; Other ")"]
+\end{verbatim}\end{footnotesize}\end{black}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Definition of the lexer}
+
+\vspace*{0.5cm}
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+let lex =
+  let several p = many (some p) in
+  let lowercase_letter s = "a" <= s & s <= "z" in
+  let uppercase_letter s = "A" <= s & s <= "Z" in
+  let letter s =
+    lowercase_letter s or uppercase_letter s in
+  let alpha s = letter s or s = "_" or s = "'" in
+  let digit s = "0" <= s & s <= "9" in
+  let alphanum s = alpha s or digit s in
+  let space s = s = " " or s = "\n" or s = "\t" in
+  let collect(h,t) = h^(itlist (prefix ^) t "") in
+  let rawname =
+     some alpha ++ several alphanum
+     >> (Name o collect) in
+  let rawnumeral =
+     some digit ++ several digit
+     >> (Num o collect) in
+  let rawother = some (K true) >> Other in
+  let token =
+    (rawname || rawnumeral || rawother) ++
+    several space >> fst in
+  let tokens = (several space ++ many token) >> snd in
+  let alltokens = (tokens ++ finished) >> fst in
+  fst o alltokens o explode;;
+\end{verbatim}\end{footnotesize}\end{black}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Parsing terms}
+
+\vspace*{0.5cm}
+
+In order to parse terms, we start with some basic parsers for single tokens of
+a particular kind:
+
+\begin{black}\begin{verbatim}
+  let name =
+    fun (Name s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let numeral =
+    fun (Num s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let other =
+    fun (Other s::rest) -> s,rest
+      | _ -> raise Noparse;;
+\end{verbatim}\end{black}
+
+Now we can define a parser for terms, in a form very similar to the original
+grammar. The main difference is that each production rule has associated with
+it some sort of special action to take as a result of parsing.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The term parser (take 1)}
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and mulexp input
+     = (atom ++ a(Other "*") ++ mulexp
+            >> (fun ((a,_),m) -> Fn("*",[a;m]))
+     || atom) input
+and term input
+     = (mulexp ++ a(Other "+") ++ term
+            >> (fun ((a,_),m) -> Fn("+",[a;m]))
+     || mulexp) input
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{verbatim}\end{footnotesize}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Examples}
+
+\vspace*{0.5cm}
+
+Let us package everything up as a single parsing function:
+
+\begin{black}\begin{verbatim}
+let parser =
+  fst o (term ++ finished >> fst) o lex;;
+\end{verbatim}\end{black}
+
+\noindent To see it in action, we try with and without the printer (see above)
+installed:
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term =
+   Fn
+    ("*",
+     [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
+      Fn ("cos", [Fn ("+", [Fn ("*", [Const "2";
+                                      Var "x"]);
+                            Var "y"])])])
+  #install_printer "print_term";;
+  - : unit = ()
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term = `sin(x + y) * cos(2 * x + y)`
+\end{verbatim}\end{footnotesize}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Automating precedence parsing}
+
+\vspace*{0.2cm}
+
+We can easily let ML construct the `fixed-up' grammar from our dynamic list of
+infixes:
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+let rec binop op parser input =
+  let atom1,rest1 as result = parser input in
+  if not rest1 = [] & hd rest1 = Other op then
+    let atom2,rest2 = binop op parser (tl rest1) in
+    Fn(op,[atom1; atom2]),rest2
+  else result;;
+
+let findmin l = itlist
+  (fun (_,pr1 as p1) (_,pr2 as p2) ->
+     if pr1 <= pr2 then p1 else p2) (tl l) (hd l);;
+
+let rec delete x (h::t) =
+  if h = x then t else h::(delete x t);;
+
+let rec precedence ilist parser input =
+  if ilist = [] then parser input else
+  let opp = findmin ilist in
+  let ilist' = delete opp ilist in
+  binop (fst opp) (precedence ilist' parser) input;;
+\end{verbatim}\end{footnotesize}\end{black}
+
+By using this function, we can make the main parser simpler and more general.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The term parser (take 2)}
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and term input = precedence (!infixes) atom input
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{verbatim}\end{footnotesize}\end{black}
+
+This will dynamically construct the precedence parser using the list
+of infixes active when it is actually used. Now the basic grammar is
+simpler.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Backtracking and reprocessing}
+
+\vspace*{0.5cm}
+
+Some productions for the same syntactic category have a common
+prefix. Note that our production rules for $term$ have this property:
+{\red
+\begin{eqnarray*}
+term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & \cdots
+\end{eqnarray*}}
+We carefully put the longer production first in our actual implementation,
+otherwise success in reading a name would cause the abandonment of attempts to
+read a parenthesized list of arguments.
+
+However, this backtracking can lead to our processing the initial name twice.
+
+This is not very serious here, but it could be in {\black \tt termlist}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{An improved treatment}
+
+\vspace*{0.5cm}
+
+We can easily replace:
+
+\begin{black}\begin{verbatim}
+let ...
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{verbatim}\end{black}
+\noindent with
+\begin{black}\begin{verbatim}
+let ...
+and termlist input
+    = term ++
+      many (a (Other ",") ++ term >> snd)
+            >> (fun (h,t) -> h::t) input;;
+\end{verbatim}\end{black}
+
+\noindent This gives another improvement to the parser, which is now more
+efficient and slightly simpler. The final version is:
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{The term parser (take 3)}
+
+\vspace*{0.5cm}
+
+\begin{black}\begin{footnotesize}\begin{verbatim}
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and term input = precedence (!infixes) atom input
+and termlist input
+      = (term ++ many (a (Other ",") ++ term >> snd)
+            >> (fun (h,t) -> h::t)) input;;
+\end{verbatim}\end{footnotesize}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{General remarks}
+
+\vspace*{0.3cm}
+
+With care, this parsing method can be used effectively. It is a good
+illustration of the power of higher order functions.
+
+The code of such a parser is highly structured and similar to the grammar,
+therefore easy to modify.
+
+However it is not as efficient as LR parsers; CAML-Yacc is capable of
+generating good LR parsers automatically.
+
+Recursive descent also has trouble with {\em left recursion}. For example, if
+we had wanted to make the addition operator left-associative in our earlier
+grammar, we could have used:
+{\red
+\begin{eqnarray*}
+term     & \goesto & term {\verb! + !} mulexp                   \\
+         & |       & mulexp
+\end{eqnarray*}}
+The naive transcription into ML would loop indefinitely. However we can often
+replace such constructs with explicit repetitions.
+
+
+\end{slide*}
+
+
+
+\end{document}

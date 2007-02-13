@@ -1,0 +1,95 @@
+\chapter{Inductive definitions}
+
+Inductive definitions are very common in mathematics, especially in the
+definition of formal languages used in mathematical logic and programming
+language semantics. \citeN{camilleri-melham} give some
+illustrative examples. Examples crop up in other parts of mathematics too, e.g.
+the definition of the Borel hierarchy of subsets of $\real$. A detailed
+discussion, from an advanced point of view, is given by \citeN{aczel-ind}.
+
+Inductive definitions define a set $S$ by means of a set of {\em rules} of the
+form `if \ldots then $t \in S$', where the hypothesis of the rule may make
+assertions about membership in $S$. These rules are customarily written with a
+horizontal line separating the hypotheses (if any) from the conclusion. For
+example, the set of even numbers $E$ might be defined as a subset of the reals
+by:
+
+$$ \frac{}{0 \in E} $$
+
+$$ \frac{n \in E}{(n + 2) \in E} $$
+
+Read literally, such a definition merely places some constraints on the set
+$E$, asserting its `closure' under the rules, and does not, in general,
+determine it uniquely. For example, the set of even numbers satisfies the
+above, but so does the set of natural numbers, the set of integers, the set of
+rational numbers and even the the whole set of real numbers! But implicit in
+writing a definition like this is that $E$ is the {\em least} set which is
+closed under the rules. It is when understood in this sense that the above
+defines the even numbers.
+
+This convention, however, needs to be justified by showing that there {\em is}
+a least set closed under the rules. A good try is to consider the set of {\em
+all} sets which are closed under the rules, and take their intersection. If
+only we knew that this intersection was closed under the rules, then it would
+certainly be the least such set. But in general we don't know that, as the
+following example illustrates:
+
+$$ \frac{n \not\in E}{n \in E} $$
+
+There are no sets at all closed under this rule! However it turns out that a
+simple syntactic restriction on the rules is enough to guarantee that the
+intersection is closed under the rules. Crudely speaking, the hypotheses must
+make only `positive' assertions about membership in $S$. To state this
+precisely, observe that we can collect together all the rules in a single
+assertion of the form:
+
+$$ \all{x} P[S,x] \Imp x \in S $$
+
+\noindent The following example for the even numbers should be a suitable
+paradigm to indicate how:
+
+$$\all{n} (n = 0 \Or \ex{m} n = m + 2 \And m \in E) \Imp n \in E $$
+
+If we make the abbreviation $f(S) = \{x \mid P[S,x]\}$ the assertion can be
+written $f(S) \subset S$. Our earlier plan was to take the intersection of all
+subsets $S$ which have this property, and hope that the intersection too is
+closed under the rules. A sufficient condition for this is given in the
+following fixpoint theorem due to \citeN{knaster} and \citeN{tarski-fix} (which
+holds for an arbitrary complete lattice): if $f:\powerset(X) \to \powerset(X)$
+is monotone, i.e. for any $S \subset X$ and $T \subset X$
+
+$$ S \subset T \Imp f(S) \subset f(T) $$
+
+\noindent then if we define
+
+$$ F = \Inters \{ S \subset X \mid f(S) \subset S \} $$
+
+\noindent not only is $f(F) \subset F$ but $F$ is actually a fixpoint of $f$,
+i.e. $f(F) = F$. To see this, define $B = \{ S \subset X \mid f(S) \subset S
+\}$. Observe that for any $S \in B$ we have $F \subset S$, so by monotonicity
+$f(F) \subset f(S)$; but since $f(S) \subset S$ we also have $f(F) \subset S$.
+This is true for {\em any} $S \in B$ so we must also have $f(F) \subset F$.
+Now monotonicity gives $f(f(F)) \subset f(F)$, so $f(F) \in B$. This shows that
+$F \subset f(F)$ and putting everything together, $f(F) = F$. Obviously $F$ is
+the least set closed under the rules, for if $F'$ is another, we have $F' \in
+B$ and so $F \subset F'$.
+
+The fixpoint property $f(F) = F$ yields what we will call a `cases theorem'
+because it lists the ways an element of the inductively defined set can arise.
+In our example, we have:
+
+$$\all{n} n \in E \Iff (n = 0 \Or \ex{m} n = m + 2 \And m \in E) $$
+
+This is a bonus from the fact that we actually have a {\em fixpoint}. It also
+yields what we will call an `induction theorem' asserting that $F$ is contained
+in every set closed under the rules. This justifies proofs by `structural
+induction' or `rule induction' (the terminology is from \citeN{winskel-sem}).
+
+$$ \all{E' \subset \nat} (0 \in E' \And (\all{n \in \nat} n \in E' \Imp (n + 2)
+   \in E')) \Imp E \subset E' $$
+
+It is easy to derive from the cases theorem by a bit of simple logic that the
+inductively defined set {\em is} closed under the rules. We will refer to this
+as the `closure theorem'.
+
+$$ 0 \in E \And (\all{n \in \nat} n \in E \Imp (n + 2) \in E) $$

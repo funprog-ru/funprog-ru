@@ -1,0 +1,75 @@
+\chapter*{Plan of the lectures}
+
+This chapter indicates roughly how the material is to be distributed over a
+course of twelve lectures, each of slightly less than one hour.
+
+\begin{enumerate}
+
+\item {\bf Introduction and Overview} Functional and imperative programming:
+contrast, pros and cons. General structure of the course: how lambda calculus
+turns out to be a general programming language. Lambda notation: how it
+clarifies variable binding and provides a general analysis of mathematical
+notation. Currying. Russell's paradox.
+
+\item {\bf Lambda calculus as a formal system} Free and bound variables.
+Substitution. Conversion rules. Lambda equality. Extensionality. Reduction and
+reduction strategies. The Church-Rosser theorem: statement and consequences.
+Combinators.
+
+\item {\bf Lambda calculus as a programming language} Computability background;
+Turing completeness (no proof). Representing data and basic operations: truth
+values, pairs and tuples, natural numbers. The predecessor operation. Writing
+recursive functions: fixed point combinators. Let expressions. Lambda calculus
+as a declarative language.
+
+\item {\bf Types} Why types? Answers from programming and logic. Simply typed
+lambda calculus. Church and Curry typing. Let polymorphism. Most general types
+and Milner's algorithm. Strong normalization (no proof), and its negative
+consequences for Turing completeness. Adding a recursion operator.
+
+\item {\bf ML} ML as typed lambda calculus with eager evaluation. Details of
+evaluation strategy. The conditional. The ML family. Practicalities of
+interacting with ML. Writing functions. Bindings and declarations. Recursive
+and polymorphic functions. Comparison of functions.
+
+\item {\bf Details of ML} More about interaction with ML. Loading from files.
+Comments. Basic data types: unit, booleans, numbers and strings. Built-in
+operations. Concrete syntax and infixes. More examples. Recursive types and
+pattern matching. Examples: lists and recursive functions on lists.
+
+\item {\bf Proving programs correct} The correctness problem. Testing and
+verification. The limits of verification. Functional programs as mathematical
+objects. Examples of program proofs: exponential, GCD, append and reverse.
+
+\item {\bf Effective ML} Using standard combinators. List iteration and other
+useful combinators; examples. Tail recursion and accumulators; why tail
+recursion is more efficient. Forcing evaluation. Minimizing consing. More
+efficient reversal. Use of `as'. Imperative features: exceptions, references,
+arrays and sequencing. Imperative features and types; the value restriction.
+
+\item {\bf ML examples I: symbolic differentiation} Symbolic computation. Data
+representation. Operator precedence. Association lists. Prettyprinting
+expressions. Installing the printer. Differentiation. Simplification. The
+problem of the `right' simplification.
+
+\item {\bf ML examples II: recursive descent parsing} Grammars and the parsing
+problem. Fixing ambiguity. Recursive descent. Parsers in ML. Parser
+combinators; examples. Lexical analysis using the same techniques. A parser for
+terms. Automating precedence parsing. Avoiding backtracking. Comparison with
+other techniques.
+
+\item {\bf ML examples III: exact real arithmetic} Real numbers and finite
+representations. Real numbers as programs or functions. Our representation of
+reals. Arbitrary precision integers. Injecting integers into the reals.
+Negation and absolute value. Addition; the importance of rounding division.
+Multiplication and division by integers. General multiplication. Inverse and
+division. Ordering and equality. Testing. Avoiding reevaluation through memo
+functions.
+
+\item {\bf ML examples IV: Prolog and theorem proving} Prolog terms.
+Case-sensitive lexing. Parsing and printing, including list syntax.
+Unification. Backtracking search. Prolog examples. Prolog-style theorem
+proving. Manipulating formulas; negation normal form. Basic prover; the use of
+continuations. Examples: Pelletier problems and whodunit.
+
+\end{enumerate}
