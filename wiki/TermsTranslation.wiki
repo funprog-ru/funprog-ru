@@ -1,4 +1,21 @@
 #summary This page contain accepted translation of the terms, used in text
 
+Please keep terms in alphabet order.
+
+Строки помеченные в конце ?? следует внимательно рассмотреть, уточнить.
+
+  * *Church numeral(s)* - нумерал(ы) Чёрча
+  * *continuation* - продолжение
+  * *conversion* - конверсия (lambda-термов)
+  * *currying* - каррирование
+  * *evaluation* - вычисление  ??
+  * *fixpoint | fixed point [of function]* - неподвижная точка [функции]
+  * *higher order function* - функция высшего порядка
+  * *lazy evaluation* - ленивое вычисление
+  * *lambda-calculus* - $\lambda$-исчисление
+  * *lambda-notation* - $\lambda$-обозначения
+  * *partial function* - частично определённая функция ??
+  * *pattern matching* - сопоставление с образцом
+  * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
-  
+  * *tuple* - кортеж
