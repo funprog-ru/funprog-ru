@@ -1,0 +1,642 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 2}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 17 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 2}\\
+{\green $\lambda$-calculus as a formal system}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item Why a formal system?
+
+\item Free and bound variables
+
+\item Substitution
+
+\item Conversion rules and lambda equality
+
+\item Reduction, evaluation strategies and the Church-Rosser theorem(s)
+
+\item Combinators
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Why a formal system?}
+
+\vspace*{0.1cm}
+
+We have taken certain facts as `obvious', e.g.
+
+{\red $$ (\lamb{x\; y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$}
+
+because they respect the intuitive meanings. Now we specify some {\em formal}
+rules for calculating with lambda expressions.
+
+These can then be applied mechanically, without thinking about them, just as
+one might take:
+
+{\red $$ x - 3 = 5 - x$$}
+
+and transform it, without considering the underlying meanings, to
+
+{\red $$ 2 x = 5 + 3 $$}
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Whitehead quotation}
+
+\vspace*{0.5cm}
+
+On the subject of symbolisms and formal rules of manipulation:
+
+\begin{green}\begin{quote}
+[\ldots] by the aid of symbolism, we can make transitions in reasoning almost
+mechanically by the eye, which otherwise would call into play the higher
+faculties of the brain. [\ldots] Civilisation advances by extending the number
+of important operations which can be performed without thinking about them.
+\end{quote}\end{green}
+
+A. N. Whitehead: `An Introduction to Mathematics', 1919.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Formal syntax of $\lambda$-terms}
+
+\vspace*{0.5cm}
+
+Lambda terms are built up inductively in the following ways:
+
+\begin{itemize}
+
+\item {\bf Variables}, e.g. {\red $x$}, {\red $u$} and {\red $v_3$}.
+
+\item {\bf Constants}, e.g. {\red $c$}, {\red $0$} and {\red $false$}.
+
+\item {\bf Applications}, of the form {\red $s\; t$} where {\red $s$} and {\red
+$t$} are $\lambda$-terms, e.g. {\red $f(x)$}.
+
+\item {\bf Abstractions}, of the form {\red $\lamb{x} s$}, e.g. {\red $\lamb{x}
+x$}.
+
+\end{itemize}
+
+This can be described by the following BNF grammar:
+
+{\red $$ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp $$}
+
+Since the syntax is defined inductively, we can {\em define things by
+primitive recursion} and {\em prove things by structural induction}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Primitive recursion: FV}
+
+\vspace*{0.5cm}
+
+As an illustration of how to define functions recursively over the
+syntax of $\lambda$-terms, here is a formal definition of the set of free
+variables in a term {\red $t$}, written {\red $FV(t)$}.
+
+\begin{red}
+\begin{eqnarray*}
+   FV(x)          & = & \{ x \}                 \\
+   FV(c)          & = & \emptyset               \\
+   FV(s\; t)      & = & FV(s) \Union FV(t)      \\
+   FV(\lamb{x} s) & = & FV(s) - \{ x \}
+\end{eqnarray*}
+\end{red}
+
+In general, we can always define the value of a function on a given term
+in terms of the value on the immediate subterms, as here. Intuitively, it
+is clear that we can always calculate the value of the function on any
+particular term.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Structural induction: FV is finite}
+
+\vspace*{0.5cm}
+
+As an illustration of structural induction, we will prove that for any
+$\lambda$-term {\red $t$}, the set {\red $FV(t)$} is always finite.
+
+\begin{itemize}
+
+\item If {\red $t$} is a variable {\red $v$}, then {\red $FV(t) = \{v\}$} by
+definition, and this is certainly finite.
+
+\item If {\red $t$} is a constant {\red $c$}, then {\red $FV(t) = \emptyset$},
+which is trivially finite.
+
+\item If {\red $t$} is an application {\red $s_1\; s_2$}, then by the inductive
+hypothesis {\red $FV(s_1)$} and {\red $FV(s_2)$} are both finite. But {\red
+$FV(t) = FV(s_1) \Union FV(s_2)$} and the union of two finite sets is finite.
+
+\item If {\red $t$} is an abstraction {\red $\lamb{x} s$}, then by the
+inductive hypothesis {\red $FV(s)$} is finite. But {\red $FV(t) = FV(s) -
+\{x\}$}, which must also be finite as it is no larger.
+
+\end{itemize}
+
+Q.E.D.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Substitution}
+
+\vspace*{0.5cm}
+
+In order to express certain rules, we need to formalize the notion of
+substituting a term for a variable in another term.
+
+We write {\red $t[s/x]$} for the result of substituting a term {\red $s$} for a
+variable {\red $x$} in another term {\red $t$}. One also sees {\red $t[x :=
+s]$} and even {\red $t[x/s]$}.
+
+Ours can be remembered by thinking of multiplication of fractions:
+
+{\red $$ x[t/x] = t $$}
+
+For example:
+
+{\red $$ (\lamb{z} x + z + x)[y/x] = \lamb{z} y + z + y $$}
+Of course we only substitute for {\em free} variables, so {\red $(\lamb{x}
+x)[y/x] = \lamb{x} x$}.
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Naive substitution}
+
+\vspace*{0.5cm}
+
+At first sight we can define substitution by primitive recursion as follows:
+{\red \begin{eqnarray*}
+   x[t/x]            & = & t                           \\
+   y[t/x]            & = & y \mbox{ if $x \not= y$}    \\
+   c[t/x]            & = & c                           \\
+   (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
+   (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
+   (\lamb{y} s)[t/x] & = & \lamb{x} (s[t/x]) \mbox{ if $x \not= y$}
+\end{eqnarray*}}
+However this isn't right. We get {\red $(\lamb{y} x + y)[y/x] = \lamb{y} y
++ y$} --- {\em variable capture}. We should rename first to {\red $\lamb{w} x +
+w$}, and only then perform the naive substitution:
+
+{\red $$ (\lamb{w} x + w)[y/x] = \lamb{w} y + w $$}
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Renaming substitution}
+
+\vspace*{0.5cm}
+
+So we consider two cases when defining {\red $(\lamb{y} s)[t/x]$} for {\red $x
+\not= y$}.
+
+\begin{itemize}
+
+\item If either {\red $x \not\in FV(s)$} or {\red $y \not\in FV(t)$} then we
+can proceed as before; variable capture will not occur.
+
+\item Otherwise, we pick a new variable {\red $z \not\in FV(s) \Union FV(t)$}
+and form {\red $\lamb{z} (s[z/y][t/x])$}. That is, first we rename the bound
+variable {\red $y$} to {\red $z$}, then proceed with the substitution as
+before.
+
+\end{itemize}
+
+For definiteness, we can define {\red $z$} to be the lexicographically earliest
+variable not occurring free in {\red $s$} or {\red $t$}.
+
+The above definition ensures that substitution always respects the intuitive
+interpretation. Now we can use this operation freely.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Conversion rules}
+
+\vspace*{0.5cm}
+
+Lambda calculus is based on three fundamental `conversions' which transform one
+term into another one, intuitively equivalent to it. These are traditionally
+denoted by the Greek letters {\green $\alpha$} (alpha), {\green $\beta$} (beta)
+and {\green $\eta$} (eta). The most important to us is {\green $\beta$}.
+
+\begin{itemize}
+
+\item Alpha conversion: {\red $\lamb{x} s \alphas \lamb{y} s[y/x]$} provided
+{\red $y \not\in FV(s)$}. For example, {\red $\lamb{u} u\; v \alphas \lamb{w}
+w\; v$}, but {\red $\lamb{u} u\; v \not\alphas \lamb{v} v\; v$}. This
+restriction avoids another instance of variable capture.
+
+\item Beta conversion: {\red $(\lamb{x} s)\; t \betas s[t/x]$}.
+
+\item Eta conversion: {\red $\lamb{x} t\; x \etas t$}, provided {\red $x
+\not\in FV(t)$}. For example {\red $\lamb{u} v\; u \etas v$} but {\red
+$\lamb{u} u\; u \not\etas u$}.
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Lambda equality}
+
+\vspace*{0.5cm}
+
+We say that two terms {\red $s$} and {\red $t$} are equal, and write {\red $s =
+t$}, if there is a finite sequence of $\alpha$, $\beta$ or $\eta$ conversions,
+forwards or backwards, at any depth, which connects them.
+
+Formally we define the relation inductively (see next slide).
+
+Note that this `equality' is a {\em defined} notion and is not the same as
+equality at the syntactic level. We'll call this `identity', and use the symbol
+{\red $\equiv$}. For example {\red $\lamb{x} x = \lamb{y} y$} but {\red
+$\lamb{x} x \not\equiv \lamb{y} y$}.
+
+The equality relation is {\em extensional}, i.e. if two functions {\red $f$}
+and {\red $g$} give equal results for all arguments, then they are themselves
+equal. Indeed, if {\red $f$} and {\red $g$} have this property, then choose a
+variable {\red $y$} not free in {\red $f$} or {\red $g$}. We have {\red $f\; y
+= g\; y$} and therefore {\red $\lamb{y} f\; y = \lamb{y} g\; y$}. But now by a
+couple of $\eta$-conversions, we get {\red $f = g$}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Lambda equality: definition}
+
+\vspace*{0.5cm}
+
+\begin{red}
+
+$$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}{s = t} $$
+
+$$ \frac{}{t = t} $$
+
+$$ \frac{s = t}{t = s} $$
+
+$$ \frac{s = t \mbox{ and } t = u}{s = u} $$
+
+$$ \frac{s = t}{s\; u = t\; u} $$
+
+$$ \frac{s = t}{u\; s = u\; t} $$
+
+$$ \frac{s = t}{\lamb{x} s = \lamb{x} t}$$
+
+\end{red}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Lambda reduction}
+
+This is a `directional' version of lambda equality.
+
+\vspace*{0.5cm}
+
+\begin{red}
+
+$$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}{s \goesto t}
+$$
+
+$$ \frac{}{t \goesto t} $$
+
+$$ \frac{s \goesto t \mbox{ and } t \goesto u}{s \goesto u} $$
+
+$$ \frac{s \goesto t}{s\; u \goesto t\; u} $$
+
+$$ \frac{s \goesto t}{u\; s \goesto u\; t} $$
+
+$$ \frac{s \goesto t}{\lamb{x} s \goesto \lamb{x} t}$$
+
+\end{red}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Evaluation strategy}
+
+\vspace*{0.5cm}
+
+The idea is that reduction corresponds to a systematic attempt to evaluate
+expressions by applying functions to arguments. However there are often several
+different ways to reduce a given term. For example we have:
+
+\begin{red}
+\begin{eqnarray*}
+& & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
+& \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
+                            (\lamb{x} x\; x\; x))                           \\
+& \goesto & (\lamb{x} y)\; (\cdots)
+\end{eqnarray*}
+\end{red}
+
+ad infinitum. However we can reduce the leftmost outermost {\em redex} first
+and get simply {\red $y$}, which is in normal form, i.e. no nontrivial
+reductions are possible.
+
+In general, then, evaluation strategy is practically important, and we will
+return to this subject.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{The Church Rosser theorem}
+
+\vspace*{0.5cm}
+
+This says that if {\red $s \goesto t_1$} and {\red $s \goesto t_2$}, then there
+is a {\red $u$} such that {\red $t_1 \goesto u$} and {\red $t_2 \goesto u$}.
+
+By applying this repeatedly, we get the stronger form that if {\red $t_1 =
+t_2$} then there is a term {\red $u$} with {\red $t_1 \goesto u$} and {\red
+$t_2 \goesto u$}.
+
+So {\em if} a term reduces to, or in general is equal to, a term in normal
+form, that normal form is unique up to alpha conversion.
+
+Also a consequence of the theorem is that lambda equality is nontrivial,
+because two terms in normal form that are not alpha-equivalent are not equal.
+For example {\red $\lamb{x\; y} x \not= \lamb{x\; y} y$}.
+
+Another theorem (also proved by Church and Rosser) is that if {\em any}
+reduction sequence terminates, then the one arrived at by systematically
+reducing the leftmost outermost redexes will terminate.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Combinators}
+
+\vspace*{0.5cm}
+
+It turns out that we can dispense with $\lambda$-abstractions altogether if we
+introduce three very simple {\em combinators}:
+
+\begin{red}
+\begin{eqnarray*}
+I & = & \lamb{x} x                              \\
+K & = & \lamb{x\; y} x                          \\
+S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
+\end{eqnarray*}
+\end{red}
+
+The names can be remembered by {\red $I$} = Identity, {\red $K$} = Konstant and
+{\red $S$} = Sharing.
+
+Combinatory completeness: every $\lambda$-term has an equivalent, with the same
+free variables, written using combinators and with no lambda abstractions.
+
+This is quite attractive, because it avoids all the complications like variable
+capture.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Combinatory completeness}
+
+\vspace*{0.5cm}
+
+It's enough to be able to find a combinatory equivalent for any {\red $\lamb{x}
+t$} where {\red $t$} is {\red $\lambda$}-free. Then we can apply the procedure
+repeatedly to the innermost abstraction in a bottom-up fashion.
+
+\begin{itemize}
+
+\item If {\red $t$} is a variable, then either {\red $t = x$}, when {\red
+$\lamb{x} x = I$}, or {\red $t \not= x$}, when {\red $\lamb{x} y = K\; y$}.
+
+\item If {\red $t$} is a constant, say {\red $c$}, then {\red $\lamb{x} y = K\;
+c$}.
+
+
+\item If {\red $t$} is an abstraction, say {\red $s\; u$}, then by the
+inductive hypothesis, there are lambda-free terms {\red $s'$} and {\red $u'$}
+with {\red $s' = \lamb{x} s$} and {\red $u' = \lamb{x} u$}. A simple calculation
+shows that {\red $\lamb{x} s\; u = S\;s'\;u'$}.
+
+\end{itemize}
+
+In fact, {\red $S$} and {\red $K$} alone suffice, since {\red $I = S\; K\; K$}.
+
+\end{slide*}
+
+
+
+\end{document}

@@ -1,0 +1,779 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 5}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 24 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 5}\\
+{\green ML}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item From lambda calculus to ML
+
+\item Eager evaluation and its consequences
+
+\item The ML family
+
+\item Starting up ML
+
+\item Basic interaction; expressions and declarations
+
+\item Examples
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{From $\lambda$-calculus to ML}
+
+\vspace*{0.5cm}
+
+We have already added some new primitive features to $\lambda$-calculus for
+various reasons, e.g.
+
+\begin{itemize}
+
+\item The {\tt let} construct as primitive to make the
+polymorphic type system more powerful.
+
+\item The recursion operator in order to regain Turing completeness in a typed
+setting.
+
+\end{itemize}
+
+This process continues until we reach ML. Notably, basic datatypes are not
+implemented as $\lambda$-terms.
+
+For example, {\red $2 + 2 \goesto 4$} happens by machine arithmetic, not by
+manipulating Church numerals. These extra reduction rules are often called
+{\em $\delta$-conversions}.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Problem with normal order}
+
+\vspace*{0.5cm}
+
+We have said that {\em normal order reduction} (`call by name') is the best
+reduction strategy, because if any strategy terminates, that one does. Recall
+the example where this strategy terminates but others don't:
+\begin{red}
+\begin{eqnarray*}
+& & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)) \\
+& \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
+                            (\lamb{x} x\; x\; x))               \\
+& \goesto & \cdots
+\end{eqnarray*}
+\end{red}
+However, there is an efficiency problem:
+{\red $$ (\lamb{x} x + x + x)\; (10 + 5) $$}
+A normal order reduction gives
+{\red $$ (10 + 5) + (10 + 5) + (10 + 5) $$}
+Then we need to evaluate three different instances of the same expression! If
+we evaluated the argument {\red $10 + 5$} first, it would be more efficient.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Lazy versus eager}
+
+\vspace*{0.5cm}
+
+This reevaluation is unacceptable in practice. There are two solutions, which
+split the world of functional programming:
+
+\begin{itemize}
+
+\item {\bf Lazy evaluation} keeps normal order reduction but also uses clever
+sharing techniques, storing expressions as a graph. In this way, an expression
+is never evaluated until needed, and never more than once.
+
+\item {\bf Eager evaluation} simply evaluates the arguments first (`applicative
+order reduction'), and the programmer is expected to avoid looping instances.
+
+\end{itemize}
+
+In some ways lazy evaluation is more elegant and powerful. However it is not
+easy to implement efficiently, and does not interact well with imperative
+features.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{ML's evaluation strategy}
+
+\vspace*{0.5cm}
+
+ML implements eager evaluation. However, as we shall see, there are ways of
+achieving many of the benefits of laziness. The evaluation rules are:
+
+\begin{itemize}
+
+\item Constants evaluate to themselves
+
+\item Evaluation stops immediately at $\lambda$-abstractions and does not look
+inside them. In particular, there is no $\eta$-conversion.
+
+\item When evaluating a combination {\red $s\; t$}, then {\em first} both {\red
+$s$} and {\red $t$} are evaluated. Then, assuming that the evaluated form of
+{\red $s$} is a lambda abstraction, a toplevel $\beta$-conversion is performed
+and the process is repeated.
+
+\end{itemize}
+
+It is important to grasp this evaluation strategy in order to understand ML
+properly.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Examples}
+
+\vspace*{0.5cm}
+
+\begin{red}
+\begin{eqnarray*}
+& & (\lamb{x} (\lamb{y} y + y)\; x) (2 + 2)     \\
+& \goesto & (\lamb{x} (\lamb{y} y + y)\; x) 4   \\
+& \goesto & (\lamb{y} y + y) 4                  \\
+& \goesto & 4 + 4                               \\
+& \goesto & 8
+\end{eqnarray*}
+
+\begin{eqnarray*}
+& & ((\lamb{f x} f\; x)\; (\lamb{y} y + y))\; (2 + 2)             \\
+& \goesto & ((\lamb{f x} f\; x)\; (\lamb{y} y + y))\; 4           \\
+& \goesto & (\lamb{x} (\lamb{y} y + y)\; x)\; 4                   \\
+& \goesto & (\lamb{y} y + y)\; 4                                  \\
+& \goesto & 4 + 4
+\end{eqnarray*}
+\end{red}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The conditional}
+
+\vspace*{0.5cm}
+
+Because of eager evaluation, we need to make the conditional primitive with its
+own special reduction strategy. If we tried to implement
+{\red $$ \mbox{if}\; b\; \mbox{then}\; e_1\; \mbox{else}\; e_2 $$}
+as the application of a normal ternary operator:
+{\red $$ \mbox{COND}\; b\; e_1\; e_2 $$}
+then most interesting cases would loop, because $b$, $e_1$ and $e_2$ are {\em
+all} evaluated before the value of $b$ is used. Consider:
+{\red $$ \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\;
+                           \mbox{then}\; 1\\
+         \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) \EA $$}
+If we want {\red $\mbox{fact}(0)$}, we need to evaluate {\red
+$\mbox{fact}(\mbox{PRE}\; 0)$}, {\red $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\;
+0))$}, and so on.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{New primitives}
+
+\vspace*{0.5cm}
+
+Because of eager evaluation, we make two changes.
+
+\begin{itemize}
+
+\item We make the conditional statement a primitive of the language, and modify
+the standard evaluation strategy so that {\em first} the boolean expression is
+evaluated, and only then is {\em exactly one} of the two arms evaluated, as
+appropriate.
+
+\item We also slightly modify the reduction rule for the recursion operator.
+Instead of:
+{\red $$ Rec\; f \goesto f(Rec\; f) $$}
+we use
+{\red $$ Rec\; f \goesto f(\lamb{x} Rec\; f\; x) $$}
+This avoids looping because ML will not evaluate inside the lambda.
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The ML family}
+
+\vspace*{0.5cm}
+
+ML is not a single language. There are many descendants of the original ML used
+as the metalanguage of Edinburgh LCF:
+
+\begin{itemize}
+
+\item Standard ML and SML/NJ
+
+\item CAML and Objective CAML
+
+\item Edinburgh ML and Cambridge ML
+
+\item Lazy ML
+
+\end{itemize}
+
+We will be using CAML Light, a small and efficient implementation of the CAML
+language.
+
+The features we use are general, and can easily be translated to other
+dialects, and other functional languages.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Starting up ML}
+
+\vspace*{0.5cm}
+
+ML is already installed on Thor. In order to use it, put its binary directory
+on your path:
+\begin{black}
+\begin{verbatim}
+  PATH="$PATH:/home/jrh13/caml/bin"
+  export PATH
+\end{verbatim}
+\end{black}
+You can put these two lines near the end of your {\black \tt .bash\_profile},
+and it will be set up automatically every time you log on.
+
+Now simply type {\black \tt camllight} and the system will start up and present
+its prompt.
+\begin{black}
+\begin{verbatim}
+  $ camllight
+  >       Caml Light version 0.73
+
+  #
+\end{verbatim}
+\end{black}
+
+If you want to install CAML Light on your own computer, see the Web page:
+\begin{black}
+\begin{verbatim}
+  http://pauillac.inria.fr/caml/
+\end{verbatim}
+\end{black}
+\end{slide*}
+
+\begin{slide*}
+
+\heading{Interacting with ML}
+
+\vspace*{0.5cm}
+
+The simplest way to interact with ML is to use it as a simple calculator.
+
+\begin{black}
+\begin{verbatim}
+  #10 + 5;;
+  - : int = 15
+\end{verbatim}
+\end{black}
+
+ML not only prints the result, but also infers the {\em type} of the
+expression, namely {\black \tt int}. If ML cannot assign a type to an
+expression then it is rejected:
+
+\begin{black}
+\begin{verbatim}
+  #1 + true;;
+  Toplevel input:
+  >let it = 1 + true;;
+  >             ^^^^
+  This expression has type bool,
+  but is used with type int.
+\end{verbatim}
+\end{black}
+
+ML knows the type of the built-in operator {\black \tt +}, and that is how it
+makes its type inference.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Using functions (1)}
+
+\vspace*{0.5cm}
+
+Since ML is a functional language, expressions are allowed to have function
+type. The ML syntax for a lambda abstraction {\red $\lamb{x} t[x]$} is {\black
+\tt fun x -> t[x]}. For example we can define the successor function:
+
+\begin{black}
+\begin{verbatim}
+  #fun x -> x + 1;;
+  - : int -> int = <fun>
+\end{verbatim}
+\end{black}
+
+Again, the type of the expression, this time {\black \tt int -> int}, is
+inferred and displayed. However the function itself is not printed; the system
+merely writes {\black \tt <fun>}. 
+
+Functions are applied by juxtaposition, as in $\lambda$-calculus:
+
+\begin{black}
+\begin{verbatim}
+  #(fun x -> x + 1) 4;;
+  - : int = 5
+\end{verbatim}
+\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Using functions (2)}
+
+\vspace*{0.5cm}
+
+ML supports similar syntactic conventions to $\lambda$-calculus for curried
+functions of several arguments:
+
+\begin{black}
+\begin{verbatim}
+  #(fun x -> fun y -> x + y) 1 2;;
+  - : int = 3
+  #(fun x y -> x + y) 1 2;;
+  - : int = 3
+  #fun x y -> x + y;;
+  - : int -> int -> int = <fun>
+\end{verbatim}
+\end{black}
+
+The first two lines are treated completely equivalently, as is the fully
+bracketed version:
+
+\begin{black}
+\begin{verbatim}
+  #((fun x -> (fun y -> x + y)) 1) 2;;
+  - : int = 3
+\end{verbatim}
+\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Let bindings}
+
+\vspace*{0.5cm}
+
+It is not necessary to evaluate an expresion all in one piece. You can use
+{\black \tt let} bindings:
+
+\begin{black}
+\begin{verbatim}
+  #let successor = fun x -> x + 1 in
+   successor(successor(successor 0));;
+  - : int = 3
+\end{verbatim}
+\end{black}
+
+When binding functions, one can also use the more elegant sugaring:
+
+\begin{black}
+\begin{verbatim}
+  #let successor x = x + 1 in
+   successor(successor(successor 0));;
+  - : int = 3
+\end{verbatim}
+\end{black}
+
+Function bindings can also be recursive: just add the {\black \tt rec} keyword:
+
+\begin{black}
+\begin{verbatim}
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1) in
+   fact 6;;
+  - : int = 720
+\end{verbatim}
+\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Declarations}
+
+\vspace*{0.5cm}
+
+In fact, the set of bindings can be augmented interactively. Simply omit the
+{\black \tt in} and terminate the phrase:
+
+\begin{black}
+\begin{verbatim}
+  #let successor x = x + 1;;
+  successor : int -> int = <fun>
+\end{verbatim}
+\end{black}
+
+or
+
+\begin{black}
+\begin{verbatim}
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1);;
+  fact : int -> int = <fun>
+\end{verbatim}
+\end{black}
+
+
+Thus one can make a series of function declarations. These can then be used
+later in the session.
+
+\begin{black}
+\begin{verbatim}
+  #successor 6;;
+  - : int = 7
+\end{verbatim}
+\end{black}
+
+Note: this is {\em not} the same thing as variable assignment!
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Polymorphic functions}
+
+\vspace*{0.5cm}
+
+We can define polymorphic functions, like the identity operator:
+
+\begin{black}
+\begin{verbatim}
+  #let I = fun x -> x;;
+  I : 'a -> 'a = <fun>
+\end{verbatim}
+\end{black}
+
+ML prints type variables as {\black \tt 'a},{\black \tt 'b} etc. These are
+supposed to be ASCII representations of {\black $\alpha$}, {\black $\beta$} and
+so on. We can now use it with different types:
+
+\begin{black}
+\begin{verbatim}
+  #I true;;
+  - : bool = true
+  #I 1;;
+  - : int = 1
+  #I I I I 12;;
+  - : int = 12
+\end{verbatim}
+\end{black}
+
+Each instance of {\black \tt I} in the last expression has a different type, 
+and intutively corresponds to a different function.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Combinators}
+
+\vspace*{0.5cm}
+
+In fact, let's define all the combinators:
+
+\begin{black}
+\begin{verbatim}
+  #let I x = x;;
+  I : 'a -> 'a = <fun>
+  #let K x y = x;;
+  K : 'a -> 'b -> 'a = <fun>
+  #let S f g x = (f x) (g x);;
+  S : ('a -> 'b -> 'c) ->
+         ('a -> 'b) -> 'a -> 'c = <fun>
+\end{verbatim}
+\end{black}
+
+Note that the system keeps track of the types for us. Recall that {\red $I =
+S\; K\; K$}; let us try this out in ML:
+\begin{black}
+\begin{verbatim}
+  #let I' x = S K K x;;
+  I' : 'a -> 'a = <fun>
+\end{verbatim}
+\end{black}
+It has the right type, and seems to work:
+\begin{black}
+\begin{verbatim}
+  #I' 3 = 3;;
+  - : bool = true
+\end{verbatim}
+\end{black}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Equality of functions}
+
+\vspace*{0.5cm}
+
+Why don't we just compare the two versions of the identity operator? Here's
+why:
+
+\begin{black}
+\begin{verbatim}
+  #I' = I;;
+  Uncaught exception: Invalid_argument
+     "equal: functional value"
+\end{verbatim}
+\end{black}
+
+It is in general {\em forbidden} to compare functions for equality. Why? Aren't
+functions supposed to be first-class objects in ML?
+
+Yes, but unfortunately, (extensional) function equality is not computable. This
+is a consequence of {\em Rice's theorem}, or simply of the {\em unsolvability
+of the halting problem}.
+
+Some versions of ML distinguish between functions and other `equality types'
+and filter out these cases during typechecking.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Pathologies of typechecking}
+
+\vspace*{0.5cm}
+
+In all our examples, the system very quickly infers a most general type for
+each expression, and the type is simple. This usually happens in practice, but
+there are pathological cases, e.g. the following example due to Mairson:
+
+\begin{black}
+\begin{verbatim}
+  let pair x y = fun z -> z x y in
+  let x1 = fun y -> pair y y in
+  let x2 = fun y -> x1(x1 y) in
+  let x3 = fun y -> x2(x2 y) in
+  let x4 = fun y -> x3(x3 y) in
+  let x5 = fun y -> x4(x4 y) in
+  x5(fun z -> z);;
+\end{verbatim}
+\end{black}
+
+The type of this expression takes about 10 seconds to calculate, and occupies
+over 4000 lines on an 80-column terminal.
+
+{\bf Don't try this at home}.
+
+\end{slide*}
+
+
+\end{document}

@@ -1,0 +1,826 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 11}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 7 February 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 11}\\
+{\green ML examples III:}\\
+{\green Exact Real Arithmetic}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item Finite representations
+
+\item Real numbers as approximating functions
+
+\item Arbitrary precision integers
+
+\item Operations over reals
+
+\item Caching
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Finite representations}
+
+\vspace*{0.5cm}
+
+Real arithmetic on computers is normally done via floating point
+approximations.
+
+In general, we can only manipulate a real number, either ourselves or inside a
+computer, via some sort of finite representation.
+
+Some question how numbers can be said to `exist' if they have no finite
+representation.
+
+For example, Kronecker accepted integers and rationals because
+they can be written down explicitly, and even {\em algebraic}
+numbers because they can be represented using the polynomials of which they
+are solutions.
+
+However he rejected transcendental numbers because apparently
+they could not be represented finitely.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Real numbers as programs}
+
+\vspace*{0.5cm}
+
+However, given our modern perspective, we can say that after all many more
+numbers than Kronecker would have accepted {\em do} have a finite
+representation.
+
+This is the program used to calculate them to greater and greater precision.
+
+For example, we can write a program that will produce for any argument {\red
+$n$} the first {\red $n$} digits of {\red $\pi$}.
+
+Alternatively it can produce a rational number {\red $r$} such that
+{\red $|\pi - r| < 2^{-n}$}.
+
+Whatever approach is taken to the successive approximation of a real number,
+the key point is that its representation, the program itself, is finite.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Our representation of reals}
+
+\vspace*{0.5cm}
+
+We  represent a real {\red $x$} by a function {\red $f_x:\nat \to \num$} that
+for each {\red $n \in \nat$}:
+{\red $$ |f_x(n) - 2^n x| < 1 $$}
+This is of course equivalent to
+{\red $$ |{f_x(n) \over 2^n} - x| < {1 \over 2^n} $$}
+We can actually represent the arithmetic operations on numbers as
+higher order functions.
+
+Given functions for approximating {\red $x$} and {\red $y$}, will produce new ones for
+approximating {\red $x + y$}, {\red $x y$}, {\red $sin(x)$} and so on, for a wide range of
+functions.
+
+Such a result is exact, in the sense that we can then give it an arbitrary
+desired precision and it will perform the appropriate calculation
+automatically.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Arbitrary precision integers}
+
+\vspace*{0.5cm}
+
+CAML's standard integers (type {\black \tt int}) have a severely limited range, so
+first of all we need to set up a type of unlimited-precision integers.
+
+The CAML release includes a library that gives a fast implementation of
+arbitrary precision integer (and in fact rational) arithmetic.
+
+A version of CAML Light with this library pre-loaded is installed on Thor. Just
+run it with:
+
+\begin{black}\begin{verbatim}
+  $ camllight my_little_caml
+\end{verbatim}\end{black}
+
+then do the following to get access to all the functions:
+
+\begin{black}\begin{verbatim}
+  #open "num";;
+\end{verbatim}\end{black}
+
+This library sets up a new type {\black \tt num} of arbitrary precision rational
+numbers; we will just use the integer subset.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Operators on {\black \tt num}}
+
+\vspace*{0.5cm}
+
+CAML does not provide overloading, so it is necessary to use different symbols
+for the usual arithmetic operations over {\black \tt num}.
+
+Note that small constants of type {\black \tt num} must be written as {\black \tt Int k}
+rather than simply {\black \tt k}.
+
+The unary negation on type {\black \tt num} is written {\black \tt minus\_num}. Another handy
+unary operator is {\black \tt abs\_num}, which finds absolute values, i.e. given {\red $x$}
+returns {\red $|x|$}.
+
+The usual complement of binary operations are also available. The (truncating)
+division and modulus function, called {\black \tt quo\_num} and {\black \tt mod\_num}, do not
+have infix status. However most of the other binary operators are infixes, and
+the names are derived from the usual ones by adding a slash `{\black \verb!/!}'.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Binary operators}
+
+\vspace*{0.5cm}
+
+\bigskip
+\begin{tabular}{|l|l|l|}
+\hline
+Op         & Type                             & Meaning               \\
+\hline
+{\black \tt **/}  & {\black \tt num -> num -> num}          & Exponentiation        \\
+{\black \tt */}   & {\black \tt num -> num -> num}          & Multiplication        \\
+{\black \tt +/}   & {\black \tt num -> num -> num}          & Addition              \\
+{\black \tt -/}   & {\black \tt num -> num -> num}          & Subtraction           \\
+{\black \tt =/}   & {\black \tt num -> num -> bool}         & Equality              \\
+{\black \tt <>/}  & {\black \tt num -> num -> bool}         & Inequality            \\
+{\black \tt </}   & {\black \tt num -> num -> bool}         & Less than             \\
+{\black \tt <=/}  & {\black \tt num -> num -> bool}         & Less or equal         \\
+{\black \tt >/}   & {\black \tt num -> num -> bool}         & Greater than          \\
+{\black \tt >=/}  & {\black \tt num -> num -> bool}         & Greater or equal      \\
+\hline
+\end{tabular}
+\bigskip
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Getting started}
+
+\vspace*{0.5cm}
+
+Recall that our real numbers are supposed to be (represented by) functions
+{\red $\num \to \num$}.
+
+In ML we will actually use {\black \tt int -> num}, since the inbuilt
+type of integers is more than adequate for indexing the level of accuracy.
+
+Now we can define some basic operations on reals. The most basic operation,
+which gets us started, is to produce the real number corresponding to an
+integer. This is easy:
+
+\begin{black}\begin{verbatim}
+  #let real_of_int k n =
+     (Int 2 **/ Int n) */ Int k;;
+  real_of_int : int -> int -> num = <fun>
+  #real_of_int 23;;
+  - : int -> num = <fun>
+\end{verbatim}\end{black}
+
+Evidently this satisfies the error criterion: in fact the error is zero.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{Basic operations}
+
+\vspace*{0.5cm}
+
+Now we can define the first nontrivial operation, that of unary negation:
+\begin{black}\begin{verbatim}
+  let real_neg f n = minus_num(f n);;
+\end{verbatim}\end{black}
+The compiler generalizes the type more than intended, but this will not trouble
+us. It is almost as easy to see that the approximation criterion is preserved.
+If we know that for each {\red $n$}:
+{\red $$ |f_x(n) - 2^n x| < 1 $$}
+\noindent then we have for any {\red $n$}:
+{\red \begin{eqnarray*}
+|f_{-x}(n) - 2^n (-x)| & = & |-f_x(n) - 2^n (-x)|       \\
+                       & = & |-(f_x(n) - 2^n x)|        \\
+                       & = & |f_x(n) - 2^n x|           \\
+                       & < & 1
+\end{eqnarray*}}
+Similarly, we can define an `absolute value' function on real numbers, using
+the corresponding function {\black \tt abs\_num} on numbers.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{Addition: first attempt}
+
+\vspace*{0.5cm}
+
+We could define:
+
+{\red $$ f_{x + y}(n) = f_x(n) + f_y(n) $$}
+
+However this gives no guarantee that the approximation criterion is maintained;
+we would have:
+
+{\red \begin{eqnarray*}
+&      & |f_{x + y}(n) - 2^n (x + y)| \\
+& =    & |f_x(n) + f_y(n) - 2^n (x + y)|      \\
+& \leq & |f_x(n) - 2^n x| + |f_y(n) - 2^n y|
+\end{eqnarray*}}
+
+We can guarantee that the sum on the right is less than {\red $2$}, but not that it is
+less than {\red $1$} as required. Therefore, we need in this case to evaluate {\red $x$} and
+{\red $y$} to {\em greater} accuracy than required in the answer.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Addition: second attempt}
+
+\vspace*{0.5cm}
+
+Suppose we define:
+{\red $$ f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2 $$}
+\noindent Now we have:
+{\red \begin{eqnarray*}
+&   & |f_{x + y}(n) - 2^n (x + y)|                              \\
+& = & |(f_x(n + 1) + f_y(n + 1)) / 2 - 2^n (x + y)|             \\
+& \leq & |f_x(n + 1) / 2 - 2^n x| + |f_y(n + 1) / 2 - 2^n y|    \\
+& = & {1 \over 2} |f_x(n + 1) - 2^{n + 1} x| +
+      {1 \over 2} |f_y(n + 1) - 2^{n + 1} y|                    \\
+& < & {1 \over 2} 1 + {1 \over 2} 1 = 1
+\end{eqnarray*}}
+
+Apparently this just gives the accuracy required. However we have implicitly
+used real mathematical division above. Since the function is supposed to yield
+an integer, we are obliged to round the quotient to an integer.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Rounding division}
+
+\vspace*{0.5cm}
+
+If we just use {\black \tt quo\_num}, the error from rounding this might be almost
+{\red $1$}, after which we could never guarantee the bound we want, however accurately
+we evaluate the arguments.
+
+We need a division function that always returns the integer closest to the true
+result (or one of them in the case of two equally close ones), so that the
+rounding error never exceeds {\red $1 \over 2$}.
+
+\begin{black}\begin{verbatim}
+  #let ndiv x y = round_num(x // y);;
+  ndiv : num -> num -> num = <fun>
+  ##infix "ndiv";;
+  #(Int 23) ndiv (Int 5);;
+  - : num = Int 5
+  #(Int 22) ndiv (Int 5);;
+  - : num = Int 4
+\end{verbatim}\end{black}
+
+Now we are ready to define a correct addition function!
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Addition: third attempt}
+
+\vspace*{0.5cm}
+
+Now if we define:
+{\red $$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4 $$}
+\noindent everything works:
+{\red \begin{eqnarray*}
+&      & |f_{x + y}(n) - 2^n (x + y)|                                   \\
+& =    & |((f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4) - 2^n (x + y)|    \\
+& \leq & {1 \over 2} + |(f_x(n + 2) + f_y(n + 2)) / 4 - 2^n (x + y)|    \\
+& =    & {1 \over 2} + {1 \over 4} |(f_x(n + 2) + f_y(n + 2)) -
+                                     2^{n + 2}(x + y)|                  \\
+& \leq & {1 \over 2} + {1 \over 4} |f_x(n + 2) - 2^{n + 2} x| +         \\
+&      &               {1 \over 4} |f_y(n + 2) - 2^{n + 2} y|           \\
+& <    & {1 \over 2} + {1 \over 4} 1 + {1 \over 4} 1 = 1
+\end{eqnarray*}}
+\noindent Accordingly we make our definition:
+\begin{black}\begin{verbatim}
+  let real_add f g n =
+    (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Multiplication by an integer (1)}
+
+\vspace*{0.5cm}
+
+It's worth treating this special case efficiently.
+We define:
+{\red $$ f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1} $$}
+\noindent where {\red $p$} is chosen so that {\red $2^p \geq |m|$}. For correctness, we have:
+
+{\red \begin{eqnarray*}
+&      & |f_{m x}(n) - 2^n (m x)|                                       \\
+& \leq & {1 \over 2} + |{m f_x(n+p+1) \over 2^{p+1}} - 2^n (m x)|       \\
+& =    & {1 \over 2} + {|m| \over 2^{p+1}} |f_x(n+p+1) - 2^{n+p+1} x|   \\
+& <    & {1 \over 2} + {|m| \over 2^{p+1}}                              \\
+& \leq & {1 \over 2} + {1 \over 2} {|m| \over 2^p}                      \\
+& \leq & {1 \over 2} + {1 \over 2} = 1
+\end{eqnarray*}}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Multiplication by an integer (2)}
+
+\vspace*{0.5cm}
+
+In order to implement this, we need a function to find the appropriate {\red $p$}:
+\begin{black}\begin{verbatim}
+let log2 =
+  let rec log2 x y =
+    if x </ Int 1 then y
+    else log2 (quo_num x (Int 2)) (y + 1) in
+  fun x -> log2 (x -/ Int 1) 0;;
+\end{verbatim}\end{black}
+\noindent The implementation is simply:
+\begin{black}\begin{verbatim}
+let real_intmul m x n =
+  let p = log2 (abs_num m) in
+  let p1 = p + 1 in
+  (m */ x(n + p1)) ndiv (Int 2 **/ Int p1);;
+\end{verbatim}\end{black}
+\noindent For division by an integer, we define:
+{\red $$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{General multiplication}
+
+\vspace*{0.5cm}
+
+This is harder because the error in approximation for one number is multiplied
+by the magnitude of the second number. We need a first evaluation to determine
+their approximate magnitude.
+
+\begin{black}\begin{verbatim}
+  let real_mul x y n =
+    let n2 = n + 2 in
+    let r = n2 / 2 in
+    let s = n2 - r in
+    let xr = x(r)
+    and ys = y(s) in
+    let p = log2 xr
+    and q = log2 ys in
+    if p = 0 & q = 0 then Int 0 else
+    let k = q + r + 1
+    and l = p + s + 1
+    and m = p + q + 4 in
+    (x(k) */ y(l)) ndiv (Int 2 **/ Int m);;
+\end{verbatim}\end{black}
+
+The error analysis is long but not really difficult.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{Multiplicative inverse (1)}
+
+\vspace*{0.5cm}
+
+In order to get any sort of upper bound on the inverse, let alone a good
+approximation, we need to get a {\em lower} bound for the argument.
+
+So first define the {\black \tt msd} function:
+
+\begin{black}\begin{verbatim}
+  let msd =
+    let rec msd n x =
+      if abs_num(x(n)) >/ Int 1 then n
+      else msd (n + 1) x in
+    msd 0;;
+\end{verbatim}\end{black}
+
+This finds the first {\red $n$} with {\red $|f_x(n) | > 1$}.
+
+Note that if {\red $x = 0$} then this will loop indefinitely. This problem is
+inevitable since equality of reals, like equality of functions, is not
+computable.
+
+However if {\red $x \not= 0$} the above must terminate eventually.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Multiplicative inverse (2)}
+
+\vspace*{0.5cm}
+
+Now we can code the inverse.
+
+\begin{black}\begin{verbatim}
+  let real_inv x n =
+    let x0 = x(0) in
+    let k =
+      if x0 >/ Int 1 then
+        let r = log2 x0 - 1 in
+        let k0 = n + 1 - 2 * r in
+        if k0 < 0 then 0 else k0
+      else
+        let p = msd x in
+        n + 2 * p + 1 in
+    (Int 2 **/ Int (n + k)) ndiv (x(k));;
+\end{verbatim}\end{black}
+
+Now, of course, it is straightforward to define division:
+
+\begin{black}\begin{verbatim}
+  let real_div x y =
+    real_mul x (real_inv y);;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Ordering and equality}
+
+\vspace*{0.5cm}
+
+To decide the ordering relation of {\red $x$} and {\red $y$} it suffices to
+find an {\red $n$} such that {\red $|f_x(n) - f_y(n)| \geq 2$}. For example, if
+{\red $f_x(n) \geq f_y(n) + 2$} we have
+{\red $$ 2^n x > f_x(n) - 1 \geq f_y(n) + 1 > 2^n y $$}
+\noindent and so {\red $x > y$}.
+
+\begin{black}\begin{verbatim}
+  let rec separate n x y =
+    let d = x(n) -/ y(n) in
+    if abs_num(d) >/ Int 1 then d
+    else separate (n + 1) x y;;
+  let real_gt x y = separate x y >/ Int 0;;
+  let real_ge x y = real_gt x y;;
+  let real_lt x y = separate x y </ Int 0;;
+  let real_le x y = real_lt x y;;
+\end{verbatim}\end{black}
+Note that the only way to arrive at the reflexive orderings is to justify the
+irreflexive version. In general, all these will fail to terminate if {\red $x = y$}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Testing}
+
+\vspace*{0.2cm}
+
+We first define a function to show us a real:
+\begin{black}\begin{verbatim}
+  let view x d =
+    let n = 4 * d in
+    let out = x(n) // (Int 2 **/ Int n) in
+    approx_num_fix d out;;
+\end{verbatim}\end{black}
+Now we can test out some simple examples:
+\begin{black}\begin{verbatim}
+  #let x = real_of_int 3;;
+  x : int -> num = <fun>
+  #let xi = real_inv x;;
+  xi : int -> num = <fun>
+  #let wun = real_mul x xi;;
+  wun : int -> num = <fun>
+  #view x 20;;
+  it : string = "3.00000000000000000000"
+  #view xi 20;;
+  it : string = ".33333333333333333333"
+  #view wun 20;;
+  it : string = "1.00000000000000000000"
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{The problem of reevaluation}
+
+\vspace*{0.5cm}
+
+The following is very slow:
+
+\begin{black}\begin{verbatim}
+  #let x1 = real_of_int 1 in
+   let x2 = real_mul x1 x1 in
+   let x3 = real_mul x2 x2 in
+   let x4 = real_mul x3 x3 in
+   let x5 = real_mul x4 x4 in
+   let x6 = real_mul x5 x5 in
+   let x7 = real_mul x6 x6 in
+   view x7 10;;
+   - : string = "+1.0000000000"
+\end{verbatim}\end{black}
+
+The problem is the repeated evaluation of the same expression. This is worse
+because multiplication and inversion often evaluate their arguments more than
+once. This tends to lead to a blowup exponential in the depth of the
+expression.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Caching}
+
+\vspace*{0.5cm}
+
+We can solve the problem by giving each function a `memo'.
+
+It will remember the most accurate result it has already calculated. If asked
+for the same one, or a less accurate one, it can take it from the store.
+
+If we know that {\red $|f_x(n + k) - 2^{n + k} x| < 1$} then we have:
+{\red \begin{eqnarray*}
+&      & |f_x(n + k) \mbox{ ndiv } 2^ k - 2^n x|                        \\
+& \leq & {1 \over 2} + |{f_x(n + k) \over 2^k} - 2^n x|                 \\
+& =    & {1 \over 2} + {1 \over 2^k} |f_x(n + k) - 2^{n + k} x|         \\
+& <    & {1 \over 2} + {1 \over 2^k}                                    \\
+& \leq & 1
+\end{eqnarray*}}
+
+Hence we are always safe in returning {\red $f_x(n + k) \mbox{ ndiv } 2^k$}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Memo function}
+
+\vspace*{0.5cm}
+
+We can use the following generic function to attach a memo to a function:
+\begin{black}\begin{verbatim}
+let memo f =
+  let mem = ref (-1,Int 0) in
+  fun n ->
+    let (m,res) = !mem in
+    if n <= m then
+      if m = n then res
+      else res ndiv (Int 2 **/ Int(m - n))
+    else
+      let res = f n in
+      mem := (n,res); res;;
+\end{verbatim}\end{black}
+Now we systematically insert this in each operator. The resulting system is
+much more efficient.
+\begin{black}\begin{verbatim}
+let real_add f g = memo (fun n ->
+   (f(n + 2) +/ g(n + 2)) ndiv (Int 4));;
+...
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+
+\end{document}
