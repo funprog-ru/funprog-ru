@@ -1,0 +1,4 @@
+#summary This page contain accepted translation of the terms, used in text
+
+  * *tail recursion* - хвостовая (концевая) рекурсия
+  
