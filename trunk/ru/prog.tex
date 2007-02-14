@@ -1,0 +1,646 @@
+\chapter{Lambda calculus as a programming language}
+
+One of the central questions studied by logicians in the 1930s was the {\em
+Entscheidungsproblem} or `decision problem'. This asked whether there was some
+systematic, mechanical procedure for deciding validity in first order logic. If
+it turned out that there was, it would have fundamental philosophical, and
+perhaps practical, significance. It would mean that a huge variety of
+complicated mathematical problems could in principle be solved purely by
+following some single fixed method --- we would now say {\em algorithm} --- no
+additional creativity would be required.
+
+As it stands the question is hard to answer, because we need to define in
+mathematical terms what it means for there to be a `systematic, mechanical'
+procedure for something. Perhaps \citeN{turing} gave the best analysis, by
+arguing that the mechanical procedures are those that could in principle be
+performed by a reasonably intelligent clerk with no knowledge of the underlying
+subject matter. He abstracted from the behaviour of such a clerk and arrived at
+the famous notion of a `Turing machine'. Despite the fact that it arose by
+considering a {\em human} `computer', and was purely a mathematical
+abstraction, we now see a Turing machine as a very simple computer. Despite
+being simple, a Turing machine is capable of performing any calculation that
+can be done by a physical computer.\footnote{Actually more, since it neglects
+the necessary finite limit to the computer's store. Arguably any existing
+computer is actually a finite state machine, but the assumption of unbounded
+memory seems a more fruitful abstraction.} A model of computation of equal
+power to a Turing machine is said to be {\em Turing complete}.
+
+At about the same time, there were several other proposed definitions of
+`mechanical procedure'. Most of these turned out to be equivalent in power to
+Turing machines. In particular, although it originally arose as a foundation
+for mathematics, lambda calculus can also be seen as a programming language, to
+be executed by performing $\beta$-conversions. In fact, Church proposed before
+Turing that the set of operations that can be expressed in lambda calculus
+formalizes the intuitive idea of a mechanical procedure, a postulate known as
+{\em Church's thesis}. \citeN{church-number} showed that if this was accepted,
+the {\em Entscheidungsproblem} is unsolvable. Turing later showed that the
+functions definable in lambda calculus are precisely those computable by a
+Turing machine, which lent more credibility to Church's claims.
+
+To a modern programmer, Turing machine programs are just about recognizable as
+a very primitive kind of machine code. Indeed, it seems that Turing machines,
+and in particular Turing's construction of a `universal machine',\footnote{A
+single Turing machine program capable of simulating any other --- we would now
+regard it as an {\em interpreter}. You will learn about this in the course on
+Computation Theory.} were a key influence in the development of modern stored
+program computers, though the extent and nature of this influence is still a
+matter for controversy \cite{robinson-turing}. It is remarkable that several of
+the other proposals for a definition of `mechanical procedure', often made
+before the advent of electronic computers, correspond closely to real
+programming methods. For example, Markov algorithms, the standard approach to
+computability in the (former) Soviet Union, can be seen as underlying the
+programming language SNOBOL. In what follows, we are concerned with the
+influence of lambda calculus on functional programming languages.
+
+LISP, the second oldest high level language (FORTRAN being the oldest) took a
+few ideas from lambda calculus, in particular the notation `$(\mbox{LAMBDA}
+\cdots)$' for anonymous functions. However it was not really based on lambda
+calculus at all. In fact the early versions, and some current dialects, use a
+system of {\em dynamic binding} that does not correspond to lambda calculus.
+(We will discuss this later.) Moreover there was no real support for higher
+order functions, while there was considerable use of imperative features.
+Nevertheless LISP deserves to be considered as the first functional programming
+language, and pioneered many of the associated techniques such as automatic
+storage allocation and garbage collection.
+
+The influence of lambda calculus really took off with the work of Landin and
+Strachey in the 60s. In particular, Landin showed how many features of current
+(imperative) languages could usefully be analyzed in terms of lambda calculus,
+e.g. the notion of variable scoping in Algol 60. \citeN{landin-700} went on to
+propose the use of lambda calculus as a core for programming languages, and
+invented a functional language ISWIM (`If you See What I Mean'). This was
+widely influential and spawned many real languages.
+
+ML started life as the metalanguage (hence the name ML) of a theorem proving
+system called Edinburgh LCF \cite{gordon-lcfbook}. That is, it was intended as
+a language in which to write algorithms for proving theorems in a formal
+deductive calculus. It was strongly influenced by ISWIM but added an innovative
+polymorphic type system including abstract types, as well as a system of {\em
+exceptions} to deal with error conditions. These facilities were dictated by
+the application at hand, and this policy resulted in a coherent and focused
+design. This narrowness of focus is typical of successful languages (C is
+another good example) and contrasts sharply with the failure of
+committee-designed languages like Algol 60 which have served more as a source
+of important ideas than as popular practical tools. We will have more to say
+about ML later. Let us now see how {\em pure lambda calculus} can be used as a
+programming language.
+
+\section{Representing data in lambda calculus}
+
+Programs need data to work on, so we start by fixing lambda expressions to
+encode data. Furthermore, we define a few basic operations on this data. In
+many cases, we show how a string of human-readable syntax $s$ can be translated
+directly into a lambda expression $s'$. This procedure is known as `syntactic
+sugaring' --- it makes the bitter pill of pure lambda notation easier to
+digest. We write such definitions as:
+
+$$ s \defeq s' $$
+
+This notation means `$s = s'$ by definition'; one also commonly sees this
+written as `$s =_{def} s'$'. If preferred, we could always regard these as
+defining a single constant denoting that operation, which is then applied to
+arguments in the usual lambda calculus style, the surface notation being
+irrelevant. For example we can imagine `$\mbox{if } E \mbox{ then } E_1 \mbox{
+else } E_2$' as `$\mbox{COND } E\; E_1\; E_2$' for some constant $\mbox{COND}$.
+In such cases, any variables on the left of the definition need to be
+abstracted over, e.g. instead of
+
+$$ \mbox{fst}\; p \defeq p\; \mbox{true} $$
+
+\noindent (see below) we could write
+
+$$ \mbox{fst} \defeq \lamb{p} p\; \mbox{true} $$
+
+\subsection{Truth values and the conditional}
+
+We can use any unequal lambda expressions to stand for `true' and `false', but
+the following work particularly smoothly:
+
+\begin{eqnarray*}
+\mbox{true} & \defeq & \lamb{x\; y} x                   \\
+\mbox{false} & \defeq & \lamb{x\; y} y
+\end{eqnarray*}
+
+Given those definitions, we can easily define a conditional expression just
+like C's `{\tt ?:}' construct. Note that this is a conditional {\em expression}
+not a conditional {\em command} (this notion makes no sense in our context) and
+therefore the `else' arm is compulsory:
+
+$$ \mbox{if } E \mbox{ then } E_1 \mbox{ else } E_2 \defeq E\; E_1\; E_2 $$
+
+\noindent indeed we have:
+
+\begin{eqnarray*}
+\mbox{if } \mbox{true} \mbox{ then } E_1 \mbox{ else } E_2
+  & = & \mbox{true}\; E_1\; E_2                 \\
+  & = & (\lamb{x\; y} x)\; E_1\; E_2            \\
+  & = & E_1
+\end{eqnarray*}
+
+\noindent and
+
+\begin{eqnarray*}
+\mbox{if } \mbox{false} \mbox{ then } E_1 \mbox{ else } E_2
+  & = & \mbox{false}\; E_1\; E_2                \\
+  & = & (\lamb{x\; y} y)\; E_1\; E_2            \\
+  & = & E_2
+\end{eqnarray*}
+
+\noindent Once we have the conditional, it is easy to define all the usual
+logical operations:
+
+\begin{eqnarray*}
+\mbox{not } p  & \defeq & \mbox{if } p \mbox{ then false else true}          \\
+p \mbox{ and } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
+p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
+\end{eqnarray*}
+
+\subsection{Pairs and tuples}
+
+We can represent ordered pairs as follows:
+
+$$ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 $$
+
+The parentheses are not obligatory, but we often use them for the sake of
+familiarity or to enforce associations. In fact we simply regard the comma as
+an infix operator like $+$. Given the above definition, the corresponding
+destructors for pairs can be defined as:
+
+\begin{eqnarray*}
+\mbox{fst } p & \defeq & p \mbox{ true}                                 \\
+\mbox{snd } p & \defeq & p \mbox{ false}
+\end{eqnarray*}
+
+\noindent It is easy to see that these work as required:
+
+\begin{eqnarray*}
+\mbox{fst}\; (p,q) & = & (p,q)\; \mbox{true}                            \\
+                   & = & (\lamb{f} f\; p\; q)\; \mbox{true}             \\
+                   & = & \mbox{true}\; p\; q                            \\
+                   & = & (\lamb{x\; y} x)\; p\; q                       \\
+                   & = & p
+\end{eqnarray*}
+
+\noindent and
+
+\begin{eqnarray*}
+\mbox{snd}\; (p,q) & = & (p,q)\; \mbox{false}                           \\
+                   & = & (\lamb{f} f\; p\; q)\; \mbox{false}            \\
+                   & = & \mbox{false}\; p\; q                           \\
+                   & = & (\lamb{x\; y} y)\; p\; q                       \\
+                   & = & q
+\end{eqnarray*}
+
+We can build up triples, quadruples, quintuples, indeed arbitrary $n$-tuples,
+by iterating the pairing construct:
+
+$$ (E_1,E_2,\ldots,E_n) = (E_1,(E_2,\ldots E_n)) $$
+
+We need simply say that the infix comma operator is right-associative, and can
+understand this without any other conventions. For example:
+
+\begin{eqnarray*}
+(p,q,r,s) & = & (p,(q,(r,s)))                                            \\
+          & = & \lamb{f} f\; p\;  (q,(r,s))                              \\
+          & = & \lamb{f} f\; p\; (\lamb{f} f\; q\; (r,s))                \\
+          & = & \lamb{f} f\; p\; (\lamb{f} f\; q\; (\lamb{f} f\; r\; s)) \\
+          & = & \lamb{f} f\; p\; (\lamb{g} g\; q\; (\lamb{h} h\; r\; s))
+\end{eqnarray*}
+
+\noindent where in the last line we have performed an alpha-conversion for the
+sake of clarity. Although tuples are built up in a flat manner, it is easy to
+create arbitrary finitely-branching tree structures by using tupling
+repeatedly. Finally, if one prefers conventional functions over Cartesian
+products to our `curried' functions, one can convert between the two using the
+following:
+
+\begin{eqnarray*}
+\mbox{CURRY}\; f  & \defeq & \lamb{x\; y} f(x,y)             \\
+\mbox{UNCURRY}\;g & \defeq & \lamb{p} g\; (\mbox{fst}\; p)\; (\mbox{snd}\; p)
+\end{eqnarray*}
+
+These special operations for pairs can easily be generalized to arbitrary
+$n$-tuples. For example, we can define a selector function to get the $i^{th}$
+component of a flat tuple $p$. We will write this operation as $(p)_i$ and
+define $(p)_1 = \mbox{fst}\; p$ and the others by $(p)_i = \mbox{fst}\;
+(\mbox{snd}^{i-1}\; p)$. Likewise we can generalize $\mbox{CURRY}$ and
+$\mbox{UNCURRY}$:
+
+\begin{eqnarray*}
+\mbox{CURRY}_n\; f  & \defeq & \lamb{x_1\; \cdots \; x_n} f(x_1,\ldots,x_n) \\
+\mbox{UNCURRY}_n\;g & \defeq & \lamb{p} g\; (p)_1 \; \cdots \; (p)_n
+\end{eqnarray*}
+
+\noindent We can now write $\lamb{(x_1,\ldots,x_n)} t$ as an abbreviation for:
+
+$$\mbox{UNCURRY}_n\; (\lamb{x_1\; \cdots \; x_n} t)$$
+
+\noindent giving a natural notation for functions over Cartesian products.
+
+\subsection{The natural numbers}
+
+We will represent each natural number $n$ as follows:\footnote{The $n$ in
+$f^n\; x$ is just a meta-notation, and does not mean that there is anything
+circular about our definition.}
+
+$$ n \defeq \lamb{f\; x} f^n\; x $$
+
+\noindent that is, $0 = \lamb{f\; x} x$, $1 = \lamb{f\; x} f\; x$, $2 =
+\lamb{f\; x} f\;(f\; x)$ etc. These representations are known as {\em Church
+numerals}, though the basic idea was used earlier by
+\citeN{wittgenstein-tractatus}.\footnote{`6.021 A number is the exponent of an
+operation'.} They are not a very efficient representation, amounting
+essentially to counting in unary, $1, 11, 111, 1111, 11111, 111111, \ldots$.
+There are, from an efficiency point of view, much better ways of representing
+numbers, e.g. tuples of trues and falses as binary expansions. But at the
+moment we are only interested in computability `in principle' and Church
+numerals have various nice formal properties. For example, it is easy to give
+lambda expressions for the common arithmetic operators such as the successor
+operator which adds one to its argument:
+
+$$ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) $$
+
+\noindent Indeed
+
+\begin{eqnarray*}
+\mbox{SUC}\; n & = & (\lamb{n\; f\; x} n\; f\; (f\; x)) (\lamb{f\; x} f^n\; x)  \\
+             & = & \lamb{f\; x} (\lamb{f\; x} f^n\; x) f\; (f\; x)          \\
+             & = & \lamb{f\; x} (\lamb{x} f^n\; x) (f\; x)                \\
+             & = & \lamb{f\; x} f^n\; (f\; x)                                \\
+             & = & \lamb{f\; x} f^{n + 1}\; x                               \\
+             & = & n + 1
+\end{eqnarray*}
+
+\noindent Similarly it is easy to test a numeral to see if it is zero:
+
+$$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$
+
+\noindent since:
+
+$$ \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
+                     = \mbox{true} $$
+
+\noindent and
+
+\begin{eqnarray*}
+\mbox{ISZERO}\; (n + 1)
+  & = & (\lamb{f\; x} f^{n + 1} x) (\lamb{x} \mbox{false}) \mbox{true}  \\
+  & = & (\lamb{x} \mbox{false})^{n + 1}\; \mbox{true}  \\
+  & = & (\lamb{x} \mbox{false}) ((\lamb{x} \mbox{false})^n\; \mbox{true}) \\
+  & = & \mbox{false}
+\end{eqnarray*}
+
+\noindent The following perform addition and multiplication on Church numerals:
+
+\begin{eqnarray*}
+ m + n & \defeq & \lamb{f\; x} m\; f\; (n\; f\; x)    \\
+ m * n & \defeq & \lamb{f\; x} m\; (n\; f)\; x
+\end{eqnarray*}
+
+\noindent Indeed:
+
+\begin{eqnarray*}
+ m + n  & = & \lamb{f\; x} m\; f\; (n\; f\; x)        \\
+        & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; f\; (n\; f\; x)     \\
+        & = & \lamb{f\; x} (\lamb{x} f^m\; x)\; (n\; f\; x)     \\
+        & = & \lamb{f\; x} f^m\; (n\; f\; x)                    \\
+        & = & \lamb{f\; x} f^m\; ((\lamb{f\; x} f^n\; x)\; f\; x)   \\
+        & = & \lamb{f\; x} f^m\; ((\lamb{x} f^n\; x)\; x)               \\
+        & = & \lamb{f\; x} f^m\; (f^n\; x)                              \\
+        & = & \lamb{f\; x} f^{m + n} x
+\end{eqnarray*}
+
+\noindent and:
+
+\begin{eqnarray*}
+ m * n  & = & \lamb{f\; x} m\; (n\; f)\; x                              \\
+        & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; (n\; f)\; x         \\
+        & = & \lamb{f\; x} (\lamb{x} (n\; f)^m\; x)\; x                 \\
+        & = & \lamb{f\; x} (n\; f)^m\; x                                \\
+        & = & \lamb{f\; x} ((\lamb{f\; x} f^n\; x)\; f)^m\; x           \\
+        & = & \lamb{f\; x} ((\lamb{x} f^n\; x)^m\; x                    \\
+        & = & \lamb{f\; x} (f^n)^m\; x                                  \\
+        & = & \lamb{f\; x} f^{m n} x
+\end{eqnarray*}
+
+Although those operations on natural numbers were fairly easy, a `predecessor'
+function is much harder. What is required is a a lambda expression $PRE$ so
+that $PRE\; 0 = 0$ and $PRE\; (n + 1) = n$. Finding such an expression was the
+first piece of mathematical research by the logician \citeN{kleene-numbers}.
+His trick was, given $\lamb{f\;x} f^n\; x$, to `throw away' one of the
+applications of $f$. The first step is to define a function `PREFN' that
+operates on pairs such that:
+
+$$ \mbox{PREFN}\; f\; (\mbox{true},x) = (\mbox{false},x) $$
+
+\noindent and
+
+$$ \mbox{PREFN}\; f\; (\mbox{false},x) = (\mbox{false},f\; x) $$
+
+Given this function, then $(\mbox{PREFN}\; f)^{n + 1} (\mbox{true},x) =
+(\mbox{false},f^n\;x)$, which is enough to let us define a predecessor
+function without much difficulty. Here is a suitable definition of `PREFN':
+
+$$ \mbox{PREFN} \defeq
+   \lamb{f\; p} (\mbox{false},
+      \mbox{if fst } p \mbox{ then snd } p \mbox{ else } f(\mbox{snd}\; p) $$
+
+\noindent Now we define:
+
+$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+       \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$
+
+\noindent It is left as an exercise to the reader to see that this works
+correctly.
+
+\section{Recursive functions}
+
+Being able to define functions by recursion is a central feature of functional
+programming: it is the only general way of performing something comparable to
+iteration. At first sight, it appears that we have no way of doing this in
+lambda calculus. Indeed, it would seem that the {\em naming} of the function is
+a vital part of making a recursive definition, since otherwise, how can we
+refer to it on the right hand side of the definition without descending into
+infinite regress? Rather surprisingly, it can be done, although as with the
+existence of a predecessor function, this fact was only discovered after
+considerable effort.
+
+The key is the existence of so-called {\em fixed point combinators}. A closed
+lambda term $Y$ is said to be a fixed point (or fixpoint) combinator when for
+all lambda terms $f$, we have $f(Y\; f) = Y\; f$. That is, a fixed point
+combinator, given any term $f$ as an argument, returns a fixed point for $f$,
+i.e. a term $x$ such that $f(x) = x$. The first such combinator to be found (by
+Curry) is usually called $Y$. It can be motivated by recalling the Russell
+paradox, and for this reason is often called the `paradoxical combinator'. We
+defined:
+
+$$ R = \lamb{x} \Not (x\; x) $$
+
+\noindent and found that:
+
+$$ R\; R = \Not (R\; R) $$
+
+That is, $R\; R$ is a fixed point of the negation operator. So in order to get
+a general fixed point combinator, all we need to do is generalize $\Not$ into
+whatever function is given it as argument. Therefore we set:
+
+$$ Y \defeq \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)) $$
+
+\noindent It is a simple matter to show that it works:
+
+\begin{eqnarray*}
+Y f  & = & (\lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))\; f       \\
+     & = & (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))                      \\
+     & = & f((\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))                   \\
+     & = & f(Y\; f)
+\end{eqnarray*}
+
+Though valid from a mathematical point of view, this is not so attractive from
+a programming point of view since the above was only valid for lambda equality,
+not reduction (in the last line we performed a {\em backwards} beta
+conversion). For this reason the following alternative, due to Turing, may be
+preferred:
+
+$$ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\; y)) $$
+
+(The proof that $T\; f \goesto f(T\; f)$ is left as an exercise.) However it
+does no harm if we simply allow $Y f$ to be beta-reduced throughout the
+reduction sequence for a recursively defined function. Now let us see how to
+use a fixed point combinator (say $Y$) to implement recursive functions. We
+will take the factorial function as an example. We want to define a function
+$\mbox{fact}$ with:
+
+$$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\;
+                   n * \mbox{fact}(\mbox{PRE}\; n) $$
+
+The first step is to transform this into the following equivalent:
+
+$$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+\mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
+
+\noindent which in its turn is equivalent to:
+
+$$ \mbox{fact} = (\lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+\mbox{else}\; n * f(\mbox{PRE}\; n))\; \mbox{fact} $$
+
+\noindent This exhibits $\mbox{fact}$ as the fixed point of a function
+$F$, namely:
+
+$$ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; n *
+f(\mbox{PRE}\; n) $$
+
+Consequently we merely need to set $\mbox{fact} = Y\; F$. Similar techniques
+work for mutually recursive functions, i.e. a set of functions whose
+definitions are mutually dependent. A definition such as:
+
+\begin{eqnarray*}
+f_1 & = & F_1\; f_1\; \cdots \; f_n             \\
+f_2 & = & F_2\; f_1\; \cdots \; f_n             \\
+\ldots & = & \ldots                             \\
+f_n & = & F_n\; f_1\; \cdots \; f_n
+\end{eqnarray*}
+
+\noindent can be transformed, using tuples, into a single equation:
+
+$$ (f_1,f_2,\ldots,f_n) = (F_1\; f_1\; \cdots \; f_n,
+                           F_2\; f_1\; \cdots \; f_n,
+                           \ldots,
+                           F_n\; f_1\; \cdots \; f_n) $$
+
+If we now write $t = (f_1,f_2,\ldots,f_n)$, then each of the functions on the
+right can be recovered by applying the appropriate selector to $t$: we have
+$f_i = (t)_i$. After abstracting out $t$, this gives an equation in the
+canonical form $t = F\; t$ which can be solved by $t = Y\; F$. Now the
+individual functions can be recovered from $t$ by the same method of selecting
+components of the tuple.
+
+\section{Let expressions}
+
+We've touted the ability to write anonymous functions as one of the merits of
+lambda calculus, and shown that names are not necessary to define recursive
+functions. Nevertheless it is often useful to be able to give names to
+expressions, to avoid tedious repetition of large terms. A simple form of
+naming can be supported as another syntactic sugar on top of pure lambda
+calculus:
+
+$$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$
+
+\noindent For example, as we would expect:
+
+$$ (\mbox{let } z = 2 + 3 \mbox{ in } z + z) = (\lamb{z} z + z)\; (2 + 3) =
+   (2 + 3) + (2 + 3) $$
+
+We can achieve the binding of multiple names to expressions either in a serial
+or parallel fashion. For the first, we will simply iterate the above construct.
+For the latter, we will write multiple bindings separated by `and':
+
+$$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
+     \mbox{ in } t $$
+
+\noindent and regard it as syntactic sugar for:
+
+$$ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) $$
+
+\noindent To illustrate the distinction between serial and parallel binding,
+consider:
+
+$$ \mbox{let } x = 1 \mbox{ in }
+   \mbox{let } x = 2 \mbox{ in }
+   \mbox{let } y = x \mbox{ in } x + y $$
+
+\noindent which should yield $4$, while:
+
+$$ \mbox{let } x = 1 \mbox{ in }
+   \mbox{let } x = 2
+   \mbox{ and } y = x \mbox{ in } x + y $$
+
+\noindent should yield $3$. We will also allow arguments to names bound by
+`{\tt let}'; again this can be regarded as syntactic sugar, with $f\; x_1\;
+\cdots \; x_n = t$ meaning $f = \lamb{x_1\; \cdots \; x_n} t$. Instead of a
+prefix `$\mbox{let } x = s \mbox{ in } t$', we will allow a postfix version,
+which is sometimes more readable:
+
+$$ t \mbox{ where } x = s $$
+
+For example, we might write `$y < y^2 \mbox{ where } y = 1 + x$'. Normally, the
+`let' and `where' constructs will be interpreted as above, in a non-recursive
+fashion. For example:
+
+$$ \mbox{let } x = x - 1 \mbox{ in } \cdots $$
+
+\noindent binds $x$ to one less than whatever value it is bound to outside,
+rather than trying to bind $x$ to the fixed point of $x = x -
+1$.\footnote{There is such a fixed point, but the lambda term involved has no
+normal form, so is in a sense `undefined'. The semantics of nonterminating
+terms is subtle, and we will not consider it at length here. Actually, the
+salient question is not whether a term has a normal form but whether it has a
+so-called {\em head normal form} --- see \citeN{barendregt} and also
+\citeN{abramsky-lazy}.} However where a recursive interpretation is required,
+we add the word `rec', writing `let rec' or `where rec', e.g.
+
+$$ \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+                            \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
+
+\noindent This can be regarded as a shorthand for `$\mbox{let fact} = Y\; F$'
+where
+
+$$ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; n *
+f(\mbox{PRE}\; n)$$
+
+\noindent as explained above.
+
+\section{Steps towards a real programming language}
+
+We have established a fairly extensive system of `syntactic sugar' to support a
+human-readable syntax on top of pure lambda calculus. It is remarkable that
+this device is enough to bring us to the point where we can write the
+definition of the factorial function almost in the way we can in ML. In what
+sense, though, is the lambda calculus augmented with these notational
+conventions really a programming language?
+
+Ultimately, a program is just a single expression. However, given the use of
+{\tt let} to bind various important subexpressions to names, it is natural
+instead to view the program as a set of {\em definitions} of auxiliary
+functions, followed finally by the expression itself, e.g:
+
+$$ \BA \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+                            \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n)
+                        \mbox{ in }\\
+       \cdots\\
+       fact(6)
+   \EA
+$$
+
+We can read these definitions of auxiliary functions as equations in the
+mathematical sense. Understood in this way, they do not give any explicit
+instructions on how to evaluate expressions, or even in which direction the
+equations are to be used. For this reason, functional programming is often
+referred to as a {\em declarative} programming method, as also is logic
+programming (e.g. PROLOG).\footnote{Apparently Landin preferred `denotative' to
+`declarative'.} The program does not incorporate explicit instructions, merely
+declares certain properties of the relevant notions, and leaves the rest to the
+machine.
+
+At the same time, the program is useless, or at least ambiguous, unless the
+machine somehow reacts sensibly to it. Therefore it must be understood that the
+program, albeit from a superficial point of view purely declarative, is to be
+executed in a certain way. In fact, the expression is evaluated by expanding
+all instances of defined notions (i.e. reading the equations from left to
+right), and then repeatedly performing $\beta$-conversions. That is, although
+there seems to be no procedural information in the program, {\em a particular
+execution strategy is understood}. In a sense then, the term `declarative' is
+largely a matter of human psychology.
+
+Moreover, there must be a definite convention for the reduction strategy to
+use, for we know that different choices of $\beta$-redex can lead to different
+behaviour with respect to termination. Consequently, it is only when we specify
+this that we really get a definite programming language. We will see in later
+chapters how different functional languages make different choices here. But
+first we pause to consider the incorporation of types.
+
+\section{Further reading}
+
+Many of the standard texts already cited include details about the matters
+discussed here. In particular \citeN{gordon-plt} gives a clear proof that
+lambda calculus is Turing-complete, and that the lambda calculus analog of the
+`halting problem' (whether a term has a normal form) is unsolvable. The
+influence of lambda calculus on real programming languages and the evolution of
+functional languages are discussed by \citeN{hudak-survey}.
+
+%\section{An undecidable problem*}
+%
+%Final gaps about representing the recursive functions. Then the undecidability
+%of normalization, i.e. the halting problem.
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item Justify `generalized $\beta$-conversion', i.e. prove that:
+
+$$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
+t[t_1,\ldots,t_n]$$
+
+\item Define $f \circ g \defeq \lamb{x} f(g\; x)$, and recall that $I =
+\lamb{x} x$. Prove that $\mbox{CURRY} \circ \mbox{UNCURRY} = I$. Is it also
+true that $\mbox{UNCURRY} \circ \mbox{CURRY} = I$?.
+
+\item What arithmetical operation does $\lamb{n\; f\; x} f(n\; f\; x)$ perform
+on Church numerals? What about $\lamb{m\; n} n\; m$?
+
+\item Prove that the following (due to Klop) is a fixed point combinator:
+
+$$ \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds} $$
+
+\noindent where:
+
+$$ \mbox{\pounds} \defeq \lamb{abcdefghijklmnopqstuvwxyzr}
+                         r(thisisafixedpointcombinator) $$
+
+\item Make a recursive definition of natural number subtraction.
+
+\item Consider the following representation of lists, due to
+\citeN{mairson-param}:
+
+\begin{eqnarray*}
+\mbox{nil}   & = & \lamb{c\; n} n                                                                                                         \\
+\mbox{cons}  & = & \lamb{x\; l\; c\; n} c\; x\; (l\; c\; n)                                                                               \\
+\mbox{head}  & = & \lamb{l} l (\lamb{x\; y} x)\; \mbox{nil}                                                                               \\
+\mbox{tail}  & = & \lamb{l} \mbox{snd}\; (l (\lamb{x\; p} (\mbox{cons}\; x\; (\mbox{fst}\; p),\mbox{fst}\; p))\; (\mbox{nil},\mbox{nil})) \\
+\mbox{append}  & = & \lamb{l_1\; l_2} l_1\; \mbox{cons}\; l_2                                                                             \\
+\mbox{append\_lists}  & = & \lamb{L} L\; \mbox{append}\; \mbox{nil}                                                                       \\
+\mbox{map}     & = & \lamb{f\; l} l\; (\lamb{x} \mbox{cons}\; (f\; x))\; \mbox{nil}                                                       \\
+\mbox{length}  & = & \lamb{l} l (\lamb{x} \mbox{SUC}) 0                                                                                   \\
+\mbox{tack}  & = & \lamb{x\; l} l\; \mbox{cons}\; (\mbox{cons}\; x\; \mbox{nil})                                                          \\
+\mbox{reverse}  & = & \lamb{l} l\; \mbox{tack}\; \mbox{nil}                                                                               \\
+\mbox{filter}  & = & \lamb{l\; test} l\; (\lamb{x} (test\; x) (\mbox{cons}\; x) (\lamb{y} y))\; \mbox{nil}
+\end{eqnarray*}
+
+Why does Mairson call them `Church lists'? What do all these functions do?
+
+\end{enumerate}

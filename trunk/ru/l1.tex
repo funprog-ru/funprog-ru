@@ -1,0 +1,665 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 1}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 16 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 1}\\
+{\green Introduction and Overview}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item Imperative programming
+
+\item Functional programming
+
+\item The merits of functional programming
+
+\item Overview of the course
+
+\item Lambda notation and its benefits
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Imperative programming}
+
+\vspace*{0.5cm}
+
+Imperative (or procedural) programs rely on modifying a {\em state} by using a
+sequence of {\em commands}.
+
+The state is mainly modified by the {\em assignment} command, written {\red \tt
+v = E} or {\red \tt v := E}.
+
+We can execute one command before another by writing them in sequence, perhaps
+separated by a semicolon: {\red $C_1 \mbox{ ; } C_2$}.
+
+Commands can be executed conditionally using {\red \tt if}, and repeatedly
+using {\red \tt while}.
+
+Programs are a series of instructions on how to modify the state.
+
+Imperative languages, e.g. {\black FORTRAN}, {\black Algol}, {\black C},
+{\black Modula-3} support this style of programming.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{An abstract view}
+
+\vspace*{0.5cm}
+
+We ignore input-output operations, and assume that a program runs for a limited
+time, producing a result.
+
+We can consider the execution in an abstract way as:
+
+{\red $$ \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n $$}
+
+The program is started with the computer in an initial state {\red $\sigma_0$},
+including the inputs to the program.
+
+The program finishes with the computer in a final state {\red $\sigma_n$},
+containing the output(s) of the program.
+
+The state passes through a finite sequence of changes to get from {\red
+$\sigma_0$} to {\red $\sigma_n$}; in general, each command may modify the
+state.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Functional programming}
+
+\vspace*{0.2cm}
+
+A functional program is simply an {\em expression}, and executing the program
+means {\em evaluating} the expression.
+
+\begin{itemize}
+
+\item There is no state, i.e. there are {\red no variables}.
+
+\item Therefore there is {\red no assignment}, since there's nothing to assign
+to.
+
+\item And there is {\red no sequencing} and {\red no repetition}, since one
+expression does not affect another.
+
+\end{itemize}
+
+But on the positive side:
+
+\begin{itemize}
+
+\item We can have {\red recursive functions}, giving something comparable to
+repetition.
+
+\item Functions can be used much more flexibly, e.g. we can have {\red higher
+order functions}.
+
+\end{itemize}
+
+Functional languages support this style of programming.
+
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Example: the factorial}
+
+\vspace*{0.5cm}
+
+The factorial function can be written imperatively in C as follows:
+
+\begin{red}\begin{verbatim}
+  int fact(int n)
+  { int x = 1;
+    while (n > 0)
+     { x = x * n;
+       n = n - 1;
+     }
+    return x;
+  }
+\end{verbatim}\end{red}
+
+\noindent whereas it would be expressed in ML as a recursive function:
+
+\begin{red}\begin{verbatim}
+  let rec fact n =
+    if n = 0 then 1
+    else n * fact(n - 1);;
+\end{verbatim}\end{red}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Why?}
+
+\vspace*{0.5cm}
+
+At first sight a language without variables, assignment and sequencing looks
+very impractical.
+
+We will show in this course how a lot of interesting programming can be done in
+the functional style.
+
+Imperative programming languages have arisen as an abstraction of the hardware,
+from machine code, through assemblers and macro assemblers, to FORTRAN and
+beyond.
+
+Perhaps this is the wrong approach and we should approach the task from the
+human side. Maybe functional languages are better suited to people.
+
+But what concrete reasons are there for preferring functional languages?
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Merits of functional programming}
+
+\vspace*{1.0cm}
+
+By avoiding variables and assignments, we gain the following advantages:
+
+\begin{itemize}
+
+\item Clearer semantics. Programs correspond more directly to abstract
+mathematical objects.
+
+\item More freedom in implementation, e.g. parallelizability.
+
+\end{itemize}
+
+By the more flexible use of functions, we gain:
+
+\begin{itemize}
+
+\item Conciseness and elegance.
+
+\item Better parametrization and modularity of programs.
+
+\item Convenient ways of representing infinite data.
+
+\end{itemize}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Denotational semantics}
+
+\vspace*{0.5cm}
+
+We can identify our ML factorial function with an abstract mathematical
+(partial) function {\red $\num \to \num$}:
+
+\begin{red}
+$$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
+                                 n! & \mbox{if $n \geq 0$} \\
+                                 \bot & \mbox{otherwise}
+                          \end{array} \right. $$
+\end{red}
+
+\noindent where {\red $\bot$} denotes undefinedness, since for negative
+arguments, the program fails to terminate.
+
+Once we have a state, this simple interpretation no longer works. Here is a C
+`function' that doesn't correspond to any mathematical function:
+
+\begin{red}\begin{verbatim}
+  int rand(void)
+  { static int n = 0;
+    return n = 2147001325 * n + 715136305;
+  }
+\end{verbatim}\end{red}
+
+This gives different results on successive calls!
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Semantics of imperative programs}
+
+\vspace*{0.5cm}
+
+In order to give a corresponding semantics to imperative programs, we need to
+make the state explicit. For example we can model commands as:
+
+\begin{itemize}
+
+\item Partial functions {\red $\Sigma \to \Sigma$} (Strachey)
+
+\item Relations on {\red $\Sigma \times \Sigma$} (Hoare)
+
+\item Predicate transformers, i.e. total functions {\red $(\Sigma \to bool) \to
+(\Sigma \to bool)$} (Dijkstra)
+
+\end{itemize}
+
+If we allow the {\red \tt goto} statement, even these are not enough, and we
+need a semantics based on {\em continuations} (Wadsworth, Morris).
+
+All these methods are quite complicated.
+
+With functional programs, we have a real chance of proving their correctness,
+or the correctness of certain transformations or optimizations.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Problems with functional programs}
+
+\vspace*{0.5cm}
+
+Functional programming is not without its deficiencies. Some things are harder
+to fit into a purely functional model, e.g.
+
+\begin{itemize}
+
+\item Input-output
+
+\item Interactive or continuously running programs (e.g. editors, process
+controllers).
+
+\end{itemize}
+
+However, in many ways, infinite data structures can be used to accommodate
+these things.
+
+Functional languages also correspond less closely to current hardware, so they
+can be less efficient, and it can be hard to reason about their time and space
+usage.
+
+ML is not a pure functional language, so you can use variables and assignments
+if required. However most of our work is in the pure functional subset.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Overview of the course (1)}
+
+\vspace*{0.5cm}
+
+We start with the theoretical underpinning, $\lambda$-calculus, and move up to
+the practical business of programming in ML.
+
+Roughly $1 \over 3$ of the course is devoted to the theoretical parts, and $2
+\over 3$ to the practical parts.
+
+The theoretical parts are:
+
+\begin{enumerate}
+
+\item Introduction and overview (this lecture)
+
+\item $\lambda$-calculus as a formal system
+
+\item $\lambda$-calculus as a programming language
+
+\item Types
+
+\end{enumerate}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Overview of the course (2)}
+
+\vspace*{0.5cm}
+
+The practical or `applied' parts of the course are:
+
+\begin{enumerate}
+
+\item Introduction to ML
+
+\item More about polymorphism
+
+\item Recursive types
+
+\item Proofs about programs
+
+\item Further ML
+
+\item Other styles of functional programming
+
+\item ML examples (1)
+
+\item ML examples (2)
+
+\end{enumerate}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Lambda notation}
+
+Lambda notation is a way of denoting functions, invented by Alonzo Church in
+the 1930s. We write:
+
+{\red $$ \lamb{x} E[x] $$ }
+
+to denote `the function of {\red $x$} that yields {\red $E[x]$}'. Here {\red
+$E[x]$} is any expression which may or may not contain {\red $x$}.
+
+For example {\red $\lamb{x} x$} is the identity function, which simply returns
+its argument, while {\red $\lamb{x} x^2$} is the squaring function.
+
+The letter {\red $\lambda$} is arbitrary, a historical accident. Originally
+Church used {\red $\hat{x}.\; E[x]$}, and a series of typesetting errors
+transformed it into the present form. One also sees {\red $x \mapsto E[x]$}
+and {\red $[x]\; E[x]$}.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\vspace*{1.0cm}
+
+\heading{Why?}
+
+In informal mathematics, when talking about a function, one normally gives it a
+name: `define {\red $f(x) = E[x]$} \ldots then {\red $\cdots f \cdots$}'.
+
+Similarly, most programming languages will only let you define functions if you
+are prepared to give them a name.
+
+This approach is rather inconsistent. It means we are not treating functions on
+a par with other mathematical objects. We don't say:
+
+\begin{quote}
+Define {\red $x$} and {\red $y$} by {\red $x = 2$} and {\red $y = 4$}
+respectively. Then {\red $x x = y$}
+\end{quote}
+
+Lambda notation helps to put functions on an equal footing. This is important
+in functional programming.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Benefits of $\lambda$-notation}
+
+The $\lambda$-notation can be useful too in order to make mathematics clearer.
+
+When we discuss {\red $x + x y$}, we are often vague about whether we mean the
+value for a particular {\red $x$}, or a function of {\red $x$} (or {\red $y$}
+\ldots). Using $\lambda$-notation this can be made explicit.
+
+In fact, using just:
+
+\begin{itemize}
+
+\item Variables, e.g. {\red $x$}, {\red $y$}.
+
+\item Constants, e.g. {\red $3$}, {\red $true$}, {\red $+$}.
+
+\item Applications of functions to arguments, e.g. {\red $f\; x$}.
+
+\item Lambda abstractions of expressions over variables, e.g. {\red $\lamb{x} x
++ y$}
+
+\end{itemize}
+
+we reach a general `abstract syntax' for mathematics.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Currying}
+
+We can have functions of more than one argument by using, for example
+{\red $\lamb{x} \lamb{y} x + y$}.
+
+We can think of this as a function {\red $\num \to (\num \to \num)$}. When
+given one argument, say {\red $2$}, it returns a function {\red $\num \to
+\num$} that adds {\red $2$} to its argument, and this takes the second
+argument. This device is known as {\em currying}, after Haskell Curry.
+
+We adopt the conventions that {\red $\lamb{x\; y} E[x,y]$} means {\red
+$\lamb{x} \lamb{y} E[x,y]$}, and that function application associates to the
+left, e.g. that {\red $f\; x\; y$} means {\red $(f(x))(y)$}. This supports the
+use of currying, e.g.
+
+{\red $$ (\lamb{x\; y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$}
+
+Note that the brackets round function arguments are optional.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Variable binding}
+
+Many constructs in mathematics {\em bind} variables. The variable {\red $x$} in
+
+{\red $$ \int_0^a 3 x^2 \; dx $$}
+
+is bound, whereas {\red $a$} is free; likewise {\red $n$} is bound and {\red
+$k$} free in
+
+{\red $$ \Sigma_{n=0}^k n^2 $$}
+
+Free and bound variables can be quite complicated, as we shall see. Using
+$\lambda$-notation, all these variable binding constructs can be broken down so
+that the only binding operation is $\lambda$-abstraction.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Example of differentiation}
+
+For example, the everyday construct {\red ${d \over dx} x^2$} can be analyzed
+as follows:
+
+{\red $$ D\; (\lamb{x} \mbox{EXP } x\; 2)\; x $$}
+
+where {\red $D$} is the (curried) differentiation operator {\red $(\real \to
+\real) \to \real \to \real$} giving the derivative of its first argument at the
+point indicated by its second argument, and {\red $\mbox{EXP}$} the
+exponentiation function.
+
+So there are really two instances of {\red $x$} here, one bound, one free. The
+same occurs in
+
+{\red $$ \int_0^x 2 x \; dx $$}
+
+but here the everyday notation separates the two properly.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\vspace*{0.5cm}
+
+\heading{Russell's paradox}
+
+Originally, Church hoped to use $\lambda$-notation to give a foundation for
+mathematics, by introducing constants for logical operations, e.g. {\red
+$\Not$} to mean `not'. Unfortunately this turned out to be inconsistent,
+because defining {\red $R = \lamb{x} \Not\; (x\; x)$} we have:
+
+{\red $$ R\; R = (\lamb{x} \Not\; (x\; x)) \; R = \Not\; (R\; R) $$}
+
+We know there is a correspondence between sets and their characteristic
+function, so if we think of {\red $s\;x$} as meaning {\red $x \in s$}, this is
+simply the well known Russell paradox of the set of all sets that do not
+contain themselves:
+
+{\red $$ R = \{x \mid x \not\in x\} $$}
+
+\end{slide*}
+
+
+
+\end{document}

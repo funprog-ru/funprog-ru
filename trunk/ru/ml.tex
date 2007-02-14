@@ -1,0 +1,639 @@
+\chapter{A taste of ML}
+
+In the last few chapters, we have started with pure lambda calculus and
+systematically extended it with new primitive features. For example we added
+the `let' construct as primitive for the sake of making the polymorphic
+typing more useful, and a recursion operation in order to restore the
+computational power that was lost when adding types. By travelling further
+along this path, we will eventually arrive at ML, although it's still valuable
+to retain the simple worldview of typed lambda calculus.
+
+The next stage is to abandon the encodings of datatypes like booleans and
+natural numbers via lambda terms, and instead make them primitive. That is, we
+have new primitive types like {\tt bool} and {\tt int} (actually positive and
+negative integers) and new type constructors like $\times$, a step we have in
+many ways anticipated in the last chapter. Associated with these are new
+constants and new conversion rules. For example, the expression $2 + 2$ is
+evaluated using machine arithmetic, rather than by translation into Church
+numerals and performing $\beta$-conversions. These additional conversions,
+regarded as augmenting the usual lambda operations, are often referred to as
+`$\delta$-conversions'. We will see in due course how the ML language is
+extended in other ways in comparison with pure lambda calculus. First, we must
+address the fundamental question of ML's evaluation strategy.
+
+\section{Eager evaluation}
+
+We have said that from a theoretical point of view, normal order (top down
+left-to-right) reduction of expressions is to be preferred, since if any
+strategy terminates, this one will.\footnote{This strategy is familiar from a
+few traditional languages like Algol 60 where it is referred to as {\em call by
+name}.} However it has some practical defects. For example, consider the
+following:
+
+$$ (\lamb{x} x + x + x)\; (10 + 5) $$
+
+A normal order reduction results in $(10 + 5) + (10 + 5) + (10 + 5)$, and the
+following reduction steps need to evaluate three separate instances of the same
+expression. This is unacceptable in practice. There are two main solutions to
+this problem, and these solutions divide the world of functional programming
+languages into two camps.
+
+The first alternative is to stick with normal order reduction, but attempt to
+optimize the implementation so multiple subexpressions arising in this way are
+shared, and never evaluated more than once. Internally, expressions are
+represented as directed acyclic graphs rather than as trees. This is known as
+{\em lazy} or {\em call-by-need} evaluation, since expressions are only
+evaluated when absolutely necessary.
+
+The second approach is to turn the theoretical considerations about reduction
+strategy on their head and evaluate arguments to functions before passing the
+values to the function. This is known as {\em applicative order} or {\em eager}
+evaluation. The latter name arises because function arguments are evaluated
+even when they may be unnecessary, e.g. $t$ in $(\lamb{x} y)\; t$. Of course,
+eager evaluation means that some expressions may loop that would terminate in a
+lazy regime. But this is considered acceptable, since these instances are
+generally easy to avoid in practice. In any case, an eager evaluation strategy
+is the standard in many programming languages like C, where it is referred to
+as {\em call by value}.
+
+ML adopts eager evaluation, for two main reasons. Choreographing the reductions
+and sharings that occur in lazy evaluation is quite tricky, and implementations
+tend to be relatively inefficient and complicated. Unless the programmer is
+very careful, memory can fill up with pending unevaluated expressions, and in
+general it is hard to understand the space behaviour of programs. In fact many
+implementations of lazy evaluation try to optimize it to eager evaluation in
+cases where there is no semantic difference.\footnote{They try to perform {\em
+strictness analysis}, a form of static analysis that can often discover that
+arguments are necessarily going to be evaluated \cite{mycroft-thesis}.} By
+contrast, in ML, we always first evaluate the arguments to functions and only
+then perform the $\beta$-reduction --- this is simple and efficient, and is
+easy to implement using standard compiler technology.
+
+The second reason for preferring applicative order evaluation is that ML is not
+a {\em pure} functional language, but includes imperative features (variables,
+assignments etc.). Therefore the order of evaluation of subexpressions can make
+a {\em semantic} difference, rather than merely affecting efficiency. If lazy
+evaluation is used, it seems to become practically impossible for the
+programmer to visualize, in a nontrivial program, exactly when each
+subexpression gets evaluated. In the eager ML system, one just needs to
+remember the simple evaluation rule.
+
+It is important to realize, however, that the ML evaluation strategy is {\em
+not} simply bottom-up, the exact opposite of normal order reduction. In fact,
+ML {\em never evaluates underneath a lambda}. (In particular, it never reduces
+$\eta$-redexes, only $\beta$-redexes.) In evaluating $(\lamb{x} s[x])\; t$, $t$
+is evaluated first. However $s[x]$ is not touched since it is underneath a
+lambda, and any subexpressions of $t$ that happen to be in the scope of a
+lambda are also left alone. The precise evaluation rules are as follows:
+
+\begin{itemize}
+
+\item Constants evaluate to themselves.
+
+\item Evaluation stops immediately at $\lambda$-abstractions and does not look
+inside them. In particular, there is no $\eta$-conversion.
+
+\item When evaluating a combination $s\; t$, then {\em first} both $s$ and
+$t$ are evaluated. Then, assuming that the evaluated form of
+$s$ is a lambda abstraction, a toplevel $\beta$-conversion is performed
+and the process is repeated.
+
+\end{itemize}
+
+The order of evaluation of $s$ and $t$ varies between versions of ML. In the
+version we will use, $t$ is always evaluated first. Strictly, we should also
+specify a rule for {\tt let} expressions, since as we have said they are by now
+accepted as a primitive. However from the point of view of evaluation they can
+be understood in the original way, as a lambda applied to an argument, with the
+understanding that the rand will be evaluated first. To make this explicit, the
+rule for
+
+$$ \mbox{let}\; x = s\; \mbox{in}\; t $$
+
+\noindent is that first of all $s$ is evaluated, the resulting value is
+substituted for $x$ in $t$, and finally the new version of $t$ is evaluated.
+Let us see some examples of evaluating expressions:
+
+\begin{eqnarray*}
+(\lamb{x} (\lamb{y} y + y)\; x) (2 + 2)
+& \goesto & (\lamb{x} (\lamb{y} y + y)\; x) 4   \\
+& \goesto & (\lamb{y} y + y) 4                  \\
+& \goesto & 4 + 4                               \\
+& \goesto & 8
+\end{eqnarray*}
+
+Note that the subterm $(\lamb{y} y + y)\; x$ is {\em not reduced}, since it is
+within the scope of a lambda. However, terms that are reducible and {\em not}
+enclosed by a lambda in both function and argument get reduced before the
+function application itself is evaluated, e.g. the second step in the
+following:
+
+\begin{eqnarray*}
+((\lamb{f\; x} f\; x)\; (\lamb{y} y + y))\; (2 + 2)
+& \goesto & ((\lamb{f\; x} f\; x)\; (\lamb{y} y + y))\; 4           \\
+& \goesto & (\lamb{x} (\lamb{y} y + y)\; x)\; 4                   \\
+& \goesto & (\lamb{y} y + y)\; 4                                  \\
+& \goesto & 4 + 4
+\end{eqnarray*}
+
+The fact that ML does not evaluate under lambdas is of crucial importance to
+advanced ML programmers. It gives precise control over the evaluation of
+expressions, and can be used to mimic many of the helpful cases of lazy
+evaluation. We shall see a very simple instance in the next section.
+
+\section{Consequences of eager evaluation}
+
+The use of eager evaluation forces us to make additional features primitive,
+with their own special reduction procedures, rather than implementing them
+directly in terms of lambda calculus. In particular, we can no longer regard
+the conditional construct:
+
+$$ \mbox{if}\; b\; \mbox{then}\; e_1\; \mbox{else}\; e_2 $$
+
+\noindent as the application of an ordinary ternary operator:
+
+$$ \mbox{COND}\; b\; e_1\; e_2 $$
+
+The reason is that in any particular instance, because of eager evaluation, we
+evaluate all the expressions $b$, $e_1$ and $e_2$ first, before evaluating the
+body of the $\mbox{COND}$. Usually, this is disastrous. For example, recall our
+definition of the factorial function:
+
+$$ \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+                            \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
+
+If the conditional evaluates all its arguments, then in order to evaluate
+$\mbox{fact}(0)$, the `else' arm must be evaluated, in its turn causing
+$\mbox{fact}(\mbox{PRE}\; 0)$ to be evaluated. This in its turn causes the
+evaluation of $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\; 0))$, and so on.
+Consequently the computation will loop indefinitely.
+
+Accordingly, we make the conditional a new primitive construct, and modify the
+usual reduction strategy so that {\em first} the boolean expression is
+evaluated, and only then is {\em exactly one} of the two arms evaluated, as
+appropriate.
+
+What about the process of recursion itself? We have suggested understanding
+recursive definitions in terms of a recursion operator $Rec$ with its own
+reduction rule:
+
+$$ Rec\; f \goesto f(Rec\; f) $$
+
+\noindent This would also loop using an eager evaluation strategy:
+
+$$  Rec\; f \goesto f(Rec\; f) \goesto f(f(Rec\; f)) \goesto f(f(f(Rec\; f)))
+\goesto \cdots $$
+
+However we only need a very simple modification to the reduction rule to make
+things work correctly:
+
+$$ Rec\; f \goesto f(\lamb{x} Rec\; f\; x) $$
+
+Now the lambda on the right means that $\lamb{x} Rec\; f\; x$ evaluates to
+itself, and so only after the expression has been further reduced following
+substitution in the body of $f$ will evaluation continue.
+
+\section{The ML family}
+
+We have been talking about `ML' as if it were a single language. In fact there
+are many variants of ML, even including `Lazy ML', an implementation from
+Chalmers University in Sweden that is based on lazy evaluation. The most
+popular version of ML in education is `Standard ML', but we will use another
+version, called CAML (`camel') Light.\footnote{The name stands for `Categorical
+Abstract Machine', the underlying implementation method.} We chose CAML Light
+for several reasons:
+
+\begin{itemize}
+
+\item The implementation is small and highly portable, so can be run
+effectively on Unix machines, PCs, Macs etc.
+
+\item The system is simple, syntactically and semantically, making it
+relatively easy to approach.
+
+\item The system is well suited to practical programming, e.g. it can easily be
+interfaced to C and supports standard {\tt make}-compatible separate
+compilation.
+
+\end{itemize}
+
+However, we will be teaching quite general techniques, and any code we write
+can be run with a few minor syntactic changes in any version of ML, and indeed
+often in other functional languages.
+
+\section{Starting up ML}
+
+ML has already been installed on Thor. In order to use it, you need to put the
+CAML binary directory on your {\tt PATH}. This can be done (assuming you use
+the `bash' shell or one of its family), as follows:
+
+\begin{boxed}\begin{verbatim}
+  PATH="$PATH:/home/jrh13/caml/bin"
+  export PATH
+\end{verbatim}\end{boxed}
+
+To avoid doing this every time you log on, you can insert these lines near the
+end of your {\tt .bash\_profile}, or the equivalent for your favourite shell.
+Now to use CAML in its normal interactive and interpretive mode, you simply
+need to type {\tt camllight}, and the system should fire up and present its
+prompt (`{\tt \#}'):
+
+\begin{boxed}\begin{verbatim}
+  $ camllight
+  >       Caml Light version 0.73
+
+  #
+\end{verbatim}\end{boxed}
+
+In order to exit the system, simply type {\tt ctrl/d} or {\tt quit();;} at the
+prompt. If you are interested in installing CAML Light on your own machine, you
+should consult the following Web page for detailed information:
+
+\begin{boxed}\begin{verbatim}
+  http://pauillac.inria.fr/caml/
+\end{verbatim}\end{boxed}
+
+\section{Interacting with ML}
+
+When ML presents you with its prompt, you can type in expressions, terminated
+by two successive semicolons, and it will evaluate them and print the result.
+In computing jargon, the ML system sits in a read-eval-print loop: it
+repeatedly reads an expression, evaluates it, and prints the result. For
+example, ML can be used as a simple calculator:
+
+\begin{boxed}\begin{verbatim}
+  #10 + 5;;
+  - : int = 15
+\end{verbatim}\end{boxed}
+
+The system not only returns the answer, but also the {\em type} of the
+expression, which it has inferred automatically. It can do this because it
+knows the type of the built-in addition operator {\tt +}. On the other hand, if
+an expression is not typable, the system will reject it, and try to give some
+idea about how the types fail to match up. In complicated cases, the error
+messages can be quite tricky to understand.
+
+\begin{boxed}\begin{verbatim}
+  #1 + true;;
+  Toplevel input:
+  >let it = 1 + true;;
+  >             ^^^^
+  This expression has type bool,
+  but is used with type int.
+\end{verbatim}\end{boxed}
+
+Since ML is a functional language, expressions are allowed to have function
+type. The ML syntax for a lambda abstraction $\lamb{x} t[x]$ is {\tt fun x ->
+t[x]}. For example we can define the successor function:
+
+\begin{boxed}\begin{verbatim}
+  #fun x -> x + 1;;
+  - : int -> int = <fun>
+\end{verbatim}\end{boxed}
+
+Again, the type of the expression, this time {\tt int -> int}, is inferred and
+displayed. However the function itself is not printed; the system merely writes
+{\tt <fun>}. This is because, in general, the internal representations of
+functions are not very readable.\footnote{CAML does not store them simply as
+syntax trees, but compiles them into bytecode.} Functions are applied to
+arguments just as in lambda calculus, by juxtaposition. For example:
+
+\begin{boxed}\begin{verbatim}
+  #(fun x -> x + 1) 4;;
+  - : int = 5
+\end{verbatim}\end{boxed}
+
+Again as in lambda calculus, function application associates to the left, and
+you can write curried functions using the same convention of eliding multiple
+$\lambda$'s (i.e. {\tt fun}'s). For example, the following are all equivalent:
+
+\begin{boxed}\begin{verbatim}
+  #((fun x -> (fun y -> x + y)) 1) 2;;
+  - : int = 3
+  #(fun x -> fun y -> x + y) 1 2;;
+  - : int = 3
+  #(fun x y -> x + y) 1 2;;
+  - : int = 3
+\end{verbatim}\end{boxed}
+
+\section{Bindings and declarations}
+
+It is not convenient, of course, to evaluate the whole expression in one go;
+rather, we want to use {\tt let} to bind useful subexpressions to names. This
+can be done as follows:
+
+\begin{boxed}\begin{verbatim}
+  #let successor = fun x -> x + 1 in
+   successor(successor(successor 0));;
+  - : int = 3
+\end{verbatim}\end{boxed}
+
+\noindent Function bindings may use the more elegant sugaring:
+
+\begin{boxed}\begin{verbatim}
+  #let successor x = x + 1 in
+  successor(successor(successor 0));;
+  - : int = 3
+\end{verbatim}\end{boxed}
+
+\noindent and can be made recursive just by adding the {\tt rec} keyword:
+
+\begin{boxed}\begin{verbatim}
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1) in
+   fact 6;;
+  - : int = 720
+\end{verbatim}\end{boxed}
+
+By using {\tt and}, we can make several binding simultaneously, and define
+mutually recursive functions. For example, here are two simple, though highly
+inefficient, functions to decide whether or not a natural number is odd or
+even:
+
+\begin{boxed}\begin{verbatim}
+  #let rec even n = if n = 0 then true else odd (n - 1)
+       and odd n  = if n = 0 then false else even (n - 1);;
+  even : int -> bool = <fun>
+  odd : int -> bool = <fun>
+  #even 12;;
+  - : bool = true
+  #odd 14;;
+  - : bool = false
+\end{verbatim}\end{boxed}
+
+In fact, any bindings can be performed separately from the final application.
+ML remembers a set of variable bindings, and the user can add to that set
+interactively. Simply omit the {\tt in} and terminate the phrase with a double
+semicolon:
+
+\begin{boxed}\begin{verbatim}
+  #let successor = fun x -> x + 1;;
+  successor : int -> int = <fun>
+\end{verbatim}\end{boxed}
+
+\noindent After this declaration, any later phrase may use the function {\tt
+successor}, e.g:
+
+\begin{boxed}\begin{verbatim}
+  #successor 11;;
+  - : int = 12
+\end{verbatim}\end{boxed}
+
+Note that we are not making {\em assignments} to {\em variables}. Each binding
+is only done once when the system analyses the input; it cannot be repeated or
+modified. It can be overwritten by a new definition using the same name, but
+this is not assignment in the usual sense, since the sequence of events is only
+connected with the {\em compilation} process, not with the dynamics of program
+{\em execution}. Indeed, apart from the more interactive feedback from the
+system, we could equally replace all the double semicolons after the
+declarations by {\tt in} and evaluate everything at once. On this view we can
+see that the overwriting of a declaration really corresponds to the definition
+of a new local variable that hides the outer one, according to the usual lambda
+calculus rules. For example:
+
+\begin{boxed}\begin{verbatim}
+  #let x = 1;;
+  x : int = 1
+  #let y = 2;;
+  y : int = 2
+  #let x = 3;;
+  x : int = 3
+  #x + y;;
+  - : int = 5
+\end{verbatim}\end{boxed}
+
+\noindent is the same as:
+
+\begin{boxed}\begin{verbatim}
+  #let x = 1 in
+   let y = 2 in
+   let x = 3 in
+   x + y;;
+  - : int = 5
+\end{verbatim}\end{boxed}
+
+Note carefully that, also following lambda calculus, variable binding is {\em
+static}, i.e. the first binding of {\tt x} is still used until an inner binding
+occurs, and any uses of it until that point are not affected by the inner
+binding. For example:
+
+\begin{boxed}\begin{verbatim}
+  #let x = 1;;
+  x : int = 1
+  #let f w = w + x;;
+  f : int -> int = <fun>
+  #let x = 2;;
+  x : int = 2
+  #f 0;;
+  - : int = 1
+\end{verbatim}\end{boxed}
+
+The first version of LISP, however, used {\em dynamic} binding, where a
+rebinding of a variable propagated to earlier uses of the variable, so that the
+analogous sequence to the above would return 2. This was in fact originally
+regarded as a bug, but soon programmers started to appreciate its convenience.
+It meant that when some low-level function was modified, the change propagated
+automatically to all applications of it in higher level functions, without the
+need for recompilation. The feature survived for a long time in many LISP
+dialects, but eventually the view that static binding is better prevailed. In
+Common LISP, static binding is the default, but dynamic binding is available if
+desired via the keyword {\tt special}.
+
+\section{Polymorphic functions}
+
+We can define polymorphic functions, like the identity operator:
+
+\begin{boxed}\begin{verbatim}
+  #let I = fun x -> x;;
+  I : 'a -> 'a = <fun>
+\end{verbatim}\end{boxed}
+
+ML prints type variables as {\tt 'a}, {\tt 'b} etc. These are supposed to be
+ASCII representations of $\alpha$, $\beta$ and so on. We can now use the
+polymorphic function several times with different types:
+
+\begin{boxed}\begin{verbatim}
+  #I true;;
+  - : bool = true
+  #I 1;;
+  - : int = 1
+  #I I I I 12;;
+  - : int = 12
+\end{verbatim}\end{boxed}
+
+Each instance of {\tt I} in the last expression has a different type, and
+intuitively corresponds to a different function. In fact, let's define all the
+combinators:
+
+\begin{boxed}\begin{verbatim}
+  #let I x = x;;
+  I : 'a -> 'a = <fun>
+  #let K x y = x;;
+  K : 'a -> 'b -> 'a = <fun>
+  #let S f g x = (f x) (g x);;
+  S : ('a -> 'b -> 'c) -> ('a -> 'b) -> 'a -> 'c = <fun>
+\end{verbatim}\end{boxed}
+
+Note that the system keeps track of the types for us, even though in the last
+case they were quite complicated. Now, recall that $I = S\; K\; K$; let us try
+this out in ML:\footnote{We remarked that from the untyped point of view, $S\;
+K\; A = I$ for any $A$. However, the reader may try, for example, $S\; K\; S$
+and see that the principal type is less general than expected.}
+
+\begin{boxed}\begin{verbatim}
+  #let I' = S K K;;
+  I' : '_a -> '_a = <fun>
+\end{verbatim}\end{boxed}
+
+\noindent It has the right type,\footnote{Ignore the underscores for now. This
+is connected with the typing of imperative features, and we will discuss it
+later.} and it may easily be checked in all concrete cases, e.g:
+
+\begin{boxed}\begin{verbatim}
+  #I' 3 = 3;;
+  - : bool = true
+\end{verbatim}\end{boxed}
+
+In the above examples of polymorphic functions, the system very quickly infers
+a most general type for each expression, and the type it infers is simple. This
+usually happens in practice, but there are pathological cases, e.g. the
+following example due to \citeN{mairson-ml}. The type of this expression takes
+about 10 seconds to calculate, and occupies over 4000 lines on an 80-column
+terminal.
+
+\begin{boxed}\begin{verbatim}
+  let pair x y = fun z -> z x y in
+  let x1 = fun y -> pair y y in
+  let x2 = fun y -> x1(x1 y) in
+  let x3 = fun y -> x2(x2 y) in
+  let x4 = fun y -> x3(x3 y) in
+  let x5 = fun y -> x4(x4 y) in
+  x5(fun z -> z);;
+\end{verbatim}\end{boxed}
+
+We have said that the ML programmer need never enter a type. This is true in
+the sense that ML will already allocate as general a type as possible to an
+expression. However it may sometimes be convenient to {\em restrict} the
+generality of a type. This cannot make code work that didn't work before, but
+it may serve as documentation regarding the intended purpose of the code; it is
+also possible to use shorter synonyms for complicated types. Type restriction
+can be achieved in ML by adding {\em type annotations} after some
+expression(s). These type annotations consist of a colon followed by a type. It
+usually doesn't matter exactly where these annotations are added, provided they
+enforce the appropriate constraints. For example, here are some alternative
+ways of constraining the identity function to type {\tt int -> int}:
+
+\begin{boxed}\begin{verbatim}
+  #let I (x:int) = x;;
+  I : int -> int = <fun>
+  #let I x = (x:int);;
+  I : int -> int = <fun>
+  #let (I:int->int) = fun x -> x;;
+  I : int -> int = <fun>
+  #let I = fun (x:int) -> x;;
+  I : int -> int = <fun>
+  #let I = ((fun x -> x):int->int);;
+  I : int -> int = <fun>
+\end{verbatim}\end{boxed}
+
+\section{Equality of functions}
+
+Instead of comparing the actions of $I$ and $I'$ on particular arguments like
+$3$, it would seem that we can settle the matter definitively by comparing the
+functions themselves. However this doesn't work:
+
+\begin{boxed}\begin{verbatim}
+  #I' = I;;
+  Uncaught exception: Invalid_argument "equal: functional value"
+\end{verbatim}\end{boxed}
+
+It is in general {\em forbidden} to compare functions for equality, though a
+few special instances, where the functions are obviously the same, yield {\tt
+true}:
+
+\begin{boxed}\begin{verbatim}
+  #let f x = x + 1;;
+  f : int -> int = <fun>
+  #let g x = x + 1;;
+  g : int -> int = <fun>
+  #f = f;;
+  - : bool = true
+  #f = g;;
+  Uncaught exception: Invalid_argument "equal: functional value"
+  #let h = g;;
+  h : int -> int = <fun>
+  #h = f;;
+  Uncaught exception: Invalid_argument "equal: functional value"
+  #h = g;;
+  - : bool = true
+\end{verbatim}\end{boxed}
+
+Why these restrictions? Aren't functions supposed to be first-class objects in
+ML? Yes, but unfortunately, (extensional) function equality is not computable.
+This follows from a number of classic theorems in recursion theory, such as the
+{\em unsolvability of the halting problem} and {\em Rice's
+theorem}.\footnote{You will see these results proved in the Computation Theory
+course. Rice's theorem is an extremely strong undecidability result which
+asserts that {\em any} nontrivial property of the function corresponding to a
+program is uncomputable from its text. An excellent computation theory textbook
+is \citeN{davis-weyuker}.} Let us give a concrete illustration of why this
+might be so. It is still an open problem whether the following function
+terminates for all arguments, the assertion that it does being known as the
+{\em Collatz conjecture}:\footnote{A good survey of this problem, and attempts
+to solve it, is given by \citeN{lagarias-collatz}. Strictly, we should use
+unlimited precision integers rather than machine arithmetic. We will see later
+how to do this.}
+
+\begin{boxed}\begin{verbatim}
+  #let rec collatz n =
+     if n <= 1 then 0
+     else if even(n) then collatz(n / 2)
+     else collatz(3 * n + 1);;
+  collatz : int -> int = <fun>
+\end{verbatim}\end{boxed}
+
+What is clear, though, is that if it does halt it returns $0$. Now consider the
+following trivial function:
+
+\begin{boxed}\begin{verbatim}
+  #let f (x:int) = 0;;
+  f : int -> int = <fun>
+\end{verbatim}\end{boxed}
+
+By deciding the equation {\tt collatz = f}, the computer would settle the
+Collatz conjecture. It is easy to concoct other examples for open mathematical
+problems.
+
+It is possible to trap out applications of the equality operator to functions
+and datatypes built up from them as part of typechecking, rather than at
+runtime. Types that do not involve functions in these ways are known as {\em
+equality types}, since it is always valid to test objects of such types for
+equality. On the negative side, this makes the type system much more
+complicated. However one might argue that static typechecking should be
+extended as far as feasibility allows.
+
+\section*{Further reading}
+
+Many books on functional programming bear on the general issues we have
+discussed here, such as evaluation strategy. A good elementary introduction to
+CAML Light and functional programming is \citeN{mauny-tutorial}.
+\citeN{paulson-ml} is another good textbook, though based on Standard ML.
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item Suppose that a `conditional' function defined by {\tt ite(b,x,y) = if b
+then x else y} is the only function available that operates on arguments of
+type {\tt bool}. Is there any way to write a factorial function?
+
+\item Use the typing rules in the last chapter to write out a formal proof that
+the $S$ combinator has the type indicated by the ML system.
+
+\item Write a simple recursively defined function to perform exponentiation of
+integers, i.e. calculate $x^n$ for $n \geq 0$. Write down two ML functions, the
+equality of which corresponds to the truth of Fermat's last theorem: there are
+no integers $x$, $y$, $z$ and natural number $n > 2$ with $x^n + y^n = z^n$
+except for the trivial case where $x = 0$ or $y = 0$.
+
+\end{enumerate}

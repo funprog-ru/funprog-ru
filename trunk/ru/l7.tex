@@ -1,0 +1,688 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 7}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 30 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 7}\\
+{\green Proving Programs Correct}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item The correctness problem
+
+\item Testing and verification
+
+\item Termination and totality
+
+\item Exponential and gcd
+
+\item Appending and reversing
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{The correctness problem}
+
+\vspace*{0.5cm}
+
+Programs are written to perform some particular task.
+
+However, it is often very hard to write a program that performs its intended
+function --- as programmers know well.
+
+In practice, most large programs have `bugs'.
+
+Some bugs are harmless, others merely irritating.
+
+They can cause financial and public relations disasters (e.g. the Pentium FDIV
+bug).
+
+In some situation bugs can be deadly.
+
+{\green Peter Neumann: `Computer Related Risks'.}
+
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Dangerous bugs}
+
+\vspace*{0.5cm}
+
+Some situations where bugs can be deadly include:
+
+\begin{itemize}
+
+\item Heart pacemakers
+
+\item Aircraft autopilots
+
+\item Car engine management systems and antilock braking systems
+
+\item Radiation therapy machines
+
+\item Nuclear reactor controllers
+
+\end{itemize}
+
+These applications are said to be {\em safety critical}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Testing and verification}
+
+\vspace*{0.2cm}
+
+One good way to track down bugs is through extensive testing.
+
+But usually there are too many possible situations to try them all
+exhaustively, so there may still be bugs lying undetected.
+
+Program testing can be very useful for demonstrating the presence of bugs, but
+it is only in a few unusual cases where it can demonstrate their absence.
+
+An alternative is {\em verification}, where we try to {\em prove} that a
+program behaves as required.
+
+Consider ordinary mathematical theorems, like
+{\red $$ \Sigma_{n=0}^{n=N} n = \frac{N (N + 1)}{2} $$}
+We can {\em test} this for many particular values of $N$, but it is easier and
+more satisfactory simply to {\em prove} it (e.g. by induction).
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The limits of verification}
+
+\vspace*{0.5cm}
+
+The enterprise of verification can be represented by this diagram:
+
+{\green
+\bigskip
+\begin{picture}(140,140)(0,0)
+\put(40,0){\dashbox(150,25){Actual system}}
+\put(40,40){\framebox(150,25){Mathematical model}}
+\put(40,80){\framebox(150,25){Mathematical specification}}
+\put(40,120){\dashbox(150,25){Actual requirements}}
+\put(115,25){\vector(0,1){15}}
+\put(115,65){\thicklines \vector(0,1){15}}
+\put(115,105){\vector(0,1){15}}
+\end{picture}}
+\bigskip
+
+It is only the central link that is mathematically precise. The others are
+still informal --- all we can do is try to keep them small.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Verifying functional programs}
+
+\vspace*{0.5cm}
+
+We suggested earlier that functional programs might be easier to reason about
+formally, because they correspond directly to the mathematical functions that
+they represent.
+
+This is arguable, but at least we will try to show that reasoning about some
+simple functional programs is straightforward.
+
+We need to remember that, in general, functional programs are {\em partial}
+functions. Sometimes we need a separate argument to establish termination.
+
+Often, the proofs proceed by induction, parallelling the definition of the
+functions involved by recursion.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Exponentiation (1)}
+
+\vspace*{0.5cm}
+
+Recall the following simple definition of natural number exponentiation:
+
+\begin{black}\begin{verbatim}
+   #let rec exp x n =
+     if n = 0 then 1
+     else x * exp x (n - 1);;
+\end{verbatim}\end{black}
+
+We will prove that this satisfies the following specification:
+
+{\red For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ terminates and
+$\mbox{exp}\; x\; n = x^n$}
+
+The function is defined by (primitive) recursion.
+
+The proof is by (step-by-step, mathematical) induction.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Exponentiation (2)}
+
+\vspace*{0.5cm}
+
+\begin{itemize}
+
+\item If {\red $n = 0$}, then by definition {\red $\mbox{exp}\; x\; n = 1$}.
+Since for any integer {\red $x$}, we have {\red $x^0 = 1$}, so the desired fact
+is established.
+
+\item Suppose we know {\red $\mbox{exp}\; x\; n = x^n$}. Because {\red $n \geq
+0$}, we also know {\red $n + 1 \not= 0$}. Therefore:
+{\red
+\begin{eqnarray*}
+\mbox{exp}\; x\; (n + 1)   & = & x * \mbox{exp}\; x\; ((n + 1) - 1)     \\
+                           & = & x * \mbox{exp}\; x\; n                 \\
+                           & = & x * x^n                                \\
+                           & = & x^{n + 1}
+\end{eqnarray*}}
+\end{itemize}
+\qed
+
+Note that we assume {\red $0^0 = 1$}, an example of how one must state the
+specification precisely!
+
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Greatest common divisor (1)}
+
+\vspace*{0.5cm}
+
+We define a function to calculate the gcd of two integers using Euclid's
+algorithm.
+
+\begin{black}\begin{verbatim}
+  #let rec gcd x y =
+       if y = 0 then x
+       else gcd y (x mod y);;
+\end{verbatim}\end{black}
+
+We want to prove:
+
+{\red For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates and returns
+a gcd of $x$ and $y$.}
+
+Here we need to be even more careful about the specification. What is a gcd of
+two negative numbers?
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Greatest common divisor (2)}
+
+\vspace*{0.5cm}
+
+We write {\red $x | y$}, pronounced `{\red $x$} divides {\red $y$}', to mean
+that {\red $y$} is an integral multiple of {\red $x$}, i.e. there is some
+integer {\red $d$} with {\red $y = d x$}.
+
+We say that {\red $d$} is a {\em common divisor} of {\red $x$} and {\red $y$}
+if {\red $d | x$} and {\red $d | y$}.
+
+We say that {\red $d$} is a {\em greatest} common divisor if:
+
+\begin{itemize}
+
+\item We have {\red $d | x$} and {\red $d | y$}
+
+\item For any other integer {\red $d'$}, if {\red $d' | x$} and {\red $d' | y$}
+then {\red $d' | d$}.
+
+\end{itemize}
+
+Note that unless {\red $x$} and {\red $y$} are both zero, we do not specify the
+sign of the gcd. The specification does not constrain the implementation
+completely.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Greatest common divisor (3)}
+
+\vspace*{0.5cm}
+
+Now we come to the proof. The {\black \tt gcd} function is no longer defined by
+{\em primitive} recursion.
+
+In fact, {\black \tt gcd x y} is defined in terms of {\black \tt gcd y (x mod
+y)} in the step case.
+
+We do not, therefore, proceed by step-by-step mathematical induction, but by
+{\em wellfounded} induction on {\red $|y|$}.
+
+The idea is that this quantity (often called a {\em measure}) decreases with
+each call. We can use it to prove termination, and as a handle for wellfounded
+induction.
+
+In complicated recursions, finding the right wellfounded ordering on the
+arguments can be tricky. But in many cases one can use this simple `measure'
+approach.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Greatest common divisor (4)}
+
+\vspace*{0.5cm}
+
+Now we come to the proof. Fix some arbitrary {\red $n$}. We suppose that
+the theorem is established for all arguments {\red $x$} and {\red
+$y$} with {\red $|y| < n$}, and we try to prove it for all {\red
+$x$} and {\red $y$} with {\red $|y| = n$}. There are
+two cases.
+
+First, suppose that {\red $y = 0$}. Then {\red $\mbox{gcd}\; x\; y
+= x$} by definition. Now trivially {\red $x | x$} and {\red $x |
+0$}, so it is a common divisor.
+
+Suppose {\red $d$} is another common divisor, i.e. {\red $d | x$}
+and {\red $d | 0$}. Then immediately we get {\red $d | x$}, so
+$x$ is a {\em greatest} common divisor.
+
+This establishes the first part of the induction proof.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{Greatest common divisor (5)}
+
+\vspace*{0.5cm}
+
+Now suppose {\red $y \not= 0$}. We want to apply the inductive hypothesis to
+{\red $\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
+
+We will write {\red $r = x\; \mbox{mod}\; y$} for short. The basic property of
+the {\tt mod} function that we use is that, since {\red $y \not= 0$}, for some
+integer {\red $q$} we have {\red $x = q y + r$} and {\red $|r| < |y|$}.
+
+Since {\red $|r| < |y|$}, the inductive hypothesis tells us that {\red $d =
+\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} is a gcd of {\red $y$} and {\red $r$}.
+
+We just need to show that it is a gcd of {\red $x$} and {\red $y$}. It is
+certainly a common divisor, since if {\red $d | y$} and {\red $d | r$} we have
+{\red $d | x$}, as {\red $x = q y + r$}.
+
+Now suppose {\red $d' | x$} and {\red $d' | y$}. By the same equation, we find
+that {\red $d' | r$}. Thus {\red $d'$} is a common divisor of {\red $y$} and
+{\red $r$}, but then by the inductive hypothesis, {\red $d' | d$} as required.
+
+\end{slide*}
+
+
+
+
+
+
+\begin{slide*}
+
+\heading{Append (1)}
+
+\vspace*{0.5cm}
+
+Now consider an example concerning lists rather than numbers. Define:
+
+\begin{black}\begin{verbatim}
+  #let rec append l1 l2 =
+     match l1 with
+       [] -> l2
+     | (h::t) -> h::(append t l2);;
+\end{verbatim}\end{black}
+
+This is supposed to join together two lists. We want to prove that the
+operation is associative, i.e. for any three lists {\red $l_1$}, {\red $l_2$}
+and {\red $l_3$} we have:
+{\red $$ \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
+(\mbox{append}\; l_1\; l_2)\; l_3 $$}
+We can proceed by induction on the length of {\red $l_1$}, but since the
+function was defined by structural recursion over lists, it is more natural to
+prove the theorem by {\em structural induction}.
+
+The principle is: if a property holds for the empty list, and whenever it holds
+for {\red $t$} it holds for any {\red $h::t$}, then it holds for any list.
+
+\end{slide*}
+
+
+
+
+
+
+\begin{slide*}
+
+\heading{Append (2)}
+
+\vspace*{0.5cm}
+
+We proceed, then, by structural induction on {\red $l_1$}. There are two cases
+to consider. First, suppose {\red $l_1 = []$}. Then we have:
+
+{\red \begin{eqnarray*}
+& & \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)           \\
+& = & \mbox{append}\; []\; (\mbox{append}\; l_2\; l_3)          \\
+& = & \mbox{append}\; l_2\; l_3                                 \\
+& = & \mbox{append}\; (\mbox{append}\; []\; l_2)\; l_3          \\
+& = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3
+\end{eqnarray*}}
+
+As required.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Append (3)}
+
+\vspace*{0.5cm}
+
+Now suppose {\red $l_1 = h::t$}. We may assume that for any {\red $l_2$}
+and {\red $l_3$} we have:
+{\red $$ \mbox{append}\; t\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
+(\mbox{append}\; t\; l_2)\; l_3 $$}
+\noindent Therefore:
+{\red \begin{eqnarray*}
+& & \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)           \\
+& = & \mbox{append}\; (h::t)\; (\mbox{append}\; l_2\; l_3)      \\
+& = & h::(\mbox{append}\; t\; (\mbox{append}\; l_2\; l_3))      \\
+& = & h::(\mbox{append}\; (\mbox{append}\; t\; l_2)\; l_3)      \\
+& = & \mbox{append}\; (h::(\mbox{append}\; t\; l_2))\; l_3)     \\
+& = & \mbox{append}\; (\mbox{append}\; (h::t)\; l_2)\; l_3)     \\
+& = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3)
+\end{eqnarray*}}
+The theorem is proved.
+
+\end{slide*}
+
+
+
+
+
+
+
+\begin{slide*}
+
+\heading{Reverse (1)}
+
+\vspace*{0.2cm}
+
+For a final example, let us define a function to reverse a list:
+\begin{black}\begin{verbatim}
+  #let rec rev =
+     fun [] -> []
+       | (h::t) -> append (rev t) [h];;
+  rev : 'a list -> 'a list = <fun>
+  #rev [1;2;3];;
+  - : int list = [3; 2; 1]
+\end{verbatim}\end{black}
+We will prove that for any list {\red $l$} we have:
+{\red $$ \mbox{rev} (\mbox{rev}\; l) = l $$}
+This is again a structural induction. However we require two lemmas, which can
+also be proved by structural induction (details in the notes):
+{\red
+\begin{eqnarray*}
+\mbox{append}\; l\; [] & = & l          \\
+\mbox{rev}(\mbox{append}\; l_1\; l_2) & = & \mbox{append}\; (\mbox{rev}\; l_2)\; (\mbox{rev}\; l_1)
+\end{eqnarray*}}
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Reverse (2)}
+
+\vspace*{0.5cm}
+
+First suppose that {\red $l = []$}. Then the proof is easy:
+
+{\red
+\begin{eqnarray*}
+\mbox{rev}(\mbox{rev}\; l)
+& = & \mbox{rev}(\mbox{rev}\; [])                               \\
+& = & \mbox{rev}\; []                                               \\
+& = & []                                                                \\
+& = & l
+\end{eqnarray*}
+}
+
+Now suppose that {\red $l = h::t$} and we know that
+
+{\red $$ \mbox{rev}(\mbox{rev}\; t) = t $$}
+
+\end{slide*}
+
+\begin{slide*}
+
+\heading{Reverse (3)}
+
+\vspace*{0.5cm}
+
+{\red
+\begin{eqnarray*}
+& & \mbox{rev}(\mbox{rev}\; l)                                  \\
+& = & \mbox{rev}(\mbox{rev}\; (h::t))                           \\
+& = & \mbox{rev}(\mbox{append}\; (\mbox{rev}\; t)\; [h])        \\
+& = & \mbox{append}\; (\mbox{rev}\; [h])\; (\mbox{rev} (\mbox{rev}\; t)) \\
+& = & \mbox{append}\; (\mbox{rev}\; [h])\; t                        \\
+& = & \mbox{append}\; (\mbox{rev}\; (h::[]))\; t                    \\
+& = & \mbox{append}\; (\mbox{append}\; []\; [h])\; t                    \\
+& = & \mbox{append}\; [h]\; t                                           \\
+& = & \mbox{append}\; (h::[])\; t                                       \\
+& = & h::(\mbox{append}\; []\; t)                                       \\
+& = & h::t                                                              \\
+& = & l
+\end{eqnarray*}}
+
+\end{slide*}
+
+\end{document}
