@@ -8,8 +8,9 @@ Please keep terms in alphabet order.
   * *continuation* - продолжение
   * *conversion* - конверсия (lambda-термов)
   * *currying* - каррирование ?? (check in Harisson/Fild)
+  * *eager evaluation* - энергичное вычисление
   * *evaluation* - вычисление  ??
-  * *fixpoint | fixed point [of function]* - неподвижная точка [функции]
+  * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
   * *higher order function* - функция высшего порядка
   * *lazy evaluation* - ленивое вычисление
   * *lambda-calculus* - $\lambda$-исчисление
@@ -19,3 +20,16 @@ Please keep terms in alphabet order.
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
+
+== Discussion ==
+
+currying - у Х/Ф переводится как ''карринг''.  Если искать в гугле, то
+на карринг больше ссылок чем на ''каррирование'' - 950 vs 50.  Всё же
+мне больше симпотично именно ''каррирование'', звучит более русско
+чтоли ..
+
+в слове ''каррирование'' больше понятно, что это некое преобразование
+(одной функции в другую), действие над чем-то.  Как например:
+промывание, обрезание, и тд - преобразования одних объектов в другие --lg
+
+----
