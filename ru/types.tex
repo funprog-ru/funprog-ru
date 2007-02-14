@@ -1,0 +1,594 @@
+\chapter{Types}
+
+Types are a means of distinguishing different sorts of data, like booleans,
+natural numbers and functions, and making sure that these distinctions are
+respected, by, for example, ensuring that functions cannot be applied to
+arguments of the wrong type. Why should we want to add types to lambda
+calculus, and to programming languages derived from it? We can distinguish
+reasons from logic and reasons from programming.
+
+From the logical point of view, we have seen that the Russell paradox makes it
+difficult to extend lambda calculus with set theory without contradiction. The
+Russell paradox may well arise because of the peculiar self-referential nature
+of the trick involved: we apply a function to itself. Even if it weren't
+necessary to avoid paradox, we might feel that intuitively we really have a
+poor grip of what's going on in a system where we can do such things. Certainly
+applying some functions to themselves, e.g. the identity function $\lamb{x} x$
+or a constant function $\lamb{x} y$, seems quite innocuous. But surely we would
+have a clearer picture of what sort of functions lambda terms denote if we knew
+exactly what their domains and codomains were, and only applied them to
+arguments in their domains. These were the sorts of reasons why Russell
+originally introduced types in {\em Principia Mathematica}.
+
+Types also arose, perhaps at first largely independently of the above
+considerations, in programming languages, and since we view lambda calculus as
+a programming language, this motivates us too. Even FORTRAN distinguished
+integers and floating point values. One reason was clearly efficiency: the
+machine can generate more efficient code, and use storage more effectively, by
+knowing more about a variable. For example the implementation of C's pointer
+arithmetic varies according to the size of the referenced objects. If $p$ is a
+pointer to objects occupying $4$ bytes, then what C programmers write as $p +
+1$ becomes $p + 4$ inside a byte-addressed machine. C's ancestor BCPL is
+untyped, and is therefore unable to distinguish pointers from integers; to
+support the same style of pointer arithmetic it is necessary to apply a scaling
+at every indirection, a significant penalty.
+
+Apart from efficiency, as time went by, types also began to be appreciated more
+and more for their value in providing limited static checks on programs. Many
+programming errors, either trivial typos or more substantial conceptual errors,
+are suggested by type clashes, and these can be detected before running the
+program, during the compilation process. Moreover, types often serve as useful
+documentation for people reading code. Finally, types can be used to achieve
+better modularization and data hiding by `artificially' distinguishing some
+data structure from its internal representation.
+
+At the same time, some programmers dislike types, because they find the
+restrictions placed on their programming style irksome. There are untyped
+programming languages, imperative ones like BCPL and functional ones like
+ISWIM, SASL and Erlang. Others, like PL/I, have only {\em weak typing}, with
+the compiler allowing some mixtures of different types and casting them
+appropriately. There are also languages like LISP that perform typechecking
+{\em dynamically}, during execution, rather than statically during compilation.
+This can (at least in principle) degrade runtime performance, since it means
+that the computer is spending some time on making sure types are respected
+during execution --- compare checking of array bounds during execution, another
+common runtime overhead. By contrast, we have suggested that static typing, if
+anything, can improve performance.
+
+Just how restrictive a type system is found depends a lot on the nature of the
+programmer's applications and programming style. Finding a type system that
+allows useful static typechecking, while at the same time allowing programmers
+plenty of flexibility, is still an active research area. The ML type system is
+an important step along this road, since it features {\em polymorphism},
+allowing the same function to be used with various different types. This
+retains strong static typechecking while giving some of the benefits of weak or
+dynamic typing.\footnote{As well, perhaps, as some of the overheads.} Moreover,
+programmers never need to specify {\em any} types in ML --- the computer can
+infer a most general type for every expression, and reject expressions that are
+not typable. We will consider polymorphism in the setting of lambda calculus
+below. Certainly, the ML type system provides a congenial environment for many
+kinds of programming. Nevertheless, we do not want to give the impression that
+it is necessarily the answer to all programming problems.
+
+\section{Typed lambda calculus}
+
+It is a fairly straightforward matter to modify lambda calculus with a notion
+of type, but the resulting changes, as we shall see, are far-reaching. The
+basic idea is that every lambda term has a {\em type}, and a term $s$ can only
+be applied to a term $t$ in a combination $s\; t$ when the types match up
+appropriately, i.e. $s$ has the type of a function $\sigma \to \tau$ and $t$
+has type $\sigma$. The result, $s\; t$, then has type $\tau$. This is, in
+programming language parlance, {\em strong typing}. The term $t$ must have {\em
+exactly} the type $\sigma$; there is no notion of subtyping or coercion. This
+contrasts with some programming languages like C where a function expecting an
+argument of type {\tt float} or {\tt double} will accept one of type {\tt int}
+and appropriately cast it. Similar notions of subtyping and coercion can also
+be added to lambda calculus, but to consider these here would lead us too far
+astray.
+
+We will use `$t : \sigma$' to mean `$t$ has type $\sigma$'. This is already the
+standard notation in mathematics where function spaces are concerned, because
+$f : \sigma \to \tau$ means that $f$ is a function from the set $\sigma$ to
+the set $\tau$. We will think of types as sets in which the corresponding
+objects live, and imagine $t:\sigma$ to mean $t \in \sigma$. Though the reader
+may like to do likewise, as a heuristic device, we will view typed lambda
+calculus purely as a formal system and make the rules independent of any such
+interpretation.
+
+\subsection{The stock of types}
+
+The first stage in our formalization is to specify exactly what the types are.
+We suppose first of all that we have some set of {\em primitive types}, which
+might, for example, contain {\tt bool} and {\tt int}. We can construct
+composite types from these using the function space {\em type constructor}.
+Formally, we make the following inductive definition of the set $Ty_C$ of types
+based on a set of primitive types $C$:
+
+$$ \frac{\sigma \in C}{\sigma \in Ty_C} $$
+
+$$ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \to \tau \in Ty_C} $$
+
+For example, possible types might be $int$, $bool \to bool$ and $(int \to
+bool) \to int \to bool$. We assume that the function arrow associates to the
+right, i.e. $\sigma \to \tau \to \upsilon$ means $\sigma \to (\tau \to
+\upsilon)$. This fits naturally with the other syntactic conventions connected
+with currying.
+
+Before long, we shall extend the type system in two ways. First, we will allow
+so-called {\em type variables} as well as primitive type constants --- these
+are the vehicle for polymorphism. Secondly, we will allow the introduction of
+other type constructors besides the function arrow. For example, we will later
+introduce a constructor $\times$ for the product type. In that case a new
+clause:
+
+$$ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \times \tau \in Ty_C}
+$$
+
+\noindent needs to be added to the inductive definition. Once we move to the
+more concrete case of ML, there is the possibility of new, user-defined types
+and type constructors, so we will get used to arbitrary sets of constructors of
+any arity. We will write $(\alpha_1,\ldots,\alpha_n)con$ for the application of
+an $n$-ary type constructor $con$ to the arguments $\alpha_i$. (Only in a few
+special cases like $\to$ and $\times$ do we use infix syntax, for the sake of
+familiarity.) For example $(\sigma)list$ is the type of lists whose elements
+all have type $\sigma$.
+
+An important property of the types, provable because of {\em free} inductive
+generation, is that $\sigma \to \tau \not= \sigma$. (In fact, more generally,
+a type cannot be the same as any proper syntactic subexpression of itself.)
+This rules out the possibility of applying a term to itself, unless the two
+instances in question have distinct types.
+
+\subsection{Church and Curry typing}
+
+There are two major approaches to defining typed lambda calculus. One approach,
+due to Church, is {\em explicit}. A (single) type is attached to each term.
+That is, in the construction of terms, the untyped terms that we have presented
+are modified with an additional field for the type. In the case of constants,
+this type is pre-assigned, but variables may be of any type. The rules for
+valid term formation are then:
+
+$$ \frac{}{v:\sigma} $$
+
+$$ \frac{\mbox{Constant $c$ has type $\sigma$}}{c:\sigma} $$
+
+$$ \frac{s:\sigma \to \tau \;\;\; t:\sigma}{s\; t : \tau} $$
+
+$$ \frac{v:\sigma \;\;\; t:\tau}{\lamb{v} t : \sigma \to \tau} $$
+
+For our purposes, however, we prefer Curry's approach to typing, which is
+purely {\em implicit}. The terms are exactly as in the untyped case, and a term
+may or may not have a type, and if it does, may have many different
+types.\footnote{Some purists would argue that this isn't properly speaking
+`typed lambda calculus' but rather `untyped lambda calculus with a separate
+notion of type assignment'.} For example, the identity function $\lamb{x} x$
+may be given any type of the form $\sigma \to \sigma$, reasonably enough. There
+are two related reasons why we prefer this approach. First, it provides a
+smoother treatment of ML's polymorphism, and secondly, it corresponds well to
+the actual use of ML, where it is never necessary to specify types explicitly.
+
+At the same time, some of the formal details of Curry-style type assignment are
+a bit more complex. We do not merely define a relation of typability in
+isolation, but with respect to a {\em context}, i.e. a finite set of typing
+assumptions about variables. We write:
+
+$$ \Gamma \vdash t : \sigma $$
+
+\noindent to mean `in context $\Gamma$, the term $t$ can be given type
+$\sigma$'. (We will, however, write $\vdash t : \sigma$ or just $t : \sigma$
+when the typing judgement holds in the empty context.) The elements of $\Gamma$
+are of the form $v:\sigma$, i.e. they are themselves typing assumptions about
+variables, typically those that are components of the term. We assume that
+$\Gamma$ never gives contradictory assignments to the same variable; if
+preferred we can think of it as a partial function from the indexing set of the
+variables into the set of types. The use of the symbol $\vdash$ corresponds to
+its general use for judgements in logic of the form $\Gamma \vdash \phi$, read
+as `$\phi$ follows from assumptions $\Gamma$'.
+
+\subsection{Formal typability rules}
+
+The rules for typing expressions are fairly natural. Remember the
+interpretation of $t : \sigma$ as `$t$ {\em could} be given type $\sigma$'.
+
+$$ \frac{v:\sigma \in \Gamma}{\Gamma \vdash v : \sigma} $$
+
+$$ \frac{\mbox{Constant $c$ has type $\sigma$}}{c:\sigma} $$
+
+$$ \frac{\Gamma \vdash s : \sigma \to \tau \;\;\;\ \Gamma \vdash t : \sigma}
+        {\Gamma \vdash s\; t : \tau} $$
+
+$$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
+        {\Gamma \vdash \lamb{v} t : \sigma \to \tau} $$
+
+Once again, this is to be regarded as an inductive definition of the
+typability relation, so a term only has a type if it can be derived by the
+above rules. For example, let us see how to type the identity function. By the
+rule for variables we have:
+
+$$ \{x:\sigma\} \vdash x:\sigma $$
+
+\noindent and therefore by the last rule we get:
+
+$$ \emptyset \vdash \lamb{x} x : \sigma \to \sigma $$
+
+By our established convention for empty contexts, we write simply $\lamb{x} x :
+\sigma \to \sigma$. This example also illustrates the need for the context in
+Curry typing, and why it can be avoided in the Church version. Without the
+context we could deduce $x:\tau$ for any $\tau$, and then by the last rule get
+$\lamb{x} x : \sigma \to \tau$, clearly at variance with the intuitive
+interpretation of the identity function. This problem doesn't arise in Church
+typing, since in that case either both variables have type $\sigma$, in which
+case the rules imply that $\lamb{x} x : \sigma \to \sigma$, or else the two
+$x$'s are actually {\em different variables}, since their types differ and the
+types are a component of the term. Now, indeed, $\lamb{x:\sigma} (x:\tau) :
+\sigma \to \tau$, but this is reasonable because the term is alpha-equivalent
+to $\lamb{x:\sigma} (y:\tau): \sigma \to \tau$. In the Curry version of typing,
+the types are not attached to the terms, and so we need some way of connecting
+instances of the same variable.
+
+\subsection{Type preservation}
+
+Since the underlying terms of our typed lambda calculus are the same as in the
+untyped case, we can take over the calculus of conversions unchanged. However,
+for this to make sense, we need to check that all the conversions preserve
+typability, a property called {\em type preservation}. This is not difficult;
+we will sketch a formal proof for $\eta$-conversion and leave the other,
+similar cases to the reader. First we prove a couple of lemmas that are fairly
+obvious but which need to be established formally. First, adding new entries to
+the context cannot inhibit typability:
+
+\begin{lemma}
+
+If $\Gamma \vdash t : \sigma$ and $\Gamma \subset \Delta$ then $\Delta \vdash t
+: \sigma$.
+
+\proof By induction on the structure of $t$. Formally we are fixing $t$ and
+proving the above for all $\Gamma$ and $\Delta$, since in the inductive step
+for abstractions, the sets concerned change. If $t$ is a variable
+we must have that $t:\sigma \in \Gamma$. Therefore $t:\sigma \in \Delta$ and
+the result follows. If $t$ is a constant the result is immediate since the
+stock of constants and their possible types is independent of the context. If
+$t$ is a combination $s\; u$ then we have, for some type $\tau$, that $\Gamma
+\vdash s : \tau \to \sigma$ and $\Gamma \vdash u : \tau$. By the inductive
+hypothesis, $\Delta \vdash s : \tau \to \sigma$ and $\Delta \vdash u : \tau$
+and the result follows. Finally, if $t$ is an abstraction $\lamb{x} s$ then we
+must have, by the last rule, that $\sigma$ is of the form $\tau \to \tau'$ and
+that $\Gamma \Union \{x:\tau\} \vdash s : \tau'$. Since $\Gamma \subset \Delta$
+we also have $\Gamma \Union \{x:\tau\} \subset \Delta \Union \{x:\tau\}$, and
+so by the inductive hypothesis $\Delta \Union \{x:\tau\} \vdash s : \tau'$. By
+applying the rule for abstractions, the result follows. \qed
+
+\end{lemma}
+
+Secondly, entries in the context for variables not free in the relevant term
+may be discarded.
+
+\begin{lemma}
+
+If $\Gamma \vdash t : \sigma$, then $\Gamma_t \vdash t : \sigma$ where
+$\Gamma_t$ contains only entries for variables free in $t$, or more formally
+$\Gamma_t = \{x:\alpha \mid x:\alpha \in \Gamma \mbox{ and } x \in FV(t)\}$.
+
+\proof Again, we prove the above for all $\Gamma$ and the corresponding
+$\Gamma_t$ by structural induction over $t$. If $t$ is a variable, then since
+$\Gamma \vdash t : \sigma$ we must have an entry $x : \sigma$ in the context.
+But by the first rule we know $\{x : \sigma\} \vdash x : \sigma$ as required.
+In the case of a constant, then the typing is independent of the context, so
+the result holds trivial ly. If $t$ is a combination $s\; u$ then we have for
+some $\tau$ that $\Gamma \vdash s : \tau \to \sigma$ and $\Gamma \vdash u :
+\tau$. By the inductive hypothesis, we have $\Gamma_s \vdash s : \tau \to
+\sigma$ and $\Gamma_u \vdash u : \tau$. By the monotonicity lemma, we therefore
+have $\Gamma_{su} \vdash s : \tau \to \sigma$ and $\Gamma_{su} \vdash u :
+\tau$, since $FV(s\; u) = FV(s) \Union FV(u)$. Hence by the rule for
+combinations we get $\Gamma_{su} \vdash  t : \sigma$. Finally, if $t$ has the
+form $\lamb{x} s$, we must have $\Gamma \Union \{x:\tau\} \vdash s:\tau'$ with
+$\sigma$ of the form $\tau \to \tau'$. By the inductive hypothesis we have
+$(\Gamma \Union \{x:\tau\})_s \vdash s:\tau'$, and so $(\Gamma \Union
+\{x:\tau\})_s - \{x:\tau\} \vdash (\lamb{x} s) : \sigma$. Now we need simply
+observe that $(\Gamma \Union \{x:\tau\})_s - \{x:\tau\} \subset \Gamma_t$ and
+appeal once more to monotonicity. \qed
+
+\end{lemma}
+
+\noindent Now we come to the main result.
+
+\begin{theorem}
+
+If $\Gamma \vdash t : \sigma$ and $t \etas t'$, then also $\Gamma \vdash t' :
+\sigma$
+
+\proof Since by hypothesis $t$ is an $\eta$-redex, it must be of the form
+$(\lamb{x} t\; x)$ with $x \not\in FV(t)$. Now, its type can only have arisen
+by the last typing rule, and therefore $\sigma$ must be of the form $\tau \to
+\tau'$, and we must have $\{x:\tau\} \vdash (t\; x) : \tau'$. Now, this typing
+can only have arisen by the rule for combinations. Since the context can only
+give one typing to each variable, we must therefore have $\{x:\tau\} \vdash t :
+\tau \to \tau'$. But since by hypothesis, $x \not\in FV(t)$, the lemma yields
+$\vdash t : \tau \to \tau'$ as required. \qed
+
+\end{theorem}
+
+Putting together all these results for other conversions, we see that if
+$\Gamma \vdash t : \sigma$ and $t \goesto t'$, then we have $\Gamma \vdash t' :
+\sigma$. This is reassuring, since if the evaluation rules that are applied
+during execution could change the types of expressions, it would cast doubt on
+the whole enterprise of static typing.
+
+\section{Polymorphism}
+
+The Curry typing system already gives us a form of {\em polymorphism}, in that
+a given term may have different types. Let us start by distinguish between the
+similar concepts of polymorphism and {\em overloading}. Both of them mean that
+an expression may have multiple types. However in the case of polymorphism, all
+the types bear a systematic relationship to each other, and all types following
+the pattern are allowed. For example, the identity function may have type
+$\sigma \to \sigma$, or $\tau \to \tau$, or $(\sigma \to \tau) \to (\sigma \to
+\tau)$, but all the instances have the same structure. By contrast, in
+overloading, a given function may have different types that bear no structural
+relation to each other, or only certain instances may be selected. For example,
+a function $+$ may be allowed to have type $int \to int \to int$ or type $float
+\to float \to float$, but not $bool \to bool \to bool$.\footnote{Strachey, who
+coined the term `polymorphism', referred to what we call polymorphism and
+overloading as {\em parametric} and {\em ad hoc} polymorphism respectively.}
+Yet a third related notion is subtyping, which is a more principled version of
+overloading, regarding certain types as embedded in others. This, however,
+turns out to be a lot more complex than it seems.\footnote{For example, if
+$\alpha$ is a subtype of $\alpha'$, should $\alpha \to \beta$ be a subtype or a
+supertype of $\alpha' \to \beta$? One can defend either interpretation
+(`covariant' or `contravariant') in certain situations.}
+
+\subsection{Let polymorphism}
+
+Unfortunately the type system we have so far places some unpleasant
+restrictions on polymorphism. For example, the following expression is
+perfectly acceptable:
+
+$$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
+\mbox{else}\; 0 $$
+
+Here is a proof according to the above rules. We assume that the constants can
+be typed in the empty environment, and we fold together two successive
+applications of the rule for combinations as a rule for {\tt if}, remembering
+that `$\mbox{if}\; b\; \mbox{then}\; t_1\; \mbox{else}\; t_2$' is shorthand for
+`$\mbox{COND}\; b\; t_1\; t_2$'.
+
+$$ \infer{\vdash \mbox{if}\; (\lamb{x} x)\;
+                        \mbox{true then}\; (\lamb{x} x)\; 1\;
+                        \mbox{else}\; 0 : int}
+         {\infer{\vdash (\lamb{x} x)\; \mbox{true} : bool}
+                {\infer{\vdash (\lamb{x} x) : bool \to bool}
+                       {\{x:bool\} \vdash x:bool} &
+                 \infer{\vdash \mbox{true} : bool}{}} &
+          \infer{\vdash (\lamb{x} x)\; 1 : int}
+                {\infer{\vdash (\lamb{x} x) : int \to int}
+                       {\{x:int\} \vdash x:int} &
+                 \infer{\vdash 1 : int}{}} &
+          \infer{\vdash 0 : int}{}}
+$$
+
+The two instances of the identity function get types $bool \to bool$ and $int
+\to int$. But consider the following:
+
+$$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I \; 1\;
+\mbox{else}\; 0 $$
+
+\noindent According to our definitions, this is just syntactic sugar for:
+
+$$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\; 0)\;
+(\lamb{x} x) $$
+
+As the reader may readily confirm, this cannot be typed according to our rules.
+There is just {\em one} instance of the identity function and it must be given
+a single type. This feature is unbearable, since in practical functional
+programming we rely heavily on using {\tt let}. Unless we change the typing
+rules, many of the benefits of polymorphism are lost. Our solution is to make
+{\tt let} primitive, rather than interpret it as syntactic sugar, and add the
+new typing rule:
+
+$$ \frac{\Gamma \vdash s : \sigma \;\;\; \Gamma \vdash t[s/x] : \tau}
+        {\Gamma \vdash \mbox{let}\; x = s\; \mbox{in}\; t : \tau} $$
+
+This rule, which sets up {\em let polymorphism}, expresses the fact that, with
+respect to typing at least, we treat {\tt let} bindings just as if separate
+instances of the named expression were written out. The additional hypothesis
+$\Gamma \vdash s : \sigma$ merely ensures that $s$ is typable, the exact type
+being irrelevant. This is to avoid admitting as well-typed terms such as:
+
+$$ \mbox{let}\; x = \lamb{f} f\; f\; \mbox{in}\; 0 $$
+
+\noindent Now, for example, we can type the troublesome example:
+
+$$ \infer{\vdash \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\;
+                                        \mbox{true then}\; I \; 1\;
+                                        \mbox{else}\; 0 : int}
+         {\infer{\vdash \lamb{x} x : \sigma \to \sigma}
+                {\infer{\{x:\sigma\} \vdash x:\sigma}
+                       {}} &
+          \infer{\vdash \mbox{if}\; (\lamb{x} x)\;
+                        \mbox{true then}\; (\lamb{x} x)\; 1\;
+                        \mbox{else}\; 0 : int}
+                {\mbox{\bf As given above}}} $$
+
+\subsection{Most general types}
+
+As we have said, some expressions have no type, e.g. $\lamb{f} f\; f$ or
+$\lamb{f} (f\; \mbox{true},f\; \mbox{1})$. Typable expressions normally have
+many types, though some, e.g. $true$, have exactly one. We have already
+commented that the form of polymorphism in ML is {\em parametric}, i.e. all the
+different types an expression can have bear a structural similarity to each
+other. In fact more is true: there exists for each typable expression a {\em
+most general type} or {\em principal type}, and all possible types for the
+expression are instances of this most general type. Before stating this
+precisely we need to establish some terminology.
+
+First, we extend our notion of types with {\em type variables}. That is, types
+can be built up by applying type constructors either to type constants or
+variables. Normally we use the letters $\alpha$ and $\beta$ to represent type
+variables, and $\sigma$ and $\tau$ arbitrary types. Given this extension, we
+can define what it means to substitute one type for a type variable in another
+type. This is precisely analogous to substitution at the term level, and we
+even use the same notation. For example $(\sigma \to bool)[(\sigma \to
+\tau)/\sigma] = (\sigma \to \tau) \to bool$. The formal definition is much
+simpler than at the term level, because we do not have to worry about bindings.
+At the same time, it is convenient to extend it to multiple parallel
+substitutions:
+
+\begin{eqnarray*}
+\alpha_i[\tau_1/\alpha_1,\ldots,\tau_n/\alpha_k] & = & \tau_i
+        \mbox{ if $\alpha_i \not= \beta$ for $1 \leq i \leq k$}         \\
+\beta[\tau_1/\alpha_1,\ldots,\tau_n/\alpha_k] & = & \beta
+        \mbox{ if $\alpha_i \not= \beta$ for $1 \leq i \leq k$}         \\
+(\sigma_1,\ldots,\sigma_n)con [\theta] & = &
+        (\sigma_1[\theta],\ldots,\sigma_n[\theta])con
+\end{eqnarray*}
+
+For simplicity we treat type constants as nullary constructors, e.g. consider
+$()int$ rather than $int$, but if preferred it is easy to include them as a
+special case. Given this definition of substitution, we can define the notion
+of a type $\sigma$ being {\em more general} than a type $\sigma'$, written
+$\sigma \preceq \sigma'$.\footnote{This relation is reflexive, so we should
+really say `at least as general as' rather than `more general than'.} This is
+defined to be true precisely if there is a set of substitutions $\theta$ such
+that $\sigma' = \sigma \theta$. For example we have:
+
+\begin{eqnarray*}
+\alpha          & \preceq & \sigma                      \\
+\alpha \to \alpha & \preceq & \beta \to \beta           \\
+\alpha \to bool   & \preceq & (\beta \to \beta) \to bool\\
+\beta \to \alpha   & \preceq & \alpha \to \beta         \\
+\alpha \to \alpha & \not\preceq & (\beta \to \beta) \to \beta
+\end{eqnarray*}
+
+\noindent Now we come to the main theorem:
+
+\begin{theorem}
+Every typable term has a principal type, i.e. if $t : \tau$, then there is some
+$\sigma$ such that $t : \sigma$ and for any $\sigma'$, if $t : \sigma'$ then
+$\sigma \preceq \sigma'$.
+\end{theorem}
+
+It is easy to see that the relation $\preceq$ is a preorder relation, i.e. is
+reflexive and transitive. The principal type is not unique, but it is unique up
+to renaming of type variables. More precisely, if $\sigma$ and $\tau$ are both
+principal types for an expression, then $\sigma \sim \tau$, meaning that
+$\sigma \preceq \tau$ and $\tau \preceq \sigma$.
+
+We will not even sketch a proof of the principal type theorem; it is not
+particularly difficult, but is rather long. What is important to understand is
+that the proof gives a concrete procedure for finding a principal type. This
+procedure is known as {\em Milner's algorithm}, or often the Hindley-Milner
+algorithm.\footnote{The above principal type theorem in the form we have
+presented it is due to \citeN{milner-poly}, but the theorem and an associated
+algorithm had earlier been discovered by Hindley in a similar system of
+combinatory logic.} All implementations of ML, and several other functional
+languages, incorporate a version of this algorithm, so expressions can
+automatically be allocated a principal type, or rejected as ill-typed.
+
+\section{Strong normalization}
+
+Recall our examples of terms with no normal form, such as:
+
+\begin{eqnarray*}
+& & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
+& \goesto & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
+                            (\lamb{x} x\; x\; x))                           \\
+& \goesto & (\cdots)
+\end{eqnarray*}
+
+In typed lambda calculus, this cannot happen by virtue of the following
+{\em strong normalization} theorem, whose proof is too long for us to give
+here.
+
+\begin{theorem}
+Every typable term has a normal form, and every possible reduction sequence
+starting from a typable term terminates.\footnote{Weak normalization means the
+first part only, i.e. every term can be reduced to normal form, but there may
+still be reduction sequences that fail to terminate.} \end{theorem}
+
+At first sight this looks good --- a functional program respecting our type
+discipline can be evaluated in any order, and it will always terminate in the
+unique normal form. (The uniqueness comes from the Church-Rosser theorem, which
+is still true in the typed system.) However, the ability to write
+nonterminating functions is essential to Turing completeness,\footnote{Given
+any recursive enumeration of total computable functions, we can always create
+one not in the list by diagonalization. This will be illustrated in the
+Computability Theory course.} so we are no longer able to define all computable
+functions, not even all total ones.
+
+This might not matter if we could define all `practically interesting'
+functions. However this is not so; the class of functions definable as typed
+lambda terms is fairly limited. \citeN{schwichtenberg-definable} has
+proved that if Church numerals are used, then the definable functions are those
+that are polynomials or result from polynomials using definition by cases. Note
+that this is strictly intensional: if another numeral representation is used, a
+different class of functions is obtained. In any case, it is not enough for a
+general programming language.
+
+Since all definable functions are total, we are clearly unable to make
+arbitrary recursive definitions. Indeed, the usual fixpoint combinators must be
+untypable; $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$ clearly isn't
+well-typed because it applies $x$ to itself and $x$ is bound by a lambda. In
+order to regain Turing-completeness we simply add a way of defining arbitrary
+recursive functions that {\em is} well-typed. We introduce a polymorphic
+recursion operator with all types of the form:
+
+$$ Rec : ((\sigma \to \tau) \to (\sigma \to \tau)) \to \sigma \to \tau $$
+
+\noindent and the extra reduction rule that for any $F:(\sigma \to \tau) \to
+(\sigma \to \tau)$ we have:
+
+$$ Rec\; F \goesto F\; (Rec\;  F) $$
+
+From now on, we will suppose that recursive definitions, signalled by `let
+rec', map down to the use of these recursion operators.
+
+\section*{Further reading}
+
+\citeN{barendregt} and \citeN{hindley-seldin} also consider typed lambda
+calculus. The original paper by \citeN{milner-poly} is still a good source of
+information about polymorphic typing and the algorithm for finding principal
+types. A nice elementary treatment of typed lambda calculus, which gives a
+proof of Strong Normalization and discusses some interesting connections with
+logic, is \citeN{girard-prat}. This also discusses a more advanced version of
+typed lambda calculus called `System F' where even though strong normalization
+holds, the majority of `interesting' functions are definable.
+
+%\section{Connections with logic}
+%
+%Here goes the CH isomorphism, and a discussion of what types can be produced
+% This is interesting in that successive bits of ML modify the answer!
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item Is it true that if $\Gamma \vdash t:\sigma$ then for any substitution
+$\theta$ we have $\Gamma \vdash t:(\sigma \theta)$?
+
+\item Prove formally the type preservation theorems for $\alpha$ and $\beta$
+conversion.
+
+\item Show that the converse to type preservation does not hold, i.e. it is
+possible that $t \goesto t'$ and $\Gamma \vdash t':\sigma$ but not $\Gamma
+\vdash t:\sigma$.
+
+\item (*) Prove that every term of typed lambda calculus with {\em principal}
+type $(\alpha \to \alpha) \to (\alpha \to \alpha)$ reduces to a Church numeral.
+
+\item (*) To what extent can the typechecking process be reversed, i.e. the
+term inferred from the type? For instance, is it true that in pure typed lambda
+calculus with type variables but no constants and no recursion operator, that
+any $t:\alpha \to \beta \to \alpha$ is in fact equal to $K = \lamb{x\; y} x$ in
+the usual sense of lambda equality? If so, how far can this be
+generalized?\footnote{See \citeN{mairson-param} for more on this question.}
+
+\item (*) We will say that an arbitrary reduction relation $\goesto$ is {\em
+weakly Church-Rosser} if whenever $t \goesto t_1$ and $t \goesto t_2$, then
+there is a $u$ with $t_1 \goesto^* u$ and $t_2 \goesto^* u$, where $\goesto^*$
+is the reflexive transitive closure of $\goesto$. Prove {\em Newman's Lemma},
+which states that if a relation is weakly Church-Rosser and obeys strong
+normalization, then $\goesto^*$ is Church-Rosser. (Hint: use a form of
+wellfounded induction.)\footnote{If you get stuck, there is a nice proof in
+\citeN{huet-reduct}.}
+
+\end{enumerate}

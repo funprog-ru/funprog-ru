@@ -1,0 +1,66 @@
+# --------------------------------------------------------------------------
+# lmake: Script to avoid too many redundant invocations of LaTeX and BibTeX.
+#
+# Use: lmake <latex root> <bibtex file> <other relevant (usually tex) files>
+#
+# Note that the latex root file should have no extension, but all the
+# others should be actual filenames.
+#
+# JRH, 8th Dec 94
+# --------------------------------------------------------------------------
+
+# Tests if the first file both exists and was modified later than the rest.
+
+fresh() { test -f $1 && test `ls -t $* | head -1` = $1; }
+
+# Copies a file or creates source and destination if source doesn't exist
+
+trycp() { (test -f $1 || touch $1 ); cp $1 $2; }
+
+# Echo all arguments but the first 2
+
+shift2() { echo $* | cut -f3- -d' '; }
+
+# Run Latex and Bibtex with explanatory messages.
+
+vlatex() { echo "Running LaTeX"; latex $1.tex ; }
+vbibtex() { echo "Running BibTeX"; bibtex $1 ; }
+
+# Back up the bbl files
+
+trycp $1.bbl $1.bbl.bak
+
+# If dvi and aux files exist, and the tex file hasn't changed later that the
+# dvi file, try to get away with just running Bibtex if the bib file has
+# changed.
+
+test -f $1.aux && fresh $1.dvi $1.tex `shift2 $*` &&
+  (fresh $1.dvi $2 || vbibtex $1)
+
+# Force at least one loop if the tex source has changed
+
+fresh $1.dvi $1.tex `shift2 $*` || echo >>$1.bbl.bak
+
+# Back up the aux file (just in case the next block is skipped).
+
+trycp $1.aux $1.aux.bak
+
+# Keep running Latex and Bibtex alternately till the bbl file fixes.
+
+until cmp -s $1.bbl $1.bbl.bak
+do trycp $1.aux $1.aux.bak
+   vlatex $1
+   trycp $1.bbl $1.bbl.bak
+   cmp -s $1.aux $1.aux.bak || vbibtex $1
+done
+
+# Now rerun Latex till the aux file fixes.
+
+until cmp -s $1.aux $1.aux.bak
+do trycp $1.aux $1.aux.bak
+   vlatex $1
+done
+
+# Finally, get rid of backup files.
+
+rm -f $1.aux.bak $1.bbl.bak

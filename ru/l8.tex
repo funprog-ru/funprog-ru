@@ -1,0 +1,871 @@
+\documentstyle[portrait,%
+              fancybox,%
+              notes,%
+              epsfig,%
+              alltt,%
+              semcolor,
+              alltt]{seminar}
+
+\input amssym.def
+\input amssym
+
+\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
+\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
+\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
+\newcommand{\real}{\mbox{$\protect\Bbb R$}}
+\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
+\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
+
+\newcommand{\lamb}[1]{\lambda #1.\:}
+\newcommand{\eps}[1]{\varepsilon #1.\:}
+\newcommand{\all}[1]{\forall #1.\:}
+\newcommand{\ex}[1]{\exists #1.\:}
+\newcommand{\exu}[1]{\exists! #1.\:}
+
+\newcommand{\True}{\top}
+\newcommand{\False}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\entails}{\vdash}
+\newcommand{\proves}{\vdash}
+
+\newcommand{\Ands}{\bigwedge}
+\newcommand{\Ors}{\bigvee}
+
+\newcommand{\BQ}{\mbox{$\ulcorner$}}
+\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
+\newcommand{\EQ}{\mbox{$\urcorner$}}
+\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
+
+\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
+\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
+\let\subset=\subseteq
+
+\newcommand{\powerset}{\wp}             % This is pretty dire...  %
+
+\newcommand{\Union}{\cup}
+\newcommand{\Inter}{\cap}
+\newcommand{\Unions}{\bigcup}
+\newcommand{\Inters}{\bigcap}
+
+\newcommand{\proof}{{\bf \noindent Proof:\ }}
+\newcommand{\qed}{Q.E.D.}
+
+\newcommand{\Rule}{\infer}
+
+\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
+
+\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
+
+\newcommand\leb{\lbrack\!\lbrack}
+\newcommand\reb{\rbrack\!\rbrack}
+\newcommand{\sem}[1]{\leb #1 \reb}
+
+\newcommand{\BA}{\begin{array}[t]{l}}
+\newcommand{\EA}{\end{array}}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\sqlt}{\sqsubset}
+
+\newcommand{\too}{\twoheadrightarrow}
+
+\newcommand{\Los}{{\L}o{\'s}}
+
+% These are from Mike's notes
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+
+\def\goesto{\longrightarrow}
+
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+% Sizes
+
+\renewcommand{\slidetopmargin}{0.8in}
+\renewcommand{\slidebottommargin}{0.8in}
+
+% Various combinations of one colour on another
+
+\newcommand{\greenonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
+
+\newcommand{\whiteonred}[1]%
+{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\yellowonmagenta}[1]%
+{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
+
+\newcommand{\whiteonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
+
+\newcommand{\blackonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
+
+\newcommand{\blueonlightgray}[1]%
+{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\cyanonblack}[1]%
+{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
+
+\newcommand{\blueonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
+
+\newcommand{\redonyellow}[1]%
+{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
+
+\newcommand{\heading}[1]%
+{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+
+\newcommand{\emphatic}[1]{\blueonyellow{#1}}
+
+\newcommand{\veryemphatic}[1]%
+{\begin{center}{\emphatic{#1}}\end{center}}
+
+% Head and foot of slides
+
+\newpagestyle{ColourDemo}%
+  {\cyanonblack{Introduction to Functional Programming:
+                Lecture 8}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{John Harrison}\hfil
+   \cyanonblack{University of Cambridge, 31 January 1997}}
+
+\pagestyle{ColourDemo}
+
+\centerslidesfalse
+
+% Colour bullets
+
+\def\labelitemi{{\black$\bullet$}}
+\def\labelitemii{{\black--}}
+\def\labelitemiii{{\black$\ast$}}
+\def\labelitemiv{{\black$\cdot$}}
+
+% Start of document (default text colour is blue)
+
+\begin{document}\blue
+
+
+\begin{slide*}
+
+\heading{%
+\begin{tabular}{c}
+{\LARGE\red Introduction to}\\
+{\LARGE\red Functional Programming}\\
+{\cyan John Harrison}\\
+{\cyan University of Cambridge}\\
+{\green Lecture 8}\\
+{\green Effective ML}
+\end{tabular}}
+
+\vspace*{0.5cm}
+
+Topics covered:
+
+\begin{itemize}
+
+\item Using standard combinators
+
+\item Tail recursion and accumulators
+
+\item Forcing evaluation
+
+\item Minimizing consing
+
+\item Exceptions
+
+\item References and arrays
+
+\end{itemize}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Using standard combinators}
+
+\vspace*{0.5cm}
+
+It often turns out that a few {\em combinators} are very useful: we can
+implement practically anything by plugging them together.
+
+This is particularly true because we can have higher order functions.
+
+For example, the {\black \tt itlist} function:
+{\red $$ \BA \mbox{itlist}\; f\; [x_1;\; x_2;\; \ldots \;; x_n]\; b\\ =
+f\; x_1\; (f\; x_2\; (f\; x_3\; ( \cdots (f\; x_n\; b)))) \EA$$}
+can often be used to avoid explicit recursive definitions over lists. We define
+it as:
+
+\begin{black}\begin{verbatim}
+  #let rec itlist f =
+     fun [] b -> b
+       | (h::t) b -> f h (itlist f t b);;
+  itlist : ('a -> 'b -> 'b) ->
+           'a list -> 'b -> 'b = <fun>
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Itlist examples (1)}
+
+\vspace*{0.5cm}
+
+For example, here is a function to add up all the elements of a list:
+
+\begin{black}\begin{verbatim}
+  #let sum l =
+     itlist (fun x sum -> x + sum) l 0;;
+  sum : int list -> int = <fun>
+  #sum [1;2;3;4;5];;
+  - : int = 15
+  #sum [];;
+  - : int = 0
+  #sum [1;1;1;1];;
+  - : int = 4
+\end{verbatim}\end{black}
+
+An alternative coding is simply:
+
+\begin{black}\begin{verbatim}
+  #let sum l = itlist (prefix +) l 0;;
+\end{verbatim}\end{black}
+
+If we want to multiply the elements instead, we change it to:
+
+\begin{black}\begin{verbatim}
+  #let sum l = itlist (prefix *) l 1;;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Itlist examples (2)}
+
+\vspace*{0.5cm}
+
+Here is a filtering function:
+
+\begin{black}\begin{verbatim}
+  #let filter p l =
+     itlist (fun x s -> if p x then x::s
+                        else s) l [];;
+\end{verbatim}\end{black}
+
+and here are some logical operations over lists:
+
+\begin{black}\begin{verbatim}
+  #let forall p l =
+     itlist (fun h a -> p(h) & a) l true;;
+  #let exists p l =
+     itlist (fun h a -> p(h) or a) l false;;
+\end{verbatim}\end{black}
+
+and some old favourites:
+
+\begin{black}\begin{verbatim}
+  #let length l =
+     itlist (fun x s -> s + 1) l 0;;
+  #let append l m =
+     itlist (fun h t -> h::t) l m;;
+  #let map f l =
+     itlist (fun x s -> (f x)::s) l [];;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Itlist examples (3)}
+
+\vspace*{0.5cm}
+
+We can implement set operations quite directly using these combinators as
+building blocks.
+
+\begin{black}\begin{verbatim}
+  #let mem x l =
+     exists (fun y -> y = x) l;;
+  #let insert x l =
+    if mem x l then l else x::l;;
+  #let union l1 l2 =
+     itlist insert l1 l2;;
+  #let setify l =
+     union l [];;
+  #let Union l =
+     itlist union l [];;
+  #let intersect l1 l2 =
+     filter (fun x -> mem x l2) l1;;
+  #let subtract l1 l2 =
+     filter (fun x -> not mem x l2) l1;;
+  #let subset l1 l2 =
+     forall (fun t -> mem t l2) l1;;
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Storing local variables}
+
+\vspace*{0.5cm}
+
+Recall our definition of the factorial:
+
+\begin{black}\begin{verbatim}
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1);;
+\end{verbatim}\end{black}
+
+A call to {\black \tt fact 6} causes another call to {\black \tt fact 5} (and
+beyond), but the computer needs to save the old value {\black \tt 6} in order
+to do the final multiplication.
+
+Therefore, the local variables of a function, in this case {\black \tt n},
+cannot be stored in a fixed place, because each instance of the function needs
+its own copy.
+
+Instead each instance of the function is allocated a frame on a {\em stack}.
+
+This technique is similar in ML to most other languages that support recursion,
+including C.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{The stack}
+
+\vspace*{0.5cm}
+
+Here is an imaginary snapshot of the stack during the evaluation of the
+innermost call of {\black \tt fact}:
+
+\bigskip
+\begin{green}
+\begin{picture}(140,140)(50,0)
+\put(140,0){\line(0,1){150}}
+\put(220,0){\line(0,1){150}}
+\put(140,0){\line(1,0){80}}
+\put(60,0){\tt SP}
+\put(80,4){\vector(1,0){60}}
+\put(165,6){$n = 0$}
+\put(140,20){\line(1,0){80}}
+\put(165,26){$n = 1$}
+\put(140,40){\line(1,0){80}}
+\put(165,46){$n = 2$}
+\put(140,60){\line(1,0){80}}
+\put(165,66){$n = 3$}
+\put(140,80){\line(1,0){80}}
+\put(165,86){$n = 4$}
+\put(140,100){\line(1,0){80}}
+\put(165,106){$n = 5$}
+\put(140,120){\line(1,0){80}}
+\put(165,126){$n = 6$}
+\put(140,140){\line(1,0){80}}
+\end{picture}
+\end{green}
+
+Note that we use about {\red $n$} words of storage when there are {\red $n$}
+nested recursive calls. In many situations this is very wasteful.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{A tail recursive version}
+
+\vspace*{0.5cm}
+
+Now, by contrast, consider the following implementation of the factorial
+function:
+
+\begin{black}\begin{verbatim}
+  #let rec tfact x n =
+     if n = 0 then x
+     else tfact (x * n) (n - 1);;
+  tfact : int -> int -> int = <fun>
+  #let fact n = tfact 1 n;;
+  fact : int -> int = <fun>
+  #fact 6;;
+  - : int = 720
+\end{verbatim}\end{black}
+
+The recursive call is the whole expression; it does not occur as a proper
+subexpression of some other expression involving values of variables.
+
+Such a call is said to be a {\em tail call} because it is the very last thing
+the calling function does.
+
+A function where all recursive calls are tail calls is said to be {\em tail
+recursive}.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Why tail recursion?}
+
+\vspace*{0.5cm}
+
+If a function is tail recursive, the compiler is clever enough to realize that
+the same area of storage can be used for the local variables of each instance.
+
+We avoid using all that stack.
+
+The additional argument {\black \tt x} of the {\black \tt tfact} function is
+called an {\em accumulator}, because it accumulates the result as the recursive
+calls stack up, and is then returned at the end.
+
+Working in this way, rather than modifying the return value on the way back up,
+is a common way of making functions tail recursive.
+
+In a sense, a tail recursive implementation using accumulators corresponds to
+an iterative version using assignments and while-loops.
+
+The only difference is that we pass the state around explicitly.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Forcing evaluation (1)}
+
+\vspace*{0.5cm}
+
+Recall that ML does not evaluate inside lambdas. Therefore it sometimes pays to
+pull expressions outside a lambda when they do not depend on the value of the
+bound variable.
+
+For example, we might code the efficient factorial by making {\black \tt tfact}
+local:
+
+\begin{black}\begin{verbatim}
+  #let fact n =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1 n;;
+\end{verbatim}\end{black}
+
+However the binding of the recursive function to {\black \tt tfact} does not
+get evaluated until {\black \tt fact} sees its arguments.
+
+Moreover, it gets reevaluated each time even though it doesn't depend on
+{\black \tt n}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Forcing evaluation (2)}
+
+\vspace*{0.5cm}
+
+A better coding is as follows:
+
+\begin{black}\begin{verbatim}
+  #let fact =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1;;
+\end{verbatim}\end{black}
+
+This is about $20 \%$ faster when called on the argument {\black \tt 6}. In
+cases where the subexpression involves much more evaluation, the difference can
+be spectacular.
+
+Most compilers do not do such optimizations automatically.
+
+However it falls under the general heading of {\em partial evaluation}, a big
+research field.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Minimizing consing (1)}
+
+\vspace*{0.5cm}
+
+The space used by type constructors (`cons cells') is not allocated and
+deallocated in such as straightforward way as stack space.
+
+In general, it is difficult to work out when a certain cons cell is in use, and
+when it is available for recycling. For example in:
+
+\begin{black}\begin{verbatim}
+  let l = 1::[] in tl l;;
+\end{verbatim}\end{black}
+
+\noindent the cons cell can be reused immediately. However if {\black \tt l} is
+passed to other functions, it is impossible to decide at compile-time when the
+cons cell is no longer needed.
+
+Therefore, space in functional languages has to be reclaimed by analyzing
+memory periodically and deciding which bits are needed. The remainder is then
+reclaimed. This process is known as {\em garbage collection}.
+
+\end{slide*}
+
+\begin{slide*}
+
+\heading{Minimizing consing (2)}
+
+\vspace*{0.5cm}
+
+We can often make programs more space and time efficient by reducing consing.
+One simple trick is to reduce the usage of {\black \tt append}. By looking at
+the definition:
+
+\begin{black}\begin{verbatim}
+  #let rec append l1 l2 =
+     match l1 with
+       [] -> l2
+     | (h::t) -> h::(append t l2);;
+\end{verbatim}\end{black}
+
+we can see that it generates {\red $n$} cons cells where {\red $n$} is the
+length of the first argument. For example, our implementation of reversal:
+
+\begin{black}\begin{verbatim}
+  #let rec rev =
+     fun [] -> []
+       | (h::t) -> append (rev t) [h];;
+\end{verbatim}\end{black}
+
+is very inefficient, generating about {\red $n^2 / 2$} cons cells, where {\red
+$n$} is the length of the list.
+
+\end{slide*}
+
+
+
+
+
+\begin{slide*}
+
+\heading{Minimizing consing (3)}
+
+\vspace*{0.2cm}
+
+A far better version is:
+
+\begin{black}\begin{verbatim}
+  #let rev =
+     let rec reverse acc =
+       fun [] -> acc
+         | (h::t) -> reverse (h::acc) t in
+     reverse [];;
+\end{verbatim}\end{black}
+
+This only generates {\red $n$} cons cells, and has the additional merit of
+being tail recursive, so we save stack space.
+
+One can also avoid consing in pattern-matching by using {\black \tt as}, e.g.
+instead of rebuilding a cons cell:
+
+\begin{black}\begin{verbatim}
+ fun [] -> []
+   | (h::t) -> if h < 0 then t else h::t;;
+\end{verbatim}\end{black}
+
+using
+
+\begin{black}\begin{verbatim}
+ fun [] -> []
+   | (h::t as l) -> if h < 0 then t else l;;
+\end{verbatim}\end{black}
+
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Exceptions (1)}
+
+\vspace*{0.5cm}
+
+ML's errors, e.g. matching failures and division by zero, are all signalled by
+propagating {\em exceptions}:
+
+\begin{black}\begin{verbatim}
+  #1 / 0;;
+  Uncaught exception: Division_by_zero
+\end{verbatim}\end{black}
+
+In all these cases the compiler complains about an `uncaught exception'. As the
+error message suggests, it is possible to `catch' them.
+
+There is a type {\black \tt exn} of {\em exceptions}, which is effectively a
+recursive type. Unlike with ordinary types, one can add new constructors for
+the type {\black \tt exn} at any point in the program via an exception
+declaration, e.g.
+
+\begin{black}\begin{verbatim}
+  #exception Died;;
+  Exception Died defined.
+  #exception Failed of string;;
+  Exception Failed defined.
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Exceptions (2)}
+
+\vspace*{0.5cm}
+
+One can explicitly generate an exception using the {\black \tt raise}
+construct, e.g.
+
+\begin{black}\begin{verbatim}
+  #raise (Failed "I don't know why");;
+  Uncaught exception:
+    Failed "I don't know why"
+\end{verbatim}\end{black}
+
+For example, we might invent our own exception to cover the case of taking the
+head of an empty list:
+
+\begin{black}\begin{verbatim}
+  #exception Head_of_empty;;
+  Exception Head_of_empty defined.
+  #let hd = fun [] -> raise Head_of_empty
+              | (h::t) -> h;;
+  hd : 'a list -> 'a = <fun>
+\end{verbatim}\end{black}
+
+\end{slide*}
+
+\begin{slide*}
+
+\heading{Exceptions (3)}
+
+\vspace*{0.5cm}
+
+One can {\em catch} exceptions using {\black \tt try \ldots with} followed by a
+series of patterns to match exceptions, e.g.
+
+\begin{black}\begin{verbatim}
+  #let headstring sl =
+     try hd sl
+     with Head_of_empty -> ""
+        | Failed s -> "Failure because "^s;;
+  headstring : string list -> string = <fun>
+  #headstring ["hi"; "there"];;
+  - : string = "hi"
+  #headstring [];;
+  - : string = ""
+\end{verbatim}\end{black}
+
+On one view, exceptions are not really imperative features. We can imagine a
+hidden type of exceptions tacked onto the return type of each function.
+
+Anyway, they are often quite useful!
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{References (1)}
+
+\vspace*{0.5cm}
+
+ML does have real assignable variables, and expressions can, as a side-effect,
+modify the values of these variables.
+
+They are explicitly accessed via {\em references} (pointers in C parlance) and
+the pointers themselves behave more like ordinary ML values.
+
+One sets up a new assignable memory cell with the initial contents {\black \tt
+x} by writing {\black \tt ref x}. This expression returns the corresponding
+reference, i.e. a pointer to it.
+
+One manipulates the contents via the pointer.
+
+This is quite similar to C: here one often simulates `variable parameters' and
+passes back composite objects from functions via explicit use of pointers.
+
+To get at the contents of a {\black \tt ref}, use the dereferencing
+(indirection) operator {\black \tt !}. To modify its value, use {\black \tt
+:=}.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{References (2)}
+
+\vspace*{0.5cm}
+
+Here is an example of how we can create and play with a reference cell:
+
+\begin{black}\begin{verbatim}
+  #let x = ref 1;;
+  x : int ref = ref 1
+  #!x;;
+  - : int = 1
+  #x := 2;;
+  - : unit = ()
+  #!x;;
+  - : int = 2
+  #x := !x + !x;;
+  - : unit = ()
+  #x;;
+  - : int ref = ref 4
+  #!x;;
+  - : int = 4
+\end{verbatim}\end{black}
+
+In most respects {\black \tt ref} behaves like a type constructor, so one
+can pattern-match against it.
+
+\end{slide*}
+
+
+
+
+\begin{slide*}
+
+\heading{Arrays (1)}
+
+\vspace*{0.5cm}
+
+As well as individual reference cells, one can use arrays, or {\em vectors} in
+the usual CAML parlance.
+
+An array of  size {\black \tt n}, with each element initialized to {\black \tt
+x} is created using the following call
+
+\begin{black}\begin{verbatim}
+  #make_vect n x;;
+\end{verbatim}\end{black}
+
+\noindent One can then read element {\black \tt m} of a vector {\black \tt v}
+using:
+
+\begin{black}\begin{verbatim}
+  #vect_item v m;;
+\end{verbatim}\end{black}
+
+\noindent and write value {\black \tt y} to element {\black \tt m} of {\black
+\tt v} using:
+
+\begin{black}\begin{verbatim}
+  #vect_assign v m y;;
+\end{verbatim}\end{black}
+
+\noindent The elements are numbered from zero. Thus the elements of a vector of
+size {\red $n$} are {\red $0,\ldots,n-1$}.
+
+\end{slide*}
+
+
+
+\begin{slide*}
+
+\heading{Arrays (2)}
+
+\vspace*{0.5cm}
+
+Here is a simple example:
+
+\begin{black}\begin{verbatim}
+  #let v = make_vect 5 0;;
+  v : int vect = [|0; 0; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 0
+  #vect_assign v 1 10;;
+  - : unit = ()
+  #v;;
+  - : int vect = [|0; 10; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 10
+\end{verbatim}\end{black}
+
+All reading and writing is constrained by bounds checking, e.g.
+
+\begin{black}\begin{verbatim}
+  #vect_item v 5;;
+  Uncaught exception:
+    Invalid_argument "vect_item"
+\end{verbatim}\end{black}
+
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Imperative features and types}
+
+\vspace*{0.5cm}
+
+There are unfortunate interactions between references and let polymorphism.
+
+For example, according to the usual rules, the following should be valid, even
+though it writes something as an integer and reads it as a boolean:
+
+\begin{black}\begin{verbatim}
+  #let l = ref [];;
+  l : '_a list ref = ref []
+  #l := [1];;
+  #hd(!l) = true;;
+\end{verbatim}\end{black}
+
+ML places restrictions on the polymorphic type of expressions involving
+references to avoid these problems. The type is not universal in the usual
+sense, merely as yet undetermined. The first use fixes the type.
+
+\end{slide*}
+
+
+
+
+\end{document}
