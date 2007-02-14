@@ -7,7 +7,7 @@ Please keep terms in alphabet order.
   * *Church numeral(s)* - нумерал(ы) Чёрча
   * *continuation* - продолжение
   * *conversion* - конверсия (lambda-термов)
-  * *currying* - каррирование
+  * *currying* - каррирование ?? (check in Harisson/Fild)
   * *evaluation* - вычисление  ??
   * *fixpoint | fixed point [of function]* - неподвижная точка [функции]
   * *higher order function* - функция высшего порядка
