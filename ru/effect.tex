@@ -242,7 +242,7 @@ recursive function as a thinly-veiled imperative implementation. There is an
 obvious parallel with our C implementation of the factorial as an iterative
 function:
 
-\begin{verbatim}
+\begin{lstlisting}[language=C]
   int fact(int n)
   { int x = 1;
     while (n > 0)
@@ -251,7 +251,7 @@ function:
      }
     return x;
   }
-\end{verbatim}
+\end{lstlisting}
 
 The initialization {\tt x = 1} corresponds to our setting of {\tt x} to $1$ by
 an outer wrapper function {\tt fact}. The central while loop corresponds to the
@@ -276,9 +276,9 @@ used any more, and reclaim them for future applications, a process known as
 constructors for recursive types, e.g. {\tt ::}. For example, when the
 following fragment is executed:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let l = 1::[] in tl l;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent a new block of memory, called a `cons cell', is allocated to store
 the instance of the {\tt ::} constructor. Typically this might be three words
@@ -384,30 +384,30 @@ The first version creates $6$ cons cells, the second only $4$. On larger trees
 the effect can be more dramatic. Another situation where gratuitous consing can
 crop up is in pattern matching. For example, consider the code fragment:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   fun [] -> []
     | (h::t) -> if h < 0 then t else h::t;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 The `else' arm creates a cons cell even though what it constructs was in fact
 the argument to the function. That is, it is taking the argument apart and then
 rebuilding it. One simple way of avoiding this is to recode the function as:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   fun l ->
     match l with
       [] -> []
     | (h::t) -> if h < 0 then t else l;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 However ML offers a more flexible alternative: using the {\tt as} keyword, a
 name may be identified with certain components of the pattern, so that it never
 needs to be rebuilt. For example:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   fun [] -> []
     | (h::t as l) -> if h < 0 then t else l;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Forcing evaluation}
 
@@ -820,3 +820,7 @@ usage? How can this be improved dramatically by a simple change?
 and efficient, always give the same answer.
 
 \end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:

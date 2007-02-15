@@ -599,7 +599,7 @@ blues. However, the only method permitted is to swap adjacent elements. Here is
 an ML solution. The function {\tt dnf} returns `true' iff it has made a change,
 and this function is then repeated until no change occurs.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
 type colour = Red | White | Blue;;
 
 let rec dnf =
@@ -612,7 +612,7 @@ let rec dnf =
 let rec flag l =
   let l',changed = dnf l in
   if changed then flag l' else l';;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent For example:
 
@@ -654,3 +654,8 @@ prove that for all lists $l$ one has $\mbox{sorted}(\mbox{sort}\; l) =
 \mbox{true}$ and $\mbox{permuted}\; l\; (\mbox{sort}\; l) = \mbox{true}$.
 
 \end{enumerate}
+
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:

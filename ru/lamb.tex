@@ -24,11 +24,11 @@ successor function (which adds $1$ to its argument) in nontrivial ways (e.g.
 consider a pointer to it), then even though it is very simple, we need to name
 it via some function definition such as:
 
-\begin{verbatim}
+\begin{lstlisting}[language=C]
   int suc(int n)
    { return n + 1;
    }
-\end{verbatim}
+\end{lstlisting}
 
 In either mathematics or programming, this seems quite natural, and generally
 works well enough. However it can get clumsy when higher order functions
@@ -891,3 +891,7 @@ consider $A = \lamb{p} p\; K\; S\; K$ and then think about $A\; A\; A$ and $A\;
 itself a fixed point of $G$, where $G = \lamb{y\; m} m(y\; m)$.
 
 \end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:

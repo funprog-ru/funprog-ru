@@ -19,6 +19,12 @@
 \renewcommand\captionlabeldelim{.}
 \onelinecaptionstrue
 
+\usepackage{listings}
+
+%% TODO: use package t-bnf for pretty-printing BNF grammars. include
+%% class into the repository.
+%% or use another package?
+%% \usepackage{t-bnf}
 
 %%
 \usepackage{jrh}
@@ -118,6 +124,10 @@
 \frenchspacing
 \righthyphenmin=2
 \sloppy
+
+%%customize listings package
+\lstset{tabsize=2,language=ML}
+
 
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{definition}[theorem]{Definition}

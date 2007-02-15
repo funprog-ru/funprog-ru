@@ -611,9 +611,9 @@ function {\verb!atom!} should process the characters {\verb!(x + y)!} and leave
 the remaining characters {\verb!* z!}. It might return a parse tree for the
 processed expression using our earlier recursive type, and hence we would have:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   atom "(x + y) * z" = Fn("+",[Var "x"; Var "y"]),"* z"
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Since any call of the function {\verb+atom+} must be from within the function
 {\verb!mulexp!}, this second function will use the result of {\verb!atom!} and
@@ -641,7 +641,7 @@ precedence of their first characters as arithmetic operations etc. That is,
 {\verb!++!} is the strongest, {\verb!>>!} falls in the middle, and {\verb!||!}
 is the weakest; this is exactly what we want.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   exception Noparse;;
 
   let prefix || parser1 parser2 input =
@@ -662,7 +662,7 @@ is the weakest; this is exactly what we want.
   let prefix >> parser treatment input =
     let result,rest = parser input in
     treatment(result),rest;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 We will, in what follows, use the following other functions. Most of these
 have been defined above, the main exception being {\tt explode} which converts
@@ -696,7 +696,7 @@ some} accepts any item satisfying a predicate and returns it. The function {\tt
 a} is similar, but demands a particular item, and finally {\tt finished} just
 makes sure there are no items left to be parsed.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let some p =
     fun [] -> raise Noparse
       | (h::t) -> if p h then (h,t) else raise Noparse;;
@@ -705,7 +705,7 @@ makes sure there are no items left to be parsed.
 
   let finished input =
     if input = [] then 0,input else raise Noparse;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Lexical analysis}
 
@@ -716,7 +716,7 @@ translates the input string into a list of tokens. The `other' cases cover
 symbolic identifiers; they are all straightforward as they consist of just a
 single character, rather than composite ones like `{\verb!:=!}'.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   type token = Name of string | Num of string | Other of string;;
 
   let lex =
@@ -739,7 +739,7 @@ single character, rather than composite ones like `{\verb!:=!}'.
     let tokens = (several space ++ many token) >> snd in
     let alltokens = (tokens ++ finished) >> fst in
     fst o alltokens o explode;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent For example:
 
@@ -756,7 +756,7 @@ single character, rather than composite ones like `{\verb!:=!}'.
 Since we are now working at the level of tokens, we define trivial parsers to
 accept tokens of (only) a certain kind:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let name =
     fun (Name s::rest) -> s,rest
       | _ -> raise Noparse;;
@@ -768,13 +768,13 @@ accept tokens of (only) a certain kind:
   let other =
     fun (Other s::rest) -> s,rest
       | _ -> raise Noparse;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent Now we can define a parser for terms, in a form very similar to the
 original grammar. The main difference is that each production rule has
 associated with it some sort of special action to take as a result of parsing.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec atom input
          = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
                 >> (fun (((name,_),args),_) -> Fn(name,args))
@@ -799,13 +799,13 @@ associated with it some sort of special action to take as a result of parsing.
                 >> (fun ((h,_),t) -> h::t)
          || term
                 >> (fun h -> [h])) input;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent Let us package everything up as a single parsing function:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let parser = fst o (term ++ finished >> fst) o lex;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent To see it in action, we try with and without the printer (see above)
 installed:
@@ -838,42 +838,42 @@ regarded as atomic expressions, and produces a new parser for such expressions
 separated by a given operator. Note that this could also be defined using
 parsing combinators, but the function below is simple and more efficient.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec binop op parser input =
     let atom1,rest1 as result = parser input in
     if not rest1 = [] & hd rest1 = Other op then
       let atom2,rest2 = binop op parser (tl rest1) in
       Fn(op,[atom1; atom2]),rest2
     else result;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Now we define functions that pick out the infix operator in our association
 list with (equal) lowest precedence, and delete it from the list. If we
 maintained the list already sorted in precedence order, we could simply take
 the head and tail of the list.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let findmin l = itlist
     (fun (_,pr1 as p1) (_,pr2 as p2) -> if pr1 <= pr2 then p1 else p2)
     (tl l) (hd l);;
 
   let rec delete x (h::t) = if h = x then t else h::(delete x t);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent Now we can define the generic precedence parser:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec precedence ilist parser input =
     if ilist = [] then parser input else
     let opp = findmin ilist in
     let ilist' = delete opp ilist in
     binop (fst opp) (precedence ilist' parser) input;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent and hence can modify the main parser to be both simpler and more
 general:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec atom input
          = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
                 >> (fun (((name,_),args),_) -> Fn(name,args))
@@ -893,7 +893,7 @@ general:
                 >> (fun h -> [h])) input;;
 
   let parser = fst o (term ++ finished >> fst) o lex;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent for example:
 
@@ -944,30 +944,30 @@ redundancy we have mentioned, this way of constructing the parser is wasteful.
 In this case it doesn't matter much, because the duplicated call only analyzes
 one token. However the case for $termlist$ is more significant:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
     let ...
     and termlist input
          = (term ++ a (Other ",") ++ termlist
                 >> (fun ((h,_),t) -> h::t)
          || term
                 >> (fun h -> [h])) input;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Here we could reparse a whole term, which might be arbitrarily large. We can
 avoid this in several ways. One is to move the {\verb!||!} alternation to after
 the initial term has been read. A convenient way to code it is to eschew
 explicit recursion in favour of {\tt many}:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
     let ...
     and termlist input
         = term ++ many (a (Other ",") ++ term >> snd)
                 >> (fun (h,t) -> h::t) input;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent Therefore the final version of the parser is:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec atom input
          = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
                 >> (fun (((name,_),args),_) -> Fn(name,args))
@@ -983,7 +983,7 @@ explicit recursion in favour of {\tt many}:
     and termlist input
           = (term ++ many (a (Other ",") ++ term >> snd)
                 >> (fun (h,t) -> h::t)) input;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 A general defect of our approach, and recursive descent parsing generally, is
 that so-called {\em left recursion} in productions causes problems. This is
@@ -1079,10 +1079,10 @@ precision integer (and in fact rational) arithmetic. A version of CAML Light
 with this library pre-loaded is installed on Thor. Assuming you have used the
 following path setting:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}[language=sh]
   PATH="$PATH:/home/jrh13/caml/bin"
   export PATH
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent then the augmented version of CAML Light can be fired up using:
 
@@ -1198,9 +1198,9 @@ $$ |f_k(n) - 2^n k| = |2^n k - 2^n k| = 0 < 1 $$
 \noindent Now we can define the first nontrivial operation, that of unary
 negation:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_neg f n = minus_num(f n);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 The compiler generalizes the type more than intended, but this will not trouble
 us. It is almost as easy to see that the approximation criterion is preserved.
@@ -1220,9 +1220,9 @@ $$ |f_x(n) - 2^n x| < 1 $$
 Similarly, we can define an `absolute value' function on real numbers, using
 the corresponding function {\tt abs\_num} on numbers:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_abs f n = abs_num (f n);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 The correctness of this is again straightforward, using the fact that $||x| -
 |y|| \leq |x - y|$. Now consider the problem of adding two real numbers.
@@ -1302,10 +1302,10 @@ $$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4 $$
 
 \noindent Accordingly we make our definition:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_add f g n =
     (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 We can define subtraction similarly, but the simplest approach is to build it
 out of the functions that we already have:
@@ -1336,22 +1336,22 @@ $$ f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1} $$
 In order to implement this, we need a function to find the appropriate $p$. The
 following is crude but adequate:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let log2 =
     let rec log2 x y =
       if x </ Int 1 then y
       else log2 (quo_num x (Int 2)) (y + 1) in
     fun x -> log2 (x -/ Int 1) 0;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent The implementation is simply:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_intmul m x n =
      let p = log2 (abs_num m) in
      let p1 = p + 1 in
      (m */ x(n + p1)) ndiv (Int 2 **/ Int p1);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent For division by an integer, we define:
 
@@ -1363,10 +1363,10 @@ we assume $|f_x(n) - 2^n x| < 1$, so $|f_x(n) / m - 2^n x / m| < {1 \over |m|}
 \leq {1 \over 2}$, which, together with the fact that $|f_x(n) \mbox{ ndiv } m
 - f_x(n) / m| \leq {1 \over 2}$, yields the result. So we have:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_intdiv m x n =
      x(n) ndiv (Int m);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{General multiplication}
 
@@ -1431,7 +1431,7 @@ We can write this as $(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} +
 2^{p + q + 1}$, which is true because we have either $p > 0$ or $q > 0$. So at
 last we are justified in defining:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_mul x y n =
     let n2 = n + 2 in
     let r = n2 / 2 in
@@ -1445,7 +1445,7 @@ last we are justified in defining:
     and l = p + s + 1
     and m = p + q + 4 in
     (x(k) */ y(l)) ndiv (Int 2 **/ Int m);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Multiplicative inverse}
 
@@ -1506,16 +1506,16 @@ $|f_x(k)| \geq 2^e$.
 
 \noindent To implement this, we first define the {\tt msd} function:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let msd =
     let rec msd n x =
       if abs_num(x(n)) >/ Int 1 then n else msd (n + 1) x in
     msd 0;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent and then translate the above mathematics into a simple program:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_inv x n =
     let x0 = x(0) in
     let k =
@@ -1527,13 +1527,13 @@ $|f_x(k)| \geq 2^e$.
         let p = msd x in
         n + 2 * p + 1 in
     (Int 2 **/ Int (n + k)) ndiv (x(k));;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent Now, of course, it is straightforward to define division:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_div x y = real_mul x (real_inv y);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Ordering relations}
 
@@ -1558,7 +1558,7 @@ $$ 2^n x > x_n - 1 \geq y_n + 1 > 2^n y $$
 search, and then define all the orderings in terms of it. Note that the only
 way to arrive at the reflexive orderings is to justify the irreflexive version!
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let separate = 
     let rec separate n x y =
       let d = x(n) -/ y(n) in
@@ -1570,7 +1570,7 @@ way to arrive at the reflexive orderings is to justify the irreflexive version!
   let real_ge x y = real_gt x y;;
   let real_lt x y = separate x y </ Int 0;;
   let real_le x y = real_lt x y;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Caching}
 
@@ -1580,12 +1580,12 @@ using some more standard facilities in the CAML library. If $d$ decimal places
 are desired, then we make $n$ such that $2^n > 10^d$ and hence the accuracy
 corresponds at least to the number of digits printed.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let view x d =
     let n = 4 * d in
     let out = x(n) // (Int 2 **/ Int n) in
     approx_num_fix d out;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Now we can test out some simple examples, which seem to work:
 
@@ -1645,7 +1645,7 @@ Hence we are always safe in returning $f_x(n + k) \mbox{ ndiv } 2^k$. We can
 implement this memo technique via a generic function {\tt memo} to be inserted
 in each of the previous functions:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let real_of_int k = memo (fun n -> (Int 2 **/ Int n) */ Int k);;
 
   let real_neg f = memo (fun n -> minus_num(f n));;
@@ -1692,11 +1692,11 @@ in each of the previous functions:
     (Int 2 **/ Int (n + k)) ndiv (x(k)));;
 
   let real_div x y = real_mul x (real_inv y);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent where
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let memo f =
     let mem = ref (-1,Int 0) in
     fun n -> let (m,res) = !mem in
@@ -1706,7 +1706,7 @@ in each of the previous functions:
              else
                let res = f n in
                mem := (n,res); res;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Now the above sequence of multiplications is instantaneous. Here are a few more
 examples:
@@ -1761,10 +1761,10 @@ similar, but not quite the same. First of all, it simplifies some of the code
 if we treat constants as nullary functions, i.e. functions that take an empty
 list of arguments. Accordingly we define:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   type term = Var of string
             | Fn of string * (term list);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Where we would formerly have used {\verb+Const s+}, we will now use
 {\verb+Fn(s,[])+}. Note that we will treat functions of different arities
@@ -1785,15 +1785,15 @@ symbols: left and right brackets, commas and semicolons. Non-punctuation
 symbols are collected together into the longest strings possible, so symbolic
 identifiers need not consist only of one character.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   type token = Variable of string
              | Constant of string
              | Punct of string;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent The lexer therefore looks like this:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let lex =
     let several p = many (some p) in
     let collect(h,t) = h^(itlist (prefix ^) t "") in
@@ -1816,7 +1816,7 @@ identifiers need not consist only of one character.
     let tokens = (several space ++ many token) >> snd in
     let alltokens = (tokens ++ finished) >> fst in
     fst o alltokens o explode;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent For example:
 
@@ -1839,7 +1839,7 @@ be written much as in ML, e.g. `{\tt [1,2,3]}'. We also allow the Prolog
 notation `{\verb+[H|T]+}' instead of `{\verb+cons(H,T)+}', typically used for
 pattern-matching. After the basic functions:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let variable =
     fun (Variable s::rest) -> s,rest
       | _ -> raise Noparse;;
@@ -1847,7 +1847,7 @@ pattern-matching. After the basic functions:
   let constant =
     fun (Constant s::rest) -> s,rest
       | _ -> raise Noparse;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent we have a parser for terms and also for Prolog rules, of these forms:
 
@@ -1858,7 +1858,7 @@ term            & \mbox{ :- } & term,\ldots,term\mbox{.}
 
 \noindent The parsers are as follows:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec atom input
          = (constant ++ a (Punct "(") ++ termlist ++ a (Punct ")")
                 >> (fun (((name,_),args),_) -> Fn(name,args))
@@ -1897,7 +1897,7 @@ term            & \mbox{ :- } & term,\ldots,term\mbox{.}
   let parse_term = fst o (term ++ finished >> fst) o lex;;
 
   let parse_rules = fst o (many rule ++ finished >> fst) o lex;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Unification}
 
@@ -1938,7 +1938,7 @@ this idea follows. We maintain an association list giving instantiations
 already made, and we look each variable up to see if it is already assigned
 before proceeding. We use the existing instantiations as an accumulator.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec unify tm1 tm2 insts =
     match tm1 with
       Var(x) ->
@@ -1957,7 +1957,7 @@ before proceeding. We use the existing instantiations as an accumulator.
             if f1 = f2
             then itlist2 unify args1 args2 insts
             else raise (error "functions do not match");;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent where the instantiation lists need to be augmented with some care to
 avoid the so-called `occurs check' problem. We must disallow instantiation of
@@ -1965,7 +1965,7 @@ $X$ to a nontrivial term involving $X$, as in the third example above. Most
 real Prologs ignore this, either for (claimed) efficiency reasons or in order
 to allow weird cyclic datastructures instead of simple first order terms.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec occurs_in x =
     fun (Var y) -> x = y
       | (Fn(_,args)) -> exists (occurs_in x) args;;
@@ -1991,7 +1991,7 @@ to allow weird cyclic datastructures instead of simple first order terms.
     | _ -> if occurs_in v t'
            then raise (error "Occurs check")
            else raw_augment (v,t') insts;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \subsection{Backtracking}
 
@@ -2001,7 +2001,7 @@ resulting instantiations, then another initial rule is tried. Thus we consider
 the whole list of goals rather than one at a time, to give the right control
 strategy.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec first f =
     fun [] -> raise (error "No rules applicable")
       | (h::t) -> try f h with error _ -> first f t;;
@@ -2018,7 +2018,7 @@ strategy.
       let goals' = (map (subst local) asms) @
                    (tl goals) in
       expand (n + 1) rules global goals') rules;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Here we use a function `rename' to generate fresh variables for the rules each
 time:
@@ -2172,7 +2172,7 @@ It's convenient if the main part of the prover need not cope with implications
 and `if and only if's. Therefore we first define a function that eliminates
 these in favour of the other connectives.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec proc tm =
     match tm with
       Fn("~",[t]) -> Fn("~",[proc t])
@@ -2186,14 +2186,14 @@ these in favour of the other connectives.
     | Fn("forall",[x; t]) -> Fn("forall",[x; proc t])
     | Fn("exists",[x; t]) -> Fn("exists",[x; proc t])
     | t -> t;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 The next step is to push the negations down the formula, putting it into
 so-called `negation normal form' (NNF). We define two mutually recursive
 functions that create NNF for a formula, and
 its negation.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec nnf_p tm =
     match tm with
       Fn("~",[t]) -> nnf_n t
@@ -2211,7 +2211,7 @@ its negation.
     | Fn("forall",[x; t]) -> Fn("exists",[x; nnf_n t])
     | Fn("exists",[x; t]) -> Fn("forall",[x; nnf_n t])
     | t -> Fn("~",[t]);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 We will convert the negation of the input formula into negation normal form,
 and the main prover will then try to derive a contradiction from it. This will
@@ -2255,7 +2255,7 @@ instantiations and tries to solve the remaining goals under these
 instantiations. Thus, rather than explicitly trying to solve all remaining
 goals, we simply try calling the continuation.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec prove fm unexp pl nl n cont i =
     if n < 0 then raise (error "No proof") else
     match fm with
@@ -2280,11 +2280,11 @@ goals, we simply try calling the continuation.
                                 cont i') nl
            with error _ ->
               prove (hd unexp) (tl unexp) (t::pl) nl n cont i);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent We set up the final prover as follows:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let prover =
     let rec prove_iter n t =
       try let insts = prove t [] [] [] n I [] in
@@ -2293,7 +2293,7 @@ goals, we simply try calling the continuation.
           n,globinsts
       with error _ -> prove_iter (n + 1) t in
     fun t -> prove_iter 0 (nnf_n(proc(parse_term t)));;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 This implements the iterative deepening strategy. It tries to find the proof
 with the fewest universal instantiations; if it succeeds, it returns the number
@@ -2466,3 +2466,7 @@ elementary logic books, e.g. \citeN{enderton-logic}.}
 \cite{stickel-pttp}
 
 \end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
