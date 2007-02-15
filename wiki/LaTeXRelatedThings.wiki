@@ -9,9 +9,10 @@
   * which style use for code in REPL?
 
 Может так и оставить, как у них сделано?  Типа:
-
+{{{
     \begin{boxed}\begin{verbatim}
       code code code
     \end{verbatim}\end{boxed}
+}}}
 
 --lg
