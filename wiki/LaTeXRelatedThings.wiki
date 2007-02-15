@@ -1,0 +1,12 @@
+#summary LaTeX-related things and TODO
+
+= TODO =
+
+  * move BNF grammars to t-bnf or bnf.sty ?
+
+= Open Questions =
+
+  * which style use for code in REPL?
+
+
+
