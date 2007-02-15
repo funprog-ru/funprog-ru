@@ -16,3 +16,12 @@
 }}}
 
 --lg
+
+= proof.sty =
+
+  * check in proof.sty?
+
+при сборке исходников чистым тетехом всего одна
+проблема -- отсутствие proof.sty..
+
+--alexey.mikhailov
