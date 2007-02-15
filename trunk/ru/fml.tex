@@ -15,7 +15,7 @@ buffers. However, this becomes laborious and time-consuming for large programs.
 Instead, you can use ML's {\tt include} function to read in the file directly.
 For example, if the file {\tt myprog.ml} contains:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let pythag x y z =
     x * x + y * y = z * z;;
 
@@ -24,7 +24,7 @@ For example, if the file {\tt myprog.ml} contains:
   pythag 5 12 13;;
 
   pythag 1 2 3;;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \noindent then the toplevel phrase {\tt include "myprog.ml";;} results in:
 
@@ -44,7 +44,7 @@ expression itself.
 In large programs, it is often helpful to include comments. In ML, these are
 written between the symbols {\tt (*} and {\tt *)}, e.g.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   (* ------------------------------------------------------ *)
   (* This function tests if (x,y,z) is a Pythagorean triple *)
   (* ------------------------------------------------------ *)
@@ -54,7 +54,7 @@ written between the symbols {\tt (*} and {\tt *)}, e.g.
 
   (*comments*) pythag (*can*) 3 (*go*) 4 (*almost*) 5 (*anywhere*)
   (* and (* can (* be (* nested *) quite *) arbitrarily *) *);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 \section{Basic datatypes and operations}
 
@@ -86,14 +86,14 @@ with unlimited precision.} The numerals are written in the usual way,
 optionally with a negation sign, e.g. {\tt 0}, {\tt 32}, {\tt -25}.
 
 \item The type {\tt string} contains strings (i.e. finite sequences) of
-characters. They are written and printed between double quotes, e.g. {\tt
-"hello"}. In order to encode include special characters in strings, C-like
-escape sequences are used. For example, {\verb+\"+} is the double quote itself,
+characters. They are written and printed between double quotes,
+e.g. \lstinline!"hello"!. In order to encode include special characters in strings, C-like
+escape sequences are used. For example, \lstinline!"! is the double quote itself,
 and {\verb+\n+} is the newline character.
 
 \end{itemize}
 
-The above values like {\tt ()}, {\tt false}, {\tt 7} and {\tt "caml"} are all
+The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
 to be regarded as constants in the lambda calculus sense. There are other
 constants corresponding to {\em operations} on the basic types. Some of these
 may be written as infix operators, for the sake of familiarity. These have a
@@ -106,7 +106,7 @@ functions may be granted infix status via the {\tt \#infix} directive. For
 example, here is a definition of a function performing composition of
 functions:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   #let successor x = x + 1;;
   successor : int -> int = <fun>
   #let o f g = fun x -> f(g x);;
@@ -120,7 +120,7 @@ functions:
   add3' : int -> int = <fun>
   #add3' 0;;
   - : int = 3
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 It is not possible to specify the precedence of user-defined infixes, nor to
 make user-defined non-infix functions right-associative. Note that the implicit
@@ -218,7 +218,7 @@ expression    & ::= & variable       \\
               & |   & expression \; infix \; expression                         \\
               & |   & \mbox{not} \; expression                                  \\
               & |   & \mbox{if} \; expression \; \mbox{then} \; expression \; \mbox{else} \; expression  \\
-              & |   & \mbox{fun} \; pattern \; \mbox{\verb+->+} \; expression \\
+              & |   & \mbox{fun} \; pattern \; \mbox{lstinline!->!} \; expression \\
               & |   & ( expression )                                            \\
               & |   & declaration \; \mbox{in} \; expression                    \\
 declaration   & ::= & \mbox{let} \; let\_bindings \;                            \\
@@ -575,8 +575,8 @@ matching and applying it to an expression, one can perform pattern-matching
 over the expression directly using the following construction:
 
 $$ \mbox{match}\; expression\; \mbox{with}\;
-   pattern_1 \mbox{\verb+->+} E_1 \mid \cdots \mid
-   pattern_n \mbox{\verb+->+} E_n $$
+   pattern_1 \mbox{\lstinline!->!} E_1 \mid \cdots \mid
+   pattern_n \mbox{\lstinline!->!} E_n $$
 
 \noindent The simplest alternative of all is to use
 
@@ -935,7 +935,7 @@ Define functions to perform arithmetic on natural numbers in this form.
 \item Use the type definition for the syntax of lambda terms that we gave
 above. Write a function to convert an arbitrary lambda term into an equivalent
 in terms of the $S$, $K$ and $I$ combinators, based on the technique we gave
-earlier. Represent the combinators by {\tt Const "S"} etc.
+earlier. Represent the combinators by \lstinline!Const "S"! etc.
 
 \item Extend the syntax of lambda terms to a incorporate Church-style typing.
 Write functions that check the typing conditions before allowing terms to be
@@ -965,12 +965,17 @@ operator?\footnote{The answer lies in the `Curry-Howard isomorphism' --- see
 \citeN{girard-prat} for example.} What is the type of the following recursive
 function?
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let rec f i = (i o f) (i o i);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 Show how it can be used to write down ML expressions with completely
 polymorphic type $\alpha$. Can you write a terminating expression with this
 property? What about an arbitrary function type $\alpha \to \beta$?
 
 \end{enumerate}
+
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:

@@ -501,7 +501,7 @@ following example due to \citeN{mairson-ml}. The type of this expression takes
 about 10 seconds to calculate, and occupies over 4000 lines on an 80-column
 terminal.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}\begin{lstlisting}
   let pair x y = fun z -> z x y in
   let x1 = fun y -> pair y y in
   let x2 = fun y -> x1(x1 y) in
@@ -509,7 +509,7 @@ terminal.
   let x4 = fun y -> x3(x3 y) in
   let x5 = fun y -> x4(x4 y) in
   x5(fun z -> z);;
-\end{verbatim}\end{boxed}
+\end{lstlisting}\end{boxed}
 
 We have said that the ML programmer need never enter a type. This is true in
 the sense that ML will already allocate as general a type as possible to an
@@ -637,3 +637,7 @@ no integers $x$, $y$, $z$ and natural number $n > 2$ with $x^n + y^n = z^n$
 except for the trivial case where $x = 0$ or $y = 0$.
 
 \end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:

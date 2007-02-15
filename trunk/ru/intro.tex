@@ -65,7 +65,7 @@ To illustrate the distinction between imperative and functional programming,
 the factorial function might be coded imperatively in C (without using C's
 unusual assignment operations) as:
 
-\begin{verbatim}
+\begin{lstlisting}[language=C]
   int fact(int n)
   { int x = 1;
     while (n > 0)
@@ -74,16 +74,16 @@ unusual assignment operations) as:
      }
     return x;
   }
-\end{verbatim}
+\end{lstlisting}
 
 \noindent whereas it would be expressed in ML, the functional language we
 discuss later, as a recursive function:
 
-\begin{verbatim}
+\begin{lstlisting}
   let rec fact n =
     if n = 0 then 1
     else n * fact(n - 1);;
-\end{verbatim}
+\end{lstlisting}
 
 In fact, this sort of definition can be used in C too. However for more
 sophisticated uses of functions, functional languages stand in a class by
@@ -145,11 +145,11 @@ a direct interpretation as mathematical objects. Using the standard notation of
 $\sem{X}$ for `the semantics of $X$', we can say for example that
 $\sem{\mbox{int}} = \num$. Now the ML function {\tt fact} defined by:
 
-\begin{verbatim}
+\begin{lstlisting}
   let rec fact n =
     if n = 0 then 1
     else n * fact(n - 1);;
-\end{verbatim}
+\end{lstlisting}
 
 \noindent has one argument of type {\tt int}, and returns a value of type {\tt
 int}, so it can simply be associated with an abstract partial function
@@ -168,12 +168,12 @@ function {\tt rand()}, which returns different, pseudo-random values on
 successive calls. This sort of thing can be implemented by using a local static
 variable to remember the previous result, e.g:
 
-\begin{verbatim}
+\begin{lstlisting}[language=C]
   int rand(void)
   { static int n = 0;
     return n = 2147001325 * n + 715136305;
   }
-\end{verbatim}
+\end{lstlisting}
 
 Thus, one can see the abandonment of variables and assignments as the logical
 next step after the abandonment of {\tt goto}, since each step makes the
@@ -261,3 +261,7 @@ style is given by \citeN{backus-liberated}, the main inventor of FORTRAN.
 functional languages, and some solutions. Readers interested in denotational
 semantics, for imperative and functional languages, may look at
 \citeN{winskel-sem}.
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
