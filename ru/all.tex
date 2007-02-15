@@ -1,8 +1,33 @@
-\documentstyle[12pt,a4,jrh,alltt,proof]{book2}
+\documentclass[12pt]{book}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[english,russian]{babel}
+
+%%
+\usepackage{indentfirst}
+\usepackage[a4paper,hmargin={3cm,2cm},vmargin={3cm,2.5cm},twoside]{geometry}
+\usepackage{longtable,citehack,enumerate}
+\usepackage[unicode,colorlinks=true,a4paper]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+\usepackage{caption2}
+% \captionstyle{indent}%
+\renewcommand\captionfont{\normalsize}%
+% \setcaptionmargin{\leftmargin}
+% \setlength\captionindent{\parindent}
+\renewcommand\captionlabeldelim{.}
+\onelinecaptionstrue
+
+
+%%
+\usepackage{jrh}
+\usepackage{alltt}
+\usepackage{proof}
 
 \input epsf
 
-\title{\Huge \bf Introduction to Functional Programming}
+\title{\Huge \bf Введение в функциональное программирование}
 
 \author{\Large {\bf John Harrison}\\{\tt jrh@cl.cam.ac.uk}}
 
@@ -89,6 +114,10 @@
 \def\goesto{\longrightarrow}
 
 \begin{document}
+
+\frenchspacing
+\righthyphenmin=2
+\sloppy
 
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{definition}[theorem]{Definition}
