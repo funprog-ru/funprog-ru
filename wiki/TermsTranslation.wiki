@@ -23,6 +23,10 @@ Please keep terms in alphabet order.
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
+  * *domain* - область определения
+  * *codomain* - область (допустимых) значений
+  * *identity function* - тождественное отображение
+  * *const function* - константная функция ??
 
 == Discussion ==
 
