@@ -8,13 +8,17 @@ Please keep terms in alphabet order.
 запятую.
 
   * *Church numeral(s)* - нумерал(ы) Чёрча
+  * *codomain* - область (допустимых) значений
+  * *const function* - константная функция ??
   * *continuation* - продолжение
   * *conversion* - конверсия (lambda-термов)
   * *currying* - каррирование ?? (check in Harisson/Fild)
+  * *domain* - область определения
   * *eager evaluation* - энергичное вычисление
   * *evaluation* - вычисление  ??
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
   * *higher order function* - функция высшего порядка
+  * *identity function* - тождественное отображение
   * *lazy evaluation* - ленивое вычисление
   * *lambda-calculus* - $\lambda$-исчисление
   * *lambda-notation* - $\lambda$-обозначения ??
@@ -23,10 +27,6 @@ Please keep terms in alphabet order.
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
-  * *domain* - область определения
-  * *codomain* - область (допустимых) значений
-  * *identity function* - тождественное отображение
-  * *const function* - константная функция ??
 
 == Discussion ==
 
