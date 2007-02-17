@@ -9,6 +9,7 @@
   * which style use for code in REPL?
 
 Может так и оставить, как у них сделано?  Типа:
+
 {{{
     \begin{boxed}\begin{verbatim}
       code code code
@@ -22,6 +23,6 @@
   * check in proof.sty?
 
 при сборке исходников чистым тетехом всего одна
-проблема -- отсутствие proof.sty..
+проблема -- отсутствие proof.sty.. --alexey.mikhailov
 
---alexey.mikhailov
+действительно, может засунуть его в поставку? я за --lg
