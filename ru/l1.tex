@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -73,7 +76,7 @@
 {\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
 
 \newcommand{\heading}[1]%
-{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
+{\begin{center}\whiteonblack{\normalsize\bf\blueonlightgray{#1}}\end{center}}
 
 \newcommand{\emphatic}[1]{\blueonyellow{#1}}
 
@@ -83,10 +86,10 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 1}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 16 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 1}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 16 января 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -103,141 +106,216 @@
 
 \begin{document}\blue
 
-
+
 \begin{slide*}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 1}\\
-{\green Introduction and Overview}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 1}\\
+{\green Введение и Обзор}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 1}\\
+%{\green Introduction and Overview}
 \end{tabular}}
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
+
+%Topics covered:
 
 \begin{itemize}
 
-\item Imperative programming
+\item Императивное программирование
 
-\item Functional programming
+%\item Imperative programming
 
-\item The merits of functional programming
+\item Функциональное программирование
 
-\item Overview of the course
+%\item Functional programming
 
-\item Lambda notation and its benefits
+\item Достоинства функционального программирования
+
+%\item The merits of functional programming
+
+\item Обзор курса
+
+%\item Overview of the course
+
+\item $\lambda$-нотация и её польза
+
+%\item Lambda notation and its benefits
 
 \end{itemize}
 
 \end{slide*}
 
-
-
-
+
 \begin{slide*}
 
-\heading{Imperative programming}
+\heading{Императивное Программирование}
+
+%\heading{Imperative programming}
 
 \vspace*{0.5cm}
 
-Imperative (or procedural) programs rely on modifying a {\em state} by using a
-sequence of {\em commands}.
+Императивные (или процедурные) программы изменяют {\em состояние} с
+помощью последовательности {\em команд} для исполнения.
 
-The state is mainly modified by the {\em assignment} command, written {\red \tt
-v = E} or {\red \tt v := E}.
+%Imperative (or procedural) programs rely on modifying a {\em state}
+%by using a sequence of {\em commands}.
 
-We can execute one command before another by writing them in sequence, perhaps
-separated by a semicolon: {\red $C_1 \mbox{ ; } C_2$}.
+Состояние в основном изменяется при помощи команд {\em присваивания},
+таких как \mbox{{\red \tt v = E}} или \mbox{{\red \tt v := E}}.
 
-Commands can be executed conditionally using {\red \tt if}, and repeatedly
-using {\red \tt while}.
+% The state is mainly modified by the {\em assignment} command,
+% written {\red \tt v = E} or {\red \tt v := E}.
 
-Programs are a series of instructions on how to modify the state.
+Мы можем выполнить одну команду за другой, написав их последовательно;
+разделив, например, точкой с запятой: {\red $C_1 \mbox{ ; } C_2$}.
 
-Imperative languages, e.g. {\black FORTRAN}, {\black Algol}, {\black C},
-{\black Modula-3} support this style of programming.
+%We can execute one command before another by writing them in
+%sequence, perhaps separated by a semicolon: {\red $C_1 \mbox{ ; }
+%C_2$}.
+
+Команды выполняются условно при помощи {\red \tt if}, и циклично при
+помощи {\red \tt while}.
+
+%Commands can be executed conditionally using {\red \tt if}, and
+%repeatedly using {\red \tt while}.
+
+Программа - последовательность инструкций по изменению состояния.
+
+%Programs are a series of instructions on how to modify the state.
+
+Императивные языки программирования, такие как {\black FORTRAN},
+{\black Algol}, {\black C}, {\black Modula-3}, поддерживают такой стиль
+программирования.
+
+%Imperative languages, e.g. {\black FORTRAN}, {\black Algol}, {\black
+%C}, {\black Modula-3} support this style of programming.
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{An abstract view}
+\heading{Абстрактный вид}
 
 \vspace*{0.5cm}
 
-We ignore input-output operations, and assume that a program runs for a limited
-time, producing a result.
+Забудем про операции ввода-вывода и допустим, что программа работает
+конечное время для выработки результата.
 
-We can consider the execution in an abstract way as:
+%We ignore input-output operations, and assume that a program runs for
+%a limited time, producing a result.
+
+Рассмотрим выполнение в абстрактном виде:
+
+%We can consider the execution in an abstract way as:
 
 {\red $$ \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n $$}
 
-The program is started with the computer in an initial state {\red $\sigma_0$},
-including the inputs to the program.
+Программа стартует в начальном состоянии компьютера {\red $\sigma_0$},
+с учётом ввода для программы.
 
-The program finishes with the computer in a final state {\red $\sigma_n$},
-containing the output(s) of the program.
+%The program is started with the computer in an initial state {\red
+%$\sigma_0$}, including the inputs to the program.
 
-The state passes through a finite sequence of changes to get from {\red
-$\sigma_0$} to {\red $\sigma_n$}; in general, each command may modify the
-state.
+После завершения программы компьютер оказывается в состоянии {\red
+$\sigma_n$}, с учётом вывода программы.
+
+%The program finishes with the computer in a final state {\red
+%$\sigma_n$}, containing the output(s) of the program.
+
+Состояние изменяется конечное число раз из {\red $\sigma_0$} в {\red
+$\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
+
+%The state passes through a finite sequence of changes to get from
+%{\red $\sigma_0$} to {\red $\sigma_n$}; in general, each command may
+%modify the state.
 
 \end{slide*}
 
-
-
+
 \begin{slide*}
 
-\heading{Functional programming}
+\heading{Функциональное программирование}
 
 \vspace*{0.2cm}
 
-A functional program is simply an {\em expression}, and executing the program
-means {\em evaluating} the expression.
+Функциональная программа - это просто {\em выражение}, а выполнение
+программы - это {\em вычисление} выражения.
+
+%A functional program is simply an {\em expression}, and executing the
+%program means {\em evaluating} the expression.
 
 \begin{itemize}
 
-\item There is no state, i.e. there are {\red no variables}.
+\item Нет состояний, то есть {\red нет переменных}.
 
-\item Therefore there is {\red no assignment}, since there's nothing to assign
-to.
+%\item There is no state, i.e. there are {\red no variables}.
 
-\item And there is {\red no sequencing} and {\red no repetition}, since one
-expression does not affect another.
+\item Поэтому {\red нет присваивания}, ибо не к чему присваивать.
+
+%\item Therefore there is {\red no assignment}, since there's nothing
+%      to assign to.
+
+\item Нет {\red последовательности исполнения} и {\red нет циклов},
+      вычисление одного выражения не влияет на вычисление другого.
+
+%\item And there is {\red no sequencing} and {\red no repetition},
+%      since one expression does not affect another.
 
 \end{itemize}
 
-But on the positive side:
+С другой стороны:
+
+%But on the positive side:
 
 \begin{itemize}
 
-\item We can have {\red recursive functions}, giving something comparable to
-repetition.
+\item Мы можем задавать {\red рекурсивные функции}, создавая что-то
+      наподобие циклов.
 
-\item Functions can be used much more flexibly, e.g. we can have {\red higher
-order functions}.
+%\item We can have {\red recursive functions}, giving something
+%      comparable to repetition.
+
+\item Более гибкое использование функций, например мы можем задавать
+      {\red функции высшего порядка}.
+
+%\item Functions can be used much more flexibly, e.g. we can have
+%      {\red higher order functions}.
 
 \end{itemize}
 
-Functional languages support this style of programming.
+Функциональные языки поддерживают такой стиль программирования.
 
+%Functional languages support this style of programming.
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{Example: the factorial}
+\heading{Пример: факториал}
+
+%\heading{Example: the factorial}
 
 \vspace*{0.5cm}
 
-The factorial function can be written imperatively in C as follows:
+Мы можем задать функцию для вычисления факториала в императивном стиле
+на языке C следующим образом:
+
+%The factorial function can be written imperatively in C as follows:
 
 \begin{red}\begin{verbatim}
   int fact(int n)
@@ -250,7 +328,10 @@ The factorial function can be written imperatively in C as follows:
   }
 \end{verbatim}\end{red}
 
-\noindent whereas it would be expressed in ML as a recursive function:
+\noindent тогда как на ML зададим рекурсивную функцию:
+
+%\noindent whereas it would be expressed in ML as a recursive
+%function:
 
 \begin{red}\begin{verbatim}
   let rec fact n =
@@ -260,73 +341,117 @@ The factorial function can be written imperatively in C as follows:
 
 \end{slide*}
 
-
-
+
 \begin{slide*}
 
-\heading{Why?}
+\heading{Зачем?}
 
 \vspace*{0.5cm}
 
-At first sight a language without variables, assignment and sequencing looks
-very impractical.
+На первый взгляд языки без переменных и присваивания выглядят совсем
+непрактично.
 
-We will show in this course how a lot of interesting programming can be done in
-the functional style.
+%At first sight a language without variables, assignment and
+%sequencing looks very impractical.
 
-Imperative programming languages have arisen as an abstraction of the hardware,
-from machine code, through assemblers and macro assemblers, to FORTRAN and
-beyond.
+В этом курсе мы покажем, как много интересного можно сделать, используя
+функциональный стиль программирования.
 
-Perhaps this is the wrong approach and we should approach the task from the
-human side. Maybe functional languages are better suited to people.
+%We will show in this course how a lot of interesting programming can
+%be done in the functional style.
 
-But what concrete reasons are there for preferring functional languages?
+Императивные языки были созданы как абстракция над ''железом'' - от
+машинного кода, ассемблеров и макро-ассемблеров до FORTRANа и ему
+подобных.
 
-\end{slide*}
+%Imperative programming languages have arisen as an abstraction of the
+%hardware, from machine code, through assemblers and macro assemblers,
+%to FORTRAN and beyond.
 
+Возможно это ошибочный подход, и нам следует смотреть на задачу
+глазами человека.  Возможно, что функциональные языки больше подходят
+для людей.
 
+%Perhaps this is the wrong approach and we should approach the task
+%from the human side. Maybe functional languages are better suited to
+%people.
 
-\begin{slide*}
+Но каковы конкретные причины, чтобы предпочесть функциональные
+языки?
 
-\heading{Merits of functional programming}
-
-\vspace*{1.0cm}
-
-By avoiding variables and assignments, we gain the following advantages:
-
-\begin{itemize}
-
-\item Clearer semantics. Programs correspond more directly to abstract
-mathematical objects.
-
-\item More freedom in implementation, e.g. parallelizability.
-
-\end{itemize}
-
-By the more flexible use of functions, we gain:
-
-\begin{itemize}
-
-\item Conciseness and elegance.
-
-\item Better parametrization and modularity of programs.
-
-\item Convenient ways of representing infinite data.
-
-\end{itemize}
+%But what concrete reasons are there for preferring functional
+%languages?
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{Denotational semantics}
+\heading{
+\begin{tabular}{c}
+{Достоинства функционального}\\
+{программирования}
+\end{tabular}}
+
+%\heading{Merits of functional programming}
 
 \vspace*{0.5cm}
 
-We can identify our ML factorial function with an abstract mathematical
-(partial) function {\red $\num \to \num$}:
+Без переменных и присваивания мы имеем следующие преимущества:
+
+%By avoiding variables and assignments, we gain the following
+%advantages:
+
+\begin{itemize}
+
+\item Более ясную семантику.  Программы  больше соответствуют
+      абстрактным математическим объектам.
+
+%\item Clearer semantics. Programs correspond more directly to
+%      abstract mathematical objects.
+
+\item Б\'{о}льшая свобода исполнения, т.е. распараллеливаемость.
+
+%\item More freedom in implementation, e.g. parallelizability.
+
+\end{itemize}
+
+Используя функции более гибко, мы имеем:
+
+%By the more flexible use of functions, we gain:
+
+\begin{itemize}
+
+\item Выразительность и элегантность.
+
+%\item Conciseness and elegance.
+
+\item Лучшая параметризация и модульность программ.
+
+%\item Better parametrization and modularity of programs.
+
+\item Удобный способ представления бесконечных данных.
+
+%\item Convenient ways of representing infinite data.
+
+\end{itemize}
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Денотационная семантика}
+
+%\heading{Denotational semantics}
+
+\vspace*{0.5cm}
+
+Функцию факториала на ML мы можем представить как
+математическую (частичную) функцию {\red $\num \to \num$}:
+
+%We can identify our ML factorial function with an abstract
+%mathematical (partial) function {\red $\num \to \num$}:
 
 \begin{red}
 $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
@@ -335,11 +460,18 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
                           \end{array} \right. $$
 \end{red}
 
-\noindent where {\red $\bot$} denotes undefinedness, since for negative
-arguments, the program fails to terminate.
+\noindent где {\red $\bot$} - неопределённость.
 
-Once we have a state, this simple interpretation no longer works. Here is a C
-`function' that doesn't correspond to any mathematical function:
+%\noindent where {\red $\bot$} denotes undefinedness, since for
+%negative arguments, the program fails to terminate.
+
+Если у нас появляется состояние, то такое представление не работает.
+Вот `функция' на C, которой не соответствует ни одна математическая
+функция:
+
+%Once we have a state, this simple interpretation no longer
+%works. Here is a C `function' that doesn't correspond to any
+%mathematical function:
 
 \begin{red}\begin{verbatim}
   int rand(void)
@@ -348,322 +480,508 @@ Once we have a state, this simple interpretation no longer works. Here is a C
   }
 \end{verbatim}\end{red}
 
-This gives different results on successive calls!
+Она выдаёт различные значения при успешных вызовах!
+
+%This gives different results on successive calls!
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{Semantics of imperative programs}
+\heading{Семантика императивных программ}
+
+%\heading{Semantics of imperative programs}
 
 \vspace*{0.5cm}
 
-In order to give a corresponding semantics to imperative programs, we need to
-make the state explicit. For example we can model commands as:
+Чтобы создать надлежащую семантику для императивных программ, нам
+необходимо чётко определить состояние.  Например, мы можем задать
+команды как:
+
+%In order to give a corresponding semantics to imperative programs, we need to
+%make the state explicit. For example we can model commands as:
 
 \begin{itemize}
 
-\item Partial functions {\red $\Sigma \to \Sigma$} (Strachey)
+\item Частичные функции {\red $\Sigma \to \Sigma$} (Strachey)
 
-\item Relations on {\red $\Sigma \times \Sigma$} (Hoare)
+%\item Partial functions {\red $\Sigma \to \Sigma$} (Strachey)
 
-\item Predicate transformers, i.e. total functions {\red $(\Sigma \to bool) \to
-(\Sigma \to bool)$} (Dijkstra)
+\item Отношения {\red $\Sigma \times \Sigma$} (Hoare)
+
+%\item Relations on {\red $\Sigma \times \Sigma$} (Hoare)
+
+\item Предикатные преобразователи, то есть всюду определенные функции
+      {\red $(\Sigma \to bool) \to (\Sigma \to bool)$} (Dijkstra)
+
+%\item Predicate transformers, i.e. total functions {\red $(\Sigma \to
+%bool) \to (\Sigma \to bool)$} (Dijkstra)
 
 \end{itemize}
 
-If we allow the {\red \tt goto} statement, even these are not enough, and we
-need a semantics based on {\em continuations} (Wadsworth, Morris).
+Даже если позволить инструкцию {\red \tt goto}, то этого мало и нам
+нужна семантика, основанная на {\em продолжениях} (Wadsworth, Morris).
 
-All these methods are quite complicated.
+%If we allow the {\red \tt goto} statement, even these are not enough,
+%and we need a semantics based on {\em continuations} (Wadsworth,
+%Morris).
 
-With functional programs, we have a real chance of proving their correctness,
-or the correctness of certain transformations or optimizations.
+Все эти методы достаточно сложны.
+
+%All these methods are quite complicated.
+
+В функциональных программах у нас есть возможность проверить их
+корректность, или корректность конкретных преобразований, или
+оптимизаций.
+
+%With functional programs, we have a real chance of proving their
+%correctness, or the correctness of certain transformations or
+%optimizations.
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{Problems with functional programs}
+\heading{
+\begin{tabular}{c}
+{Проблемы с функциональными}\\
+{программами}
+\end{tabular}}
 
-\vspace*{0.5cm}
+Функциональное программирование не без недостатков.  Некоторые вещи
+сложнее всунуть в чисто функциональную модель, типа:
 
-Functional programming is not without its deficiencies. Some things are harder
-to fit into a purely functional model, e.g.
+%Functional programming is not without its deficiencies. Some things
+%are harder to fit into a purely functional model, e.g.
 
 \begin{itemize}
 
-\item Input-output
+\item Ввод-вывод
 
-\item Interactive or continuously running programs (e.g. editors, process
-controllers).
+%\item Input-output
+
+\item Интерактивные или постоянно запущенные программы (редакторы и
+      др.)
+
+%\item Interactive or continuously running programs (e.g. editors,
+%process controllers).
 
 \end{itemize}
 
-However, in many ways, infinite data structures can be used to accommodate
-these things.
+Зачастую, чтобы добиться всего этого, можно использовать бесконечные
+структуры данных.
 
-Functional languages also correspond less closely to current hardware, so they
-can be less efficient, and it can be hard to reason about their time and space
-usage.
+%However, in many ways, infinite data structures can be used to
+%accommodate these things.
 
-ML is not a pure functional language, so you can use variables and assignments
-if required. However most of our work is in the pure functional subset.
+Функциональные языки также меньше соответствуют современному железу,
+поэтому они могут быть менее эффективны и в них может быть сложнее
+обосновать время исполнения и затраченные ресурсы.
+
+%Functional languages also correspond less closely to current
+%hardware, so they can be less efficient, and it can be hard to reason
+%about their time and space usage.
+
+ML не чисто функциональный язык, поэтому вы можете присваивать
+переменные, если потребуется.  Большинство наших программ написано на
+чисто функциональной его части.
+
+%ML is not a pure functional language, so you can use variables and
+%assignments if required. However most of our work is in the pure
+%functional subset.
 
 \end{slide*}
 
-
-
+
 \begin{slide*}
 
-\heading{Overview of the course (1)}
+\heading{Обзор курса (1)}
+
+%\heading{Overview of the course (1)}
 
 \vspace*{0.5cm}
 
-We start with the theoretical underpinning, $\lambda$-calculus, and move up to
-the practical business of programming in ML.
+Мы начнём с теоретического фундамента - $\lambda$-исчисления, и
+дойдём до практического применения программирования на ML.
 
-Roughly $1 \over 3$ of the course is devoted to the theoretical parts, and $2
-\over 3$ to the practical parts.
+%We start with the theoretical underpinning, $\lambda$-calculus, and
+%move up to the practical business of programming in ML.
 
-The theoretical parts are:
+Ориентировочно треть курса посвящена теории и две трети практике.
+
+%Roughly $1 \over 3$ of the course is devoted to the theoretical
+%parts, and $2 \over 3$ to the practical parts.
+
+Теоретические части:
+
+%The theoretical parts are:
 
 \begin{enumerate}
 
-\item Introduction and overview (this lecture)
+\item Введение и обзор (эта лекция)
 
-\item $\lambda$-calculus as a formal system
+%\item Introduction and overview (this lecture)
 
-\item $\lambda$-calculus as a programming language
+\item $\lambda$-исчисление как формальная система
 
-\item Types
+%\item $\lambda$-calculus as a formal system
+
+\item $\lambda$-исчисление как язык программирования
+
+%\item $\lambda$-calculus as a programming language
+
+\item Типы
+
+%\item Types
 
 \end{enumerate}
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\heading{Overview of the course (2)}
+\heading{Обзор курса (2)}
+
+%\heading{Overview of the course (2)}
 
 \vspace*{0.5cm}
 
-The practical or `applied' parts of the course are:
+Практические или `прикладные' части курса:
+
+%The practical or `applied' parts of the course are:
 
 \begin{enumerate}
 
-\item Introduction to ML
+\item Введение в ML
 
-\item More about polymorphism
+%\item Introduction to ML
 
-\item Recursive types
+\item Разбор полиморфизма
 
-\item Proofs about programs
+%\item More about polymorphism
 
-\item Further ML
+\item Рекурсивные типы
 
-\item Other styles of functional programming
+%\item Recursive types
 
-\item ML examples (1)
+\item Доказательства программ
 
-\item ML examples (2)
+%\item Proofs about programs
+
+\item Продвинутый ML
+
+%\item Further ML
+
+\item Другие стили программирования
+
+%\item Other styles of functional programming
+
+\item Примеры на ML (1)
+
+%\item ML examples (1)
+
+\item Примеры на ML (2)
+
+%\item ML examples (2)
 
 \end{enumerate}
 
 \end{slide*}
 
-
+
 \begin{slide*}
 
-\vspace*{0.5cm}
+\heading{$\lambda$-нотация}
 
-\heading{Lambda notation}
+$\lambda$-нотация - это способ задавать функции, изобретённый Алонзо
+Чёрчем в 1930 году.  Мы пишем:
 
-Lambda notation is a way of denoting functions, invented by Alonzo Church in
-the 1930s. We write:
+%Lambda notation is a way of denoting functions, invented by Alonzo
+%Church in the 1930s. We write:
 
 {\red $$ \lamb{x} E[x] $$ }
 
-to denote `the function of {\red $x$} that yields {\red $E[x]$}'. Here {\red
-$E[x]$} is any expression which may or may not contain {\red $x$}.
+чтобы определить `функцию от {\red $x$}, которая выдаёт {\red
+$E[x]$}'.  Где {\red $E[x]$} это выражение, которое содержит или не
+содержит {\red $x$}.
 
-For example {\red $\lamb{x} x$} is the identity function, which simply returns
-its argument, while {\red $\lamb{x} x^2$} is the squaring function.
+%to denote `the function of {\red $x$} that yields {\red
+%$E[x]$}'. Here {\red $E[x]$} is any expression which may or may not
+%contain {\red $x$}.
 
-The letter {\red $\lambda$} is arbitrary, a historical accident. Originally
-Church used {\red $\hat{x}.\; E[x]$}, and a series of typesetting errors
-transformed it into the present form. One also sees {\red $x \mapsto E[x]$}
-and {\red $[x]\; E[x]$}.
+Например, {\red $\lamb{x} x$} это функция тождественного отображения,
+которая возвращает заданный аргумент, а {\red $\lamb{x} x^2$} это
+функция возведения в квадрат.
 
-\end{slide*}
+%For example {\red $\lamb{x} x$} is the identity function, which
+%simply returns its argument, while {\red $\lamb{x} x^2$} is the
+%squaring function.
 
+Литера {\red $\lambda$} - историческая случайность. Изначально Чёрч
+использовал {\red $\hat{x}.\; E[x]$}, а серия ошибок набора превратило
+это в нынешнюю форму. Иногда также пишут {\red $x \mapsto E[x]$} и
+{\red $[x]\; E[x]$}.
 
-\begin{slide*}
-
-\vspace*{1.0cm}
-
-\heading{Why?}
-
-In informal mathematics, when talking about a function, one normally gives it a
-name: `define {\red $f(x) = E[x]$} \ldots then {\red $\cdots f \cdots$}'.
-
-Similarly, most programming languages will only let you define functions if you
-are prepared to give them a name.
-
-This approach is rather inconsistent. It means we are not treating functions on
-a par with other mathematical objects. We don't say:
-
-\begin{quote}
-Define {\red $x$} and {\red $y$} by {\red $x = 2$} and {\red $y = 4$}
-respectively. Then {\red $x x = y$}
-\end{quote}
-
-Lambda notation helps to put functions on an equal footing. This is important
-in functional programming.
+%The letter {\red $\lambda$} is arbitrary, a historical
+%accident. Originally Church used {\red $\hat{x}.\; E[x]$}, and a
+%series of typesetting errors transformed it into the present
+%form. One also sees {\red $x \mapsto E[x]$} and {\red $[x]\; E[x]$}.
 
 \end{slide*}
 
-
+
 \begin{slide*}
+
+\heading{Зачем?}
+
+%\heading{Why?}
 
 \vspace*{0.5cm}
 
-\heading{Benefits of $\lambda$-notation}
+В неформальной математике, когда мы говорим о функции, то обычно именуем
+её: `Пусть {\red $f(x) = E[x]$} \ldots тогда {\red $\cdots f
+\cdots$}'.
 
-The $\lambda$-notation can be useful too in order to make mathematics clearer.
+%In informal mathematics, when talking about a function, one normally gives it a
+%name: `define {\red $f(x) = E[x]$} \ldots then {\red $\cdots f \cdots$}'.
 
-When we discuss {\red $x + x y$}, we are often vague about whether we mean the
-value for a particular {\red $x$}, or a function of {\red $x$} (or {\red $y$}
-\ldots). Using $\lambda$-notation this can be made explicit.
+Также, большинство языков программирования позволяют задать функцию
+только, если она будет именована.
 
-In fact, using just:
+% Similarly, most programming languages will only let you define
+% functions if you are prepared to give them a name.
+
+Такой подход не совсем оправдан.  Он означает, что мы не рассматриваем
+функции наравне с другими математическими объектами.  Мы не говорим:
+
+% This approach is rather inconsistent. It means we are not treating
+% functions on a par with other mathematical objects. We don't say:
+
+\begin{quote}
+Определим {\red $x$} и {\red $y$} как {\red $x = 2$} и {\red $y = 4$}
+соответственно. Тогда {\red $x x = y$}
+\end{quote}
+
+%\begin{quote}
+%Define {\red $x$} and {\red $y$} by {\red $x = 2$} and {\red $y = 4$}
+%respectively. Then {\red $x x = y$}
+%\end{quote}
+
+$\lambda$-нотация помогает привести функции в равное положение.  Это
+важно в функциональном программировании.
+
+%Lambda notation helps to put functions on an equal footing. This is
+%important in functional programming.
+
+\end{slide*}
+
+
+\begin{slide*}
+
+\heading{Преимущества $\lambda$-нотации}
+
+%\heading{Benefits of $\lambda$-notation}
+
+\vspace*{0.5cm}
+
+$\lambda$-нотация также полезна для улучшения ясности математики.
+
+%The $\lambda$-notation can be useful too in order to make mathematics
+%clearer.
+
+Когда мы говорим {\red $x + x y$}, то часто не разъясняем, является ли
+это выражение определённым значением для конкретного {\red $x$} или
+это функция от {\red $x$} (или {\red $y$} \ldots).  Используя
+$\lambda$-нотацию мы можем задать это явно.
+
+%When we discuss {\red $x + x y$}, we are often vague about whether we
+%mean the value for a particular {\red $x$}, or a function of {\red
+%$x$} (or {\red $y$} \ldots). Using $\lambda$-notation this can be
+%made explicit.
+
+Вообще, используя только:
+
+%In fact, using just:
 
 \begin{itemize}
 
-\item Variables, e.g. {\red $x$}, {\red $y$}.
+\item Переменные, то есть {\red $x$}, {\red $y$}.
 
-\item Constants, e.g. {\red $3$}, {\red $true$}, {\red $+$}.
+%\item Variables, e.g. {\red $x$}, {\red $y$}.
 
-\item Applications of functions to arguments, e.g. {\red $f\; x$}.
+\item Константы, то есть {\red $3$}, {\red $true$}, {\red $+$}.
 
-\item Lambda abstractions of expressions over variables, e.g. {\red $\lamb{x} x
-+ y$}
+%\item Constants, e.g. {\red $3$}, {\red $true$}, {\red $+$}.
+
+\item Применение функции к аргументам, то есть {\red $f\; x$}.
+
+%\item Applications of functions to arguments, e.g. {\red $f\; x$}.
+
+\item $\lambda$-абстракция выражения над переменными, то есть {\red
+      $\lamb{x} x + y$}
+
+%\item Lambda abstractions of expressions over variables, e.g. {\red
+%$\lamb{x} x + y$}
 
 \end{itemize}
 
-we reach a general `abstract syntax' for mathematics.
+мы составим основной `абстрактный синтаксис' математики.
+
+%we reach a general `abstract syntax' for mathematics.
 
 \end{slide*}
 
-
-
+
 \begin{slide*}
 
-\vspace*{0.5cm}
+\heading{Каррирование}
 
-\heading{Currying}
+%\heading{Currying}
 
-We can have functions of more than one argument by using, for example
+У нас могут быть функции от двух и более аргументов, например
 {\red $\lamb{x} \lamb{y} x + y$}.
 
-We can think of this as a function {\red $\num \to (\num \to \num)$}. When
-given one argument, say {\red $2$}, it returns a function {\red $\num \to
-\num$} that adds {\red $2$} to its argument, and this takes the second
-argument. This device is known as {\em currying}, after Haskell Curry.
+%We can have functions of more than one argument by using, for example
+%{\red $\lamb{x} \lamb{y} x + y$}.
 
-We adopt the conventions that {\red $\lamb{x\; y} E[x,y]$} means {\red
-$\lamb{x} \lamb{y} E[x,y]$}, and that function application associates to the
-left, e.g. that {\red $f\; x\; y$} means {\red $(f(x))(y)$}. This supports the
-use of currying, e.g.
+Мы можем думать о ней как о функции от одного аргумента {\red $\num
+  \to (\num \to \num)$}.  Если дан аргумент, допустим {\red $2$}, то
+она возвращает функцию от одного аргумента {\red $\num \to \num$},
+которая прибавляет {\red $2$} к своему аргументу.  Этот принцип
+известен как {\em каррирование}, в честь Хаскела Карри.
+
+%We can think of this as a function {\red $\num \to (\num \to \num)$}. When
+%given one argument, say {\red $2$}, it returns a function {\red $\num \to
+%\num$} that adds {\red $2$} to its argument, and this takes the second
+%argument. This device is known as {\em currying}, after Haskell Curry.
+
+Примем соглашение, что {\red $\lamb{x\; y} E[x,y]$} означает {\red
+$\lamb{x} \lamb{y} E[x,y]$}, и что функция применяется всегда к левому
+аргументу, то есть {\red $f\; x\; y$} означает {\red $(f(x))(y)$}.
+Это поддерживает каррирование, то есть
+
+%We adopt the conventions that {\red $\lamb{x\; y} E[x,y]$} means {\red
+%$\lamb{x} \lamb{y} E[x,y]$}, and that function application associates to the
+%left, e.g. that {\red $f\; x\; y$} means {\red $(f(x))(y)$}. This supports the
+%use of currying, e.g.
 
 {\red $$ (\lamb{x\; y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$}
 
-Note that the brackets round function arguments are optional.
+Заметим что скобки опциональны.
+
+%Note that the brackets round function arguments are optional.
 
 \end{slide*}
 
-
+
 \begin{slide*}
+
+\heading{Связывание переменных}
+
+%\heading{Variable binding}
 
 \vspace*{0.5cm}
 
-\heading{Variable binding}
-
-Many constructs in mathematics {\em bind} variables. The variable {\red $x$} in
+Многие конструкции в математике {\em связывают} переменные.  Переменная
+{\red $x$} в 
+%Many constructs in mathematics {\em bind} variables. The variable {\red $x$} in
 
 {\red $$ \int_0^a 3 x^2 \; dx $$}
 
-is bound, whereas {\red $a$} is free; likewise {\red $n$} is bound and {\red
-$k$} free in
+связана, тогда как {\red $a$} свободна; также {\red $n$} связана, а
+{\red $k$} свободна в
+
+%is bound, whereas {\red $a$} is free; likewise {\red $n$} is bound and {\red
+%$k$} free in
 
 {\red $$ \Sigma_{n=0}^k n^2 $$}
 
-Free and bound variables can be quite complicated, as we shall see. Using
-$\lambda$-notation, all these variable binding constructs can be broken down so
-that the only binding operation is $\lambda$-abstraction.
+Мы увидим, что свободные и связанные переменные могут быть достаточно
+сложными.  Используя $\lambda$-нотацию, все эти конструкции связывания
+переменных могут быть разбиты таким образом, что единственной операцией
+связывания будет $\lambda$-абстракция.
+
+%Free and bound variables can be quite complicated, as we shall see. Using
+%$\lambda$-notation, all these variable binding constructs can be broken down so
+%that the only binding operation is $\lambda$-abstraction.
 
 \end{slide*}
 
-
-
+
 \begin{slide*}
 
-\vspace*{0.5cm}
+\heading{Пример дифференцирования}
 
-\heading{Example of differentiation}
+%\heading{Example of differentiation}
 
-For example, the everyday construct {\red ${d \over dx} x^2$} can be analyzed
-as follows:
+Например, общепринятая конструкция {\red ${d \over dx} x^2$} может быть
+разложена как:
+
+%For example, the everyday construct {\red ${d \over dx} x^2$} can be analyzed
+%as follows:
 
 {\red $$ D\; (\lamb{x} \mbox{EXP } x\; 2)\; x $$}
 
-where {\red $D$} is the (curried) differentiation operator {\red $(\real \to
-\real) \to \real \to \real$} giving the derivative of its first argument at the
-point indicated by its second argument, and {\red $\mbox{EXP}$} the
-exponentiation function.
+где {\red $D$} (каррированный) оператор дифференцирования {\red $(\real \to
+\real) \to \real \to \real$}, возвращающий производную его первого аргумента
+в точке, заданной вторым аргументом, а {\red $\mbox{EXP}$} - функция
+возведения в степень.
 
-So there are really two instances of {\red $x$} here, one bound, one free. The
-same occurs in
+%where {\red $D$} is the (curried) differentiation operator {\red $(\real \to
+%\real) \to \real \to \real$} giving the derivative of its first argument at the
+%point indicated by its second argument, and {\red $\mbox{EXP}$} the
+%exponentiation function.
+
+Получается, что тут две переменные {\red $x$}, одна связана, а другая
+нет.  Аналогично в
+
+%So there are really two instances of {\red $x$} here, one bound, one free. The
+%same occurs in
 
 {\red $$ \int_0^x 2 x \; dx $$}
 
-but here the everyday notation separates the two properly.
+в данном случае общепринятая запись корректно разделяет их.
+
+%but here the everyday notation separates the two properly.
 
 \end{slide*}
 
-
-
-
-
+
 \begin{slide*}
+
+\heading{Парадокс Рассела}
+
+%\heading{Russell's paradox}
 
 \vspace*{0.5cm}
 
-\heading{Russell's paradox}
+Изначально Чёрч надеялся использовать $\lambda$-нотацию как основу
+математики, введя константы для логических операций, то есть чтобы
+{\red $\Not$} означало `не'.  К сожалению, у него не получилось, ибо
+определяя {\red $R = \lamb{x} \Not\; (x\; x)$} мы получаем:
 
-Originally, Church hoped to use $\lambda$-notation to give a foundation for
-mathematics, by introducing constants for logical operations, e.g. {\red
-$\Not$} to mean `not'. Unfortunately this turned out to be inconsistent,
-because defining {\red $R = \lamb{x} \Not\; (x\; x)$} we have:
+%Originally, Church hoped to use $\lambda$-notation to give a foundation for
+%mathematics, by introducing constants for logical operations, e.g. {\red
+%$\Not$} to mean `not'. Unfortunately this turned out to be inconsistent,
+%because defining {\red $R = \lamb{x} \Not\; (x\; x)$} we have:
 
 {\red $$ R\; R = (\lamb{x} \Not\; (x\; x)) \; R = \Not\; (R\; R) $$}
 
-We know there is a correspondence between sets and their characteristic
-function, so if we think of {\red $s\;x$} as meaning {\red $x \in s$}, this is
-simply the well known Russell paradox of the set of all sets that do not
-contain themselves:
+Как мы знаем, существует соответствие между множествами и их
+характеристической функцией, поэтому, если думать о {\red $s\;x$} как о
+{\red $x \in s$}, то получается хорошо известный парадокс Рассела о
+множестве всех множеств, не содержащих себя.
+
+%We know there is a correspondence between sets and their characteristic
+%function, so if we think of {\red $s\;x$} as meaning {\red $x \in s$}, this is
+%simply the well known Russell paradox of the set of all sets that do not
+%contain themselves:
 
 {\red $$ R = \{x \mid x \not\in x\} $$}
 
 \end{slide*}
 
-
-
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
