@@ -43,6 +43,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -107,7 +111,7 @@
 \begin{document}\blue
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
@@ -150,16 +154,16 @@
 
 %\item Overview of the course
 
-\item $\lambda$-нотация и её польза
+\item $\lambda$-нотация и её достоинства
 
 %\item Lambda notation and its benefits
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Императивное Программирование}
 
@@ -168,7 +172,7 @@
 \vspace*{0.5cm}
 
 Императивные (или процедурные) программы изменяют {\em состояние} с
-помощью последовательности {\em команд} для исполнения.
+помощью последовательности выполняемых {\em команд}.
 
 %Imperative (or procedural) programs rely on modifying a {\em state}
 %by using a sequence of {\em commands}.
@@ -192,7 +196,7 @@
 %Commands can be executed conditionally using {\red \tt if}, and
 %repeatedly using {\red \tt while}.
 
-Программа - последовательность инструкций по изменению состояния.
+Программы - последовательности инструкций по изменению состояния.
 
 %Programs are a series of instructions on how to modify the state.
 
@@ -203,17 +207,17 @@
 %Imperative languages, e.g. {\black FORTRAN}, {\black Algol}, {\black
 %C}, {\black Modula-3} support this style of programming.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Абстрактный вид}
 
 \vspace*{0.5cm}
 
 Забудем про операции ввода-вывода и допустим, что программа работает
-конечное время для выработки результата.
+конечное время, производя какой-либо результат.
 
 %We ignore input-output operations, and assume that a program runs for
 %a limited time, producing a result.
@@ -243,10 +247,10 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 %{\red $\sigma_0$} to {\red $\sigma_n$}; in general, each command may
 %modify the state.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Функциональное программирование}
 
@@ -289,7 +293,7 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 %\item We can have {\red recursive functions}, giving something
 %      comparable to repetition.
 
-\item Более гибкое использование функций, например мы можем задавать
+\item Более гибкое использование функций, например, мы можем задавать
       {\red функции высшего порядка}.
 
 %\item Functions can be used much more flexibly, e.g. we can have
@@ -301,10 +305,10 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 %Functional languages support this style of programming.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Пример: факториал}
 
@@ -339,10 +343,10 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
     else n * fact(n - 1);;
 \end{verbatim}\end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Зачем?}
 
@@ -376,16 +380,15 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 %from the human side. Maybe functional languages are better suited to
 %people.
 
-Но каковы конкретные причины, чтобы предпочесть функциональные
-языки?
+Но каковы конкретные причины для выбора функциональных языков?
 
 %But what concrete reasons are there for preferring functional
 %languages?
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{
 \begin{tabular}{c}
@@ -397,7 +400,7 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 \vspace*{0.5cm}
 
-Без переменных и присваивания мы имеем следующие преимущества:
+Избегая использования переменных и операций присваивания мы получаем следующие преимущества:
 
 %By avoiding variables and assignments, we gain the following
 %advantages:
@@ -410,7 +413,7 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 %\item Clearer semantics. Programs correspond more directly to
 %      abstract mathematical objects.
 
-\item Б\'{о}льшая свобода исполнения, т.е. распараллеливаемость.
+\item Б\'{о}льшая свобода исполнения операций, т.е. распараллеливаемость.
 
 %\item More freedom in implementation, e.g. parallelizability.
 
@@ -436,10 +439,10 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Денотационная семантика}
 
@@ -484,10 +487,10 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 
 %This gives different results on successive calls!
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Семантика императивных программ}
 
@@ -496,7 +499,7 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 \vspace*{0.5cm}
 
 Чтобы создать надлежащую семантику для императивных программ, нам
-необходимо чётко определить состояние.  Например, мы можем задать
+необходимо явно определить состояние.  Например, мы можем задать
 команды как:
 
 %In order to give a corresponding semantics to imperative programs, we need to
@@ -539,10 +542,10 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 %correctness, or the correctness of certain transformations or
 %optimizations.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{
 \begin{tabular}{c}
@@ -550,8 +553,8 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 {программами}
 \end{tabular}}
 
-Функциональное программирование не без недостатков.  Некоторые вещи
-сложнее всунуть в чисто функциональную модель, типа:
+Функциональное программирование не лишено недостатков.  Некоторые вещи
+сложнее внедрить в чисто функциональную модель, например:
 
 %Functional programming is not without its deficiencies. Some things
 %are harder to fit into a purely functional model, e.g.
@@ -576,26 +579,27 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 %However, in many ways, infinite data structures can be used to
 %accommodate these things.
 
-Функциональные языки также меньше соответствуют современному железу,
-поэтому они могут быть менее эффективны и в них может быть сложнее
-обосновать время исполнения и затраченные ресурсы.
+Функциональные языки также меньше соответствуют современному
+аппаратному обеспечению, поэтому они могут быть менее эффективны и в
+них может быть сложнее обосновать время исполнения и затраченные
+ресурсы.
 
 %Functional languages also correspond less closely to current
 %hardware, so they can be less efficient, and it can be hard to reason
 %about their time and space usage.
 
-ML не чисто функциональный язык, поэтому вы можете присваивать
-переменные, если потребуется.  Большинство наших программ написано на
-чисто функциональной его части.
+ML не чисто функциональный язык, поэтому вы можете использовать присваиваивание
+переменных, если это потребуется.  Большинство наших программ написано на
+чисто функциональном подмножестве языка.
 
 %ML is not a pure functional language, so you can use variables and
 %assignments if required. However most of our work is in the pure
 %functional subset.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Обзор курса (1)}
 
@@ -638,10 +642,10 @@ ML не чисто функциональный язык, поэтому вы можете присваивать
 
 \end{enumerate}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Обзор курса (2)}
 
@@ -689,14 +693,14 @@ ML не чисто функциональный язык, поэтому вы можете присваивать
 
 \end{enumerate}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{$\lambda$-нотация}
 
-$\lambda$-нотация - это способ задавать функции, изобретённый Алонзо
+$\lambda$-нотация~-- это способ задавать функции, предложенный Алонзо
 Чёрчем в 1930 году.  Мы пишем:
 
 %Lambda notation is a way of denoting functions, invented by Alonzo
@@ -705,24 +709,24 @@ $\lambda$-нотация - это способ задавать функции, изобретённый Алонзо
 {\red $$ \lamb{x} E[x] $$ }
 
 чтобы определить `функцию от {\red $x$}, которая выдаёт {\red
-$E[x]$}'.  Где {\red $E[x]$} это выражение, которое содержит или не
+$E[x]$}'.  Здесь {\red $E[x]$}~-- это выражение, которое содержит или не
 содержит {\red $x$}.
 
 %to denote `the function of {\red $x$} that yields {\red
 %$E[x]$}'. Here {\red $E[x]$} is any expression which may or may not
 %contain {\red $x$}.
 
-Например, {\red $\lamb{x} x$} это функция тождественного отображения,
-которая возвращает заданный аргумент, а {\red $\lamb{x} x^2$} это
+Например, {\red $\lamb{x} x$}~-- это функция тождественного отображения,
+которая возвращает заданный аргумент, а {\red $\lamb{x} x^2$}~-- это
 функция возведения в квадрат.
 
 %For example {\red $\lamb{x} x$} is the identity function, which
 %simply returns its argument, while {\red $\lamb{x} x^2$} is the
 %squaring function.
 
-Литера {\red $\lambda$} - историческая случайность. Изначально Чёрч
-использовал {\red $\hat{x}.\; E[x]$}, а серия ошибок набора превратило
-это в нынешнюю форму. Иногда также пишут {\red $x \mapsto E[x]$} и
+Литера {\red $\lambda$}~-- историческая случайность. Первоначально Чёрч
+использовал обозначение {\red $\hat{x}.\; E[x]$}, а серия ошибок набора превратило
+его в нынешнюю форму. Иногда также пишут {\red $x \mapsto E[x]$} и
 {\red $[x]\; E[x]$}.
 
 %The letter {\red $\lambda$} is arbitrary, a historical
@@ -730,10 +734,10 @@ $E[x]$}'.  Где {\red $E[x]$} это выражение, которое содержит или не
 %series of typesetting errors transformed it into the present
 %form. One also sees {\red $x \mapsto E[x]$} and {\red $[x]\; E[x]$}.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Зачем?}
 
@@ -741,15 +745,15 @@ $E[x]$}'.  Где {\red $E[x]$} это выражение, которое содержит или не
 
 \vspace*{0.5cm}
 
-В неформальной математике, когда мы говорим о функции, то обычно именуем
-её: `Пусть {\red $f(x) = E[x]$} \ldots тогда {\red $\cdots f
+В неформальной математике, когда мы говорим о функции, то обычно даем
+ей какое-то имя: `Пусть {\red $f(x) = E[x]$} \ldots тогда {\red $\cdots f
 \cdots$}'.
 
 %In informal mathematics, when talking about a function, one normally gives it a
 %name: `define {\red $f(x) = E[x]$} \ldots then {\red $\cdots f \cdots$}'.
 
 Также, большинство языков программирования позволяют задать функцию
-только, если она будет именована.
+только, если ей будет дано имя.
 
 % Similarly, most programming languages will only let you define
 % functions if you are prepared to give them a name.
@@ -771,15 +775,15 @@ $E[x]$}'.  Где {\red $E[x]$} это выражение, которое содержит или не
 %\end{quote}
 
 $\lambda$-нотация помогает привести функции в равное положение.  Это
-важно в функциональном программировании.
+является важным аспектом функционального программирования.
 
 %Lambda notation helps to put functions on an equal footing. This is
 %important in functional programming.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Преимущества $\lambda$-нотации}
 
@@ -787,15 +791,16 @@ $\lambda$-нотация помогает привести функции в равное положение.  Это
 
 \vspace*{0.5cm}
 
-$\lambda$-нотация также полезна для улучшения ясности математики.
+$\lambda$-нотация также может быть полезна для улучшения ясности
+математического изложения.
 
 %The $\lambda$-notation can be useful too in order to make mathematics
 %clearer.
 
 Когда мы говорим {\red $x + x y$}, то часто не разъясняем, является ли
-это выражение определённым значением для конкретного {\red $x$} или
+это выражение определённым значением для конкретного {\red $x$}, или
 это функция от {\red $x$} (или {\red $y$} \ldots).  Используя
-$\lambda$-нотацию мы можем задать это явно.
+$\lambda$-нотацию мы можем явно это обозначить.
 
 %When we discuss {\red $x + x y$}, we are often vague about whether we
 %mean the value for a particular {\red $x$}, or a function of {\red
@@ -832,10 +837,10 @@ $\lambda$-нотацию мы можем задать это явно.
 
 %we reach a general `abstract syntax' for mathematics.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Каррирование}
 
@@ -874,10 +879,10 @@ $\lamb{x} \lamb{y} E[x,y]$}, и что функция применяется всегда к левому
 
 %Note that the brackets round function arguments are optional.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Связывание переменных}
 
@@ -908,10 +913,10 @@ $\lamb{x} \lamb{y} E[x,y]$}, и что функция применяется всегда к левому
 %$\lambda$-notation, all these variable binding constructs can be broken down so
 %that the only binding operation is $\lambda$-abstraction.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Пример дифференцирования}
 
@@ -947,10 +952,10 @@ $\lamb{x} \lamb{y} E[x,y]$}, и что функция применяется всегда к левому
 
 %but here the everyday notation separates the two properly.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Парадокс Рассела}
 
@@ -982,6 +987,6 @@ $\lamb{x} \lamb{y} E[x,y]$}, и что функция применяется всегда к левому
 
 {\red $$ R = \{x \mid x \not\in x\} $$}
 
-\end{slide*}
+\end{rslide}
 
 \end{document}
