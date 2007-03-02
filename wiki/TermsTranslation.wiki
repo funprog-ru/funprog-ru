@@ -22,6 +22,7 @@ Please keep terms in alphabet order.
   * *lazy evaluation* - ленивое вычисление
   * *lambda-calculus* - $\lambda$-исчисление
   * *lambda-notation* - $\lambda$-нотация
+  * *lecture notes* - лекционные материалы ??
   * *partial function* - частично определённая функция ??
   * *pattern matching* - сопоставление с образцом
   * *reduction* - редукция
