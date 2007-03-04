@@ -15,7 +15,7 @@ Please keep terms in alphabet order.
   * *currying* - каррирование ?? (check in Harisson/Fild)
   * *domain* - область определения
   * *eager evaluation* - энергичное вычисление
-  * *evaluation* - вычисление  ??
+  * *evaluation* - вычисление
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
   * *higher order function* - функция высшего порядка
   * *identity function* - тождественное отображение
@@ -23,7 +23,7 @@ Please keep terms in alphabet order.
   * *lambda-calculus* - $\lambda$-исчисление
   * *lambda-notation* - $\lambda$-нотация
   * *lecture notes* - лекционные материалы ??
-  * *partial function* - частично определённая функция ??
+  * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
@@ -104,4 +104,10 @@ partial function - частично вычислимая функция, как 
 {{{
     правила вывода по полиморфизму    - 1 (dimiii)
 }}}
- --dimiii
+
+--dimiii
+
+----
+
+lecture notes - может как ''конспекты лекций''? --lg
+
