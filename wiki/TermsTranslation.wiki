@@ -12,22 +12,25 @@ Please keep terms in alphabet order.
   * *const function* - константная функция ??
   * *continuation* - продолжение
   * *conversion* - конверсия (lambda-термов)
+  * *conversion rules* - правила преобразования (lambda-термов)
   * *currying* - каррирование ?? (check in Harisson/Fild)
   * *domain* - область определения
   * *eager evaluation* - энергичное вычисление
   * *evaluation* - вычисление
+  * *extensionality* - экстенсиональность
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
   * *higher order function* - функция высшего порядка
   * *identity function* - тождественное отображение
   * *lazy evaluation* - ленивое вычисление
   * *lambda-calculus* - $\lambda$-исчисление
   * *lambda-notation* - $\lambda$-нотация
-  * *lecture notes* - лекционные материалы ??
+  * *lecture notes* - лекционные материалы / коспекты лекций ??
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
+  * *variable capture* - захват переменной
 
 == Discussion ==
 
