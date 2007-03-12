@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 12}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 11 February 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 12}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 11 февраля 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 12}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 11 February 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,18 +161,26 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 12}\\
-{\green ML examples IV:}\\
-{\green Prolog and Theorem Proving}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 12}\\
+{\green Примеры на ML IV:}\\
+{\green Prolog и Доказательство Теорем}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 12}\\
+%{\green ML examples IV:}\\
+%{\green Prolog and Theorem Proving}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -181,11 +201,11 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Overview}
 
@@ -209,11 +229,11 @@ We will show how to implement a cut-down Prolog interpreter in ML.
 We will then use the same tools and techniques to build a simple theorem
 prover.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prolog terms}
 
@@ -239,10 +259,10 @@ Where we would formerly have used {\black \verb+Const s+}, we will now use
 Note that we will treat functions of different arities (different numbers of
 arguments) as distinct, even if they have the same name.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Lexical analysis (1)}
 
@@ -268,11 +288,11 @@ possible, so symbolic identifiers need not consist only of one character.
              | Punctuation of string;;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Lexical analysis (2)}
 
@@ -302,11 +322,11 @@ let lex =
   fst o alltokens o explode;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Parsing and printing}
 
@@ -335,11 +355,11 @@ term            & \mbox{ :- } & term,\ldots,term\mbox{.}
 \noindent We have a parser for these, returning a {\black \verb+term * term
 list+}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Unification}
 
@@ -361,11 +381,11 @@ unification}.
 This means that we can end up proving a special case of the original goal, e.g.
 {\red $P(f(X))$} instead of {\red $P(Y)$}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Unification: examples and algorithm}
 
@@ -388,12 +408,12 @@ One needs to check that the variable hasn't already been assigned to something
 else, and that it doesn't occur in the term being assigned to it (as in the
 last example above).
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Unification: code}
 
@@ -423,11 +443,11 @@ let rec unify tm1 tm2 insts =
 
 We use the existing instantiations as an accumulator.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Augmenting instantiations}
 
@@ -459,11 +479,11 @@ let augment (v,t) insts =
          else raw_augment (v,t') insts;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Backtracking}
 
@@ -491,11 +511,11 @@ let rec expand n rules insts goals =
     expand (n + 1) rules global goals') rules;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Other details}
 
@@ -527,11 +547,11 @@ This says either that the goal cannot be solved, or that it can be solved with
 the given instantiations. Note that we only return one answer in this case, but
 this is easy to fix.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prolog examples (1)}
 
@@ -564,11 +584,11 @@ rules : (term * term list) list =
 - : outcome = Yes ["Y", `edward`; "X", `alice`]
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prolog examples (2)}
 
@@ -598,11 +618,11 @@ the following will loop indefinitely:
 #prolog r (parse_term "append(X,[3,4],X)");;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prolog-style theorem proving}
 
@@ -624,11 +644,11 @@ Usually, depth-first search would go into an infinite loop, so we need to
 modify the Prolog strategy slightly. We will use {\em depth first iterative
 deepening}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Manipulating formulas}
 
@@ -657,11 +677,11 @@ An alternative would be to introduce a separate type of formulas, but this
 would require separate parsing and printing support. We will avoid this, for
 the sake of simplicity.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Preprocessing formulas}
 
@@ -690,11 +710,11 @@ let rec proc tm =
 The next step is to push the negations down the formula, putting it into
 so-called `negation normal form' (NNF).
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{NNF code}
 
@@ -726,12 +746,12 @@ and nnf_n tm =
 We will convert the negation of the input formula into negation normal form,
 and the main prover will then try to derive a contradiction from it.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The main prover}
 
@@ -759,11 +779,11 @@ contradictory literal.
 If this fails, add it to the list of literals, and proceed with the next
 formula.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Continuations}
 
@@ -782,12 +802,12 @@ goals under these instantiations.
 Thus, rather than explicitly trying to solve all remaining goals, we simply try
 calling the continuation.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prover code}
 
@@ -819,12 +839,12 @@ let rec prove fm unexp pl nl n cont i =
                                (t::pl) nl n cont i);;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prover examples (1)}
 
@@ -858,12 +878,12 @@ P18 : int * (string * term) list = 2, []
 P19 : int * (string * term) list = 6, []
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prover examples (2)}
 
@@ -897,7 +917,7 @@ In fact, the prover can work out `whodunit':
 P55' : int * (string * term) list = 6, ["X", `agatha`]
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 

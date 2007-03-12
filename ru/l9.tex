@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 9}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 4 February 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 9}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 4 февраля 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 9}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 4 February 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,18 +161,26 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 9}\\
-{\green ML examples I:}\\
-{\green Symbolic Differentiation}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 9}\\
+{\green Примеры на ML I:}\\
+{\green Символьное Дифференцирование}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 9}\\
+%{\green ML examples I:}\\
+%{\green Symbolic Differentiation}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -181,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Symbolic computation}
 
@@ -209,10 +229,10 @@ symbolic differentiation.
 This will illustrate all the typical components of symbolic computation
 systems: data representation, internal algorithms, parsing and prettyprinting.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Data representation}
 
@@ -243,11 +263,11 @@ represented by:
      Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The need for parsing and printing}
 
@@ -271,11 +291,11 @@ will defer that for now.
 
 However we will now write a simple printer for our expressions.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Prettyprinting expressions}
 
@@ -301,11 +321,11 @@ brackets.
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Storing precedences}
 
@@ -337,12 +357,12 @@ This procedure of linear search is inefficient, but it is simple and adequate
 for small examples. Techniques like hashing are better for heavyweight
 applications.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Making precedences modifiable}
 
@@ -371,13 +391,13 @@ modifiable:
 
 This setup is not purely functional, but is perhaps more natural.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Finding if an operator is infix}
 
@@ -405,13 +425,13 @@ out whether the application of its first argument to its seconds succeeds::
   is_infix : string -> bool = <fun>
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The printer: explanation}
 
@@ -431,14 +451,14 @@ We have a second, mutually recursive, function, to print a list of terms
 separated by commas. This is for the argument lists of non-unary and non-infix
 functions of the form {\red  $f(x_1,\ldots,x_n)$}.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The printer: code}
 
@@ -468,12 +488,12 @@ functions of the form {\red  $f(x_1,\ldots,x_n)$}.
                    (string_of_terms t);;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The printer: installing}
 
@@ -500,12 +520,12 @@ sure that our printer interacts with the toplevel loop.
   - : unit = ()
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Before and after}
 
@@ -539,13 +559,13 @@ x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
   `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`]
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Differentiation: algorithm}
 
@@ -573,11 +593,11 @@ $g'(x) * f'(g(x))$}.
 
 This translates very easily into a recursive computer algorithm.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Differentiation: code}
 
@@ -610,12 +630,12 @@ and chain x t u =  Fn("*",[differentiate x t; u]);;
 \end{verbatim}\end{footnotesize}\end{black}
 
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Differentiation examples}
 
@@ -643,10 +663,10 @@ Let's try a few examples:
     -(inv(cos(x) ^ 2)))`
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Simplification}
 
@@ -675,12 +695,12 @@ rules like the chain rule even in trivial cases. We'll write a simplifier:
   | t -> t;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Simplification examples}
 
@@ -709,7 +729,7 @@ Now we get better results:
 There are still other simplifications to be made, e.g. {\red $cos(x) *
 inv(cos(x)) = 1$}. Good algebraic simplification is a difficult problem!
 
-\end{slide*}
+\end{rslide}
 
 
 

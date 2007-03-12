@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 6}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 28 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 6}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 28 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 6}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 28 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,17 +161,24 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 6}\\
-{\green Details of ML}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 6}\\
+{\green Более подробно о ML}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 6}\\
+%{\green Details of ML}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -180,12 +199,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Interaction with ML}
 
@@ -203,9 +222,9 @@ Emacs with multiple buffers.
 For larger programs, it's convenient simply to load them from file into the ML
 session. This can be done using the {\black \tt include} command in ML.
 
-\end{slide*}
-
-\begin{slide*}
+\end{rslide}
+
+\begin{rslide}
 
 \heading{Loading from files (1)}
 
@@ -224,11 +243,11 @@ Suppose that the file {\black \tt myprog.ml} contains the following lines:
   pythag 1 2 3;;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Loading from files (2)}
 
@@ -255,11 +274,11 @@ has type {\black \tt string -> unit}.
 
 It is permissible to nest inclusions.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Comments}
 
@@ -283,12 +302,12 @@ Comments are written between {\black \tt (*} and {\black \tt *)}, e.g.
 
 The comments are ignored by ML, but are useful for people reading the code.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Basic datatypes}
 
@@ -317,11 +336,11 @@ constructor {\black \verb+->+} and the Cartesian product constructor {\black \ve
 
 We will see how to define other types and type constructors later.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Infixes}
 
@@ -346,10 +365,10 @@ You can define your own infixes using the {\black \verb+#infix+} directive:
   - : int = 2
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Basic infix operators}
 
@@ -376,11 +395,11 @@ Operator   & Meaning               \\
 \end{tabular}
 \end{center}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Notes on operators}
 
@@ -404,10 +423,10 @@ The logical {\black \tt not} operator has special prefix status, so that {\black
 p} is parsed as {\black \tt not (not p)}. This reverses the usual left-associativity
 convention for functions.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Examples (1)}
 
@@ -437,11 +456,11 @@ goes the other way:
   - : int = 32
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Examples (2)}
 
@@ -466,11 +485,11 @@ Recall the arithmetic operators on Church numerals. We can test them:
 
 They seem to work. Of course they're not very efficient!
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Defining new types}
 
@@ -498,10 +517,10 @@ This creates a new type {\black \tt sum} and two new {\em constructors}:
   - : 'a -> ('b, 'a) sum = <fun>
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Properties of type constructors}
 
@@ -525,12 +544,12 @@ and {\black \tt y} might be.
 
 Because of these properties, we can define functions by {\em pattern matching}.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Pattern matching}
 
@@ -555,12 +574,12 @@ constructors are injective. The cases cannot clash because the constructors are
 distinct. Finally, the function is defined everywhere because the constructors
 are exhaustive.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Non-exhaustive matching}
 
@@ -585,12 +604,12 @@ argument not of the form {\black \tt inl x}, then it will not work:
   Uncaught exception: Match_failure
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{General matching}
 
@@ -617,10 +636,10 @@ treated just as variables for binding:
   - : int = 1
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Other matching constructs}
 
@@ -645,11 +664,11 @@ The simplest alternative of all is to use
   x : int = 3
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Recursive types}
 
@@ -679,12 +698,12 @@ written:
   Cons(1,Cons(2,Cons(3,Nil)));;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Lists}
 
@@ -713,13 +732,13 @@ The version that is printed can also be used for input:
 \end{verbatim}\end{black}
 
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Pattern matching over lists}
 
@@ -745,11 +764,11 @@ we can define functions to take the head and tail of a list:
 
 ML warns us that they will fail when applied to an empty list.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Recursive functions over lists}
 
@@ -775,12 +794,12 @@ functions {\black \tt hd} and {\black \tt tl}. This style of function definition
 usual in many languages, notably LISP, but the direct use of pattern matching
 is often more elegant.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The subtlety of recursive types}
 
@@ -809,7 +828,7 @@ We must be careful with semantics, and also types:
   - : int = 720
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 

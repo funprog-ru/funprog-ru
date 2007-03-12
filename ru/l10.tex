@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 10}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 6 February 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 10}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 6 февраля 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 10}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 6 February 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,18 +161,26 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 10}\\
-{\green ML examples II:}\\
-{\green Recursive Descent Parsing}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 10}\\
+{\green Примеры на ML II:}\\
+{\green Рекурсивный Нисходящий Разбор}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 10}\\
+%{\green ML examples II:}\\
+%{\green Recursive Descent Parsing}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -181,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Grammar for terms}
 
@@ -209,10 +229,10 @@ termlist & \goesto & term {\verb!,!} termlist                   \\
 
 Here we have a grammar for terms, defined by a set of production rules.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Ambiguity}
 
@@ -239,10 +259,10 @@ interpret {\red $x {\verb! + !} y {\verb! * !} z$} either as {\red $x
 {\verb! + !} (y {\verb! * !} z)$} or {\red $(x {\verb! + !} y) {\verb! * !}
 z$}.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Encoding precedences}
 
@@ -266,12 +286,12 @@ termlist & \goesto & term {\verb!,!} termlist                   \\
 Now it's unambiguous. Multiplication has higher precedence and both infixes
 associate to the right.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Recursive descent}
 
@@ -292,11 +312,11 @@ parenthesis, will make a recursive call to {\black \verb!termlist!}. This in
 itself will make at least one recursive call to {\black \verb!term!}, and so
 on.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Parsers in ML}
 
@@ -321,11 +341,11 @@ hence we would have:
     Fn("+",[Var "x"; Var "y"]),"* z"
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Parser combinators}
 
@@ -352,10 +372,10 @@ the same parser as long as possible.
 tries {\black \verb!p2!}. These are automatically infix, in decreasing order of
 precedence.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Definitions of the combinators}
 
@@ -382,10 +402,10 @@ let prefix || parser1 parser2 input =
   with Noparse -> parser2 input;;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Auxiliary functions}
 
@@ -411,11 +431,11 @@ let explode s =
   exap (string_length s - 1) [];;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Atomic parsers}
 
@@ -441,10 +461,10 @@ The first two accept something satisfying {\black \verb!p!}, and something
 equal to {\black \verb!tok!}, respectively. The last one makes sure there is no
 unprocessed input.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Lexical analysis}
 
@@ -471,10 +491,10 @@ spaces, e.g.
     Other "+"; Name "y"; Other ")"]
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Definition of the lexer}
 
@@ -507,10 +527,10 @@ let lex =
   fst o alltokens o explode;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Parsing terms}
 
@@ -537,11 +557,11 @@ Now we can define a parser for terms, in a form very similar to the original
 grammar. The main difference is that each production rule has associated with
 it some sort of special action to take as a result of parsing.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The term parser (take 1)}
 
@@ -573,11 +593,11 @@ and termlist input
             >> (fun h -> [h])) input;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Examples}
 
@@ -608,11 +628,11 @@ installed:
   - : term = `sin(x + y) * cos(2 * x + y)`
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Automating precedence parsing}
 
@@ -645,11 +665,11 @@ let rec precedence ilist parser input =
 
 By using this function, we can make the main parser simpler and more general.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The term parser (take 2)}
 
@@ -678,11 +698,11 @@ This will dynamically construct the precedence parser using the list
 of infixes active when it is actually used. Now the basic grammar is
 simpler.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Backtracking and reprocessing}
 
@@ -704,11 +724,11 @@ However, this backtracking can lead to our processing the initial name twice.
 
 This is not very serious here, but it could be in {\black \tt termlist}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{An improved treatment}
 
@@ -736,12 +756,12 @@ and termlist input
 \noindent This gives another improvement to the parser, which is now more
 efficient and slightly simpler. The final version is:
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The term parser (take 3)}
 
@@ -766,11 +786,11 @@ and termlist input
             >> (fun (h,t) -> h::t)) input;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{General remarks}
 
@@ -797,7 +817,7 @@ The naive transcription into ML would loop indefinitely. However we can often
 replace such constructs with explicit repetitions.
 
 
-\end{slide*}
+\end{rslide}
 
 
 

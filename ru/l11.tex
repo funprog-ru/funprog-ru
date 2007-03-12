@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 11}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 7 February 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 11}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 7 февраля 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 11}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 7 February 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,18 +161,26 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 11}\\
-{\green ML examples III:}\\
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 11}\\
+{\green Примеры на ML III:}\\
 {\green Exact Real Arithmetic}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 11}\\
+%{\green ML examples III:}\\
+%{\green Exact Real Arithmetic}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -181,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Finite representations}
 
@@ -209,10 +229,10 @@ are solutions.
 However he rejected transcendental numbers because apparently
 they could not be represented finitely.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Real numbers as programs}
 
@@ -233,11 +253,11 @@ Alternatively it can produce a rational number {\red $r$} such that
 Whatever approach is taken to the successive approximation of a real number,
 the key point is that its representation, the program itself, is finite.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Our representation of reals}
 
@@ -259,11 +279,11 @@ Such a result is exact, in the sense that we can then give it an arbitrary
 desired precision and it will perform the appropriate calculation
 automatically.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Arbitrary precision integers}
 
@@ -291,10 +311,10 @@ then do the following to get access to all the functions:
 This library sets up a new type {\black \tt num} of arbitrary precision rational
 numbers; we will just use the integer subset.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Operators on {\black \tt num}}
 
@@ -315,11 +335,11 @@ division and modulus function, called {\black \tt quo\_num} and {\black \tt mod\
 have infix status. However most of the other binary operators are infixes, and
 the names are derived from the usual ones by adding a slash `{\black \verb!/!}'.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Binary operators}
 
@@ -344,11 +364,11 @@ Op         & Type                             & Meaning               \\
 \end{tabular}
 \bigskip
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Getting started}
 
@@ -374,13 +394,13 @@ integer. This is easy:
 
 Evidently this satisfies the error criterion: in fact the error is zero.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Basic operations}
 
@@ -404,13 +424,13 @@ If we know that for each {\red $n$}:
 Similarly, we can define an `absolute value' function on real numbers, using
 the corresponding function {\black \tt abs\_num} on numbers.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Addition: first attempt}
 
@@ -433,10 +453,10 @@ We can guarantee that the sum on the right is less than {\red $2$}, but not that
 less than {\red $1$} as required. Therefore, we need in this case to evaluate {\red $x$} and
 {\red $y$} to {\em greater} accuracy than required in the answer.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Addition: second attempt}
 
@@ -458,12 +478,12 @@ Apparently this just gives the accuracy required. However we have implicitly
 used real mathematical division above. Since the function is supposed to yield
 an integer, we are obliged to round the quotient to an integer.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Rounding division}
 
@@ -489,10 +509,10 @@ rounding error never exceeds {\red $1 \over 2$}.
 
 Now we are ready to define a correct addition function!
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Addition: third attempt}
 
@@ -517,12 +537,12 @@ Now if we define:
     (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Multiplication by an integer (1)}
 
@@ -542,10 +562,10 @@ We define:
 & \leq & {1 \over 2} + {1 \over 2} = 1
 \end{eqnarray*}}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Multiplication by an integer (2)}
 
@@ -569,12 +589,12 @@ let real_intmul m x n =
 \noindent For division by an integer, we define:
 {\red $$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{General multiplication}
 
@@ -602,13 +622,13 @@ their approximate magnitude.
 
 The error analysis is long but not really difficult.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Multiplicative inverse (1)}
 
@@ -635,11 +655,11 @@ computable.
 
 However if {\red $x \not= 0$} the above must terminate eventually.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Multiplicative inverse (2)}
 
@@ -668,11 +688,11 @@ Now, of course, it is straightforward to define division:
     real_mul x (real_inv y);;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Ordering and equality}
 
@@ -697,11 +717,11 @@ find an {\red $n$} such that {\red $|f_x(n) - f_y(n)| \geq 2$}. For example, if
 Note that the only way to arrive at the reflexive orderings is to justify the
 irreflexive version. In general, all these will fail to terminate if {\red $x = y$}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Testing}
 
@@ -730,13 +750,13 @@ Now we can test out some simple examples:
   it : string = "1.00000000000000000000"
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The problem of reevaluation}
 
@@ -761,11 +781,11 @@ because multiplication and inversion often evaluate their arguments more than
 once. This tends to lead to a blowup exponential in the depth of the
 expression.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Caching}
 
@@ -787,11 +807,11 @@ If we know that {\red $|f_x(n + k) - 2^{n + k} x| < 1$} then we have:
 
 Hence we are always safe in returning {\red $f_x(n + k) \mbox{ ndiv } 2^k$}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Memo function}
 
@@ -818,7 +838,7 @@ let real_add f g = memo (fun n ->
 ...
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
