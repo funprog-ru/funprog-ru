@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 7}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 30 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 7}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 30 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 7}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 30 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,17 +161,24 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 7}\\
-{\green Proving Programs Correct}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 7}\\
+{\green Доказательство корректности программы}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 7}\\
+%{\green Proving Programs Correct}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -180,12 +199,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The correctness problem}
 
@@ -208,11 +227,11 @@ In some situation bugs can be deadly.
 {\green Peter Neumann: `Computer Related Risks'.}
 
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Dangerous bugs}
 
@@ -236,11 +255,11 @@ Some situations where bugs can be deadly include:
 
 These applications are said to be {\em safety critical}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Testing and verification}
 
@@ -262,11 +281,11 @@ Consider ordinary mathematical theorems, like
 We can {\em test} this for many particular values of $N$, but it is easier and
 more satisfactory simply to {\em prove} it (e.g. by induction).
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The limits of verification}
 
@@ -290,11 +309,11 @@ The enterprise of verification can be represented by this diagram:
 It is only the central link that is mathematically precise. The others are
 still informal --- all we can do is try to keep them small.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Verifying functional programs}
 
@@ -313,11 +332,11 @@ functions. Sometimes we need a separate argument to establish termination.
 Often, the proofs proceed by induction, parallelling the definition of the
 functions involved by recursion.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Exponentiation (1)}
 
@@ -340,11 +359,11 @@ The function is defined by (primitive) recursion.
 
 The proof is by (step-by-step, mathematical) induction.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Exponentiation (2)}
 
@@ -372,11 +391,11 @@ Note that we assume {\red $0^0 = 1$}, an example of how one must state the
 specification precisely!
 
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Greatest common divisor (1)}
 
@@ -399,12 +418,12 @@ a gcd of $x$ and $y$.}
 Here we need to be even more careful about the specification. What is a gcd of
 two negative numbers?
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Greatest common divisor (2)}
 
@@ -432,12 +451,12 @@ Note that unless {\red $x$} and {\red $y$} are both zero, we do not specify the
 sign of the gcd. The specification does not constrain the implementation
 completely.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Greatest common divisor (3)}
 
@@ -460,11 +479,11 @@ In complicated recursions, finding the right wellfounded ordering on the
 arguments can be tricky. But in many cases one can use this simple `measure'
 approach.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Greatest common divisor (4)}
 
@@ -486,13 +505,13 @@ $x$ is a {\em greatest} common divisor.
 
 This establishes the first part of the induction proof.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Greatest common divisor (5)}
 
@@ -516,14 +535,14 @@ Now suppose {\red $d' | x$} and {\red $d' | y$}. By the same equation, we find
 that {\red $d' | r$}. Thus {\red $d'$} is a common divisor of {\red $y$} and
 {\red $r$}, but then by the inductive hypothesis, {\red $d' | d$} as required.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Append (1)}
 
@@ -550,14 +569,14 @@ prove the theorem by {\em structural induction}.
 The principle is: if a property holds for the empty list, and whenever it holds
 for {\red $t$} it holds for any {\red $h::t$}, then it holds for any list.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Append (2)}
 
@@ -576,10 +595,10 @@ to consider. First, suppose {\red $l_1 = []$}. Then we have:
 
 As required.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Append (3)}
 
@@ -601,15 +620,15 @@ and {\red $l_3$} we have:
 \end{eqnarray*}}
 The theorem is proved.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Reverse (1)}
 
@@ -633,11 +652,11 @@ also be proved by structural induction (details in the notes):
 \mbox{append}\; l\; [] & = & l          \\
 \mbox{rev}(\mbox{append}\; l_1\; l_2) & = & \mbox{append}\; (\mbox{rev}\; l_2)\; (\mbox{rev}\; l_1)
 \end{eqnarray*}}
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Reverse (2)}
 
@@ -659,9 +678,9 @@ Now suppose that {\red $l = h::t$} and we know that
 
 {\red $$ \mbox{rev}(\mbox{rev}\; t) = t $$}
 
-\end{slide*}
-
-\begin{slide*}
+\end{rslide}
+
+\begin{rslide}
 
 \heading{Reverse (3)}
 
@@ -683,7 +702,7 @@ Now suppose that {\red $l = h::t$} and we know that
 & = & l
 \end{eqnarray*}}
 
-\end{slide*}
+\end{rslide}
 
 \end{document}
 

@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 3}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 21 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 3}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 21 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 3}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 21 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,31 +161,47 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 3}\\
-{\green $\lambda$-calculus as a}\\
-{\green programming language}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 3}\\
+{\green $\lambda$-исчисление как}\\
+{\green язык программирования}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 3}\\
+%{\green $\lambda$-calculus as a}\\
+%{\green programming language}
 \end{tabular}}
 
 \vspace*{0.1cm}
 
-Topics covered:
+Темы:
+
+%Topics covered:
 
 \begin{itemize}
 
-\item Computability and Turing completeness
+\item Вычислимость и Тьюрингова полнота
 
-\item $\lambda$-calculus and programming languages
+%\item Computability and Turing completeness
 
-\item Representing basic data types
+\item $\lambda$-исчисление как язык программирования
+
+%\item $\lambda$-calculus and programming languages
+
+\item Представление простых типов данных
+
+%\item Representing basic data types
 
 \item Recursive functions and fixpoint combinators
 
@@ -183,12 +211,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Computability; Turing completeness}
 
@@ -215,11 +243,11 @@ Many of them correspond to programming methods, even though they came before
 computers! For example, Markov algorithms are related to SNOBOL, and {\em
 $\lambda$-calculus to functional programming}.
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{The influence of $\lambda$-calculus}
 
@@ -241,11 +269,11 @@ design focus resulted in a coherent language.
 
 We'll start with $\lambda$-calculus and work up!
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Booleans (1)}
 
@@ -274,10 +302,10 @@ For example:
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Booleans (2)}
 
@@ -304,10 +332,10 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Pairs}
 
@@ -336,11 +364,11 @@ These work as required, e.g.
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Tuples}
 
@@ -360,10 +388,10 @@ and for {\red $i > 1$}:
 
 We have {\red $(E_1,E_2,\ldots,E_n)_i = E_i$} for {\red $i \leq n$}.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Uncurried functions}
 
@@ -386,11 +414,11 @@ Then we have generalized $\beta$-conversion:
 {\red $$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
               t[t_1,\ldots,t_n]$$}
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Natural numbers}
 
@@ -414,10 +442,10 @@ This means:
 \end{red}
 and so on.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Successor}
 
@@ -443,11 +471,11 @@ We can also test if a Church numeral is zero with:
 {\red $$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$}
 
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Addition}
 
@@ -472,10 +500,10 @@ Indeed:
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Multiplication}
 
@@ -500,10 +528,10 @@ Indeed:
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Predecessor}
 
@@ -529,11 +557,11 @@ We can use this to `throw away' one of the applications of {\red $f$} in
 {\red $$ \mbox{PRE}\; n \defeq \lamb{f\; x}
    \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Recursive functions (1)}
 
@@ -552,10 +580,10 @@ paradox. We defined {\red $R = \lamb{x} \Not (x\; x)$} and found {\red $R\; R =
 function {\red $f$} concerned. Thus:
 {\red $$Y \defeq \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$$}
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Recursive functions (2)}
 
@@ -579,10 +607,10 @@ y)) $$}
 
 This has the even better property that {\red $T\; f \goesto f(T\; f)$}.
 
-\end{slide*}
+\end{rslide}
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Recursive functions (3)}
 
@@ -602,11 +630,11 @@ we find that {\red $\mbox{fact}$} is the fixpoint of {\red $F$}, i.e. {\red
 $\mbox{fact} = F\; \mbox{fact}$}. Therefore we define:
 {\red $$\mbox{fact} = Y\; F$$}
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Let expressions}
 
@@ -623,11 +651,11 @@ which is syntactic sugar for:
 Also, we may say {\red $\mbox{let } f\; x_1\; \cdots x_n = t$},
 which is a sugaring for
 {\red $$\mbox{let } f = \lamb{x_1\; \cdots \; x_n} t$$}
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Recursive let expressions}
 
@@ -647,11 +675,11 @@ where as above:
 
 {\red $$F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
          \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Functional programs}
 
@@ -673,11 +701,11 @@ Thus the program can be read `declaratively', as a set of mathematical
 equations giving some properties of the relevant notions. The computational
 information is all {\em implicit}.
 
-\end{slide*}
+\end{rslide}
 
 
 
-\begin{slide*}
+\begin{rslide}
 
 \heading{Computational interpretation}
 
@@ -695,7 +723,7 @@ Different functional languages make different choices, as we shall see.
 
 The next step, however, is to think about {\em types}.
 
-\end{slide*}
+\end{rslide}
 
 
 \end{document}

@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 8}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 31 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 8}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 31 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 8}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 31 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,17 +161,24 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 8}\\
-{\green Effective ML}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 8}\\
+{\green Эффективный ML}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 8}\\
+%{\green Effective ML}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -182,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Using standard combinators}
 
@@ -212,11 +231,11 @@ it as:
            'a list -> 'b -> 'b = <fun>
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Itlist examples (1)}
 
@@ -248,12 +267,12 @@ If we want to multiply the elements instead, we change it to:
   #let sum l = itlist (prefix *) l 1;;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Itlist examples (2)}
 
@@ -287,10 +306,10 @@ and some old favourites:
      itlist (fun x s -> (f x)::s) l [];;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Itlist examples (3)}
 
@@ -318,11 +337,11 @@ building blocks.
      forall (fun t -> mem t l2) l1;;
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Storing local variables}
 
@@ -348,11 +367,11 @@ Instead each instance of the function is allocated a frame on a {\em stack}.
 This technique is similar in ML to most other languages that support recursion,
 including C.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The stack}
 
@@ -389,11 +408,11 @@ innermost call of {\black \tt fact}:
 Note that we use about {\red $n$} words of storage when there are {\red $n$}
 nested recursive calls. In many situations this is very wasteful.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{A tail recursive version}
 
@@ -422,12 +441,12 @@ the calling function does.
 A function where all recursive calls are tail calls is said to be {\em tail
 recursive}.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Why tail recursion?}
 
@@ -450,12 +469,12 @@ an iterative version using assignments and while-loops.
 
 The only difference is that we pass the state around explicitly.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Forcing evaluation (1)}
 
@@ -482,11 +501,11 @@ get evaluated until {\black \tt fact} sees its arguments.
 Moreover, it gets reevaluated each time even though it doesn't depend on
 {\black \tt n}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Forcing evaluation (2)}
 
@@ -511,12 +530,12 @@ Most compilers do not do such optimizations automatically.
 However it falls under the general heading of {\em partial evaluation}, a big
 research field.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Minimizing consing (1)}
 
@@ -540,9 +559,9 @@ Therefore, space in functional languages has to be reclaimed by analyzing
 memory periodically and deciding which bits are needed. The remainder is then
 reclaimed. This process is known as {\em garbage collection}.
 
-\end{slide*}
-
-\begin{slide*}
+\end{rslide}
+
+\begin{rslide}
 
 \heading{Minimizing consing (2)}
 
@@ -571,13 +590,13 @@ length of the first argument. For example, our implementation of reversal:
 is very inefficient, generating about {\red $n^2 / 2$} cons cells, where {\red
 $n$} is the length of the list.
 
-\end{slide*}
+\end{rslide}
 
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Minimizing consing (3)}
 
@@ -612,11 +631,11 @@ using
 \end{verbatim}\end{black}
 
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Exceptions (1)}
 
@@ -645,12 +664,12 @@ declaration, e.g.
   Exception Failed defined.
 \end{verbatim}\end{black}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Exceptions (2)}
 
@@ -676,9 +695,9 @@ head of an empty list:
   hd : 'a list -> 'a = <fun>
 \end{verbatim}\end{black}
 
-\end{slide*}
-
-\begin{slide*}
+\end{rslide}
+
+\begin{rslide}
 
 \heading{Exceptions (3)}
 
@@ -704,11 +723,11 @@ hidden type of exceptions tacked onto the return type of each function.
 
 Anyway, they are often quite useful!
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{References (1)}
 
@@ -733,12 +752,12 @@ To get at the contents of a {\black \tt ref}, use the dereferencing
 (indirection) operator {\black \tt !}. To modify its value, use {\black \tt
 :=}.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{References (2)}
 
@@ -766,12 +785,12 @@ Here is an example of how we can create and play with a reference cell:
 In most respects {\black \tt ref} behaves like a type constructor, so one
 can pattern-match against it.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Arrays (1)}
 
@@ -804,11 +823,11 @@ using:
 \noindent The elements are numbered from zero. Thus the elements of a vector of
 size {\red $n$} are {\red $0,\ldots,n-1$}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Arrays (2)}
 
@@ -838,10 +857,10 @@ All reading and writing is constrained by bounds checking, e.g.
 \end{verbatim}\end{black}
 
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Imperative features and types}
 
@@ -863,7 +882,7 @@ ML places restrictions on the polymorphic type of expressions involving
 references to avoid these problems. The type is not universal in the usual
 sense, merely as yet undetermined. The first use fixes the type.
 
-\end{slide*}
+\end{rslide}
 
 
 

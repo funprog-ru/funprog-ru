@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 5}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 24 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 5}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 24 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 5}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 24 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,17 +161,24 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 5}\\
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 5}\\
 {\green ML}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 5}\\
+%{\green ML}
 \end{tabular}}
 
 \vspace*{0.5cm}
@@ -182,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{From $\lambda$-calculus to ML}
 
@@ -213,10 +232,10 @@ For example, {\red $2 + 2 \goesto 4$} happens by machine arithmetic, not by
 manipulating Church numerals. These extra reduction rules are often called
 {\em $\delta$-conversions}.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Problem with normal order}
 
@@ -240,11 +259,11 @@ A normal order reduction gives
 Then we need to evaluate three different instances of the same expression! If
 we evaluated the argument {\red $10 + 5$} first, it would be more efficient.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Lazy versus eager}
 
@@ -268,10 +287,10 @@ In some ways lazy evaluation is more elegant and powerful. However it is not
 easy to implement efficiently, and does not interact well with imperative
 features.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{ML's evaluation strategy}
 
@@ -297,11 +316,11 @@ and the process is repeated.
 It is important to grasp this evaluation strategy in order to understand ML
 properly.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Examples}
 
@@ -325,11 +344,11 @@ properly.
 \end{eqnarray*}
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The conditional}
 
@@ -349,11 +368,11 @@ If we want {\red $\mbox{fact}(0)$}, we need to evaluate {\red
 $\mbox{fact}(\mbox{PRE}\; 0)$}, {\red $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\;
 0))$}, and so on.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{New primitives}
 
@@ -377,11 +396,11 @@ This avoids looping because ML will not evaluate inside the lambda.
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The ML family}
 
@@ -408,11 +427,11 @@ language.
 The features we use are general, and can easily be translated to other
 dialects, and other functional languages.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Starting up ML}
 
@@ -446,9 +465,9 @@ If you want to install CAML Light on your own computer, see the Web page:
   http://pauillac.inria.fr/caml/
 \end{verbatim}
 \end{black}
-\end{slide*}
-
-\begin{slide*}
+\end{rslide}
+
+\begin{rslide}
 
 \heading{Interacting with ML}
 
@@ -481,11 +500,11 @@ expression then it is rejected:
 ML knows the type of the built-in operator {\black \tt +}, and that is how it
 makes its type inference.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Using functions (1)}
 
@@ -515,11 +534,11 @@ Functions are applied by juxtaposition, as in $\lambda$-calculus:
 \end{verbatim}
 \end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Using functions (2)}
 
@@ -549,11 +568,11 @@ bracketed version:
 \end{verbatim}
 \end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Let bindings}
 
@@ -591,11 +610,11 @@ Function bindings can also be recursive: just add the {\black \tt rec} keyword:
 \end{verbatim}
 \end{black}
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Declarations}
 
@@ -634,11 +653,11 @@ later in the session.
 
 Note: this is {\em not} the same thing as variable assignment!
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Polymorphic functions}
 
@@ -671,11 +690,11 @@ so on. We can now use it with different types:
 Each instance of {\black \tt I} in the last expression has a different type, 
 and intutively corresponds to a different function.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Combinators}
 
@@ -711,10 +730,10 @@ It has the right type, and seems to work:
 \end{verbatim}
 \end{black}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Equality of functions}
 
@@ -741,12 +760,12 @@ of the halting problem}.
 Some versions of ML distinguish between functions and other `equality types'
 and filter out these cases during typechecking.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Pathologies of typechecking}
 
@@ -773,7 +792,7 @@ over 4000 lines on an 80-column terminal.
 
 {\bf Don't try this at home}.
 
-\end{slide*}
+\end{rslide}
 
 
 \end{document}

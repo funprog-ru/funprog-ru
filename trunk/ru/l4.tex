@@ -1,10 +1,13 @@
-\documentstyle[portrait,%
+\documentclass[portrait,%
               fancybox,%
               notes,%
               epsfig,%
               alltt,%
               semcolor,
               alltt]{seminar}
+
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
 
 \input amssym.def
 \input amssym
@@ -86,6 +89,10 @@
 
 % Sizes
 
+\newenvironment{rslide}
+{\begin{slide*}[240mm,165mm] }
+{\end{slide*}}
+
 \renewcommand{\slidetopmargin}{0.8in}
 \renewcommand{\slidebottommargin}{0.8in}
 
@@ -129,10 +136,15 @@
 % Head and foot of slides
 
 \newpagestyle{ColourDemo}%
-  {\cyanonblack{Introduction to Functional Programming:
-                Lecture 4}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{John Harrison}\hfil
-   \cyanonblack{University of Cambridge, 23 January 1997}}
+  {\cyanonblack{Введение в Функциональное Программирование:
+                Лекция 4}\hfil\cyanonblack{\thepage}}
+  {\cyanonblack{Джон Харрисон}\hfil
+   \cyanonblack{Университет Кембриджа, 23 января 1997}}
+%\newpagestyle{ColourDemo}%
+%  {\cyanonblack{Introduction to Functional Programming:
+%                Lecture 4}\hfil\cyanonblack{\thepage}}
+%  {\cyanonblack{John Harrison}\hfil
+%   \cyanonblack{University of Cambridge, 23 January 1997}}
 
 \pagestyle{ColourDemo}
 
@@ -149,17 +161,24 @@
 
 \begin{document}\blue
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{%
 \begin{tabular}{c}
-{\LARGE\red Introduction to}\\
-{\LARGE\red Functional Programming}\\
-{\cyan John Harrison}\\
-{\cyan University of Cambridge}\\
-{\green Lecture 4}\\
-{\green Types}
+{\Large\red Введение в}\\
+{\Large\red Функциональное}\\
+{\Large\red Программирование}\\
+{\cyan Джон Харрисон}\\
+{\cyan Университет Кембриджа}\\
+{\green Лекция 4}\\
+{\green Типы}
+%{\LARGE\red Introduction to}\\
+%{\LARGE\red Functional Programming}\\
+%{\cyan John Harrison}\\
+%{\cyan University of Cambridge}\\
+%{\green Lecture 4}\\
+%{\green Types}
 \end{tabular}}
 
 \vspace*{0.1cm}
@@ -182,12 +201,12 @@ Topics covered:
 
 \end{itemize}
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Logical reasons for types}
 
@@ -210,12 +229,12 @@ Type theory is now seen as an {\em alternative} to set theory as a foundation.
 There are interesting links between type theory and programming (Martin-L\"of
 and others).
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Programming reasons for types}
 
@@ -241,12 +260,12 @@ programming errors before execution.
 At the same time, some programmers find them an irksome restriction. How can we
 achieve the best balance?
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Different typing methods}
 
@@ -276,10 +295,10 @@ and also between
 ML is statically and strongly typed. At the same time, a feature called {\em
 polymorphism} gives many benefits of weak or dynamic typing.
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The stock of types}
 
@@ -300,11 +319,11 @@ In due course we will introduce more type constructors, e.g. the product type
 polymorphism. We normally use {\red $\alpha$} and {\red $\beta$} for type
 variables.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{The idea of typed $\lambda$-calculus}
 
@@ -328,11 +347,11 @@ notation in the case of function spaces.
 However as usual, this interpretation is only a heuristic guide, and we develop
 simply typed $\lambda$-calculus as a formal system.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Church typing}
 
@@ -359,11 +378,11 @@ types are different terms.
 However we prefer to use {\em implicit} typing. In fact, in ML, the user never
 has to write a type!
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Curry typing}
 
@@ -382,12 +401,12 @@ means that `assuming all the type assignments in {\red $\Gamma$} hold, then
 We will continue to write simply {\red $t : \sigma$} in cases where the context
 is empty.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Formal typing rules}
 
@@ -407,10 +426,10 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
         {\Gamma \vdash \lamb{v} t : \sigma \to \tau} $$
 \end{red}
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{An example}
 
@@ -431,12 +450,12 @@ Note that the context was crucial to `link' different occurrences of the same
 variable. In Church typing this would not have been needed as each variable
 carries around its type.
 
-\end{slide*}
+\end{rslide}
 
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Type preservation}
 
@@ -458,11 +477,11 @@ then also {\red $\Gamma \vdash t' : \sigma$}.
 This shows that static typing and dynamic execution don't interfere with each
 other.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Adding new types}
 
@@ -486,11 +505,11 @@ In general, we can have arbitrarily many type constructors, and arbitrary
 constants whose types involve these constructors. As we shall see, ML lets us
 define our own type constructors.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Polymorphism}
 
@@ -514,11 +533,11 @@ We have true, parametric, polymorphism. For example, possible types for the
 identity function are {\red $\sigma \to \sigma$}, {\red $\tau \to \tau$}, or
 {\red $(\sigma \to \tau) \to (\sigma \to \tau)$}.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Let polymorphism (1)}
 
@@ -538,11 +557,11 @@ Consider:
 This cannot be typed according to our rules, since the {\em single} instance of
 the identity function needs to be given a {\em single} type.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Let polymorphism (2)}
 
@@ -561,11 +580,11 @@ Secondly, we add a new typing rule:
 
 Now we can type expressions like the above in the way that we would expect.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Most general types (1)}
 
@@ -589,10 +608,10 @@ because
 But not conversely.
 
 
-\end{slide*}
+\end{rslide}
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Most general types (2)}
 
@@ -612,11 +631,11 @@ Modula-3. We never have to specify types explicitly {\em and} we can often
 re-use the same code with different types: the compiler will work everything
 out for us.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Strong normalization}
 
@@ -640,11 +659,11 @@ This sounds good --- every program terminates. Unfortunately this means that we
 can't write all computable functions, or even all the interesting ones. We need
 to add something.
 
-\end{slide*}
+\end{rslide}
 
 
-
-\begin{slide*}
+
+\begin{rslide}
 
 \heading{Recursion}
 
@@ -669,7 +688,7 @@ and the extra reduction rule that for any {\red $F:(\sigma \to \tau) \to
 
 {\red $$ Rec\; F \goesto F\; (Rec\;  F) $$}
 
-\end{slide*}
+\end{rslide}
 
 
 \end{document}
