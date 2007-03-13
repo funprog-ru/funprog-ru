@@ -28,6 +28,7 @@ Please keep terms in alphabet order.
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
   * *pretty print* - ???
+  * *prover* - ???
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
