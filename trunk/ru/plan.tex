@@ -41,57 +41,69 @@
   язык.
 
 \item {\bf Типы} Почему типы?  Ответы из программирования и логики.
-  Simply typed lambda calculus. Church and Curry typing. Let
-  polymorphism. Most general types and Milner's algorithm. Strong
-  normalization (no proof), and its negative consequences for Turing
-  completeness. Adding a recursion operator.
+  Простое $\lambda$-исчисление с типами.  Типизирование по Church и
+  Curry.  Полиморфиз ???Let.  Наиболее общие типы и алгоритм Milner.
+  Жесткая нормализация (без доказательства), и ее негативное влияние
+  на Тьюрингову полноту.  Добавляем оператор рекурсии.
 
-\item {\bf ML} ML as typed lambda calculus with eager evaluation. Details of
-evaluation strategy. The conditional. The ML family. Practicalities of
-interacting with ML. Writing functions. Bindings and declarations. Recursive
-and polymorphic functions. Comparison of functions.
+\item {\bf ML} ML как тизированное $\lambda$-исчисление с энергичным
+  вычислением.  Подробности стратегии вычисления.  Условия.  Семейство
+  языков ML.  Практика работы с ML.  Создание функций.  Связывания и
+  объявления.  Рекурсивные и полиморфические функции.  Сравнение
+  функций.
 
-\item {\bf Более подробно о ML} More about interaction with ML. Loading from files.
-Comments. Basic data types: unit, booleans, numbers and strings. Built-in
-operations. Concrete syntax and infixes. More examples. Recursive types and
-pattern matching. Examples: lists and recursive functions on lists.
+\item {\bf Более подробно о ML} Более подробно о работе с ML.
+  Загрузка кода из файлов.  Комментарии.  Базовые типы данных:
+  unit???, логические, числа и строки.  Встроенные операции.
+  Конкретный синтаксис и инфинксные операции.  Дополнительные примеры.
+  Рекурсивные типы и сопоставление с образцом.  Примеры: списки и
+  рекурсивные функции для работы со списками.
 
-\item {\bf Доказательство корректности программы} The correctness
-  problem. Testing and verification. The limits of
-  verification. Functional programs as mathematical objects. Examples
-  of program proofs: exponential, GCD, append and reverse.
+\item {\bf Доказательство корректности программы} Проблема
+  корректности.  Тестирование и проверка ???(verification).  Пределы
+  проверки.  Функциональные программы как математические объекты.
+  Примеры доказательтсва программ: exponential, GCD, append и reverse.
 
-\item {\bf Эффективный ML} Using standard combinators. List iteration and other
-useful combinators; examples. Tail recursion and accumulators; why tail
-recursion is more efficient. Forcing evaluation. Minimizing consing. More
-efficient reversal. Use of `as'. Imperative features: exceptions, references,
-arrays and sequencing. Imperative features and types; the value restriction.
+\item {\bf Эффективный ML} Использование стандартных комбинаторов.
+  Проход по списку (???List iteration) и другие полезные примеры
+  использования комбинаторов.  Хвостовая рекурсия и аккумуляторы;
+  почему хвостовая рекурсия более эффективна.  Принудительное
+  вычисление.  Минимизация операций cons.  Более эффективная
+  реализация обращения данных. Использование `as'.  Императивные
+  возможности: исключения, ссылки, массивы и последовательности.
+  Императивные возможности и типы; ограничение значения.
 
 \item {\bf Примеры на ML I: символьное дифференцирование} Символьные
-  вычисления.  Представление данных.  Приоритет операторов. Association
-  lists. Prettyprinting expressions. Installing the
-  printer. Differentiation. Simplification. The problem of the `right'
-  simplification.
+  вычисления.  Представление данных.  Приоритет операторов.
+  Ассоциативные списки.  ???Prettyprinting выражений.  Устанавливаем
+  принтер.  Дифференцирование.  Упрощение.  Проблема `правильного'
+  упрощения.
 
-\item {\bf Примеры на ML II: рекурсивный нисходящий разбор} Grammars and the parsing
-problem. Fixing ambiguity. Recursive descent. Parsers in ML. Parser
-combinators; examples. Lexical analysis using the same techniques. A parser for
-terms. Automating precedence parsing. Avoiding backtracking. Comparison with
-other techniques.
+\item {\bf Примеры на ML II: рекурсивный нисходящий разбор} Грамматики
+  и проблема разбора.  Избегаем неоднозначености. Рекурсивный
+  нисходящий разбор.  Парсеры в ML.  Комбинаторы для парсеров;
+  примеры.  Лексический анализ с использованием тех же приемов.
+  Парсер для членов выражений (???terms).  Автоматический разбор
+  приоритетов (???precedence).  Избегаем возврата (???backtracking).
+  Сравнение с другими приемами.
 
-\item {\bf Примеры на ML III: exact real arithmetic} Real numbers and finite
-representations. Real numbers as programs or functions. Our representation of
-reals. Arbitrary precision integers. Injecting integers into the reals.
-Negation and absolute value. Addition; the importance of rounding division.
-Multiplication and division by integers. General multiplication. Inverse and
-division. Ordering and equality. Testing. Avoiding reevaluation through memo
-functions.
+\item {\bf Примеры на ML III: арифметика вещественных чисел}
+  Вещественные числа и конечные представления.  Вещественные числа как
+  программы или функции.  Наше собственное представление вещественных
+  чисел.  Целые числа с произвольной точностью.  Комбинирование целых
+  чисел с вещественными.  Отрицательные и абсолютные значения.
+  Дополнение; важность деления с округлением.  Умножение и деление
+  целых чисел.  Общий вариант умножения.  Инверсия и деление.
+  Упорядочение (???Ordering) и равенство.  Тестирование.  Избегаем
+  повторной оценки с помощью функций с паматью.
 
-\item {\bf Примеры на ML IV: Prolog и доказательство теорем} Prolog terms.
-Case-sensitive lexing. Parsing and printing, including list syntax.
-Unification. Backtracking search. Prolog examples. Prolog-style theorem
-proving. Manipulating formulas; negation normal form. Basic prover; the use of
-continuations. Examples: Pelletier problems and whodunit.
+\item {\bf Примеры на ML IV: Prolog и доказательство теорем} Выражения
+  Prolog.  Лексический анализ с учетом регистра.  Разбор и печать,
+  включая списочный синтаксис.  Унификация.  Поиск с возвратом.
+  Примеры выражений Prolog.  Доказательство теорем в стиле Prolog.
+  Работа с формулами; ????negation normal form.  Базовое средство
+  доказательства (?? prover); использование продожений.  примеры:
+  Проблемы Pelletier и ???whodunit.
 
 \end{enumerate}
 
