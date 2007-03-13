@@ -27,6 +27,7 @@ Please keep terms in alphabet order.
   * *lecture notes* - лекционные материалы / коспекты лекций ??
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
+  * *pretty print* - ???
   * *reduction* - редукция
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
