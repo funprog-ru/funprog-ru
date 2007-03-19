@@ -1,34 +1,40 @@
-\chapter{Introduction}
+\chapter{Введение}
 
-Programs in traditional languages, such as FORTRAN, Algol, C and Modula-3, rely
-heavily on modifying the values of a collection of variables, called the {\em
-state}. If we neglect the input-output operations and the possibility that a
-program might run continuously (e.g. the controller for a manufacturing
-process), we can arrive at the following abstraction. Before execution, the
-state has some initial value $\sigma$, representing the inputs to the program,
-and when the program has finished, the state has a new value $\sigma'$
-including the result(s). Moreover, during execution, each command changes the
-state, which has therefore proceeded through some finite sequence of values:
+Программы написанные на традиционных языках программирования, таких
+как FORTRAN, Algol, C и Modula-3, в своей работе опираются на
+изменение значений наборов переменных, называемых {\em
+  состоянием}. Если мы пренебрежем операциями ввода-вывода, и
+вероятностью того, что программа будет работать постоянно (например,
+управляющая система для производства), то мы можем прийти к следующей
+абстракции.  До выполнения, состояние имеет некоторое начальное значение
+$\sigma$, представляющее собой входное значение для программы, а когда
+программа завершается, то состояние имеет новое значение $\sigma'$,
+представляющее результат(ы).  Кроме того, в ходе выполнения, каждая
+команда изменяет состояние, которое следовательно проходит через
+конечное число значений:
 
 $$ \sigma = \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n =
 \sigma' $$
 
-For example in a sorting program, the state initially includes an array of
-values, and when the program has finished, the state has been modified in such
-a way that these values are sorted, while the intermediate states represent
-progress towards this goal.
+Например, в программе сортировки, состояние первоначально включает в
+себя массив значений, а после того, как программа завершается,
+состояние модифицируется таким образом, что эти значения будут
+отсортированы, в то время как промежуточные состояния представляют
+собой ход достижения данной цели.
 
-The state is typically modified by {\em assignment} commands, often written in
-the form {\tt v = E} or {\tt v := E} where {\tt v} is a variable and {\tt E}
-some expression. These commands can be executed in a sequential manner by
-writing them one after the other in the program, often separated by a
-semicolon. By using statements like {\tt if} and {\tt while}, one can execute
-these commands conditionally, and repeatedly, depending on other properties of
-the current state. The program amounts to a set of instructions on how to
-perform these state changes, and therefore this style of programming is often
-called {\em imperative} or {\em procedural}. Correspondingly, the traditional
-languages intended to support it are known as imperative or procedural
-languages.
+Состояние обычно изменяется с помощью команд {\em присваивания}, часто
+записываемых в виде {\tt v = E} или {\tt v := E}, где {\tt v}~--
+переменная, а {\tt E}~-- некоторое выражение.  Эти команды могут
+выполняться последовательно, путем их последовательно записи в
+программе, зачастую разделяя их с помощью точки с запитой.  С помощью
+выражений, таких как {\tt if} и {\tt while}, можно выполнять команды в
+зависимости от условия, или циклически, зачастую полагаясь на другие
+свойства текущего состояния.  В результате программа превращается в
+набор инструкций по изменению состояния, и поэтому данный стиль
+программирования часто называется {\em императивным} или {\em
+  процедурным}.  Соответственно, традиционные языки программирования,
+поддерживающие данный стиль, также известны как императивные или
+процедурные языки.
 
 Functional programming represents a radical departure from this model.
 Essentially, a functional program is simply an expression, and execution means
@@ -249,7 +255,7 @@ general types. We then move on to more advanced topics including exceptions and
 ML's imperative features. We conclude with some substantial examples, which we
 hope provide evidence for the power of ML.
 
-\section*{Further reading}
+\section*{Дополнительная литература}
 
 Numerous textbooks on `functional programming' include a general introduction
 to the field and a contrast with imperative programming --- browse through a
