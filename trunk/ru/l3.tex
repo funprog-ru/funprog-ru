@@ -234,7 +234,7 @@
 
 \vspace*{0.5cm}
 
-До того как появились компьютеры, проблема разрешимости({\em
+До того как появились компьютеры, проблема разрешимости ({\em
   Entscheidungsproblem}) стимулировала создание множества равноценных
 определений `вычислимости'.
 
@@ -754,10 +754,10 @@ y)) $$}
 \noindent Сначала преобразуем его в:
 {\red $$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
     \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
-\noindent таким образом, если мы зададим:
+\noindent Таким образом, если мы зададим:
 {\red $$F \defeq \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
     \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
-мы обнаружим, что {\red $\mbox{fact}$} есть неподвижная точка функции
+то мы обнаружим, что {\red $\mbox{fact}$} есть неподвижная точка функции
 {\red $F$}, т.е. {\red $\mbox{fact} = F\; \mbox{fact}$}.  Поэтому мы зададим:
 {\red $$\mbox{fact} = Y\; F$$}
 
@@ -788,7 +788,7 @@ y)) $$}
 
 Зачастую, удобно привязать выражение к некоторому имени, чтобы избежать
 множества повторов одного и того же выражения.  Введём следующий
-вариант синтаксического сахара:
+вариант синтаксического сахара XXX:
 {\red $$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$}
 Введём так же запись для множества {\em совместных} привязок:
 {\red $$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
@@ -823,7 +823,8 @@ y)) $$}
 \vspace*{0.5cm}
 
 Обычно {\red $\mbox{let}$} интерпретируется нерекурсивно.  Когда мы
-хотим задать рекурсивно, то добавляем слово {\red $\mbox{rec}$}.  Например:
+хотим задать выражение рекурсивно, то добавляем слово {\red
+  $\mbox{rec}$}.  Например:
 %Normally {\red $\mbox{let}$} is interpreted nonrecursively. When we want to
 %make a recursive definition, we add the word {\red $\mbox{rec}$}. For example:
 
@@ -854,9 +855,9 @@ y)) $$}
 Мы уже говорили, что функциональная программа это просто выражение.
 %We have said that a functional program is simply an expression.
 
-Однако, мы обычно выделяем конкретные общие и интересные выражения в
-{\red \tt let} конструкции; таким образом, программа преобретает форму:
-серия определений подвыражений и основное выражение, например
+Однако, мы обычно выделяем некоторые общие и интересные выражения в
+{\red \tt let} конструкции; таким образом, программа преобретает
+форму: серия определений подвыражений и основное выражение, например
 %However, we normally extract certain common and interesting subexpressions as
 %{\red \tt let} constructs, so the program has the form: a series of
 %definitions, followed by the main expression, e.g.
@@ -885,7 +886,7 @@ $$}
 
 \vspace*{0.5cm}
 
-Тем не менее, способ вычисления всё же {\em есть}.
+Тем не менее, способ вычисления всё же {\em существует}.
 %The computational interpretation {\em is} still there though!
 
 Грубо говоря, все уравнения читаются слева направо, и все имена
