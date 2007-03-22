@@ -36,40 +36,51 @@ $$ \sigma = \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n =
 поддерживающие данный стиль, также известны как императивные или
 процедурные языки.
 
-Functional programming represents a radical departure from this model.
-Essentially, a functional program is simply an expression, and execution means
-evaluation of the expression.\footnote{Functional programming is often called
-`applicative programming' since the basic mechanism is the {\em application} of
-functions to arguments.} We can see how this might be possible, in general
-terms, as follows. Assuming that an imperative program (as a whole) is
-deterministic, i.e. the output is completely determined by the input, we can
-say that the final state, or whichever fragments of it are of interest, is some
-function of the initial state, say $\sigma' = f(\sigma)$.\footnote{Compare
-Naur's remarks \cite{raphael-spl} that he can write any program in a single
-statement $Output = Program(Input)$.} In functional programming this view is
-emphasized: the program is actually an expression that corresponds to the
-mathematical function $f$. Functional languages support the construction of
-such expressions by allowing rather powerful functional constructs.
+Функциональное программирование представляет собой радикальное отличие
+от этой модели.  По существу, функциональная программа~-- это просто
+выражение, а выполнение~-- вычисление
+выражения.\footnote{Функциональное программирование часто называют 
+`???(applicative programming)', поскольку основной механизм~-- это
+{\em применение??? application} функции к аргументам.}  В общих чертах
+мы можем увидеть как это возможно, используя следующие рассуждения.
+Предположив, что императивная программа (вся целиком) детерминична
+????, т.е. вывод полностью определяется вводом, мы можем сказать, что
+финальное состояние, или тот фрагмент, который нас интересует,
+являются функцией начального состояния, например $\sigma' =
+f(\sigma)$.\footnote{Сравните замечание Naur??? \cite{raphael-spl},
+  что мы можем записать любую программу в виде одного выражения
+  $Output = Program(Input)$.}  В функциональном программировании эта
+точка зрения выявлена более явно: программа~-- это выражение, которое
+соответствует математической функции $f$.  Функциональные языки
+программирования поддерживают создание таких выражений, путем
+использования можных функциональных возможностей???
 
-Functional programming can be contrasted with imperative programming either
-in a negative or a positive sense. Negatively, functional programs do not use
-variables --- there {\em is} no state. Consequently, they cannot use
-assignments, since there is nothing to assign to. Furthermore the idea of
-executing commands in sequence is meaningless, since the first command can make
-no difference to the second, there being no state to mediate between them.
-Positively however, functional programs can use functions in much more
-sophisticated ways. Functions can be treated in exactly the same way as simpler
-objects like integers: they can be passed to other functions as arguments and
-returned as results, and in general calculated with. Instead of sequencing and
-looping, functional languages use recursive functions, i.e. functions that are
-defined in terms of themselves. By contrast, most traditional languages provide
-poor facilities in these areas. C allows some limited manipulation of functions
-via pointers, but does not allow one to create new functions dynamically.
-FORTRAN does not even support recursion at all.
+Функциональное программирование может контрастировать с императивным
+как в положительных, так и отрицательных вещах.  К негативным вещам
+можно отнести то, что функциональные программа не используют
+переменные~-- т.е., {\em не имеют} состояния.  Соответственно, они не
+могут использовать присваивание, поскольку не во что присваивать.
+Кроме того, идея последовательного выполнения команд, также
+бессмыслена, поскольку первая команда не имеет никакого значения для
+второй, поскольку нет никакого состояния, передаваемого между ними.  К
+положительным вещам можно отнести то, что функциональные программы
+могут использовать функции более сложным способом.  Функции могут
+рассматриваться точно так же, как и более простые объекты, такие как
+целые числа: они могут передаваться в другие функции как аргументы, и
+возвращаться в качестве результатов, а также использоваться в
+вычислениях.  Вместо последовательного и циклического выполнения,
+функциональные языки программирования используют рекурсивные функции,
+т.е. функции, определенные в терминах самих себя.  Большинство
+традиционных языков программирования обеспечивают весьма бедные
+возможности в этих областях. Язык C имеет некоторые ограниченные
+возможности манипуляции функциями с помощью указателей, но не
+позволяет создавать новые функции динамически. А язык FORTRAN вообще
+не поддерживает рекурсию.
 
-To illustrate the distinction between imperative and functional programming,
-the factorial function might be coded imperatively in C (without using C's
-unusual assignment operations) as:
+Для того, чтобы показать разницу между императивным и функциональным
+программированием, используем функцию для вычисления факториала,
+которая может быть записана в императивном стиле на языке C (без
+использования необычных операторов присвоения языка C) в виде:
 
 \begin{lstlisting}[language=C]
   int fact(int n)
@@ -82,8 +93,9 @@ unusual assignment operations) as:
   }
 \end{lstlisting}
 
-\noindent whereas it would be expressed in ML, the functional language we
-discuss later, as a recursive function:
+\noindent в то время как, эта фкнция может быть записана на языке ML
+(фукциональном языке программирования, который мы обсудим позже) в
+виде рекурсивной функции:
 
 \begin{lstlisting}
   let rec fact n =
@@ -91,17 +103,19 @@ discuss later, as a recursive function:
     else n * fact(n - 1);;
 \end{lstlisting}
 
-In fact, this sort of definition can be used in C too. However for more
-sophisticated uses of functions, functional languages stand in a class by
-themselves.
+Можно отметить, что такое определение также может быть создано и для
+языка C.  Однако, при более сложных использованиях функций,
+функциональные языке относятся к отдельному классу.
 
-\section{The merits of functional programming}
+\section{Достоинства функционального программирования}
 
-At first sight, a language without variables or sequencing might seem
-completely impractical. This impression cannot be dispelled simply by a few
-words here. But we hope that by studying the material that follows, readers
-will gain an appreciation of how it is possible to do a lot of interesting
-programming in the functional manner.
+На первый взгляд, язык без переменных или возможности
+последовательного выполнения кажется совершенно непрактичным.  Это
+впечатление не может быть разрушено с помощью нескольких слов,
+написанных тут.  Но мы надеемся, что изучая материал, приведенный
+далее, читатели получат представление о том, как можно сделать
+множество интересных вещей, используя функциональный стиль
+программирования.
 
 There is nothing sacred about the imperative style, familiar though it is. Many
 features of imperative languages have arisen by a process of abstraction from
