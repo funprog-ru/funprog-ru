@@ -2,7 +2,7 @@
 
 Программы написанные на традиционных языках программирования, таких
 как FORTRAN, Algol, C и Modula-3, в своей работе опираются на
-изменение значений наборов переменных, называемых {\em
+изменение значений набора переменных, называемых {\em
   состоянием}. Если мы пренебрежем операциями ввода-вывода, и
 вероятностью того, что программа будет работать постоянно (например,
 управляющая система для производства), то мы можем прийти к следующей
@@ -25,55 +25,55 @@ $$ \sigma = \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n =
 Состояние обычно изменяется с помощью команд {\em присваивания}, часто
 записываемых в виде {\tt v = E} или {\tt v := E}, где {\tt v}~--
 переменная, а {\tt E}~-- некоторое выражение.  Эти команды могут
-выполняться последовательно, путем их последовательно записи в
-программе, зачастую разделяя их с помощью точки с запитой.  С помощью
+выполняться последовательно, путем их последовательной записи в
+программе, зачастую разделяя их с помощью точки с запятой.  С помощью
 выражений, таких как {\tt if} и {\tt while}, можно выполнять команды в
 зависимости от условия, или циклически, зачастую полагаясь на другие
 свойства текущего состояния.  В результате программа превращается в
 набор инструкций по изменению состояния, и поэтому данный стиль
 программирования часто называется {\em императивным} или {\em
   процедурным}.  Соответственно, традиционные языки программирования,
-поддерживающие данный стиль, также известны как императивные или
+поддерживающие такой стиль, также известны как императивные или
 процедурные языки.
 
 Функциональное программирование представляет собой радикальное отличие
 от этой модели.  По существу, функциональная программа~-- это просто
 выражение, а выполнение~-- вычисление
 выражения.\footnote{Функциональное программирование часто называют 
-`???(applicative programming)', поскольку основной механизм~-- это
-{\em применение??? application} функции к аргументам.}  В общих чертах
+`(аппликативным программированием)', поскольку основной механизм~-- это
+{\em аппликация (применение)} функции к аргументам.}  В общих чертах
 мы можем увидеть как это возможно, используя следующие рассуждения.
-Предположив, что императивная программа (вся целиком) детерминична
-????, т.е. вывод полностью определяется вводом, мы можем сказать, что
+Предположив, что императивная программа (вся целиком) детерминирована,
+т.е. вывод полностью определяется вводом, мы можем сказать, что
 финальное состояние, или тот фрагмент, который нас интересует,
 являются функцией начального состояния, например $\sigma' =
-f(\sigma)$.\footnote{Сравните замечание Naur??? \cite{raphael-spl},
+f(\sigma)$.\footnote{Сравните замечание Наура \cite{raphael-spl},
   что мы можем записать любую программу в виде одного выражения
   $Output = Program(Input)$.}  В функциональном программировании эта
-точка зрения выявлена более явно: программа~-- это выражение, которое
+точка зрения имеет особое значение: программа~-- это выражение, которое
 соответствует математической функции $f$.  Функциональные языки
-программирования поддерживают создание таких выражений, путем
-использования можных функциональных возможностей???
+программирования позволяют создавать такие выражения, предоставляя
+мощные функциональные конструкции.
 
-Функциональное программирование может контрастировать с императивным
-как в положительных, так и отрицательных вещах.  К негативным вещам
-можно отнести то, что функциональные программа не используют
+Функциональное программирование может противопоставляться
+императивному как в негативном так и в позитивном виде.  К негативным
+вещам можно отнести то, что функциональные программы не используют
 переменные~-- т.е., {\em не имеют} состояния.  Соответственно, они не
-могут использовать присваивание, поскольку не во что присваивать.
+могут использовать присваивание, поскольку не к чему присваивать.
 Кроме того, идея последовательного выполнения команд, также
 бессмыслена, поскольку первая команда не имеет никакого значения для
 второй, поскольку нет никакого состояния, передаваемого между ними.  К
 положительным вещам можно отнести то, что функциональные программы
-могут использовать функции более сложным способом.  Функции могут
+могут использовать функции более изощрённым способом.  Функции могут
 рассматриваться точно так же, как и более простые объекты, такие как
 целые числа: они могут передаваться в другие функции как аргументы, и
 возвращаться в качестве результатов, а также использоваться в
 вычислениях.  Вместо последовательного и циклического выполнения,
 функциональные языки программирования используют рекурсивные функции,
 т.е. функции, определенные в терминах самих себя.  Большинство
-традиционных языков программирования обеспечивают весьма бедные
+традиционных языков программирования обеспечивают весьма скудные
 возможности в этих областях. Язык C имеет некоторые ограниченные
-возможности манипуляции функциями с помощью указателей, но не
+возможности работы с функциями при помощи указателей, но не
 позволяет создавать новые функции динамически. А язык FORTRAN вообще
 не поддерживает рекурсию.
 
@@ -93,7 +93,7 @@ f(\sigma)$.\footnote{Сравните замечание Naur??? \cite{raphael-spl},
   }
 \end{lstlisting}
 
-\noindent в то время как, эта фкнция может быть записана на языке ML
+\noindent в то время как, эта функция может быть записана на языке ML
 (фукциональном языке программирования, который мы обсудим позже) в
 виде рекурсивной функции:
 
@@ -105,65 +105,74 @@ f(\sigma)$.\footnote{Сравните замечание Naur??? \cite{raphael-spl},
 
 Можно отметить, что такое определение также может быть создано и для
 языка C.  Однако, при более сложных использованиях функций,
-функциональные языке относятся к отдельному классу.
+функциональные языки относятся к отдельному классу.
 
 \section{Достоинства функционального программирования}
 
 На первый взгляд, язык без переменных или возможности
 последовательного выполнения кажется совершенно непрактичным.  Это
 впечатление не может быть разрушено с помощью нескольких слов,
-написанных тут.  Но мы надеемся, что изучая материал, приведенный
+написанных тут.  Но мы надеемся, что изучая материал, приведённый
 далее, читатели получат представление о том, как можно сделать
 множество интересных вещей, используя функциональный стиль
 программирования.
 
-There is nothing sacred about the imperative style, familiar though it is. Many
-features of imperative languages have arisen by a process of abstraction from
-typical computer hardware, from machine code to assemblers, to macro
-assemblers, and then to FORTRAN and beyond. There is no reason to suppose that
-such languages represent the most palatable way for humans to communicate
-programs to a machine. After all, existing hardware designs are not sacred
-either, and computers are supposed to do our bidding rather than conversely.
-Perhaps the right approach is not to start from the hardware and work upwards,
-but to start with programming languages as an abstract notation for specifying
-algorithms, and then work {\em down} to the hardware
-\cite{dijkstra-discipline}. Actually, this tendency can be detected in
-traditional languages too. Even FORTRAN allows arithmetical expressions to be
-written in the usual way. The programmer is not burdened with the task of
-linearizing the evaluation of subexpressions and finding temporary storage for
-intermediate results.
+Нет ничего таинственного в императивном стиле.  Многие свойства
+императивных языков программирования развились в процессе
+абстрагирования от типового компьютерного оборудования, от машинного
+кода к ассемблерам, макроассемблерам, затем переход к  FORTRAN и
+дальше. Нет причин предполагать, что такие языки представляют собой
+наиболее удобный способ для взаимодействия человека и машины.  Кроме
+того, архитектура оборудования тоже не содержит никаких тайн, и
+компьютеры должны выполнять наши приказы, а не наоборот.  Полагаю, что
+правильный подход не в том, чтобы начать с оборудования и продвигаться
+вверх, а наоборот~-- начать работу с языка программирования, как
+средства для описания алгоритмов, и затем двигаться {\em вниз} к оборудованию
+\cite{dijkstra-discipline}.  В действительности, данная тенденция
+может быть обнаружена и в традиционных языках программирования.  Даже
+FORTRAN  позволяет записывать арифметические выражения обычным
+способом.  Программист не обеспокоен задачей линеаризации вычисления
+подвыражений и нахождения места для промежуточных результатов.
 
-This suggests that the idea of developing programming languages quite different
-from the traditional imperative ones is certainly defensible. However, to
-emphasize that we are not merely proposing change for change's sake, we should
-say a few words about why we might prefer functional programs to imperative
-ones.
+Это ведет к тому, что идея разработки языков программирования, сильно
+отличающихся от традиционных, императивных языков, является вполне
+законной.  Однако, для того, чтобы показать, что мы не просто
+предлагаем изменения ради изменений, мы должны сказать несколько слов
+о том, почему мы можем предпочитать функциональные языки
+программирования императивным.
 
-Perhaps the main reason is that functional programs correspond more directly to
-mathematical objects, and it is therefore easier to reason about them. In order
-to get a firm grip on exactly what programs mean, we might wish to assign an
-abstract mathematical meaning to a program or command --- this is the aim of
-{\em denotational semantics} (semantics = meaning). In imperative languages,
-this has to be done in a rather indirect way, because of the implicit
-dependency on the value of the state. In simple imperative languages, one can
-associate a command with a function $\Sigma \to \Sigma$, where $\Sigma$ is the
-set of possible values for the state. That is, a command takes some state and
-produces another state. It may fail to terminate (e.g. {\tt while true do x :=
-x}), so this function may in general be partial. Alternative semantics are
-sometimes preferred, e.g. in terms of {\em predicate transformers}
-\cite{dijkstra-discipline}. But if we add features that can pervert the
-execution sequence in more complex ways, e.g. {\tt goto}, or C's {\tt break}
-and {\tt continue}, even these interpretations no longer work, since one
-command can cause the later commands to be skipped. Instead, one typically uses
-a more complicated semantics based on {\em continuations}.
+Возможно, главной причиной будет то, что программы на функциональных
+языках более точно соответствуют математическим объектам, и их более
+легко доказывать. Для того, чтобы показать что программа означает, мы
+можем связать абстрактный математический смысл с программой или
+командой~-- это цель {\em денотационной семантики} (семантика =
+значение????смысл).  В императивных языках это должно делаться
+непрямым способом, из-за неявной зависимости от значений состояния.  В
+простых императивных языках, кто-то может связать команду с функцией
+$\Sigma \to \Sigma$, где $\Sigma$~-- набор возможных значений
+состояния.  Таким образом, команда получает некоторое состояние и
+создает другое состояние.  Это может не закончиться (например, {\tt
+  while true do x := x}), так что эта функция в общем является
+частичной.  Иногда предпочитают использовать альтернативные семантики,
+например, в терминах {\em преобразователей предикатов}
+\cite{dijkstra-discipline}.  Но, если мы добавим возможности, которые
+могут исказить последовательность выполнения более сложным способом,
+например, {\tt goto}, или конструкиции {\tt break} и {\tt continue}
+языка C, то даже эти объяснения не будут больше работать, поскольку
+одна команда может привести к пропуску выполнения следующих команд.
+Вместо этого, можно использовать более сложные семантики, основанные
+на {\em продолжениях (continuations)}.
 
-By contrast functional programs, in the words of \citeN{henson-book}, `wear
-their semantics on their sleeves'.\footnote{More: denotational semantics can be
-seen as an attempt to turn imperative languages into functional ones by making
-the state explicit.} We can illustrate this using ML. The basic datatypes have
-a direct interpretation as mathematical objects. Using the standard notation of
-$\sem{X}$ for `the semantics of $X$', we can say for example that
-$\sem{\mbox{int}} = \num$. Now the ML function {\tt fact} defined by:
+По контрасту с этим, функциональные программы, по
+словам\citeN{henson-book}, `носят свою семантику с
+собой'.\footnote{Дополнительно: денотационная семантика может быть
+  рассмотрена как попытка превратить императивные языки в
+  функциональные, путем явного объявления состояний.}  Мы можем
+показать это на примере ML.  Базовые типы напрямую могут
+рассматриваться как математические объекты.  Используя стандартную
+запись $\sem{X}$ для `семантики $X$', мы можем сказать, например, что
+$\sem{\mbox{int}} = \num$.  Так что функция ML {\tt fact},
+определенная выражением:
 
 \begin{lstlisting}
   let rec fact n =
@@ -171,22 +180,24 @@ $\sem{\mbox{int}} = \num$. Now the ML function {\tt fact} defined by:
     else n * fact(n - 1);;
 \end{lstlisting}
 
-\noindent has one argument of type {\tt int}, and returns a value of type {\tt
-int}, so it can simply be associated with an abstract partial function
-$\num \to \num$:
+\noindent имеет один аргумент типа {\tt int}, и возвращает значение
+типа {\tt int}, так что она просто является связанной с абстрактной
+частичной функцией $\num \to \num$:
 
 $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
-                                 n! & \mbox{if $n \geq 0$} \\
-                                 \bot & \mbox{otherwise}
-                          \end{array} \right. $$
+    n! & \mbox{if $n \geq 0$} \\
+    \bot & \mbox{otherwise}
+  \end{array} \right. $$
 
-(Here $\bot$ denotes undefinedness, since for negative arguments, the program
-fails to terminate.) This kind of simple interpretation, however, fails in
-non-functional programs, since so-called `functions' might not be functions at
-all in the mathematical sense. For example, the standard C library features a
-function {\tt rand()}, which returns different, pseudo-random values on
-successive calls. This sort of thing can be implemented by using a local static
-variable to remember the previous result, e.g:
+(Здесь $\bot$ обозначает неопределенность, поскольку для отрицательных
+аргументов, программа не сможет завершиться).  Однако этот способ
+простой интерпретации не работает для не-функциональных программ,
+поскольку, так называемы `функции' могут быть не функциями в
+математическом смысле.  Например, стандартная библиотека языка  C
+имеет функциб {\tt rand()},  которая возвращает разные,
+псевдо-случайные значения при последовательных вызовах.  Это может
+быть сделано с помощью локальных статических переменных, используемых
+для хранения предыдущих результатов, например, так:
 
 \begin{lstlisting}[language=C]
   int rand(void)
