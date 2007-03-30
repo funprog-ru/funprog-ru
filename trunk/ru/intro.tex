@@ -206,92 +206,116 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
   }
 \end{lstlisting}
 
-Thus, one can see the abandonment of variables and assignments as the logical
-next step after the abandonment of {\tt goto}, since each step makes the
-semantics simpler. A simpler semantics makes reasoning about programs more
-straightforward. This opens up more possibilities for correctness proofs, and
-for provably correct transformations into more efficient programs.
+Таким образом, мы можем увидеть отказ от переменных(????) и
+использование присвоений, как логический шаг после отказа от
+\texttt{goto} поскольку каждый шаг делает семантику более простой.
+Более простая семантика делает доказательство программ более ясным.
+Это дает нам больше возможностей для доказательства корректности
+программ, и для доказуемо корректных преобразований в более
+эффективные программы.
 
-Another potential advantage of functional languages is the following. Since the
-evaluation of expressions has no side-effect on any state, separate
-subexpressions can be evaluated in any order without affecting each other. This
-means that functional programs may lend themselves well to parallel
-implementation, i.e. the computer can automatically farm out different
-subexpressions to different processors. By contrast, imperative programs often
-impose a fairly rigid order of execution, and even the limited interleaving of
-instructions in modern pipelined processors turns out to be complicated and
-full of technical problems.
+% Thus, one can see the abandonment of variables and assignments as the logical
+% next step after the abandonment of {\tt goto}, since each step makes the
+% semantics simpler. A simpler semantics makes reasoning about programs more
+% straightforward. This opens up more possibilities for correctness proofs, and
+% for provably correct transformations into more efficient programs.
 
-Actually, ML is not a purely functional programming language; it does have
-variables and assignments if required. Most of the time, we will work inside
-the purely functional subset. But even if we do use assignments, and lose some
-of the preceding benefits, there are advantages too in the more flexible use of
-functions that languages like ML allow. Programs can often be expressed in a
-very concise and elegant style using higher-order functions (functions that
-operate on other functions).\footnote{Elegance is subjective and conciseness is
-not an end in itself. Functional languages, and other languages like APL, often
-create a temptation to produce very short tricky code which is elegant to
-cognoscenti but obscure to outsiders.} Code can be made more general, since it
-can be parametrized even over other functions. For example, a program to add up
-a list of numbers and a program to multiply a list of numbers can be seen as
-instances of the same program, parametrized by the pairwise arithmetic
-operation and the corresponding identity. In one case it is given $+$ and $0$
-and in the other case, $*$ and $1$.\footnote{This parallels the notion of
-abstraction in pure mathematics, e.g. that the additive and multiplicative
-structures over numbers are instances of the abstract notion of a monoid. This
-similarly avoids duplication and increases elegance.} Finally, functions can
-also be used to represent {\em infinite} data in a convenient way --- for
-example we will show later how to use functions to perform exact calculation
-with real numbers, as distinct from floating point approximations.
+Функциональные языки также имеют другое потенциальное преимущества.
+Поскольку вычисление выражений не имеет побочных эффектов для любых
+состояний, то отдельный подвыражения могут вычисляться в произвольном
+порядке, не влияя на другие.  Это означает, что функциональные
+программы могут давать возможность параллельной обработки, т.е.,
+компьютер может автоматически вычислять различные подвыражения на
+разных процессорах.  В отличии от этого, императивные программы часто
+задают жесткий порядок вычислений, и даже ограниченное перемешивание
+инструкций в современных процессорах с конвейерной обработкой, ведет к
+сложностям и возникновению технических проблем.
 
-At the same time, functional programs are not without their problems. Since
-they correspond less directly the the eventual execution in hardware, it can be
-difficult to reason about their exact usage of resources such as time and
-space. Input-output is also difficult to incorporate neatly into a functional
-model, though there are ingenious techniques based on infinite sequences.
+В действительности, ML не является чисто функциональным языком
+программирования; в нем есть переменные и присваивания, если это
+нужно.  Большую часть времени, мы будем делать нашу работу используя
+чисто функциональное подмножество языка.  Но даже если мы будем
+использовать присваивания, и потеряем некоторые из ранее перечисленных
+достоинств, то все равно есть преимущества в более гибком
+использовании функции, что позволяют сделать языки, подобные ML.
+Программы часто могут быть выражены очень кратко и элегантно путем
+использования функций высшего порядка (функции, которые оперируют над
+другими функциями).\footnote{Элегантность субъективна, а краткость не
+  ограничевается собой.  Функциональные языки, а также другие языки,
+  такие как APL, часто создают соблазн создания очень короткого,
+  хитроумного кода, который элегантен для знатоков, но непонятен для
+  остальных.}  Код может быть более общим, поскольку он может быть
+параметризован другими функциями.  Например, программа, которая
+складывает список числе и программа, которая умножает список чисел,
+могут рассматриваться как объекты одной и той же программы, которая
+параметризуется арифметической операцией над парой чисел и
+соответствующим числом (???? identity).  В первом случае это будут $+$
+и $0$, а во втором~-- $*$ и $1$.\footnote{Это имеет параллели с идеями
+  абстракции в чистой математике, например, что аддитивные и
+  мультипликативные структуры над числами являются объектами
+  абстрактного понятия `моноид'.  Это подобие помогает избегать
+  дублирования и увеличивает элегантсность.}  В заключение, функции
+могут использоваться для представления {\em бесконечных} наборов
+данных удобным способом, например, мы позже покажем как использовать
+функции для выполнения вычислений с вещественными числами, в отличии
+от использования приблежений в виде числе с плавающей запятой.
 
-It is up to readers to decide, after reading this book, on the merits of the
-functional style. We do not wish to enforce any ideologies, merely to point out
-that there {\em are} different ways of looking at programming, and that in the
-right situations, functional programming may have considerable merits. Most of
-our examples are chosen from areas that might loosely be described as `symbolic
-computation', for we believe that functional programs work well in such
-applications. However, as always one should select the most appropriate tool
-for the job. It may be that imperative programming, object-oriented programming
-or logic programming are more suited to certain tasks. Horses for courses.
+В то же время, функциональные программы не лишены собственных
+проблем.  Поскольку, они менее прямо соответствуют выполнению кода на
+оборудовании, то может быть тяжело вычислить точное использование
+ресурсов, таких как время и память.  Ввод-вывод также тяжело ввести в
+функциональную модель, хотя существуют остроумные способы, основанные
+на бесконечных последовательностях.
 
-\section{Outline}
+Читатели данной книги должны сами сделать заключение о достоинствах
+функционального стиля.  Мы не хотим навязывать никакую идеологию,
+только хотим показать, что {\em существуют} разные подходы к
+программированию, и что в соответствующих ситуациях, функциональное
+программирование может иметь значительные достоинтства.  Большинство
+наших примеров выбрано из областей, которые могут быть определены как
+`символьные вычисления'.  Мы верим, что функциональные программы
+успешно работают в таких приложениях.  Однако, как всегда, человек
+должен использовать наиболее подходящие для работы инструменты.  Может
+быть, что императивное, объектно-ориентированное или логическое
+программирование лучше подходят для определенныз задач.
 
-For those used to imperative programming, the transition to functional
-programming is inevitably difficult, whatever approach is taken. While some
-will be impatient to get quickly to real programming, we have chosen to start
-with lambda calculus, and show how it can be seen as the theoretical
-underpinning for functional languages. This has the merit of corresponding
-quite well to the actual historical line of development.
+\section{Конспект}
 
-So first we introduce lambda calculus, and show how what was originally
-intended as a formal logical system for mathematics turned out to be a
-completely general programming language. We then discuss why we might want to
-add types to lambda calculus, and show how it can be done. This leads us into
-ML, which is essentially an extended and optimized implementation of typed
-lambda calculus with a certain evaluation strategy. We cover the practicalities
-of basic functional programming in ML, and discuss polymorphism and most
-general types. We then move on to more advanced topics including exceptions and
-ML's imperative features. We conclude with some substantial examples, which we
-hope provide evidence for the power of ML.
+Для тех, кто использовал императивное программирование, переход к
+функциональному будет неизбежно тяжел, независимо от используемого
+подхода.  Хотя есть люди, которые  нетерпеливо ожидают перехода
+к настоящему программированию, мы выбрали другой подход~--  мы начнем
+с $lambda$-исчисления, и покажем как оно может быть использовано как
+теоретическая основа для функциональных языков.  Этот подход имеет
+достоинство, поскольку он хорошо соответствует акутальной истории
+разработки функциональных языков.
+
+Так что сначала мы введем $lambda$-исчисление, и покажем как то, что в
+оригинале предназначалось как формальная логическая система для
+математики превратилось в язык программрования общего назначения.
+Затем мы обсудим, зачем мы можем добавить типы в $lambda$-исчисление,
+и как это может быть сделано.  Это приведет нас к ML, который по
+существу является оптимизованной реализацией типизированного
+$lambda$-исчисления с определенной стратегией вычисления выражений.
+Мы рассмотрим практические основы функционального программирования на
+ML, и обсудим полиморфищм и основные типы данных.  Затем мы перейдем к
+более сложным темам, таким как исключения и императивные возможности
+ML.  В заключение, мы приведем несколько реальных примеров, которые,
+как мы надеемся, обеспечат доказательство мощности ML.
 
 \section*{Дополнительная литература}
 
-Numerous textbooks on `functional programming' include a general introduction
-to the field and a contrast with imperative programming --- browse through a
-few and find one that you like. For example, \citeN{henson-book} contains a
-good introductory discussion, and features a similar mixture of theory and
-practice to this text. A detailed and polemical advocacy of the functional
-style is given by \citeN{backus-liberated}, the main inventor of FORTRAN.
-\citeN{gordon-io} discusses the problems of incorporating input-output into
-functional languages, and some solutions. Readers interested in denotational
-semantics, for imperative and functional languages, may look at
-\citeN{winskel-sem}.
+Существует бесчисленное количество книг о `функциональном
+программировании', включая общее введение и описание отличий от
+императивного программрования~-- просмотрите несколько и выберите ту,
+которая вам нравится.  Например, \citeN{henson-book} содержит хорошее
+вводное обсуждение, и содержит хорошую смесь теории и практики.
+Детальная и спорная пропаганда функционального стиля программирования
+приведена в \citeN{backus-liberated}, главного вдохновителя FORTRAN.
+\citeN{gordon-io} обсуждает проблемы введения ввода-вывода в
+функциональные языки, а также приводит некоторые решения.  Читатели,
+заинтересовавшиеся денотационной семантикой для императивных и
+функциональных языков, могут прочитать \citeN{winskel-sem}.
 
 %%% Local Variables:
 %%% TeX-master: "all"
