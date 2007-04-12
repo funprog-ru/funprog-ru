@@ -244,8 +244,8 @@
 %even to this day, as a foundation for mathematics.
 
 В настоящее время теория типов рассматривается как {\em альтернатива}
-теории множеств в роли основания.  Есть интересные связи между теорией
-типов и программированием (Мартин-Лёф и другие).
+теории множеств в роли основания математики.  Есть интересные связи
+между теорией типов и программированием (Мартин-Лёф и другие).
 %Type theory is now seen as an {\em alternative} to set theory as a foundation.
 %There are interesting links between type theory and programming (Martin-L\"of
 %and others).
@@ -257,7 +257,7 @@
 
 \begin{rslide}
 
-\heading{Программное обоснование типов}
+\heading{Обоснование типов в программировании}
 %\heading{Programming reasons for types}
 
 \vspace*{0.5cm}
@@ -288,8 +288,8 @@
 
 \end{itemize}
 
-В то же время некоторые программисты находят их как раздражающее
-ограничение.  Как нам достичь оптимального баланса?
+В то же время некоторые программисты считают их раздражающим
+ограничением.  Как нам достичь оптимального баланса?
 %At the same time, some programmers find them an irksome restriction. How can we
 %achieve the best balance?
 
@@ -355,8 +355,8 @@ ML статически и сильно типизирован.  В то же время возможность {\em
 
 
 Допустим, что у нас есть некий набор {\red $Ptys$} константных
-типов, например {\red \tt int} и {\red \tt bool}, и мы можем составлять
-новые типы из них, используя конструктор функциональных типов,
+типов, например {\red \tt int} и {\red \tt bool}, и мы можем создавать
+из них новые типы, используя конструктор функциональных типов,
 например
 {\red $$ \mbox{int} \to \mbox{int} $$}
 и
@@ -484,7 +484,7 @@ ML статически и сильно типизирован.  В то же время возможность {\em
 
 \vspace*{0.5cm}
 
-Тут термы такие же, как были раньше; и есть отдельное понятие
+Здесь термы такие же, как и были раньше; кроме того, есть отдельное понятие
 типизирования.  Всё типизирование является {\em неявным}, и у терма
 может быть много типов.  Мы используем {\em контекст} {\red $\Gamma$},
 который задаёт назначение типов для переменных и констант:
@@ -623,7 +623,7 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
 
 \vspace*{0.5cm}
 
-Описанная выше система продолжает работать, если мы добавим ещё
+Описанная выше система продолжает работать, если мы добавим 
 примитивных типов и конструкторов типов.
 %The above system still works if we add more primitive types and type
 %constructors.
@@ -873,7 +873,7 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
 %normal form and all reduction sequences terminate in that normal form. This
 %property is known as {\em strong normalization}.
 
-Это просто отлично~--- любая программа завершается.  Однако, это
+Это замечательно~--- любая программа завершается.  Однако, это
 означает, что мы не можем написать все вычислимые, или даже все
 интересные, функции.  Нам надо что-то добавить.
 %This sounds good --- every program terminates. Unfortunately this means that we
@@ -897,7 +897,7 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
 %could create non-terminating functions.
 
 Очевидно, что функция {\red $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$}
-не полностью типизирована, так как она применяет {\red $x$} к самому себе.
+не полностью типизирована, так как она применяет {\red $x$} к самой себе.
 %Clearly {\red $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$} isn't
 %well-typed because it applies {\red $x$} to itself.
 
