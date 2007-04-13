@@ -1,64 +1,76 @@
-\chapter{A taste of ML}
+\chapter{``Вкус'' ML}
 
-In the last few chapters, we have started with pure lambda calculus and
-systematically extended it with new primitive features. For example we added
-the `let' construct as primitive for the sake of making the polymorphic
-typing more useful, and a recursion operation in order to restore the
-computational power that was lost when adding types. By travelling further
-along this path, we will eventually arrive at ML, although it's still valuable
-to retain the simple worldview of typed lambda calculus.
+В предыдущих главах мы начали с чистого $lambda$-исчисления, а затем
+систематически расширяли его новыми возможностями.  Например, мы
+добавили конструкцию `let' как примитив, чтобы сделать полиморфическое
+типизирование более полезным, а также оператор рекурсии, для того,
+чтобы восстановить мощь вычислений, которая была потеряна после
+введения типов.  Двигаясь дальше по этому пути, мы в конечном счете
+достигли ML, при этом имея возможность простого взгляда на мир
+используя типизированное $lambda$-исчисление.
 
-The next stage is to abandon the encodings of datatypes like booleans and
-natural numbers via lambda terms, and instead make them primitive. That is, we
-have new primitive types like {\tt bool} and {\tt int} (actually positive and
-negative integers) and new type constructors like $\times$, a step we have in
-many ways anticipated in the last chapter. Associated with these are new
-constants and new conversion rules. For example, the expression $2 + 2$ is
-evaluated using machine arithmetic, rather than by translation into Church
-numerals and performing $\beta$-conversions. These additional conversions,
-regarded as augmenting the usual lambda operations, are often referred to as
-`$\delta$-conversions'. We will see in due course how the ML language is
-extended in other ways in comparison with pure lambda calculus. First, we must
-address the fundamental question of ML's evaluation strategy.
+Следующей стадией является избавление от выражения таких типов данных
+как логические значения и натуральные числа через $lambda$-термы, и
+создания примитивов для них.  Так что мы получим новые примитивные
+типы, такие как {\tt bool} и {\tt int} (положительные и отрицательные
+целые числа) и новые конструктора типов, такие как $\times$,~--- шаг,
+который мы пречувствовали в последней главе.  С этими изменениями
+также связаны новые константы и новые правила преобразования.
+Например, выражение $2 + 2$ вычисляется с использованием машинной
+арифметики, вместо преобразования его в нумералы Черча и выполнения
+$\beta$-преобразований.  Эти допольнительные преобразования,
+рассматриваемые как расширение обычных $lambda$-операций, часто
+называются `$\delta$-преобразованиями'.  Мы увидим в течении курса как
+язык ML расширен по сравнению с чистым $lambda$-исчислением.  Первым
+делом мы должны обратиться к фундаментальному вопросу стратегии оценки
+выражений ML.
 
-\section{Eager evaluation}
+\section{Энергичное вычисление}
 
-We have said that from a theoretical point of view, normal order (top down
-left-to-right) reduction of expressions is to be preferred, since if any
-strategy terminates, this one will.\footnote{This strategy is familiar from a
-few traditional languages like Algol 60 where it is referred to as {\em call by
-name}.} However it has some practical defects. For example, consider the
-following:
+Мы сказали, что с теоретической точки зрения, нормальный порядок
+(сверху вниз, слева направо) редукции выражений более предпочтителен,
+поскольку, если любая стратегия завершается, то она и будет выбрана
+(???this one will).\footnote{Эта стратегия подобна некоторым,
+  используемым в традиционных языках, таких как Algol 60, где на нее
+  ссылались как на {\em вызов по имени}.}  Однако, этот подход имеет
+некоторые практические дефекты.  Например, рассмотрим следуюшее
+выражение:
 
 $$ (\lamb{x} x + x + x)\; (10 + 5) $$
 
-A normal order reduction results in $(10 + 5) + (10 + 5) + (10 + 5)$, and the
-following reduction steps need to evaluate three separate instances of the same
-expression. This is unacceptable in practice. There are two main solutions to
-this problem, and these solutions divide the world of functional programming
-languages into two camps.
+При использовании нормального порядка редукции мы получаем $(10 + 5) +
+(10 + 5) + (10 + 5)$, и на следующих шагах редукции мы должны
+вычислить три отдельных вхождения (??? instances) одного и того же
+выражения.  На практике это совершенно недопустимо.  Существует два
+основных решения данной проблемы, эти решения делят мир
+функционального программирования на два лагеря.
 
-The first alternative is to stick with normal order reduction, but attempt to
-optimize the implementation so multiple subexpressions arising in this way are
-shared, and never evaluated more than once. Internally, expressions are
-represented as directed acyclic graphs rather than as trees. This is known as
-{\em lazy} or {\em call-by-need} evaluation, since expressions are only
-evaluated when absolutely necessary.
+Первым решением является придерживание нормального порядка редукции,
+но при этом пытаться оптимизовать реализацию так, чтобы множественные
+подвыражения, возникающие при таком подходе, использовались совместно,
+и никогда не вычислялись более одного раза.  Внутри выражения
+представляются как связанные ацикличные графы, а не деревья.  Этот
+подход известен как {\em ленивое (lazy)} или {\em вызов по
+  необходимости (call-by-need)} вычисление, поскольку выражения
+вычисляются только тогда, когда они необходимы.
 
-The second approach is to turn the theoretical considerations about reduction
-strategy on their head and evaluate arguments to functions before passing the
-values to the function. This is known as {\em applicative order} or {\em eager}
-evaluation. The latter name arises because function arguments are evaluated
-even when they may be unnecessary, e.g. $t$ in $(\lamb{x} y)\; t$. Of course,
-eager evaluation means that some expressions may loop that would terminate in a
-lazy regime. But this is considered acceptable, since these instances are
-generally easy to avoid in practice. In any case, an eager evaluation strategy
-is the standard in many programming languages like C, where it is referred to
-as {\em call by value}.
+Вторым решением является попытка перевернуть теоретические размышления
+о стратегии редукции с ног на голову, и вычислять аргументы функции до
+передачи значений.  Этот подход известен как {\em аппликативный
+  порядок} или {\em энергичное} вычисление.  Последнее имя возникло
+из-за того, что аргументы функции вычисляются даже тогда, когда они не
+нужны, например, $t$ в $(\lamb{x} y)\; t$.  Конечно, энергичное
+вычисление означает, что некоторые выражения могут зацикливаться,
+тогда как они могут завершаться при работе в ленивом режиме.  Но это
+считается допустими, поскольку этих вещей достаточно легко избежать на
+практике.  В любом случае, стратегия энергичного вычисления является
+стандартной для многих языков программирования, таких как C, где на
+нее ссылаются как на {\em вызов по значению (call by value)}.
 
-ML adopts eager evaluation, for two main reasons. Choreographing the reductions
-and sharings that occur in lazy evaluation is quite tricky, and implementations
-tend to be relatively inefficient and complicated. Unless the programmer is
+ML использует энергичное вычисление по двум основным причинам.
+Управление редукцией и совместным использованием, которое возникает
+при ленивом вычислении, является достаточно сложным, и реализация
+может быть относительно неэффективной и усложненной.  Unless the programmer is
 very careful, memory can fill up with pending unevaluated expressions, and in
 general it is hard to understand the space behaviour of programs. In fact many
 implementations of lazy evaluation try to optimize it to eager evaluation in
@@ -221,7 +233,7 @@ However, we will be teaching quite general techniques, and any code we write
 can be run with a few minor syntactic changes in any version of ML, and indeed
 often in other functional languages.
 
-\section{Starting up ML}
+\section{Запуск ML}
 
 ML has already been installed on Thor. In order to use it, you need to put the
 CAML binary directory on your {\tt PATH}. This can be done (assuming you use
@@ -253,7 +265,7 @@ should consult the following Web page for detailed information:
   http://pauillac.inria.fr/caml/
 \end{verbatim}\end{boxed}
 
-\section{Interacting with ML}
+\section{Взаимодействие с ML}
 
 When ML presents you with its prompt, you can type in expressions, terminated
 by two successive semicolons, and it will evaluate them and print the result.
