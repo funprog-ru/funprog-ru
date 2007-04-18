@@ -70,61 +70,71 @@ $$ (\lamb{x} x + x + x)\; (10 + 5) $$
 ML использует энергичное вычисление по двум основным причинам.
 Управление редукцией и совместным использованием, которое возникает
 при ленивом вычислении, является достаточно сложным, и реализация
-может быть относительно неэффективной и усложненной.  Unless the programmer is
-very careful, memory can fill up with pending unevaluated expressions, and in
-general it is hard to understand the space behaviour of programs. In fact many
-implementations of lazy evaluation try to optimize it to eager evaluation in
-cases where there is no semantic difference.\footnote{They try to perform {\em
-strictness analysis}, a form of static analysis that can often discover that
-arguments are necessarily going to be evaluated \cite{mycroft-thesis}.} By
-contrast, in ML, we always first evaluate the arguments to functions and only
-then perform the $\beta$-reduction --- this is simple and efficient, and is
-easy to implement using standard compiler technology.
+может быть относительно неэффективной и усложненной.  Если программист
+не особо заботлив, то память может заполниться невычисленными
+выражениями, и в общем тяжело понять потребление памяти программами.
+В действительности, многие реализации ленивого вычисления стараются
+оптимизовать их, путем использования энергичных вычислений в тех
+местах, где семантика не отличается.\footnote{Они стараются выполнить
+  {\em анализ строгости}~--- один из видов статического анализа,
+  который часто помогает определить, что аргументы должны быть
+  вычислены \cite{mycroft-thesis}.}  В противоположность этому, в ML
+мы всегда сначала вычисляем аргументы функций, и только затем
+выполняем $\beta$-редукцию~--- это просто и эффективно, и легко
+реализуется с использованием стандартных технологий построения
+компиляторов.
 
-The second reason for preferring applicative order evaluation is that ML is not
-a {\em pure} functional language, but includes imperative features (variables,
-assignments etc.). Therefore the order of evaluation of subexpressions can make
-a {\em semantic} difference, rather than merely affecting efficiency. If lazy
-evaluation is used, it seems to become practically impossible for the
-programmer to visualize, in a nontrivial program, exactly when each
-subexpression gets evaluated. In the eager ML system, one just needs to
-remember the simple evaluation rule.
+Второй причиной для выбора аппликативного порядка вычислений является
+то, что ML не является {\em чистым} функциональным языком, а имеет
+императивные возможности (переменные, присваивание и т.п.).
+Следовательно, порядок вычисления подвыражений может сделать {\em
+  семантику} отличающейся, а не просто затрагивает эффективность.
+Если используется ленивое вычисление, то для программиста становится
+практически невозможным показать (в нетривиальной программе) когда
+какое подвыражение вычисляется.  В энергичной системе ML, нужно лишь
+помнить простое правило вычисления.
 
-It is important to realize, however, that the ML evaluation strategy is {\em
-not} simply bottom-up, the exact opposite of normal order reduction. In fact,
-ML {\em never evaluates underneath a lambda}. (In particular, it never reduces
-$\eta$-redexes, only $\beta$-redexes.) In evaluating $(\lamb{x} s[x])\; t$, $t$
-is evaluated first. However $s[x]$ is not touched since it is underneath a
-lambda, and any subexpressions of $t$ that happen to be in the scope of a
-lambda are also left alone. The precise evaluation rules are as follows:
+Однако важно осозновать, что стратегия вычислений ML  {\em не} просто
+снизу-вверх, в противоположность нормальному порядку редукции. В
+действительности ML {\em никогда не вычисляет содержимое
+  $lambda$-выражений}.  (В частности, он не когда не
+редуцирует$\eta$-???redexes, в только $\beta$-???redexes.)  При
+вычислении  $(\lamb{x} s[x])\; t$, сначала вычисляется $t$.  Однако
+$s[x]$ не затрагивается, поскольку оно является содержимым
+$lambda$-выражения.  Кроме того, любое подвыражение  $t$, которое
+является содержимым $lambda$-выражения, также остается нетронутым.
+Вот точные правила вычисления:
 
 \begin{itemize}
 
-\item Constants evaluate to themselves.
+\item Константы вычисляются сами в себя.
 
-\item Evaluation stops immediately at $\lambda$-abstractions and does not look
-inside them. In particular, there is no $\eta$-conversion.
+\item Вычисления заканчиваются на $\lambda$-абстракциях, и не
+  затрагивают их содержимого.  В частности, не выполняется
+  $\eta$-преобразование.
 
-\item When evaluating a combination $s\; t$, then {\em first} both $s$ and
-$t$ are evaluated. Then, assuming that the evaluated form of
-$s$ is a lambda abstraction, a toplevel $\beta$-conversion is performed
-and the process is repeated.
+\item При вычислении комбинации $s\; t$ {\em сначала} вычисляются и
+  $s$ и $t$. Предполагая, что вычисляемая форма $s$ является
+  $lambda$-абстракцией, то выполняется $\beta$-преобразование верхнего
+  уровня, и процесс повторяется.
 
 \end{itemize}
 
-The order of evaluation of $s$ and $t$ varies between versions of ML. In the
-version we will use, $t$ is always evaluated first. Strictly, we should also
-specify a rule for {\tt let} expressions, since as we have said they are by now
-accepted as a primitive. However from the point of view of evaluation they can
-be understood in the original way, as a lambda applied to an argument, with the
-understanding that the rand will be evaluated first. To make this explicit, the
-rule for
+Порядок вычисления $s$ и $t$ отличается в зависимости от версии ML.  В
+той версии, которую мы будем использовать, сначала всегда
+вычисляется~$t$.  Строго говоря, мы также должны задать правило для
+{\tt let}-выражений, поскольку, как упоминалось, они теперь
+рассматриваются как примитивы.  Однако, с точки зрения вычислений, они
+могут рассматриваться как обычно, как $lambda$-выражения, примененные
+к аргументу, с понимаем того, что  rand???? будет вычислен первым.
+Для того, чтобы сделать это явным, правило для 
 
 $$ \mbox{let}\; x = s\; \mbox{in}\; t $$
 
-\noindent is that first of all $s$ is evaluated, the resulting value is
-substituted for $x$ in $t$, and finally the new version of $t$ is evaluated.
-Let us see some examples of evaluating expressions:
+\noindent гласит, что сначала вычисляются все $s$, а результат
+подставляется вместо $x$ в $t$, и в заключение, вычисляется новое
+значение $t$.  Давайте рассмотрим некоторые примеры вычисления
+выражений:
 
 \begin{eqnarray*}
 (\lamb{x} (\lamb{y} y + y)\; x) (2 + 2)
@@ -134,11 +144,11 @@ Let us see some examples of evaluating expressions:
 & \goesto & 8
 \end{eqnarray*}
 
-Note that the subterm $(\lamb{y} y + y)\; x$ is {\em not reduced}, since it is
-within the scope of a lambda. However, terms that are reducible and {\em not}
-enclosed by a lambda in both function and argument get reduced before the
-function application itself is evaluated, e.g. the second step in the
-following:
+Заметьте, что подтерм $(\lamb{y} y + y)\; x$ is {\em не редуцируется},
+поскольку он находится внутри $lambda$-выражения.  Однако,
+что редуцируемые термы, \emph{не} находящиеся внутри $lambda$-выражений
+обоих функций, а также аргумент, редуцируются до того, как вычисляется
+применения функции, например, второй шаг будет следующим:
 
 \begin{eqnarray*}
 ((\lamb{f\; x} f\; x)\; (\lamb{y} y + y))\; (2 + 2)
@@ -148,37 +158,41 @@ following:
 & \goesto & 4 + 4
 \end{eqnarray*}
 
-The fact that ML does not evaluate under lambdas is of crucial importance to
-advanced ML programmers. It gives precise control over the evaluation of
-expressions, and can be used to mimic many of the helpful cases of lazy
-evaluation. We shall see a very simple instance in the next section.
+Факт, что ML не вычисляет внутри $lambda$-выражений, является ключевым
+для высококвалифицированных программистов на ML.  Это дает возможность
+точного контроля за вычислением выражений, и может использоваться для
+имитации многих полезных вещей из стратегии ленивого вычисления.  Мы
+увидим очень простые примеры в следующем разделе.
 
-\section{Consequences of eager evaluation}
+\section{Результаты энергичного вычисления}
 
-The use of eager evaluation forces us to make additional features primitive,
-with their own special reduction procedures, rather than implementing them
-directly in terms of lambda calculus. In particular, we can no longer regard
-the conditional construct:
+Использование энергичного вычисления заставляет нас объявить некоторые
+дополнительные возможности как примитивы, с их собственными
+специальными процедурами редукции, вместо того, чтобы реализовать их
+напрямую, в терминах $lambda$-исчисления.  В частности, мы не можем
+больше рассматривать условную конструкцию:
 
 $$ \mbox{if}\; b\; \mbox{then}\; e_1\; \mbox{else}\; e_2 $$
 
-\noindent as the application of an ordinary ternary operator:
+\noindent как применение обычного трехкомпонентного (тернарного) оператора:
 
 $$ \mbox{COND}\; b\; e_1\; e_2 $$
 
-The reason is that in any particular instance, because of eager evaluation, we
-evaluate all the expressions $b$, $e_1$ and $e_2$ first, before evaluating the
-body of the $\mbox{COND}$. Usually, this is disastrous. For example, recall our
-definition of the factorial function:
+Причина заключается в том, что в любом случае, из-за применения
+энергичного вычисления, мы вычисляем все выражения $b$, $e_1$ и $e_2$,
+\emph{до} вычисления содержимого $\mbox{COND}$.  Обычно это пагубно.
+Например, заново рассмотрим наше определение функции для вычисления
+факториала:
 
 $$ \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
                             \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
 
-If the conditional evaluates all its arguments, then in order to evaluate
-$\mbox{fact}(0)$, the `else' arm must be evaluated, in its turn causing
-$\mbox{fact}(\mbox{PRE}\; 0)$ to be evaluated. This in its turn causes the
-evaluation of $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\; 0))$, and so on.
-Consequently the computation will loop indefinitely.
+Если условие будет вычислять все свои аргументы, то для вычисления 
+$\mbox{fact}(0)$, ветвь `else' также должна быть вычислена, что
+в свою очередь вызывает вычисление $\mbox{fact}(\mbox{PRE}\; 0)$.  И
+это в свою очередь вызывает вычисление $\mbox{fact}(\mbox{PRE}\;
+(\mbox{PRE}\; 0))$, и т.д.  Соответственно, вычисление превратиться в
+бесконечный цикл.
 
 Accordingly, we make the conditional a new primitive construct, and modify the
 usual reduction strategy so that {\em first} the boolean expression is
