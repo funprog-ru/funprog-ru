@@ -183,21 +183,28 @@
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
+%Topics covered:
 
 \begin{itemize}
 
-\item From lambda calculus to ML
+\item От $\lambda$-исчисления к ML
+%\item From lambda calculus to ML
 
-\item Eager evaluation and its consequences
+\item Энергичное вычисление и его значимость
+%\item Eager evaluation and its consequences
 
-\item The ML family
+\item Семейство языков ML
+%\item The ML family
 
-\item Starting up ML
+\item Запускаем ML
+%\item Starting up ML
 
-\item Basic interaction; expressions and declarations
+\item Основное взаимодействие; выражения и объявления
+%\item Basic interaction; expressions and declarations
 
-\item Examples
+\item Примеры
+%\item Examples
 
 \end{itemize}
 
@@ -208,42 +215,61 @@ Topics covered:
 
 \begin{rslide}
 
-\heading{From $\lambda$-calculus to ML}
+\heading{От $\lambda$-исчисления к ML}
+%\heading{From $\lambda$-calculus to ML}
 
 \vspace*{0.5cm}
 
-We have already added some new primitive features to $\lambda$-calculus for
-various reasons, e.g.
+По ряду причин мы уже добавили некоторые примитивные возможности в
+$\lambda$-исчисление, например:
+%We have already added some new primitive features to $\lambda$-calculus for
+%various reasons, e.g.
 
 \begin{itemize}
 
-\item The {\tt let} construct as primitive to make the
-polymorphic type system more powerful.
+\item Примитивную конструкцию {\tt let}, чтобы полиморфическая система
+  типов была более мощной.
+%\item The {\tt let} construct as primitive to make the
+%polymorphic type system more powerful.
 
-\item The recursion operator in order to regain Turing completeness in a typed
-setting.
+\item Оператор рекурсии, чтобы восстановить полноту по Тьюрингу в
+  типизированном окружении.
+%\item The recursion operator in order to regain Turing completeness in a typed
+%setting.
 
 \end{itemize}
 
-This process continues until we reach ML. Notably, basic datatypes are not
-implemented as $\lambda$-terms.
+Так будет продолжаться пока мы не построим ML.  Особенно
+интересно, что основные типы данных не реализованы в виде
+$\lambda$-термов.
+%This process continues until we reach ML. Notably, basic datatypes are not
+%implemented as $\lambda$-terms.
 
-For example, {\red $2 + 2 \goesto 4$} happens by machine arithmetic, not by
-manipulating Church numerals. These extra reduction rules are often called
-{\em $\delta$-conversions}.
+Например, преобразование {\red $2 + 2 \goesto 4$} происходит благодаря машинной
+арифметике, а не манипулированию нумералами Чёрча.  Такие
+дополнительные правила преобразования часто называют {\em
+  $\delta$-конверсии}.
+%For example, {\red $2 + 2 \goesto 4$} happens by machine arithmetic, not by
+%manipulating Church numerals. These extra reduction rules are often called
+%{\em $\delta$-conversions}.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Problem with normal order}
+\heading{Проблема с нормальным порядком}
+%\heading{Problem with normal order}
 
 \vspace*{0.5cm}
 
-We have said that {\em normal order reduction} (`call by name') is the best
-reduction strategy, because if any strategy terminates, that one does. Recall
-the example where this strategy terminates but others don't:
+Мы уже сказали, что {\em нормальный порядок редукции} (`вызов по
+имени') является наилучшей редукционной стратегией, потому что если
+хоть какая-то стратегия завершается, то эта тоже.  Вспомните пример
+когда эта стратегия завершается, а другие нет:
+%We have said that {\em normal order reduction} (`call by name') is the best
+%reduction strategy, because if any strategy terminates, that one does. Recall
+%the example where this strategy terminates but others don't:
 \begin{red}
 \begin{eqnarray*}
 & & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)) \\
@@ -252,12 +278,16 @@ the example where this strategy terminates but others don't:
 & \goesto & \cdots
 \end{eqnarray*}
 \end{red}
-However, there is an efficiency problem:
+Однако, встаёт вопрос эффективности:
+%However, there is an efficiency problem:
 {\red $$ (\lamb{x} x + x + x)\; (10 + 5) $$}
-A normal order reduction gives
+Нормальный порядок редукции даст
+%A normal order reduction gives
 {\red $$ (10 + 5) + (10 + 5) + (10 + 5) $$}
-Then we need to evaluate three different instances of the same expression! If
-we evaluated the argument {\red $10 + 5$} first, it would be more efficient.
+Нам придётся три раза вычислять одно и тоже выражение!  Было бы
+эффективнее сначала вычислить аргумент {\red $10 + 5$}.
+%Then we need to evaluate three different instances of the same expression! If
+%we evaluated the argument {\red $10 + 5$} first, it would be more efficient.
 
 \end{rslide}
 
@@ -265,56 +295,83 @@ we evaluated the argument {\red $10 + 5$} first, it would be more efficient.
 
 \begin{rslide}
 
-\heading{Lazy versus eager}
+\heading{Ленивое и энергичное вычисление}
+
+%\heading{Lazy versus eager}
 
 \vspace*{0.5cm}
 
-This reevaluation is unacceptable in practice. There are two solutions, which
-split the world of functional programming:
+Такие повторения вычислений недопустимы на практике.  Существует два решения
+проблемы, которые разбивают мир функционального программирования:
+%This reevaluation is unacceptable in practice. There are two solutions, which
+%split the world of functional programming:
 
 \begin{itemize}
 
-\item {\bf Lazy evaluation} keeps normal order reduction but also uses clever
-sharing techniques, storing expressions as a graph. In this way, an expression
-is never evaluated until needed, and never more than once.
+\item {\bf Ленивое вычисление} выполняет нормальный порядок редукции,
+  но также использует хитрую технику разделения выражений, сохраняя их в
+  виде графа.  При таком способе выражения вычисляются только один раз
+  и только когда это понадобится.
+%\item {\bf Lazy evaluation} keeps normal order reduction but also uses clever
+%sharing techniques, storing expressions as a graph. In this way, an expression
+%is never evaluated until needed, and never more than once.
 
-\item {\bf Eager evaluation} simply evaluates the arguments first (`applicative
-order reduction'), and the programmer is expected to avoid looping instances.
+\item {\bf Энергичное вычисление} просто вычисляет сперва аргументы
+  (`аппликативный порядок редукции'), и сам программист должен следить,
+  чтобы не было зацикливаний.
+%\item {\bf Eager evaluation} simply evaluates the arguments first (`applicative
+%order reduction'), and the programmer is expected to avoid looping instances.
 
 \end{itemize}
 
-In some ways lazy evaluation is more elegant and powerful. However it is not
-easy to implement efficiently, and does not interact well with imperative
-features.
+В некотором роде ленивое вычисление элегантнее и мощнее.
+Однако, его не так просто реализовать и связать с императивными
+возможностями.
+%In some ways lazy evaluation is more elegant and powerful. However it is not
+%easy to implement efficiently, and does not interact well with imperative
+%features.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{ML's evaluation strategy}
+\heading{Стратегия вычисления в ML}
+%\heading{ML's evaluation strategy}
 
 \vspace*{0.5cm}
 
-ML implements eager evaluation. However, as we shall see, there are ways of
-achieving many of the benefits of laziness. The evaluation rules are:
+В ML реализовано энергичное вычисление.  Однако, как мы увидим, есть
+способы добиться многих преимуществ ленивых вычислений.  Правила
+вычислений следующие:
+%ML implements eager evaluation. However, as we shall see, there are ways of
+%achieving many of the benefits of laziness. The evaluation rules are:
 
 \begin{itemize}
 
-\item Constants evaluate to themselves
+\item Константы вычисляются в самих себя.
+%\item Constants evaluate to themselves
 
-\item Evaluation stops immediately at $\lambda$-abstractions and does not look
-inside them. In particular, there is no $\eta$-conversion.
+\item Выражения под $\lambda$-абстракциями не вычисляются.  В
+  частности, тут нет $\eta$-конверсии.
+%\item Evaluation stops immediately at $\lambda$-abstractions and does not look
+%inside them. In particular, there is no $\eta$-conversion.
 
-\item When evaluating a combination {\red $s\; t$}, then {\em first} both {\red
-$s$} and {\red $t$} are evaluated. Then, assuming that the evaluated form of
-{\red $s$} is a lambda abstraction, a toplevel $\beta$-conversion is performed
-and the process is repeated.
+\item При вычислении комбинации {\red $s\; t$} {\em сначала}
+  вычисляются оба {\red $s$} и {\red $t$}.  Потом, при условии, что
+  вычисление {\red $s$} дало $\lambda$-абстракцию, производится
+  самая внешняя $\beta$-конверсия, и процесс продолжается.
+%\item When evaluating a combination {\red $s\; t$}, then {\em first} both {\red
+%$s$} and {\red $t$} are evaluated. Then, assuming that the evaluated form of
+%{\red $s$} is a lambda abstraction, a toplevel $\beta$-conversion is performed
+%and the process is repeated.
 
 \end{itemize}
 
-It is important to grasp this evaluation strategy in order to understand ML
-properly.
+Что бы правильно понимать работу ML, важно хорошо усвоить эти правила
+вычислений.
+%It is important to grasp this evaluation strategy in order to understand ML
+%properly.
 
 \end{rslide}
 
@@ -322,7 +379,8 @@ properly.
 
 \begin{rslide}
 
-\heading{Examples}
+\heading{Примеры}
+%\heading{Examples}
 
 \vspace*{0.5cm}
 
@@ -350,23 +408,34 @@ properly.
 
 \begin{rslide}
 
-\heading{The conditional}
+\heading{Условное выражение}
+%\heading{The conditional}
 
 \vspace*{0.5cm}
 
-Because of eager evaluation, we need to make the conditional primitive with its
-own special reduction strategy. If we tried to implement
+Из-за энергичного вычисления нам необходимо создать примитив~--
+условное выражение с собственной редукционной стратегией.  Если мы
+попытаемся реализовать
+%Because of eager evaluation, we need to make the conditional primitive with its
+%own special reduction strategy. If we tried to implement
 {\red $$ \mbox{if}\; b\; \mbox{then}\; e_1\; \mbox{else}\; e_2 $$}
-as the application of a normal ternary operator:
+как применение обычного тернарного оператора:
+%as the application of a normal ternary operator:
 {\red $$ \mbox{COND}\; b\; e_1\; e_2 $$}
-then most interesting cases would loop, because $b$, $e_1$ and $e_2$ are {\em
-all} evaluated before the value of $b$ is used. Consider:
+то самые интересные случаи будут зациклены, так как {\em все} $b$, $e_1$
+и $e_2$ вычисляются до того, как вычисленное значение $b$ будет
+использовано.  Рассмотрим:
+%then most interesting cases would loop, because $b$, $e_1$ and $e_2$ are {\em
+%all} evaluated before the value of $b$ is used. Consider:
 {\red $$ \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\;
                            \mbox{then}\; 1\\
          \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) \EA $$}
-If we want {\red $\mbox{fact}(0)$}, we need to evaluate {\red
-$\mbox{fact}(\mbox{PRE}\; 0)$}, {\red $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\;
-0))$}, and so on.
+Если мы хотим вычислить {\red $\mbox{fact}(0)$}, то нам надо будет
+вычислить {\red $\mbox{fact}(\mbox{PRE}\; 0)$}, {\red
+  $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\; 0))$} и так далее.
+%If we want {\red $\mbox{fact}(0)$}, we need to evaluate {\red
+%$\mbox{fact}(\mbox{PRE}\; 0)$}, {\red $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\;
+%0))$}, and so on.
 
 \end{rslide}
 
@@ -374,25 +443,37 @@ $\mbox{fact}(\mbox{PRE}\; 0)$}, {\red $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\;
 
 \begin{rslide}
 
-\heading{New primitives}
+\heading{Новые примитивы}
+%\heading{New primitives}
 
 \vspace*{0.5cm}
 
-Because of eager evaluation, we make two changes.
+Из-за энергичного вычисления мы делаем два изменения.
+%Because of eager evaluation, we make two changes.
 
 \begin{itemize}
 
-\item We make the conditional statement a primitive of the language, and modify
-the standard evaluation strategy so that {\em first} the boolean expression is
-evaluated, and only then is {\em exactly one} of the two arms evaluated, as
-appropriate.
+\item Мы делаем условное выражение примитивой языка и изменяем
+  стандартную стратегию вычислений для него таким образом, что {\em сначала}
+  вычисляется булево выражение, а потом {\em только один} из нужных
+  рукавов.
+%\item We make the conditional statement a primitive of the language, and modify
+%the standard evaluation strategy so that {\em first} the boolean expression is
+%evaluated, and only then is {\em exactly one} of the two arms evaluated, as
+%appropriate.
 
-\item We also slightly modify the reduction rule for the recursion operator.
-Instead of:
+\item Мы также немного поменяем правило редукции для оператора
+  рекурсии.
+Вместо:
+%\item We also slightly modify the reduction rule for the recursion operator.
+%Instead of:
 {\red $$ Rec\; f \goesto f(Rec\; f) $$}
-we use
+мы используем
+%we use
 {\red $$ Rec\; f \goesto f(\lamb{x} Rec\; f\; x) $$}
-This avoids looping because ML will not evaluate inside the lambda.
+Благодаря этому мы избежим зацикливаний, так так ML не будет вычислять
+выражения под $\lambda$-абстракцией.
+%This avoids looping because ML will not evaluate inside the lambda.
 
 \end{itemize}
 
@@ -402,30 +483,37 @@ This avoids looping because ML will not evaluate inside the lambda.
 
 \begin{rslide}
 
-\heading{The ML family}
+\heading{Семейство языков ML}
+%\heading{The ML family}
 
 \vspace*{0.5cm}
 
-ML is not a single language. There are many descendants of the original ML used
-as the metalanguage of Edinburgh LCF:
+ML это не один язык.  Есть множество потомков первого ML, который
+использовался как метаязык в Edinburgh LCF:
+%ML is not a single language. There are many descendants of the original ML used
+%as the metalanguage of Edinburgh LCF:
 
 \begin{itemize}
 
-\item Standard ML and SML/NJ
+\item Standard ML и SML/NJ
 
-\item CAML and Objective CAML
+\item CAML и Objective CAML
 
-\item Edinburgh ML and Cambridge ML
+\item Edinburgh ML и Cambridge ML
 
 \item Lazy ML
 
 \end{itemize}
 
-We will be using CAML Light, a small and efficient implementation of the CAML
-language.
+Мы будем использовать CAML Light, маленькую и быструю реализацию языка
+CAML.
+%We will be using CAML Light, a small and efficient implementation of the CAML
+%language.
 
-The features we use are general, and can easily be translated to other
-dialects, and other functional languages.
+Мы будем использовать возможности, которые легко можно перевести на
+другие диалекты ML и другие функциональные языки.
+%The features we use are general, and can easily be translated to other
+%dialects, and other functional languages.
 
 \end{rslide}
 
@@ -433,7 +521,8 @@ dialects, and other functional languages.
 
 \begin{rslide}
 
-\heading{Starting up ML}
+\heading{Запускаем ML}
+%\heading{Starting up ML}
 
 \vspace*{0.5cm}
 
@@ -448,8 +537,10 @@ on your path:
 You can put these two lines near the end of your {\black \tt .bash\_profile},
 and it will be set up automatically every time you log on.
 
-Now simply type {\black \tt camllight} and the system will start up and present
-its prompt.
+Теперь просто наберите {\black \tt camllight}.  Система запустится и
+выведет приглашение.
+%Now simply type {\black \tt camllight} and the system will start up and present
+%its prompt.
 \begin{black}
 \begin{verbatim}
   $ camllight
@@ -459,7 +550,9 @@ its prompt.
 \end{verbatim}
 \end{black}
 
-If you want to install CAML Light on your own computer, see the Web page:
+Если вы хотите поставить CAML Light на свой компьютер, зайдите на
+страничку:
+%If you want to install CAML Light on your own computer, see the Web page:
 \begin{black}
 \begin{verbatim}
   http://pauillac.inria.fr/caml/
@@ -469,11 +562,14 @@ If you want to install CAML Light on your own computer, see the Web page:
 
 \begin{rslide}
 
-\heading{Interacting with ML}
+\heading{Взаимодействие с ML}
+%\heading{Interacting with ML}
 
 \vspace*{0.5cm}
 
-The simplest way to interact with ML is to use it as a simple calculator.
+Самый простой способ взаимодействия с ML это использование его в роли
+простого калькулятора.
+%The simplest way to interact with ML is to use it as a simple calculator.
 
 \begin{black}
 \begin{verbatim}
@@ -482,9 +578,12 @@ The simplest way to interact with ML is to use it as a simple calculator.
 \end{verbatim}
 \end{black}
 
-ML not only prints the result, but also infers the {\em type} of the
-expression, namely {\black \tt int}. If ML cannot assign a type to an
-expression then it is rejected:
+ML не только печатает результат, но также выводит {\em тип} выражения,
+в данном случае {\black \tt int}.  Если ML не может назначить тип
+выражению, то оно не пригодно.
+%ML not only prints the result, but also infers the {\em type} of the
+%expression, namely {\black \tt int}. If ML cannot assign a type to an
+%expression then it is rejected:
 
 \begin{black}
 \begin{verbatim}
@@ -497,8 +596,10 @@ expression then it is rejected:
 \end{verbatim}
 \end{black}
 
-ML knows the type of the built-in operator {\black \tt +}, and that is how it
-makes its type inference.
+ML знает тип встроенного оператора {\black \tt +} и именно поэтому он
+может вывести тип этого выражения.
+%ML knows the type of the built-in operator {\black \tt +}, and that is how it
+%makes its type inference.
 
 \end{rslide}
 
@@ -506,13 +607,18 @@ makes its type inference.
 
 \begin{rslide}
 
-\heading{Using functions (1)}
+\heading{Используем функции (1)}
+%\heading{Using functions (1)}
 
 \vspace*{0.5cm}
 
-Since ML is a functional language, expressions are allowed to have function
-type. The ML syntax for a lambda abstraction {\red $\lamb{x} t[x]$} is {\black
-\tt fun x -> t[x]}. For example we can define the successor function:
+Так как ML это функциональный язык, то выражения могут иметь
+функциональный тип.  Синтаксис ML для обозначения $\lambda$-абстракции
+{\red $\lamb{x} t[x]$} выглядит как {\black \tt fun x -> t[x]}.
+Например мы можем задать функцию инкремента:
+%Since ML is a functional language, expressions are allowed to have function
+%type. The ML syntax for a lambda abstraction {\red $\lamb{x} t[x]$} is {\black
+%\tt fun x -> t[x]}. For example we can define the successor function:
 
 \begin{black}
 \begin{verbatim}
@@ -521,11 +627,15 @@ type. The ML syntax for a lambda abstraction {\red $\lamb{x} t[x]$} is {\black
 \end{verbatim}
 \end{black}
 
-Again, the type of the expression, this time {\black \tt int -> int}, is
-inferred and displayed. However the function itself is not printed; the system
-merely writes {\black \tt <fun>}. 
+Опять же, тип выражения, в этот раз {\black \tt int -> int}, был выведен
+и показан.  Однако сама функция не была напечатана; система просто
+написала {\black \tt <fun>}.
+%Again, the type of the expression, this time {\black \tt int -> int}, is
+%inferred and displayed. However the function itself is not printed; the system
+%merely writes {\black \tt <fun>}. 
 
-Functions are applied by juxtaposition, as in $\lambda$-calculus:
+Функции применяются к соседним аргументам, как в $\lambda$-исчислении:
+%Functions are applied by juxtaposition, as in $\lambda$-calculus:
 
 \begin{black}
 \begin{verbatim}
@@ -540,12 +650,15 @@ Functions are applied by juxtaposition, as in $\lambda$-calculus:
 
 \begin{rslide}
 
-\heading{Using functions (2)}
+\heading{Используем функции (2)}
+%\heading{Using functions (2)}
 
 \vspace*{0.5cm}
 
-ML supports similar syntactic conventions to $\lambda$-calculus for curried
-functions of several arguments:
+ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
+для каррированных функций от нескольких аргументов.
+%ML supports similar syntactic conventions to $\lambda$-calculus for curried
+%functions of several arguments:
 
 \begin{black}
 \begin{verbatim}
@@ -558,8 +671,9 @@ functions of several arguments:
 \end{verbatim}
 \end{black}
 
-The first two lines are treated completely equivalently, as is the fully
-bracketed version:
+Первые две строчки полностью эквивалентны варианту со всеми скобками:
+%The first two lines are treated completely equivalently, as is the fully
+%bracketed version:
 
 \begin{black}
 \begin{verbatim}
@@ -574,12 +688,15 @@ bracketed version:
 
 \begin{rslide}
 
-\heading{Let bindings}
+\heading{Let связывания}
+%\heading{Let bindings}
 
 \vspace*{0.5cm}
 
-It is not necessary to evaluate an expresion all in one piece. You can use
-{\black \tt let} bindings:
+Не обязательно вычислять всё выражение за раз.  Можно использовать
+{\black \tt let} связывания:
+%It is not necessary to evaluate an expresion all in one piece. You can use
+%{\black \tt let} bindings:
 
 \begin{black}
 \begin{verbatim}
@@ -589,7 +706,8 @@ It is not necessary to evaluate an expresion all in one piece. You can use
 \end{verbatim}
 \end{black}
 
-When binding functions, one can also use the more elegant sugaring:
+Когда связываются функции, можно использовать более элегантную обёртку:
+%When binding functions, one can also use the more elegant sugaring:
 
 \begin{black}
 \begin{verbatim}
@@ -599,7 +717,9 @@ When binding functions, one can also use the more elegant sugaring:
 \end{verbatim}
 \end{black}
 
-Function bindings can also be recursive: just add the {\black \tt rec} keyword:
+Связывания функций могут быть рекурсивными, только добавьте ключевое
+слово {\black \tt rec}:
+%Function bindings can also be recursive: just add the {\black \tt rec} keyword:
 
 \begin{black}
 \begin{verbatim}
@@ -616,12 +736,15 @@ Function bindings can also be recursive: just add the {\black \tt rec} keyword:
 
 \begin{rslide}
 
-\heading{Declarations}
+\heading{Объявления}
+%\heading{Declarations}
 
 \vspace*{0.5cm}
 
-In fact, the set of bindings can be augmented interactively. Simply omit the
-{\black \tt in} and terminate the phrase:
+По сути, набор связываний может быть дополнен интерактивно.  Просто
+опустите {\black \tt in} и завершите выражение:
+%In fact, the set of bindings can be augmented interactively. Simply omit the
+%{\black \tt in} and terminate the phrase:
 
 \begin{black}
 \begin{verbatim}
@@ -630,7 +753,8 @@ In fact, the set of bindings can be augmented interactively. Simply omit the
 \end{verbatim}
 \end{black}
 
-or
+или
+%or
 
 \begin{black}
 \begin{verbatim}
@@ -640,9 +764,10 @@ or
 \end{verbatim}
 \end{black}
 
-
-Thus one can make a series of function declarations. These can then be used
-later in the session.
+Таким образом можно создать набор объявлений функций, которые могут
+быть использованы позже в сеансе работы.
+%Thus one can make a series of function declarations. These can then be used
+%later in the session.
 
 \begin{black}
 \begin{verbatim}
@@ -651,7 +776,8 @@ later in the session.
 \end{verbatim}
 \end{black}
 
-Note: this is {\em not} the same thing as variable assignment!
+Замечание: это {\em не} тоже самое что и присвоение переменных!
+%Note: this is {\em not} the same thing as variable assignment!
 
 \end{rslide}
 
@@ -659,11 +785,14 @@ Note: this is {\em not} the same thing as variable assignment!
 
 \begin{rslide}
 
-\heading{Polymorphic functions}
+\heading{Полиморфические функции}
+%\heading{Polymorphic functions}
 
 \vspace*{0.5cm}
 
-We can define polymorphic functions, like the identity operator:
+Мы можем задавать полиморфические функции, такие как оператор
+тождества:
+%We can define polymorphic functions, like the identity operator:
 
 \begin{black}
 \begin{verbatim}
@@ -672,9 +801,13 @@ We can define polymorphic functions, like the identity operator:
 \end{verbatim}
 \end{black}
 
-ML prints type variables as {\black \tt 'a},{\black \tt 'b} etc. These are
-supposed to be ASCII representations of {\black $\alpha$}, {\black $\beta$} and
-so on. We can now use it with different types:
+ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
+далее.  Предполагается, что они являются ASCII представлением для
+{\black $\alpha$}, {\black $\beta$} и так далее.  Теперь мы можем
+использовать тождество с разными типами:
+%ML prints type variables as {\black \tt 'a},{\black \tt 'b} etc. These are
+%supposed to be ASCII representations of {\black $\alpha$}, {\black $\beta$} and
+%so on. We can now use it with different types:
 
 \begin{black}
 \begin{verbatim}
@@ -687,8 +820,10 @@ so on. We can now use it with different types:
 \end{verbatim}
 \end{black}
 
-Each instance of {\black \tt I} in the last expression has a different type, 
-and intutively corresponds to a different function.
+В последнем выражении все вхождения {\black \tt I} имеют различные
+типы и интуитивно соответствуют разным функциям.
+%Each instance of {\black \tt I} in the last expression has a different type, 
+%and intutively corresponds to a different function.
 
 \end{rslide}
 
@@ -696,11 +831,13 @@ and intutively corresponds to a different function.
 
 \begin{rslide}
 
-\heading{Combinators}
+\heading{Комбинаторы}
+%\heading{Combinators}
 
 \vspace*{0.5cm}
 
-In fact, let's define all the combinators:
+Вообще, давайте определим все комбинаторы:
+%In fact, let's define all the combinators:
 
 \begin{black}
 \begin{verbatim}
@@ -714,15 +851,18 @@ In fact, let's define all the combinators:
 \end{verbatim}
 \end{black}
 
-Note that the system keeps track of the types for us. Recall that {\red $I =
-S\; K\; K$}; let us try this out in ML:
+Заметим, что система следит за типами без нас.  Вспомним что {\red $I
+  = S\; K\; K$}; давайте попробуем это в ML:
+%Note that the system keeps track of the types for us. Recall that {\red $I =
+%S\; K\; K$}; let us try this out in ML:
 \begin{black}
 \begin{verbatim}
   #let I' x = S K K x;;
   I' : 'a -> 'a = <fun>
 \end{verbatim}
 \end{black}
-It has the right type, and seems to work:
+У него правильный тип, и похоже он работает:
+%It has the right type, and seems to work:
 \begin{black}
 \begin{verbatim}
   #I' 3 = 3;;
@@ -735,12 +875,15 @@ It has the right type, and seems to work:
 
 \begin{rslide}
 
-\heading{Equality of functions}
+\heading{Равенство функций}
+%\heading{Equality of functions}
 
 \vspace*{0.5cm}
 
-Why don't we just compare the two versions of the identity operator? Here's
-why:
+Почему бы нам просто не сравнить два варианта оператора тождества?  Вот
+почему:
+%Why don't we just compare the two versions of the identity operator? Here's
+%why:
 
 \begin{black}
 \begin{verbatim}
@@ -750,15 +893,22 @@ why:
 \end{verbatim}
 \end{black}
 
-It is in general {\em forbidden} to compare functions for equality. Why? Aren't
-functions supposed to be first-class objects in ML?
+В основном {\em запрещено} сравнивать функции на равенство.  Почему?
+Ведь предполагается, что функции являются объектами высшего порядка в ML?
+%It is in general {\em forbidden} to compare functions for equality. Why? Aren't
+%functions supposed to be first-class objects in ML?
 
-Yes, but unfortunately, (extensional) function equality is not computable. This
-is a consequence of {\em Rice's theorem}, or simply of the {\em unsolvability
-of the halting problem}.
+Да, но к сожалению, (экстенсиональное) сравнение функций не
+вычислимо.  Это следствие из {\em теоремы Риса}, или просто из {\em
+  неразрешимости проблемы останова}.
+%Yes, but unfortunately, (extensional) function equality is not computable. This
+%is a consequence of {\em Rice's theorem}, or simply of the {\em unsolvability
+%of the halting problem}.
 
-Some versions of ML distinguish between functions and other `equality types'
-and filter out these cases during typechecking.
+Некоторые версии ML различают функции и другие `сравнимые
+типы' и фильтруют такие случаи во время проверки типов.
+%Some versions of ML distinguish between functions and other `equality types'
+%and filter out these cases during typechecking.
 
 \end{rslide}
 
@@ -767,13 +917,18 @@ and filter out these cases during typechecking.
 
 \begin{rslide}
 
-\heading{Pathologies of typechecking}
+\heading{Отклонения в проверке типов}
+%\heading{Pathologies of typechecking}
 
 \vspace*{0.5cm}
 
-In all our examples, the system very quickly infers a most general type for
-each expression, and the type is simple. This usually happens in practice, but
-there are pathological cases, e.g. the following example due to Mairson:
+Во всех наших примерах система очень быстро выводит наиболее общий тип
+для каждого выражения и тип получается простым.  Так обычно и бывает
+на практике, но бывают и патологические случаи, например следующий
+вариант, предложенный Майерсоном:
+%In all our examples, the system very quickly infers a most general type for
+%each expression, and the type is simple. This usually happens in practice, but
+%there are pathological cases, e.g. the following example due to Mairson:
 
 \begin{black}
 \begin{verbatim}
@@ -787,10 +942,13 @@ there are pathological cases, e.g. the following example due to Mairson:
 \end{verbatim}
 \end{black}
 
-The type of this expression takes about 10 seconds to calculate, and occupies
-over 4000 lines on an 80-column terminal.
+Чтобы вычислить тип этого выражения потребуется порядка 10 секунд, а
+печать займёт свыше 4000 строк на 80-ти столбцевом терминале.
+%The type of this expression takes about 10 seconds to calculate, and occupies
+%over 4000 lines on an 80-column terminal.
 
-{\bf Don't try this at home}.
+{\bf Не пробуйте дома}.
+%{\bf Don't try this at home}.
 
 \end{rslide}
 

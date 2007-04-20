@@ -183,19 +183,25 @@
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
+%Topics covered:
 
 \begin{itemize}
 
-\item Interaction with ML; loading files
+\item Взаимодействие с ML; загрузка файлов
+%\item Interaction with ML; loading files
 
-\item Basic datatypes and operators
+\item Базовые типы данных и операторы
+%\item Basic datatypes and operators
 
-\item Infixes and concrete syntax
+\item Инфиксные операции и конкретный синтаксис
+%\item Infixes and concrete syntax
 
-\item Further examples
+\item Дополнительные примеры
+%\item Further examples
 
-\item Defining new types
+\item Определение новых типов
+%\item Defining new types
 
 \end{itemize}
 
@@ -206,31 +212,43 @@ Topics covered:
 
 \begin{rslide}
 
-\heading{Interaction with ML}
+\heading{Взаимодействие с ML}
+%\heading{Interaction with ML}
 
 \vspace*{0.5cm}
 
-We have just been typing things into ML and thinking about the results. However
-one doesn't write real programs in this way.
+Пока мы только вводили текст в ML и думали о результатах.  Однако, так
+реальные программы не пишутся.
+%We have just been typing things into ML and thinking about the results. However
+%one doesn't write real programs in this way.
 
-Typically, one writes the expressions and declarations in a file. To try them
-out as you go, these can be inserted in the ML window using cut and paste.
+Обычно записывают выражения и объявления в файл.  Чтобы попробовать их
+в работе их можно поместить в ML используя команды вырезать-вставить.
+%Typically, one writes the expressions and declarations in a file. To try them
+%out as you go, these can be inserted in the ML window using cut and paste.
 
-You can cut and paste using X-windows and similar systems, or an editor like
-Emacs with multiple buffers.
+Вы можете вырезать и вставить используя X Window System и схожие
+системы либо редактор, с поддержкой буферов, как Emacs.
+%You can cut and paste using X-windows and similar systems, or an editor like
+%Emacs with multiple buffers.
 
-For larger programs, it's convenient simply to load them from file into the ML
-session. This can be done using the {\black \tt include} command in ML.
+Для больших программ удобнее загружать выражения из файла в сеанс
+работы ML.  Это можно сделать с помощью команды ML {\black \tt
+  include}.
+%For larger programs, it's convenient simply to load them from file into the ML
+%session. This can be done using the {\black \tt include} command in ML.
 
 \end{rslide}
 
 \begin{rslide}
 
-\heading{Loading from files (1)}
+\heading{Загрузка из файлов (1)}
+%\heading{Loading from files (1)}
 
 \vspace*{0.5cm}
 
-Suppose that the file {\black \tt myprog.ml} contains the following lines:
+Допустим файл {\black \tt myprog.ml} содержит следующие строки:
+%Suppose that the file {\black \tt myprog.ml} contains the following lines:
 
 \begin{black}\begin{verbatim}
   let pythag x y z =
@@ -249,11 +267,14 @@ Suppose that the file {\black \tt myprog.ml} contains the following lines:
 
 \begin{rslide}
 
-\heading{Loading from files (2)}
+\heading{Загрузка из файлов (2)}
+%\heading{Loading from files (2)}
 
 \vspace*{0.5cm}
 
-Using {\black \tt include} on this file results in the following:
+Используя команду {\black \tt include} над этим файлом, мы получаем
+следующее:
+%Using {\black \tt include} on this file results in the following:
 
 \begin{black}\begin{verbatim}
   #include "myprog.ml";;
@@ -264,15 +285,22 @@ Using {\black \tt include} on this file results in the following:
   - : unit = ()
 \end{verbatim}\end{black}
 
-ML responds just as if the file had been typed in at the top level.
+ML отвечает так, как будто содержание файла было введено в сеанс
+работы.
+%ML responds just as if the file had been typed in at the top level.
 
-Normally, the inclusion process terminates as soon as an error is encountered.
-The error message is accompanied by a line number.
+Обычно процесс включения файла завершается как только была обнаружена
+ошибка.  В сообщении об ошибке указывается номер строки.
+%Normally, the inclusion process terminates as soon as an error is encountered.
+%The error message is accompanied by a line number.
 
-The final line is the return from the {\black \tt include} command itself. It
-has type {\black \tt string -> unit}.
+Последняя строка это результат работы самой команды {\black \tt
+  include}.  У него тип {\black \tt string -> unit}.
+%The final line is the return from the {\black \tt include} command itself. It
+%has type {\black \tt string -> unit}.
 
-It is permissible to nest inclusions.
+Допускается гнездитьXXX включения.
+%It is permissible to nest inclusions.
 
 \end{rslide}
 
@@ -280,11 +308,14 @@ It is permissible to nest inclusions.
 
 \begin{rslide}
 
-\heading{Comments}
+\heading{Комментарии}
+%\heading{Comments}
 
 \vspace*{0.5cm}
 
-Comments are written between {\black \tt (*} and {\black \tt *)}, e.g.
+Комментарии записываются между {\black \tt (*} и {\black \tt *)},
+например:
+%Comments are written between {\black \tt (*} and {\black \tt *)}, e.g.
 
 \begin{black}\begin{verbatim}
   (* ----------------------------------- *)
@@ -300,7 +331,10 @@ Comments are written between {\black \tt (*} and {\black \tt *)}, e.g.
   quite *) arbitrarily *) *);;
 \end{verbatim}\end{black}
 
-The comments are ignored by ML, but are useful for people reading the code.
+ML игнорирует комментарии, но комментарии полезны для людей читающих
+код.
+%The comments are ignored by ML, but are useful for people reading the
+%code.
 
 \end{rslide}
 
@@ -309,32 +343,46 @@ The comments are ignored by ML, but are useful for people reading the code.
 
 \begin{rslide}
 
-\heading{Basic datatypes}
+\heading{Базовые типы данных}
+%\heading{Basic datatypes}
 
 \vspace*{0.5cm}
 
-The main primitive types are:
+Важнейшие примитивные типы:
+%The main primitive types are:
 
 \begin{itemize}
 
-\item Type {\black \tt unit}, a 1-element type, whose only element is written
-{\black \tt ()}.
+\item Тип {\black \tt unit}, одноэлементный тип, чей единственный
+  элемент записывается как {\black \tt ()}.
+%\item Type {\black \tt unit}, a 1-element type, whose only element is written
+%{\black \tt ()}.
 
-\item Type {\black \tt bool}, a 2-element type whose elements are written
-{\black \tt true} and {\black \tt false}.
+\item Тип {\black \tt bool}, двухэлементный тип, чьи элементы
+  записываются как {\black \tt true} и {\black \tt false}.
+%\item Type {\black \tt bool}, a 2-element type whose elements are written
+%{\black \tt true} and {\black \tt false}.
 
-\item Type {\black \tt int}, a subset of the positive and negative integers,
-written for example {\black \tt 6} and {\black \tt -11}.
+\item Тип {\black \tt int}, подмножество положительных и отрицательных
+  чисел, записанных например как {\black \tt 6} и {\black \tt -11}.
+%\item Type {\black \tt int}, a subset of the positive and negative integers,
+%written for example {\black \tt 6} and {\black \tt -11}.
 
-\item Type {\black \tt string}, which corresponds to sequences of characters,
-written {\black \tt "like this"}.
+\item Тип {\black \tt string}, который соответствует
+  последовательности символов, записанных {\black \tt ``например так''}.
+%\item Type {\black \tt string}, which corresponds to sequences of characters,
+%written {\black \tt "like this"}.
 
 \end{itemize}
 
-These can be put together using type constructors, including the function
-constructor {\black \verb+->+} and the Cartesian product constructor {\black \verb+*+}.
+Типы могут быть соединены с помощью конструкторов типов, включая
+конструктор функционального типа {\black \verb+->+} и конструктор
+Декартового произведения типов {\black \verb+*+}.
+%These can be put together using type constructors, including the function
+%constructor {\black \verb+->+} and the Cartesian product constructor {\black \verb+*+}.
 
-We will see how to define other types and type constructors later.
+Позже мы увидим как можно определять другие типы и конструкторы типов.
+%We will see how to define other types and type constructors later.
 
 \end{rslide}
 
@@ -342,17 +390,26 @@ We will see how to define other types and type constructors later.
 
 \begin{rslide}
 
-\heading{Infixes}
+\heading{Инфиксные операции}
+%\heading{Infixes}
 
 \vspace*{0.5cm}
 
-Many built-in constants like {\black \tt +} have infix status. They also have a notion
-of precedence, so expressions associate more or less as expected.
+У многих встроенных констант, как например, у {\black \tt +}, есть
+статус инфиксной операции.  Есть также понятие старшинства операции,
+поэтому выражения ассоциируются более или менее как ожидается.
+%Many built-in constants like {\black \tt +} have infix status. They
+%also have a notion of precedence, so expressions associate more or
+%less as expected.
 
-For example, {\black \tt x < 2 * y + z} is parsed as {\black \tt < x (+ (* 2 y)
-z)}.
+Например {\black \tt x < 2 * y + z} разбирается как {\black \tt < x (+
+  (* 2 y) z)}.
+%For example, {\black \tt x < 2 * y + z} is parsed as {\black \tt < x (+ (* 2 y)
+%z)}.
 
-You can define your own infixes using the {\black \verb+#infix+} directive:
+Вы можете задать своей функции статус инфиксной операции используя
+директиву {\black \verb+#infix+}.
+%You can define your own infixes using the {\black \verb+#infix+} directive:
 
 \begin{black}\begin{verbatim}
   #let o f g = fun x -> f(g x);;
@@ -370,27 +427,42 @@ You can define your own infixes using the {\black \verb+#infix+} directive:
 
 \begin{rslide}
 
-\heading{Basic infix operators}
+\heading{Базовые инфиксные операторы}
+%\heading{Basic infix operators}
 
 \begin{center}
 \begin{tabular}{|l|l|}
 \hline
-Operator   & Meaning               \\
+Оператор   & Значение               \\
 \hline
-{\black \tt mod}  & Modulus (remainder)   \\
-{\black \tt *}    & Multiplication        \\
-{\black \tt /}    & Truncating division   \\
-{\black \tt +}    & Addition              \\
-{\black \tt -}    & Subtraction           \\
-{\black \verb+^+} & String concatenation  \\
-{\black \tt =}    & Equality              \\
-{\black \tt <>}   & Inequality            \\
-{\black \tt <}    & Less than             \\
-{\black \tt <=}   & Less than or equal    \\
-{\black \tt >}    & Greater than          \\
-{\black \tt >=}   & Greater than or equal \\
-{\black \tt \&}   & Boolean `and'         \\
-{\black \tt or}   & Boolean `or'          \\
+{\black \tt mod}  & Modulus (остаток)   \\
+%{\black \tt mod}  & Modulus (remainder)   \\
+{\black \tt *}    & Умножение        \\
+%{\black \tt *}    & Multiplication        \\
+{\black \tt /}    & Целочисленное деление   \\
+%{\black \tt /}    & Truncating division   \\
+{\black \tt +}    & Сложение              \\
+%{\black \tt +}    & Addition              \\
+{\black \tt -}    & Вычитание           \\
+%{\black \tt -}    & Subtraction           \\
+{\black \verb+^+} & Соединение строк  \\
+%{\black \verb+^+} & String concatenation  \\
+{\black \tt =}    & Проверка равенства              \\
+%{\black \tt =}    & Equality              \\
+{\black \tt <>}   & Проверка не равенства            \\
+%{\black \tt <>}   & Inequality            \\
+{\black \tt <}    & Строго меньше             \\
+%{\black \tt <}    & Less than             \\
+{\black \tt <=}   & Меньше или равно    \\
+%{\black \tt <=}   & Less than or equal    \\
+{\black \tt >}    & Строго больше          \\
+%{\black \tt >}    & Greater than          \\
+{\black \tt >=}   & Больше или равно \\
+%{\black \tt >=}   & Greater than or equal \\
+{\black \tt \&}   & Булево `и'         \\
+%{\black \tt \&}   & Boolean `and'         \\
+{\black \tt or}   & Булево `или'          \\
+%{\black \tt or}   & Boolean `or'          \\
 \hline
 \end{tabular}
 \end{center}
@@ -401,12 +473,16 @@ Operator   & Meaning               \\
 
 \begin{rslide}
 
-\heading{Notes on operators}
+\heading{Замечания про операторы}
+%\heading{Notes on operators}
 
 \vspace*{0.5cm}
 
-Note that the logical operators {\black \verb+&+} and {\black \verb+or+} also have a
-non-eager evaluation strategy. You can regard them as synonyms:
+Заметим, что у логических операторов {\black \verb+&+} и {\black
+  \verb+or+} стратегия вычислений не энергичная.  Мы можем
+рассматривать их как синонимы к:
+%Note that the logical operators {\black \verb+&+} and {\black \verb+or+} also have a
+%non-eager evaluation strategy. You can regard them as synonyms:
 
 \begin{black}
 \begin{eqnarray*}
@@ -415,26 +491,37 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 \end{eqnarray*}
 \end{black}
 
-There are also two built-in symbolic operations on the basic types, {\black
-\verb+-+}, which performs numerical negation, and {\black \tt not} which
-performs logical negation.
+Также есть две встроенные символьные операции над базовыми типами:
+{\black \verb+-+} которая выполняет численное отрицание, и {\black
+\tt not} которая выполняет логическое отрицание.
+%There are also two built-in symbolic operations on the basic types, {\black
+%\verb+-+}, which performs numerical negation, and {\black \tt not} which
+%performs logical negation.
 
-The logical {\black \tt not} operator has special prefix status, so that {\black \tt not not
-p} is parsed as {\black \tt not (not p)}. This reverses the usual left-associativity
-convention for functions.
+У логического оператора {\black \tt not} необычный префиксный статус,
+такой что {\black \tt not not p} разбирается как {\black \tt not (not
+  p)} в противоположность обычному левоассоциативному разбору для
+функций.
+%The logical {\black \tt not} operator has special prefix status, so that {\black \tt not not
+%p} is parsed as {\black \tt not (not p)}. This reverses the usual left-associativity
+%convention for functions.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Examples (1)}
+\heading{Примеры (1)}
+%\heading{Examples (1)}
 
 \vspace*{0.5cm}
 
-We define by recursion a function that takes a positive integer {\red $n$}
-and a function {\red $f$} and returns {\red $f^n$}, i.e. {\red $f \circ \cdots
-\circ f$} ({\red $n$} times):
+Мы зададим рекурсивную функцию, которая принимает два аргумента:
+положительное число {\red $n$} и функцию {\red $f$} и возвращает {\red
+  $f^n$}, то есть {\red $f \circ \cdots \circ f$} ({\red $n$} раз):
+%We define by recursion a function that takes a positive integer {\red $n$}
+%and a function {\red $f$} and returns {\red $f^n$}, i.e. {\red $f \circ \cdots
+%\circ f$} ({\red $n$} times):
 
 \begin{black}\begin{verbatim}
   #let rec funpow n f x =
@@ -444,9 +531,12 @@ and a function {\red $f$} and returns {\red $f^n$}, i.e. {\red $f \circ \cdots
            'a -> 'a = <fun>
 \end{verbatim}\end{black}
 
-In fact, {\black \tt funpow} takes a machine integer {\black \tt n} to the
-corresponding Church numeral. We can easily define an inverse function that
-goes the other way:
+На самом деле {\black \tt funpow} переводит машинное число {\black \tt
+  n} в соответствующий нумерал Чёрча.  Мы легко можем задать обратную
+функцию следующим образом:
+%In fact, {\black \tt funpow} takes a machine integer {\black \tt n} to the
+%corresponding Church numeral. We can easily define an inverse function that
+%goes the other way:
 
 \begin{black}\begin{verbatim}
   #let defrock n = n (fun x -> x + 1) 0;;
@@ -466,7 +556,9 @@ goes the other way:
 
 \vspace*{0.5cm}
 
-Recall the arithmetic operators on Church numerals. We can test them:
+Вспомним арифметические операции над нумералами Чёрча.  Мы можем их
+проверить:
+%Recall the arithmetic operators on Church numerals. We can test them:
 
 \begin{black}\begin{verbatim}
   #let add m n f x = m f (n f x)
@@ -483,7 +575,8 @@ Recall the arithmetic operators on Church numerals. We can test them:
   - : int = 1024
 \end{verbatim}\end{black}
 
-They seem to work. Of course they're not very efficient!
+Похоже что они работают.  Но, конечно, они не очень эффективны!
+%They seem to work. Of course they're not very efficient!
 
 \end{rslide}
 
@@ -491,16 +584,21 @@ They seem to work. Of course they're not very efficient!
 
 \begin{rslide}
 
-\heading{Defining new types}
+\heading{Определение новых типов}
+%\heading{Defining new types}
 
 \vspace*{0.5cm}
 
-ML has facilities for defining new types and type constructors.
+ML содержит средства определения новых типов и конструкторов типов.
+%ML has facilities for defining new types and type constructors.
 
-In fact, the constructors can be recursive, i.e. not only take existing types
-as arguments but the new type itself.
+На деле конструкторы могут быть рекурсивными, то есть использовать
+как аргументы не только существующие типы, но и сам новый тип.
+%In fact, the constructors can be recursive, i.e. not only take existing types
+%as arguments but the new type itself.
 
-We will look at a simple example first: the disjoint sum type.
+Посмотрим сначала на простой пример: несвязную сумму типов.
+%We will look at a simple example first: the disjoint sum type.
 
 \begin{black}\begin{verbatim}
   #type ('a,'b)sum = inl of 'a
@@ -508,7 +606,9 @@ We will look at a simple example first: the disjoint sum type.
   Type sum defined.
 \end{verbatim}\end{black}
 
-This creates a new type {\black \tt sum} and two new {\em constructors}:
+Эта запись создаёт новый тип {\black \tt sum} и два новых {\em
+  конструктора}:
+%This creates a new type {\black \tt sum} and two new {\em constructors}:
 
 \begin{black}\begin{verbatim}
   #inl;;
@@ -522,27 +622,41 @@ This creates a new type {\black \tt sum} and two new {\em constructors}:
 
 \begin{rslide}
 
-\heading{Properties of type constructors}
+\heading{Свойства конструкторов типов}
+%\heading{Properties of type constructors}
 
 \vspace*{0.5cm}
 
-All type constructors arising in this way have three key properties:
+У всех конструкторов типов, возникающих таким образом, есть три
+ключевых свойства:
+%All type constructors arising in this way have three key properties:
 
 \begin{enumerate}
 
-\item They are exhaustive, i.e. every element of the new type is obtainable
-either by  {\black \tt inl x} for some {\black \tt x} or {\black \tt inr y} for some {\black \tt y}.
+\item Они полны, т.е. любой элемент нового типа доступен либо через
+  {\black \tt inl x} для некоторого {\black \tt x} либо через {\black
+    \tt inr y} для некоторого {\black \tt y}.
+%\item They are exhaustive, i.e. every element of the new type is obtainable
+%either by  {\black \tt inl x} for some {\black \tt x} or {\black \tt inr y} for some {\black \tt y}.
 
-\item They are injective, i.e. an equality test {\black \tt inl x = inl y} is true if
-and only if {\black \tt x = y}, and similarly for {\black \tt inr}.
+\item Они инъективны, т.е. признак равенства {\black \tt inl x = inl
+    y} верно если и только если {\black \tt x = y}, тоже самое и для
+  {\black \tt inr}.
+%\item They are injective, i.e. an equality test {\black \tt inl x = inl y} is true if
+%and only if {\black \tt x = y}, and similarly for {\black \tt inr}.
 
-\item They are distinct, i.e. their ranges are disjoint. More concretely this
-means in the above example that {\black \tt inl x = inr y} is false whatever {\black \tt x}
-and {\black \tt y} might be.
+\item Они раздельны, т.е. их области не пересекаются.  Конкретнее, это
+  означает, что, в примере выше, для любых {\black \tt x} и {\black \tt
+    y} сравнение {\black \tt inl x = inr y} всегда ложно.
+%\item They are distinct, i.e. their ranges are disjoint. More concretely this
+%means in the above example that {\black \tt inl x = inr y} is false whatever {\black \tt x}
+%and {\black \tt y} might be.
 
 \end{enumerate}
 
-Because of these properties, we can define functions by {\em pattern matching}.
+Благодаря этим свойствам мы можем задавать функции используя {\em
+  сопоставление с образцом}.
+%Because of these properties, we can define functions by {\em pattern matching}.
 
 \end{rslide}
 
@@ -551,13 +665,17 @@ Because of these properties, we can define functions by {\em pattern matching}.
 
 \begin{rslide}
 
-\heading{Pattern matching}
+\heading{Сопоставление с образцом}
+%\heading{Pattern matching}
 
 \vspace*{0.5cm}
 
-We perform pattern matching by using more general expressions called {\em
-varstructs} as the arguments to lambdas. We can also consider several different
-cases. For example:
+Мы производим сопоставление с образцом используя в роли аргументов к
+$\lambda$-функциям более общие выражения, называемые {\em varstructs}.
+Мы также можем рассмотреть несколько других случаев.  Например:
+%We perform pattern matching by using more general expressions called {\em
+%varstructs} as the arguments to lambdas. We can also consider several different
+%cases. For example:
 
 \begin{black}\begin{verbatim}
   #fun (inl n) -> n > 6
@@ -565,14 +683,22 @@ cases. For example:
   - : (int, bool) sum -> bool = <fun>
 \end{verbatim}\end{black}
 
-This function has the property, naturally enough, that when applied to {\black
-\tt inl n} it returns {\black \verb+n > 6+} and when applied to {\black \tt inr
-b} it returns {\black \tt b}. Why is this valid?
+Как и ожидалось у этой функции есть свойство, такое, что когда она
+применяется к {\black \tt inl n}, то возвращает {\black \verb+n > 6+},
+а когда применяется к {\black \tt inr b}, то возвращает {\black \tt
+  b}.  Чем это обосновано?
+%This function has the property, naturally enough, that when applied to {\black
+%\tt inl n} it returns {\black \verb+n > 6+} and when applied to {\black \tt inr
+%b} it returns {\black \tt b}. Why is this valid?
 
-It is permissible to recover {\black \tt n} from {\black \tt inl n} because the
-constructors are injective. The cases cannot clash because the constructors are
-distinct. Finally, the function is defined everywhere because the constructors
-are exhaustive.
+Допускается восстановить {\black \tt n} из {\black \tt inl n}, потому что
+конструкторы инъективны.  Экземпляры образца не конфликтуют, потому что
+конструкторы раздельны.  В заключение, функция определена на всех
+допустимых значениях, потому что конструкторы полны.
+%It is permissible to recover {\black \tt n} from {\black \tt inl n} because the
+%constructors are injective. The cases cannot clash because the constructors are
+%distinct. Finally, the function is defined everywhere because the constructors
+%are exhaustive.
 
 \end{rslide}
 
@@ -581,11 +707,14 @@ are exhaustive.
 
 \begin{rslide}
 
-\heading{Non-exhaustive matching}
+\heading{Неполное сопоставление}
+%\heading{Non-exhaustive matching}
 
 \vspace*{0.5cm}
 
-In fact, we can define partial functions that don't cover every case:
+Вообще, мы можем задать частичную функцию которая определена не для
+всех допустимых значений.
+%In fact, we can define partial functions that don't cover every case:
 
 \begin{black}\begin{verbatim}
   #fun (inr b) -> b;;
@@ -596,8 +725,11 @@ In fact, we can define partial functions that don't cover every case:
   - : ('a, 'b) sum -> 'b = <fun>
 \end{verbatim}\end{black}
 
-The compiler warns us of this fact. If we try to use the function on an
-argument not of the form {\black \tt inl x}, then it will not work:
+Компилятор предупреждает нас об этом.  Если мы попробуем применить
+функцию над аргументом не в форме {\black \tt inr x}, то она не будет
+работать:
+%The compiler warns us of this fact. If we try to use the function on an
+%argument not of the form {\black \tt inl x}, then it will not work:
 
 \begin{black}\begin{verbatim}
   #(...) (inl 3);;
@@ -611,12 +743,15 @@ argument not of the form {\black \tt inl x}, then it will not work:
 
 \begin{rslide}
 
-\heading{General matching}
+\heading{Повсеместное сопоставление}
+%\heading{General matching}
 
 \vspace*{0.5cm}
 
-We can perform matching even in other situations, when the matches might not be
-mutually exclusive. In this case, the first possible match is taken.
+Мы можем производить сопоставление и в других ситуациях, когда образцы
+не взаимно исключающие.  В этом случае берётся первое совпадение.
+%We can perform matching even in other situations, when the matches might not be
+%mutually exclusive. In this case, the first possible match is taken.
 
 \begin{black}\begin{verbatim}
   #(fun 0 -> true | n -> false) 0;;
@@ -625,8 +760,11 @@ mutually exclusive. In this case, the first possible match is taken.
   - : bool = false
 \end{verbatim}\end{black}
 
-However, in general, constants need special constructor status, or they will be
-treated just as variables for binding:
+Однако, в основном, необходимо чтобы у констант был статус
+конструктора, иначе они будут рассматриваться как обычные связанные
+переменные.
+%However, in general, constants need special constructor status, or they will be
+%treated just as variables for binding:
 
 \begin{black}\begin{verbatim}
   #(fun true -> 1 | false -> 0) (4 < 3);;
@@ -641,19 +779,25 @@ treated just as variables for binding:
 
 \begin{rslide}
 
-\heading{Other matching constructs}
+\heading{Другие конструкции сопоставления}
+%\heading{Other matching constructs}
 
 \vspace*{0.5cm}
 
-Instead of using {\black \tt fun} with various patterns, and applying the
-function to an expression, there is an alternative syntax that uses the
-expression directly:
+Вместо использования {\black \tt fun} с различными образцами и
+применения функции к выражению, существует другой синтаксис, который
+использует выражения напрямую:
+%Instead of using {\black \tt fun} with various patterns, and applying the
+%function to an expression, there is an alternative syntax that uses the
+%expression directly:
 {\black $$ \mbox{match}\; E\; \mbox{with}\;
-   pattern_1 \mbox{\verb+->+} E_1 \mid \cdots \mid
-   pattern_n \mbox{\verb+->+} E_n $$}
-The simplest alternative of all is to use
+   pattern_1 {\verb+->+} E_1 \mid \cdots \mid
+   pattern_n {\verb+->+} E_n $$}
+Простейший выбор из всех это использовать
+%The simplest alternative of all is to use
 {\black $$ \mbox{let}\; pattern \mbox{ = } expression $$}
-\noindent but in this case only a single pattern is allowed. For example:
+\noindent но в данном случае разрешён только один образец.  Например:
+%\noindent but in this case only a single pattern is allowed. For example:
 
 \begin{black}\begin{verbatim}
   #let (inl x) = inl 3;;
@@ -670,11 +814,14 @@ The simplest alternative of all is to use
 
 \begin{rslide}
 
-\heading{Recursive types}
+\heading{Рекурсивные типы}
+%\heading{Recursive types}
 
 \vspace*{0.5cm}
 
-As we have said, types can be defined recursively, i.e. in terms of themselves.
+Как мы уже сказали, типы могут быть заданы рекурсивно, т.е. через
+самих себя.
+%As we have said, types can be defined recursively, i.e. in terms of themselves.
 
 \begin{black}\begin{verbatim}
   #type ('a)list = Nil
@@ -686,10 +833,14 @@ As we have said, types can be defined recursively, i.e. in terms of themselves.
   - : 'a * 'a list -> 'a list = <fun>
 \end{verbatim}\end{black}
 
-We imagine {\black \tt Nil} as the empty list and {\black \tt Cons} as a
-function that adds a new element on the front of a list. The lists {\black \tt
-$[]$}, {\black \tt $[1]$}, {\black \tt $[1;2]$} and {\black \tt $[1;2;3]$} are
-written:
+Представим что {\black \tt Nil} это пустой список, а {\black \tt Cons}
+как функцию которая добавляет элемент в начало списка.  Списки {\black \tt
+$[]$}, {\black \tt $[1]$}, {\black \tt $[1;2]$} и {\black \tt
+$[1;2;3]$} записываются как:
+%We imagine {\black \tt Nil} as the empty list and {\black \tt Cons} as a
+%function that adds a new element on the front of a list. The lists {\black \tt
+%$[]$}, {\black \tt $[1]$}, {\black \tt $[1;2]$} and {\black \tt $[1;2;3]$} are
+%written:
 
 \begin{black}\begin{verbatim}
   Nil;;
@@ -705,13 +856,18 @@ written:
 
 \begin{rslide}
 
-\heading{Lists}
+\heading{Списки}
+%\heading{Lists}
 
 \vspace*{0.5cm}
 
-Actually, this type is already built in. The empty list is written {\black \verb+[]+}
-and the recursive constructor {\black \verb+::+}, has infix status. Thus, the above
-lists are actually written:
+Вообще то, такой тип уже является встроенным.  Пустой список
+записывается {\black \verb+[]+}, и у рекурсивного конструктора {\black
+  \verb+::+} есть статус инфиксной операции.  Поэтому списки выше, в
+действительности, записываются так:
+%Actually, this type is already built in. The empty list is written {\black \verb+[]+}
+%and the recursive constructor {\black \verb+::+}, has infix status. Thus, the above
+%lists are actually written:
 
 \begin{black}\begin{verbatim}
   #[];;
@@ -724,7 +880,8 @@ lists are actually written:
   - : int list = [1; 2; 3]
 \end{verbatim}\end{black}
 
-The version that is printed can also be used for input:
+Вариант который печатается на выводе может быть использован и как ввод:
+%The version that is printed can also be used for input:
 
 \begin{black}\begin{verbatim}
   #[1;2;3;4;5] = 1::2::3::4::5::[];;
@@ -740,12 +897,15 @@ The version that is printed can also be used for input:
 
 \begin{rslide}
 
-\heading{Pattern matching over lists}
+\heading{Сопоставление с образцом над списками}
+%\heading{Pattern matching over lists}
 
 \vspace*{0.5cm}
 
-We can now define functions by pattern matching in the usual way. For example,
-we can define functions to take the head and tail of a list:
+Мы можем задать функции используя сопоставление с образцом как
+обычно.  Например, мы можем задать функции взятия головы и хвоста списка:
+%We can now define functions by pattern matching in the usual way. For example,
+%we can define functions to take the head and tail of a list:
 
 \begin{black}\begin{verbatim}
   #let hd (h::t) = h;;
@@ -762,7 +922,9 @@ we can define functions to take the head and tail of a list:
   tl : 'a list -> 'a list = <fun>
 \end{verbatim}\end{black}
 
-ML warns us that they will fail when applied to an empty list.
+ML предупреждает что возникнет ошибка если эти функции применить к
+пустому списку.
+%ML warns us that they will fail when applied to an empty list.
 
 \end{rslide}
 
@@ -770,13 +932,17 @@ ML warns us that they will fail when applied to an empty list.
 
 \begin{rslide}
 
-\heading{Recursive functions over lists}
+\heading{Рекурсивные функции над списками}
+%\heading{Recursive functions over lists}
 
 \vspace*{0.5cm}
 
-It is possible to mix pattern matching and recursion. This is natural since the
-type itself is defined recursively. For example, here is a
-function to return the length of a list:
+Допускается совмещать сопоставление с образцом и рекурсию.  Это
+выглядит естественно так как сами типы были заданы рекурсивно.  Вот
+например функция, которая возвращает длину списка:
+%It is possible to mix pattern matching and recursion. This is natural since the
+%type itself is defined recursively. For example, here is a
+%function to return the length of a list:
 
 \begin{black}\begin{verbatim}
   #let rec length =
@@ -789,10 +955,15 @@ function to return the length of a list:
   - : int = 3
 \end{verbatim}\end{black}
 
-Alternatively, this can be written in terms of our earlier `destructor'
-functions {\black \tt hd} and {\black \tt tl}. This style of function definition is more
-usual in many languages, notably LISP, but the direct use of pattern matching
-is often more elegant.
+С другой стороны эта функция может быть написана используя ранее
+заданные `деструктор' функции {\black \tt hd} и {\black \tt tl}.
+Такой стиль задания функций принят во многих языках, особенно в LISP,
+однако прямое использование сопоставления с образцом зачастую
+элегантнее.
+%Alternatively, this can be written in terms of our earlier `destructor'
+%functions {\black \tt hd} and {\black \tt tl}. This style of function definition is more
+%usual in many languages, notably LISP, but the direct use of pattern matching
+%is often more elegant.
 
 \end{rslide}
 
@@ -801,20 +972,26 @@ is often more elegant.
 
 \begin{rslide}
 
-\heading{The subtlety of recursive types}
+\heading{Коварство рекурсивных типов}
+%\heading{The subtlety of recursive types}
 
 \vspace*{0.5cm}
 
-Consider the following:
+Рассмотрим следующую конструкцию:
+%Consider the following:
 
 \begin{black}\begin{verbatim}
   #type ('a)embedding =
      K of ('a)embedding->'a;;
 \end{verbatim}\end{black}
 
-This looks suspicious because it embeds the function space {\red $A \to B$}
-inside {\red $A$}. In fact it only embeds the {\em computable} functions.
-We must be careful with semantics, and also types:
+Она выглядит подозрительно, потому что вставляет функциональное
+пространство {\red $A \to B$} внутрь {\red $A$}.  В действительности
+это так только для {\em вычислимых} функций.  Мы должны быть
+внимательными с семантикой, а также с типами:
+%This looks suspicious because it embeds the function space {\red $A \to B$}
+%inside {\red $A$}. In fact it only embeds the {\em computable} functions.
+%We must be careful with semantics, and also types:
 \begin{black}\begin{verbatim}
   #let Y h =
     let g (K x) z = h (x (K x)) z in
