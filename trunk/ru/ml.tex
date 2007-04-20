@@ -194,86 +194,94 @@ $\mbox{fact}(0)$, ветвь `else' также должна быть вычислена, что
 (\mbox{PRE}\; 0))$, и т.д.  Соответственно, вычисление превратиться в
 бесконечный цикл.
 
-Accordingly, we make the conditional a new primitive construct, and modify the
-usual reduction strategy so that {\em first} the boolean expression is
-evaluated, and only then is {\em exactly one} of the two arms evaluated, as
-appropriate.
+Таким образом, мы делаем условия примитивной конструкцией, и изменяем
+обычную стратегию редукции таким образом, что  {\em сначала}
+вычисляется логическое выражение, а затем вычисляется {\em только
+  одно} из двух ветвей условия.
 
-What about the process of recursion itself? We have suggested understanding
-recursive definitions in terms of a recursion operator $Rec$ with its own
-reduction rule:
+А что происходит с самим процессом рекурсии?  Мы предполагаем
+понимание рекурсивных определений в терминах рекурсивного оператора
+$Rec$ с его собственным правилом редукции:
 
 $$ Rec\; f \goesto f(Rec\; f) $$
 
-\noindent This would also loop using an eager evaluation strategy:
+\noindent он также будет зацикливаться при использовании стратегии
+энергичного вычисления:
 
 $$  Rec\; f \goesto f(Rec\; f) \goesto f(f(Rec\; f)) \goesto f(f(f(Rec\; f)))
 \goesto \cdots $$
 
-However we only need a very simple modification to the reduction rule to make
-things work correctly:
+Однако, нам необходимо лишь очень простое изменение в правиле
+редукции, которое заставит работать правильно:
 
 $$ Rec\; f \goesto f(\lamb{x} Rec\; f\; x) $$
 
-Now the lambda on the right means that $\lamb{x} Rec\; f\; x$ evaluates to
-itself, and so only after the expression has been further reduced following
-substitution in the body of $f$ will evaluation continue.
+Теперь, $lambda$-выражение справа означает, что $\lamb{x} Rec\; f\; x$
+вычисляется само в себя, и только после того, как выражение будет
+редуцирует следующие подстановки в теле $f$, вычисление продолжится.
 
-\section{The ML family}
+\section{Семейство языков ML}
 
-We have been talking about `ML' as if it were a single language. In fact there
-are many variants of ML, even including `Lazy ML', an implementation from
-Chalmers University in Sweden that is based on lazy evaluation. The most
-popular version of ML in education is `Standard ML', but we will use another
-version, called CAML (`camel') Light.\footnote{The name stands for `Categorical
-Abstract Machine', the underlying implementation method.} We chose CAML Light
-for several reasons:
+Мы говорили о `ML' так, как будто это один язык.  На самом деле
+существует много вариантов ML, даже включая `Lazy ML', реализацию
+университета Chalmers в Швеции, которая базируется на ленивых
+вычислениях.  Наиболее популярная версия ML в образовании~--- это
+`Standard ML', но мы будет использовать другую версию, называющуюся
+CAML (`camel') Light.\footnote{Это имя означает `Categorical Abstract
+  Machine', метод реализации, лежащий в ее основе.}  Мы выбрали CAML
+Light по следующим причинам:
 
 \begin{itemize}
 
-\item The implementation is small and highly portable, so can be run
-effectively on Unix machines, PCs, Macs etc.
+\item реализация имеет небольшой объем и хорошо переносима между
+  платформами, так что она эффективно работает на Unix, PC, Macs, и
+  других.
 
-\item The system is simple, syntactically and semantically, making it
-relatively easy to approach.
+\item Система очень проста, синтаксически и семантически, что делает
+  ее достаточно простой для изучения.
 
-\item The system is well suited to practical programming, e.g. it can easily be
-interfaced to C and supports standard {\tt make}-compatible separate
-compilation.
+\item Система хорошо подходит для практического использования,
+  например, она имеет интерфейс с библиотекам на языке C и
+  поддерживает стандартную, раздельную компиляцию, совместимую с {\tt
+    make}.
 
 \end{itemize}
 
-However, we will be teaching quite general techniques, and any code we write
-can be run with a few minor syntactic changes in any version of ML, and indeed
-often in other functional languages.
+Однако, мы будем изучать достаточно общие техники, и любой написанный
+код, может быть запущен (с небольшими синтаксическими изменениями) на
+любой версии ML, и часто, на других функциональных языках.
 
 \section{Запуск ML}
 
-ML has already been installed on Thor. In order to use it, you need to put the
-CAML binary directory on your {\tt PATH}. This can be done (assuming you use
-the `bash' shell or one of its family), as follows:
+ML уже установлен на рабочий сервер (Thor).  Для того, чтобы
+использовать его, вам необходимо поместить каталог с исполняемыми
+файлами CAML в переменную среды {\tt PATH}.  Это может быть сделано
+следующим образом (преполагая, что вы используете командный процессор
+`bash' или что-то из его семейства):
 
 \begin{boxed}\begin{verbatim}
   PATH="$PATH:/home/jrh13/caml/bin"
   export PATH
-\end{verbatim}\end{boxed}
+\end{verbatim}\end{boxed}%$
 
-To avoid doing this every time you log on, you can insert these lines near the
-end of your {\tt .bash\_profile}, or the equivalent for your favourite shell.
-Now to use CAML in its normal interactive and interpretive mode, you simply
-need to type {\tt camllight}, and the system should fire up and present its
-prompt (`{\tt \#}'):
+Чтобы не вводить эти команды при каждом заходе на сервер, вы можете
+вставить эти команды в конец вашего файла {\tt .bash\_profile}, или
+его эквивалента для вашего командного процессора.  Теперь, для
+использования CAML в интерактивном режиме, вам просто надо набрать
+{\tt camllight}, и программа должна запуститься и выдать приглашение
+(`{\tt \#}'):
 
 \begin{boxed}\begin{verbatim}
   $ camllight
   >       Caml Light version 0.73
 
   #
-\end{verbatim}\end{boxed}
+\end{verbatim}\end{boxed}%$
 
-In order to exit the system, simply type {\tt ctrl/d} or {\tt quit();;} at the
-prompt. If you are interested in installing CAML Light on your own machine, you
-should consult the following Web page for detailed information:
+Для того, чтобы выйти из системы, просто наберите {\tt ctrl/d} или
+{\tt quit();;} в строке приглашения.  Если вы заинтересованы в
+установке CAML Light на ваш собственный компьютер, то вы должны
+прочитать следующую Web-страницу для получения подробной информации:
 
 \begin{boxed}\begin{verbatim}
   http://pauillac.inria.fr/caml/
@@ -281,23 +289,26 @@ should consult the following Web page for detailed information:
 
 \section{Взаимодействие с ML}
 
-When ML presents you with its prompt, you can type in expressions, terminated
-by two successive semicolons, and it will evaluate them and print the result.
-In computing jargon, the ML system sits in a read-eval-print loop: it
-repeatedly reads an expression, evaluates it, and prints the result. For
-example, ML can be used as a simple calculator:
+Когда ML выдает вам строку приглашения, вы можете вводить выражения,
+завешаемые двумя последовательными знаками ``точка с запятой'', он
+будет вычислять их и выдавать результат.  На компьютерном жаргоне
+говорят, что ML находится в состоянии ``цикл read-eval-print
+(считать-вычислить-напечатать)???'': выражения считываются,
+вычисляются и печатаются результаты.  Например, ML может быть
+использован как простой калькулятор:
 
 \begin{boxed}\begin{verbatim}
   #10 + 5;;
   - : int = 15
 \end{verbatim}\end{boxed}
 
-The system not only returns the answer, but also the {\em type} of the
-expression, which it has inferred automatically. It can do this because it
-knows the type of the built-in addition operator {\tt +}. On the other hand, if
-an expression is not typable, the system will reject it, and try to give some
-idea about how the types fail to match up. In complicated cases, the error
-messages can be quite tricky to understand.
+Система не только возвращает ответ, но также выдает  {\em тип}
+выражения, который определяется автоматически.  Система может сделать
+это, поскольку знает тип встроенного оператора сложения {\tt +}.  С
+другой стороны, если для выражения не может быть определен тип, то
+система отвергнет его, и постарается выдать сообщение о том, почему
+произошла ошибка.  В сложных случаях, сообщения об ошибках  достаточно
+тяжело понять.
 
 \begin{boxed}\begin{verbatim}
   #1 + true;;
@@ -308,30 +319,33 @@ messages can be quite tricky to understand.
   but is used with type int.
 \end{verbatim}\end{boxed}
 
-Since ML is a functional language, expressions are allowed to have function
-type. The ML syntax for a lambda abstraction $\lamb{x} t[x]$ is {\tt fun x ->
-t[x]}. For example we can define the successor function:
+Поскольку ML является функциональным языком, то выражения могут иметь
+тип-функцию.  Для $lambda$-выражения $\lamb{x} t[x]$ ML предоставляет
+следующий синтаксис~--- {\tt fun x -> t[x]}.  Например, мы можем
+определить функцию ``следующий successor'':
 
 \begin{boxed}\begin{verbatim}
   #fun x -> x + 1;;
   - : int -> int = <fun>
 \end{verbatim}\end{boxed}
 
-Again, the type of the expression, this time {\tt int -> int}, is inferred and
-displayed. However the function itself is not printed; the system merely writes
-{\tt <fun>}. This is because, in general, the internal representations of
-functions are not very readable.\footnote{CAML does not store them simply as
-syntax trees, but compiles them into bytecode.} Functions are applied to
-arguments just as in lambda calculus, by juxtaposition. For example:
+Как и в предыдущем примере, тип выражения (сейчас это {\tt int ->
+  int}), выводится из выдается на экран.  Однако сама функция не
+печатается; система лишь выдает {\tt <fun>}.  Это сделано потому, что
+внутренее представление функций не слишком читабельно.\footnote{CAML
+  не хранит их как синтаксические деревья, а компилирует в байт-код.}
+Функции применяются к аргументам, также как и в $lambda$-исчислении,
+путем комбинирования.  Например:
 
 \begin{boxed}\begin{verbatim}
   #(fun x -> x + 1) 4;;
   - : int = 5
 \end{verbatim}\end{boxed}
 
-Again as in lambda calculus, function application associates to the left, and
-you can write curried functions using the same convention of eliding multiple
-$\lambda$'s (i.e. {\tt fun}'s). For example, the following are all equivalent:
+Снова, как в $lambda$-исчислении, применение функции асоциируется
+слева, и вы можете написать карированные функции, используя  то же
+самое соглашение по упрощению множественных $\lambda$-выражений (т.е.,
+{\tt fun}-й).  Например, все следующие выражения эквивалентны:
 
 \begin{boxed}\begin{verbatim}
   #((fun x -> (fun y -> x + y)) 1) 2;;
@@ -342,7 +356,7 @@ $\lambda$'s (i.e. {\tt fun}'s). For example, the following are all equivalent:
   - : int = 3
 \end{verbatim}\end{boxed}
 
-\section{Bindings and declarations}
+\section{Связывания и объявления}
 
 It is not convenient, of course, to evaluate the whole expression in one go;
 rather, we want to use {\tt let} to bind useful subexpressions to names. This
@@ -562,7 +576,7 @@ ways of constraining the identity function to type {\tt int -> int}:
   I : int -> int = <fun>
 \end{verbatim}\end{boxed}
 
-\section{Equality of functions}
+\section{Эквивалентность функций}
 
 Instead of comparing the actions of $I$ and $I'$ on particular arguments like
 $3$, it would seem that we can settle the matter definitively by comparing the
