@@ -7,17 +7,19 @@ Please keep terms in alphabet order.
 При голосовании прибавляйте индекс и записывайте себя в скобках через
 запятую.
 
+  * *bug* - дефект
   * *Church numeral(s)* - нумерал(ы) Чёрча
   * *codomain* - область (допустимых) значений
   * *const function* - константная функция ??
   * *continuation* - продолжение
-  * *conversion* - конверсия (lambda-термов) ??
+  * *conversion* - конверсия (lambda-термов) / преобразование
   * *conversion rules* - правила преобразования (lambda-термов)
   * *currying* - каррирование ?? (check in Harisson/Fild)
   * *domain* - область определения ??
   * *eager evaluation* - энергичное вычисление
   * *evaluation* - вычисление
   * *extensionality* - экстенсиональность
+  * *first class object* - объект высшего порядка / объект первого рода ??
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
   * *higher order function* - функция высшего порядка
   * *identity function* - тождественное отображение
@@ -30,7 +32,7 @@ Please keep terms in alphabet order.
   * *pretty print* - печать в наглядной форме ??
   * *prover* - средство доказательства ??
   * *reduction* - редукция
-  * *syntactic sugar* - синтаксический сахар ??
+  * *syntactic sugar* - синтаксическая обёртка
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
   * *variable capture* - захват переменной
