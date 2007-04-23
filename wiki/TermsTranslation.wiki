@@ -29,6 +29,7 @@ Please keep terms in alphabet order.
   * *lecture notes* - лекционные материалы / коспекты лекций ??
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
+  * *polymorphic function(s)* - полиморфные фукнция(и)
   * *pretty print* - печать в наглядной форме / ÓÔÒÕËÔÕÒÎÁÑ(ÉÒÏ×ÁÎÎÁÑ) ÐÅÞÁÔØ (×Ù×ÏÄ). ??
   * *prover* - средство доказательства ??
   * *reduction* - редукция
