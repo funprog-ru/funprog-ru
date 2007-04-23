@@ -200,7 +200,7 @@
 \item Запускаем ML
 %\item Starting up ML
 
-\item Основное взаимодействие; выражения и объявления
+\item Основы взаимодействия; выражения и объявления
 %\item Basic interaction; expressions and declarations
 
 \item Примеры
@@ -239,7 +239,7 @@ $\lambda$-исчисление, например:
 
 \end{itemize}
 
-Так будет продолжаться пока мы не построим ML.  Особенно
+Так будет продолжаться до тех пор, пока мы не построим ML.  Особенно
 интересно, что основные типы данных не реализованы в виде
 $\lambda$-термов.
 %This process continues until we reach ML. Notably, basic datatypes are not
@@ -248,7 +248,7 @@ $\lambda$-термов.
 Например, преобразование {\red $2 + 2 \goesto 4$} происходит благодаря машинной
 арифметике, а не манипулированию нумералами Чёрча.  Такие
 дополнительные правила преобразования часто называют {\em
-  $\delta$-конверсии}.
+  $\delta$-конверсиями}.
 %For example, {\red $2 + 2 \goesto 4$} happens by machine arithmetic, not by
 %manipulating Church numerals. These extra reduction rules are often called
 %{\em $\delta$-conversions}.
@@ -258,7 +258,7 @@ $\lambda$-термов.
 
 \begin{rslide}
 
-\heading{Проблема с нормальным порядком}
+\heading{Проблема с нормальным порядком редукции}
 %\heading{Problem with normal order}
 
 \vspace*{0.5cm}
@@ -302,7 +302,7 @@ $\lambda$-термов.
 \vspace*{0.5cm}
 
 Такие повторения вычислений недопустимы на практике.  Существует два решения
-проблемы, которые разбивают мир функционального программирования:
+проблемы, которые делят мир функционального программирования на части:
 %This reevaluation is unacceptable in practice. There are two solutions, which
 %split the world of functional programming:
 
@@ -414,7 +414,7 @@ $\lambda$-термов.
 \vspace*{0.5cm}
 
 Из-за энергичного вычисления нам необходимо создать примитив~--
-условное выражение с собственной редукционной стратегией.  Если мы
+условное выражение с собственной стратегией редукции.  Если мы
 попытаемся реализовать
 %Because of eager evaluation, we need to make the conditional primitive with its
 %own special reduction strategy. If we tried to implement
@@ -453,7 +453,7 @@ $\lambda$-термов.
 
 \begin{itemize}
 
-\item Мы делаем условное выражение примитивой языка и изменяем
+\item Мы делаем условное выражение примитивом языка и изменяем
   стандартную стратегию вычислений для него таким образом, что {\em сначала}
   вычисляется булево выражение, а потом {\em только один} из нужных
   рукавов.
@@ -526,16 +526,16 @@ CAML.
 
 \vspace*{0.5cm}
 
-ML is already installed on Thor. In order to use it, put its binary directory
-on your path:
+ML уже установлен на сервер Thor.  Чтобы использовать его, поместите
+каталог с ним в пути поиска:
 \begin{black}
 \begin{verbatim}
   PATH="$PATH:/home/jrh13/caml/bin"
   export PATH
 \end{verbatim}
 \end{black}
-You can put these two lines near the end of your {\black \tt .bash\_profile},
-and it will be set up automatically every time you log on.
+Вы можете поместить эти строки в конец вашего файла {\black \tt
+  .bash\_profile}, и они будут выполняться автоматически при входе.
 
 Теперь просто наберите {\black \tt camllight}.  Система запустится и
 выведет приглашение.
@@ -567,7 +567,7 @@ and it will be set up automatically every time you log on.
 
 \vspace*{0.5cm}
 
-Самый простой способ взаимодействия с ML это использование его в роли
+Самый простой способ взаимодействия с ML~--- это использование его в роли
 простого калькулятора.
 %The simplest way to interact with ML is to use it as a simple calculator.
 
@@ -580,7 +580,7 @@ and it will be set up automatically every time you log on.
 
 ML не только печатает результат, но также выводит {\em тип} выражения,
 в данном случае {\black \tt int}.  Если ML не может назначить тип
-выражению, то оно не пригодно.
+выражению, то оно отвергается.
 %ML not only prints the result, but also infers the {\em type} of the
 %expression, namely {\black \tt int}. If ML cannot assign a type to an
 %expression then it is rejected:
@@ -596,7 +596,7 @@ ML не только печатает результат, но также выводит {\em тип} выражения,
 \end{verbatim}
 \end{black}
 
-ML знает тип встроенного оператора {\black \tt +} и именно поэтому он
+ML знает тип встроенного оператора {\black \tt +}, и именно поэтому он
 может вывести тип этого выражения.
 %ML knows the type of the built-in operator {\black \tt +}, and that is how it
 %makes its type inference.
@@ -612,7 +612,7 @@ ML знает тип встроенного оператора {\black \tt +} и именно поэтому он
 
 \vspace*{0.5cm}
 
-Так как ML это функциональный язык, то выражения могут иметь
+Поскольку ML является функциональныи языком, то выражения могут иметь
 функциональный тип.  Синтаксис ML для обозначения $\lambda$-абстракции
 {\red $\lamb{x} t[x]$} выглядит как {\black \tt fun x -> t[x]}.
 Например мы можем задать функцию инкремента:
@@ -628,7 +628,7 @@ ML знает тип встроенного оператора {\black \tt +} и именно поэтому он
 \end{black}
 
 Опять же, тип выражения, в этот раз {\black \tt int -> int}, был выведен
-и показан.  Однако сама функция не была напечатана; система просто
+и показан.  Однако сама функция не была показана; система просто
 написала {\black \tt <fun>}.
 %Again, the type of the expression, this time {\black \tt int -> int}, is
 %inferred and displayed. However the function itself is not printed; the system
@@ -655,7 +655,7 @@ ML знает тип встроенного оператора {\black \tt +} и именно поэтому он
 
 \vspace*{0.5cm}
 
-ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
+ML использует синтаксис подобный принятому в $\lambda$-исчислении
 для каррированных функций от нескольких аргументов.
 %ML supports similar syntactic conventions to $\lambda$-calculus for curried
 %functions of several arguments:
@@ -706,7 +706,7 @@ ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
 \end{verbatim}
 \end{black}
 
-Когда связываются функции, можно использовать более элегантную обёртку:
+Когда связываются функции, то можно использовать более элегантную обёртку:
 %When binding functions, one can also use the more elegant sugaring:
 
 \begin{black}
@@ -742,7 +742,7 @@ ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
 \vspace*{0.5cm}
 
 По сути, набор связываний может быть дополнен интерактивно.  Просто
-опустите {\black \tt in} и завершите выражение:
+уберите {\black \tt in} и завершите выражение:
 %In fact, the set of bindings can be augmented interactively. Simply omit the
 %{\black \tt in} and terminate the phrase:
 
@@ -764,8 +764,8 @@ ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
 \end{verbatim}
 \end{black}
 
-Таким образом можно создать набор объявлений функций, которые могут
-быть использованы позже в сеансе работы.
+Таким образом можно создать набор объявлений функций, которые позже
+могут быть использованы в процессе работы.
 %Thus one can make a series of function declarations. These can then be used
 %later in the session.
 
@@ -790,7 +790,7 @@ ML поддерживает синтаксис подобный принятому в $\lambda$-исчислении
 
 \vspace*{0.5cm}
 
-Мы можем задавать полиморфические функции, такие как оператор
+Мы можем определять полиморфические функции, такие как оператор
 тождества:
 %We can define polymorphic functions, like the identity operator:
 
@@ -851,7 +851,7 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
 \end{verbatim}
 \end{black}
 
-Заметим, что система следит за типами без нас.  Вспомним что {\red $I
+Заметим, что система сама следит за типами.  Вспомним, что {\red $I
   = S\; K\; K$}; давайте попробуем это в ML:
 %Note that the system keeps track of the types for us. Recall that {\red $I =
 %S\; K\; K$}; let us try this out in ML:
@@ -861,7 +861,7 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
   I' : 'a -> 'a = <fun>
 \end{verbatim}
 \end{black}
-У него правильный тип, и похоже он работает:
+У него правильный тип, и похоже это работает:
 %It has the right type, and seems to work:
 \begin{black}
 \begin{verbatim}
@@ -893,7 +893,7 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
 \end{verbatim}
 \end{black}
 
-В основном {\em запрещено} сравнивать функции на равенство.  Почему?
+В общем случае {\em запрещено} сравнивать функции на равенство.  Почему?
 Ведь предполагается, что функции являются объектами высшего порядка в ML?
 %It is in general {\em forbidden} to compare functions for equality. Why? Aren't
 %functions supposed to be first-class objects in ML?

@@ -217,8 +217,8 @@
 
 \vspace*{0.5cm}
 
-Пока мы только вводили текст в ML и думали о результатах.  Однако, так
-реальные программы не пишутся.
+Пока мы только вводили текст в ML и думали о результатах.  Однако, 
+реальные программы так не пишутся.
 %We have just been typing things into ML and thinking about the results. However
 %one doesn't write real programs in this way.
 
@@ -228,7 +228,7 @@
 %out as you go, these can be inserted in the ML window using cut and paste.
 
 Вы можете вырезать и вставить используя X Window System и схожие
-системы либо редактор, с поддержкой буферов, как Emacs.
+системы, или редактор, с поддержкой буферов, такой как Emacs.
 %You can cut and paste using X-windows and similar systems, or an editor like
 %Emacs with multiple buffers.
 
@@ -272,7 +272,7 @@
 
 \vspace*{0.5cm}
 
-Используя команду {\black \tt include} над этим файлом, мы получаем
+Используя команду {\black \tt include} для этого файла, мы получаем
 следующее:
 %Using {\black \tt include} on this file results in the following:
 
@@ -299,7 +299,7 @@ ML отвечает так, как будто содержание файла было введено в сеанс
 %The final line is the return from the {\black \tt include} command itself. It
 %has type {\black \tt string -> unit}.
 
-Допускается гнездитьXXX включения.
+Допускается использование вложенных включений файлов.
 %It is permissible to nest inclusions.
 
 \end{rslide}
@@ -348,23 +348,23 @@ ML игнорирует комментарии, но комментарии полезны для людей читающих
 
 \vspace*{0.5cm}
 
-Важнейшие примитивные типы:
+Важнейшие примитивные типы данных:
 %The main primitive types are:
 
 \begin{itemize}
 
-\item Тип {\black \tt unit}, одноэлементный тип, чей единственный
+\item Тип {\black \tt unit}~---  одноэлементный тип, чей единственный
   элемент записывается как {\black \tt ()}.
 %\item Type {\black \tt unit}, a 1-element type, whose only element is written
 %{\black \tt ()}.
 
-\item Тип {\black \tt bool}, двухэлементный тип, чьи элементы
+\item Тип {\black \tt bool}~---  двухэлементный тип, чьи элементы
   записываются как {\black \tt true} и {\black \tt false}.
 %\item Type {\black \tt bool}, a 2-element type whose elements are written
 %{\black \tt true} and {\black \tt false}.
 
-\item Тип {\black \tt int}, подмножество положительных и отрицательных
-  чисел, записанных например как {\black \tt 6} и {\black \tt -11}.
+\item Тип {\black \tt int}~---  подмножество положительных и отрицательных
+  чисел, записанных, например как {\black \tt 6} и {\black \tt -11}.
 %\item Type {\black \tt int}, a subset of the positive and negative integers,
 %written for example {\black \tt 6} and {\black \tt -11}.
 
@@ -395,9 +395,9 @@ ML игнорирует комментарии, но комментарии полезны для людей читающих
 
 \vspace*{0.5cm}
 
-У многих встроенных констант, как например, у {\black \tt +}, есть
+У многих встроенных констант, таких как, {\black \tt +}, есть
 статус инфиксной операции.  Есть также понятие старшинства операции,
-поэтому выражения ассоциируются более или менее как ожидается.
+поэтому выражения связываются более или менее как ожидается пользователем.
 %Many built-in constants like {\black \tt +} have infix status. They
 %also have a notion of precedence, so expressions associate more or
 %less as expected.
@@ -449,7 +449,7 @@ ML игнорирует комментарии, но комментарии полезны для людей читающих
 %{\black \verb+^+} & String concatenation  \\
 {\black \tt =}    & Проверка равенства              \\
 %{\black \tt =}    & Equality              \\
-{\black \tt <>}   & Проверка не равенства            \\
+{\black \tt <>}   & Проверка неравенства            \\
 %{\black \tt <>}   & Inequality            \\
 {\black \tt <}    & Строго меньше             \\
 %{\black \tt <}    & Less than             \\
@@ -459,9 +459,9 @@ ML игнорирует комментарии, но комментарии полезны для людей читающих
 %{\black \tt >}    & Greater than          \\
 {\black \tt >=}   & Больше или равно \\
 %{\black \tt >=}   & Greater than or equal \\
-{\black \tt \&}   & Булево `и'         \\
+{\black \tt \&}   & Логическое `и'         \\
 %{\black \tt \&}   & Boolean `and'         \\
-{\black \tt or}   & Булево `или'          \\
+{\black \tt or}   & Логическое `или'          \\
 %{\black \tt or}   & Boolean `or'          \\
 \hline
 \end{tabular}
@@ -480,7 +480,7 @@ ML игнорирует комментарии, но комментарии полезны для людей читающих
 
 Заметим, что у логических операторов {\black \verb+&+} и {\black
   \verb+or+} стратегия вычислений не энергичная.  Мы можем
-рассматривать их как синонимы к:
+рассматривать их как синонимы для:
 %Note that the logical operators {\black \verb+&+} and {\black \verb+or+} also have a
 %non-eager evaluation strategy. You can regard them as synonyms:
 
@@ -499,7 +499,7 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 %performs logical negation.
 
 У логического оператора {\black \tt not} необычный префиксный статус,
-такой что {\black \tt not not p} разбирается как {\black \tt not (not
+так что {\black \tt not not p} разбирается как {\black \tt not (not
   p)} в противоположность обычному левоассоциативному разбору для
 функций.
 %The logical {\black \tt not} operator has special prefix status, so that {\black \tt not not
@@ -517,7 +517,7 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 \vspace*{0.5cm}
 
 Мы зададим рекурсивную функцию, которая принимает два аргумента:
-положительное число {\red $n$} и функцию {\red $f$} и возвращает {\red
+положительное число {\red $n$} и функцию {\red $f$}, а возвращает {\red
   $f^n$}, то есть {\red $f \circ \cdots \circ f$} ({\red $n$} раз):
 %We define by recursion a function that takes a positive integer {\red $n$}
 %and a function {\red $f$} and returns {\red $f^n$}, i.e. {\red $f \circ \cdots
@@ -552,7 +552,7 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 
 \begin{rslide}
 
-\heading{Examples (2)}
+\heading{Примеры (2)}
 
 \vspace*{0.5cm}
 
@@ -592,7 +592,7 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 ML содержит средства определения новых типов и конструкторов типов.
 %ML has facilities for defining new types and type constructors.
 
-На деле конструкторы могут быть рекурсивными, то есть использовать
+На деле конструкторы могут быть рекурсивными, то есть можно использовать
 как аргументы не только существующие типы, но и сам новый тип.
 %In fact, the constructors can be recursive, i.e. not only take existing types
 %as arguments but the new type itself.
@@ -634,13 +634,13 @@ ML содержит средства определения новых типов и конструкторов типов.
 \begin{enumerate}
 
 \item Они полны, т.е. любой элемент нового типа доступен либо через
-  {\black \tt inl x} для некоторого {\black \tt x} либо через {\black
+  {\black \tt inl x} для некоторого {\black \tt x}, либо через {\black
     \tt inr y} для некоторого {\black \tt y}.
 %\item They are exhaustive, i.e. every element of the new type is obtainable
 %either by  {\black \tt inl x} for some {\black \tt x} or {\black \tt inr y} for some {\black \tt y}.
 
-\item Они инъективны, т.е. признак равенства {\black \tt inl x = inl
-    y} верно если и только если {\black \tt x = y}, тоже самое и для
+\item Они инъективны, т.е. равенство {\black \tt inl x = inl
+    y} верно, если, и только если {\black \tt x = y}, тоже самое и для
   {\black \tt inr}.
 %\item They are injective, i.e. an equality test {\black \tt inl x = inl y} is true if
 %and only if {\black \tt x = y}, and similarly for {\black \tt inr}.
@@ -793,7 +793,7 @@ $\lambda$-функциям более общие выражения, называемые {\em varstructs}.
 {\black $$ \mbox{match}\; E\; \mbox{with}\;
    pattern_1 {\verb+->+} E_1 \mid \cdots \mid
    pattern_n {\verb+->+} E_n $$}
-Простейший выбор из всех это использовать
+Простейший выбор из всех вариантов~---  это использовать
 %The simplest alternative of all is to use
 {\black $$ \mbox{let}\; pattern \mbox{ = } expression $$}
 \noindent но в данном случае разрешён только один образец.  Например:
@@ -833,8 +833,8 @@ $\lambda$-функциям более общие выражения, называемые {\em varstructs}.
   - : 'a * 'a list -> 'a list = <fun>
 \end{verbatim}\end{black}
 
-Представим что {\black \tt Nil} это пустой список, а {\black \tt Cons}
-как функцию которая добавляет элемент в начало списка.  Списки {\black \tt
+Представим, что {\black \tt Nil}~---  это пустой список, а {\black \tt Cons}~--- 
+функция которая добавляет элемент в начало списка.  Списки {\black \tt
 $[]$}, {\black \tt $[1]$}, {\black \tt $[1;2]$} и {\black \tt
 $[1;2;3]$} записываются как:
 %We imagine {\black \tt Nil} as the empty list and {\black \tt Cons} as a
@@ -880,7 +880,8 @@ $[1;2;3]$} записываются как:
   - : int list = [1; 2; 3]
 \end{verbatim}\end{black}
 
-Вариант который печатается на выводе может быть использован и как ввод:
+Вариант который печатается на выводе может быть использован и для
+записи в коде:
 %The version that is printed can also be used for input:
 
 \begin{black}\begin{verbatim}
@@ -897,13 +898,13 @@ $[1;2;3]$} записываются как:
 
 \begin{rslide}
 
-\heading{Сопоставление с образцом над списками}
+\heading{Сопоставление с образцом для списков}
 %\heading{Pattern matching over lists}
 
 \vspace*{0.5cm}
 
-Мы можем задать функции используя сопоставление с образцом как
-обычно.  Например, мы можем задать функции взятия головы и хвоста списка:
+Теперь мы можем задать функции используя сопоставление с образцом.  Например,
+мы можем задать функции взятия головы и хвоста списка:
 %We can now define functions by pattern matching in the usual way. For example,
 %we can define functions to take the head and tail of a list:
 
@@ -938,7 +939,7 @@ ML предупреждает что возникнет ошибка если эти функции применить к
 \vspace*{0.5cm}
 
 Допускается совмещать сопоставление с образцом и рекурсию.  Это
-выглядит естественно так как сами типы были заданы рекурсивно.  Вот
+выглядит естественно, поскольку сами типы были заданы рекурсивно.  Вот
 например функция, которая возвращает длину списка:
 %It is possible to mix pattern matching and recursion. This is natural since the
 %type itself is defined recursively. For example, here is a
@@ -955,7 +956,7 @@ ML предупреждает что возникнет ошибка если эти функции применить к
   - : int = 3
 \end{verbatim}\end{black}
 
-С другой стороны эта функция может быть написана используя ранее
+С другой стороны, эта функция может быть написана используя ранее
 заданные `деструктор' функции {\black \tt hd} и {\black \tt tl}.
 Такой стиль задания функций принят во многих языках, особенно в LISP,
 однако прямое использование сопоставления с образцом зачастую
@@ -1011,7 +1012,3 @@ ML предупреждает что возникнет ошибка если эти функции применить к
 
 
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
