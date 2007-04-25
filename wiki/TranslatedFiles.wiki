@@ -3,27 +3,26 @@
 
 = Полностью переведённые =
 
-*l1.tex* - перевод lg.zevlg, прочитали alexott
-*l2.tex* - перевод lg.zevlg, прочитали alexott
-*l3.tex* - перевод lg.zevlg, прочитали alexott
-*l4.tex* - перевод lg.zevlg, прочитали alexott
-*l5.tex* - перевод lg.zevlg, прочитали alexott
-*l6.tex* - перевод lg.zevlg, прочитали alexott
-*intro.tex* - перевод alexott, прочитали
-*effect.tex* - перевод alexott, прочитали
-*preface.tex* - перевод pr.dimiii, прочитали
+  * *l1.tex* - перевод lg.zevlg, прочитали alexott
+  * *l2.tex* - перевод lg.zevlg, прочитали alexott
+  * *l3.tex* - перевод lg.zevlg, прочитали alexott
+  * *l4.tex* - перевод lg.zevlg, прочитали alexott
+  * *l5.tex* - перевод lg.zevlg, прочитали alexott
+  * *l6.tex* - перевод lg.zevlg, прочитали alexott
+  * *intro.tex* - перевод alexott, прочитали
+  * *effect.tex* - перевод alexott, прочитали
+  * *preface.tex* - перевод pr.dimiii, прочитали
 
 = Остальные =
 
-*ml.tex* - перевод, прочитали
-*plan.tex* - перевод, прочитали
+  * *ml.tex* - перевод, прочитали
+  * *plan.tex* - перевод, прочитали
 
-*comb.tex* - перевод, прочитали
-*examples.tex* - перевод, прочитали
-*fml.tex* - перевод, прочитали
-*ind-defs.tex* - перевод, прочитали
-*lamb.tex* - перевод, прочитали
-*prog.tex* - перевод, прочитали
-*proving.tex* - перевод , прочитали
-*types.tex* - перевод, прочитали
-
+  * *comb.tex* - перевод, прочитали
+  * *examples.tex* - перевод, прочитали
+  * *fml.tex* - перевод, прочитали
+  * *ind-defs.tex* - перевод, прочитали
+  * *lamb.tex* - перевод, прочитали
+  * *prog.tex* - перевод, прочитали
+  * *proving.tex* - перевод , прочитали
+  * *types.tex* - перевод, прочитали
