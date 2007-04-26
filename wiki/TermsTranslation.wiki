@@ -15,12 +15,14 @@ Please keep terms in alphabet order.
   * *conversion* - конверсия (lambda-термов) / преобразование
   * *conversion rules* - правила преобразования (lambda-термов)
   * *currying* - каррирование ?? (check in Harisson/Fild)
+  * *define function* - определить фукнцию
   * *domain* - область определения ??
   * *eager evaluation* - энергичное вычисление
   * *evaluation* - вычисление
   * *extensionality* - экстенсиональность
   * *first class object* - объект высшего порядка / объект первого рода ??
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
+  * *function definition* - определение функции
   * *higher order function* - функция высшего порядка
   * *identity function* - тождественное отображение
   * *lazy evaluation* - ленивое вычисление
