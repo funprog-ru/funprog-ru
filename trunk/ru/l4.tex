@@ -891,8 +891,8 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
 
 \vspace*{0.5cm}
 
-Мы не можем задавать произвольные рекурсивные функции, иначе
-мы смогли бы задать функцию, которая никогда не завершается.
+Мы не можем определять произвольные рекурсивные функции, иначе мы
+смогли бы определить функцию, которая никогда не завершается.
 %We can't define arbitrary recursive functions any more --- if we could then we
 %could create non-terminating functions.
 
@@ -901,8 +901,8 @@ $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
 %Clearly {\red $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$} isn't
 %well-typed because it applies {\red $x$} to itself.
 
-Таким образом, нам надо найти способ задания произвольных рекурсивных
-функций, которые полностью типизированы.
+Таким образом, нам надо найти способ определения произвольных
+рекурсивных функций, которые полностью типизированы.
 %So we simply add a way of defining arbitrary recursive functions that {\em is}
 %well-typed.
 

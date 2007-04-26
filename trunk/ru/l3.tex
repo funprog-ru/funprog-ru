@@ -332,7 +332,7 @@ Edinburgh LCF.  ML добавил в ISWIM новейшую систему типов и {\em
 
 \vspace*{0.5cm}
 
-Мы можем задать булевы значения следующим образом:
+Мы можем определить булевы значения следующим образом:
 
 %We can define the truth values as follows:
 
@@ -475,8 +475,9 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 
 \vspace*{0.5cm}
 
-Теперь мы зададим не-каррированные функции от многих аргументов.  Вот
-функции для перевода функций в каррированный и декаррированный вид:
+Теперь мы определим не-каррированные функции от многих аргументов.
+Вот функции для перевода функций в каррированный и декаррированный
+вид:
 
 %We can now define functions of multiple arguments that are non-curried. Here
 %are functions to translate between curried and uncurried versions:
@@ -640,7 +641,7 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 
 \vspace*{0.5cm}
 
-Это уже намного сложнее.  Сначала нам надо задать вспомогательную
+Это уже намного сложнее.  Сначала нам надо определить вспомогательную
 функцию для работы с парами:
 %This is much harder. First we define an auxiliary function on pairs:
 
@@ -660,7 +661,7 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 \end{red}
 Мы можем использовать эту фукнцию для того, чтобы `отбросить' одно из
 применений {\red $f$} в {\red $f^n\; x$}.  Эта выдумка принадлежит
-Клину.  Теперь зададим: {\red $$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+Клину.  Теперь определим: {\red $$ \mbox{PRE}\; n \defeq \lamb{f\; x}
   \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
 
 %We can use this to `throw away' one of the applications of {\red $f$} in
@@ -689,7 +690,7 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 его к функции {\red $f$}, мы получим неподвижную точку {\red $x$} для
 {\red $f$}, то есть такое {\red $x$}, что {\red $f(x) = x$}.  Для всех
 {\red $f$} имеем: {\red $$ f(Y\; f) = Y\; f $$} Мы сможем понять как
-составить такой комбинатор вспомнив, парадокс Рассела.  Мы задавали
+составить такой комбинатор вспомнив, парадокс Рассела.  Мы определяли
 {\red $R = \lamb{x} \Not (x\; x)$} и приходили к тому, что {\red $R\; R
   = \Not (R\; R)$}.  Всё, что нам потребуется, это заменить {\red
   $\Not$} на функцию {\red $f$}.  Таким образом: {\red $$Y \defeq
@@ -746,19 +747,19 @@ y)) $$}
 
 \vspace*{0.5cm}
 
-Как нам использовать комбинатор неподвижной точки для задания
+Как нам использовать комбинатор неподвижной точки для определения
 рекурсивных функций?  Рассмотрим функцию факториала.  Хотелось бы
-задать {\red $\mbox{fact}$} следующим образом:
+определить {\red $\mbox{fact}$} следующим образом:
 {\red $$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
          \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
 \noindent Сначала преобразуем его в:
 {\red $$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
     \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
-\noindent Таким образом, если мы зададим:
+\noindent Таким образом, если мы определим:
 {\red $$F \defeq \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
     \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
 то мы обнаружим, что {\red $\mbox{fact}$} есть неподвижная точка функции
-{\red $F$}, т.е. {\red $\mbox{fact} = F\; \mbox{fact}$}.  Поэтому мы зададим:
+{\red $F$}, т.е. {\red $\mbox{fact} = F\; \mbox{fact}$}.  Поэтому мы определим:
 {\red $$\mbox{fact} = Y\; F$$}
 
 %How do we use a fixpoint combinator to define recursive functions? Consider the
