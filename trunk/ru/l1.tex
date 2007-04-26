@@ -171,14 +171,14 @@
 
 \vspace*{0.5cm}
 
-Императивные (или процедурные) программы изменяют {\em состояние} с
-помощью последовательности выполняемых {\em команд}.
+Императивные (или процедурные) программы основываются на изменении
+{\em состояния} с помощью последовательности выполняемых {\em команд}.
 
 %Imperative (or procedural) programs rely on modifying a {\em state}
 %by using a sequence of {\em commands}.
 
-Состояние в основном изменяется при помощи команд {\em присваивания},
-таких как \mbox{{\red \tt v = E}} или \mbox{{\red \tt v := E}}.
+Состояние в основном изменяется при помощи команды {\em присваивания},
+записываемой как \mbox{{\red \tt v = E}} или \mbox{{\red \tt v := E}}.
 
 % The state is mainly modified by the {\em assignment} command,
 % written {\red \tt v = E} or {\red \tt v := E}.
@@ -228,14 +228,14 @@
 
 {\red $$ \sigma_0 \to \sigma_1 \to \sigma_2 \to \cdots \to \sigma_n $$}
 
-Программа стартует в начальном состоянии компьютера {\red $\sigma_0$},
-которое соответствует входному значению для программы.
+Программа стартует в вычислителе с начальным состоянием {\red $\sigma_0$},
+содержащем входные значения для программы.
 
 %The program is started with the computer in an initial state {\red
 %$\sigma_0$}, including the inputs to the program.
 
-После завершения программы компьютер оказывается в состоянии {\red
-$\sigma_n$}, представляющее собой результат работы программы.
+После завершения программы, вычислитель оказывается в состоянии {\red
+$\sigma_n$}, содержащем результат(ы) работы программы.
 
 %The program finishes with the computer in a final state {\red
 %$\sigma_n$}, containing the output(s) of the program.
@@ -274,7 +274,8 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 %      to assign to.
 
 \item Нет {\red последовательности исполнения} и {\red нет циклов},
-      вычисление одного выражения не влияет на вычисление другого.
+      поскольку вычисление одного выражения не влияет на вычисление
+      другого.
 
 %\item And there is {\red no sequencing} and {\red no repetition},
 %      since one expression does not affect another.
@@ -352,8 +353,8 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 \vspace*{0.5cm}
 
-На первый взгляд языки без переменных и присваивания выглядят совсем
-непрактично.
+На первый взгляд язык без переменных, присваивания и
+последовательностей команд выглядит совсем непрактично.
 
 %At first sight a language without variables, assignment and
 %sequencing looks very impractical.
@@ -435,7 +436,7 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 %\item Better parametrization and modularity of programs.
 
-\item Удобный способ представления бесконечных данных.
+\item Удобные способы представления бесконечных данных.
 
 %\item Convenient ways of representing infinite data.
 
@@ -537,7 +538,7 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 %All these methods are quite complicated.
 
 В функциональных программах у нас есть возможность проверить их
-корректность, или корректность конкретных преобразований, или
+корректность, или корректность определённых преобразований, или
 оптимизаций.
 
 %With functional programs, we have a real chance of proving their
@@ -681,7 +682,7 @@ ML не чисто функциональный язык, поэтому вы можете использовать присваиваивание
 
 %\item Further ML
 
-\item Другие стили программирования
+\item Другие стили функционального программирования
 
 %\item Other styles of functional programming
 
@@ -702,7 +703,7 @@ ML не чисто функциональный язык, поэтому вы можете использовать присваиваивание
 
 \heading{$\lambda$-нотация}
 
-$\lambda$-нотация~-- это способ задавать функции, предложенный Алонзо
+$\lambda$-нотация~-- это способ определения функций, предложенный Алонзо
 Чёрчем в 1930 году.  Мы пишем:
 
 %Lambda notation is a way of denoting functions, invented by Alonzo
@@ -858,7 +859,7 @@ $\lambda$-нотацию мы можем явно это обозначить.
   \to (\num \to \num)$}.  Если дан аргумент, допустим {\red $2$}, то
 она возвращает функцию от одного аргумента {\red $\num \to \num$},
 которая прибавляет {\red $2$} к своему аргументу.  Этот принцип
-известен как {\em каррирование}, в честь Хаскела Карри.
+известен как {\em каррирование}, в честь Хаскелла Карри.
 
 %We can think of this as a function {\red $\num \to (\num \to \num)$}. When
 %given one argument, say {\red $2$}, it returns a function {\red $\num \to
