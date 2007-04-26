@@ -56,7 +56,7 @@
 \newcommand{\Inters}{\bigcap}
 
 \newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
+\newcommand{\qed}{Что и требовалось доказать.}
 
 \newcommand{\Rule}{\infer}
 
@@ -172,7 +172,8 @@
 {\cyan Джон Харрисон}\\
 {\cyan Университет Кембриджа}\\
 {\green Лекция 7}\\
-{\green Доказательство корректности программы}
+{\green Доказательство корректности}\\
+{\green программы}
 %{\LARGE\red Introduction to}\\
 %{\LARGE\red Functional Programming}\\
 %{\cyan John Harrison}\\
@@ -183,19 +184,25 @@
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
+%Topics covered:
 
 \begin{itemize}
 
-\item The correctness problem
+\item Проблема корректности
+%\item The correctness problem
 
-\item Testing and verification
+\item Тестирование и верификация
+%\item Testing and verification
 
-\item Termination and totality
+\item Завершение и полнота
+%\item Termination and totality
 
-\item Exponential and gcd
+\item Показательная функция и НОД
+%\item Exponential and gcd
 
-\item Appending and reversing
+\item Добавление элемента и реверсирование
+%\item Appending and reversing
 
 \end{itemize}
 
@@ -206,25 +213,34 @@ Topics covered:
 
 \begin{rslide}
 
-\heading{The correctness problem}
+\heading{Проблема корректности}
+%\heading{The correctness problem}
 
 \vspace*{0.5cm}
 
-Programs are written to perform some particular task.
+Программы пишутся, чтобы они выполняли определённую задачу.
+%Programs are written to perform some particular task.
 
-However, it is often very hard to write a program that performs its intended
-function --- as programmers know well.
+Однако, программисты знают, что зачастую достаточно сложно написать
+программу, которая делает то, что требуется.
+%However, it is often very hard to write a program that performs its intended
+%function --- as programmers know well.
 
-In practice, most large programs have `bugs'.
+На практике, в большинстве объёмных программ есть `дефекты'.
+%In practice, most large programs have `bugs'.
 
-Some bugs are harmless, others merely irritating.
+Некоторые дефекты безобидные, другие просто раздражают.
+%Some bugs are harmless, others merely irritating.
 
-They can cause financial and public relations disasters (e.g. the Pentium FDIV
-bug).
+Они могут вызвать финансовые катастрофы или проблемы отношений между компаниями (например дефект Pentium FDIV).
+%They can cause financial and public relations disasters (e.g. the Pentium FDIV
+%bug).
 
-In some situation bugs can be deadly.
+Иногда дефекты могут быть смертельно опасными.
+%In some situation bugs can be deadly.
 
-{\green Peter Neumann: `Computer Related Risks'.}
+{\green Питер Ньюман: `Компьютерные риски'}
+%{\green Peter Neumann: `Computer Related Risks'.}
 
 
 \end{rslide}
@@ -233,27 +249,36 @@ In some situation bugs can be deadly.
 
 \begin{rslide}
 
-\heading{Dangerous bugs}
+\heading{Опасные дефекты}
+%\heading{Dangerous bugs}
 
 \vspace*{0.5cm}
 
-Some situations where bugs can be deadly include:
+Вот несколько задач, где дефекты могут быть смертельно опасными:
+%Some situations where bugs can be deadly include:
 
 \begin{itemize}
 
-\item Heart pacemakers
+\item Электронный стимулятор сердца
+%\item Heart pacemakers
 
-\item Aircraft autopilots
+\item Авиацаонные автопилоты
+%\item Aircraft autopilots
 
-\item Car engine management systems and antilock braking systems
+\item Системы управления двигателем автомобиля и противоблокирующее
+  устройство тормозной системы
+%\item Car engine management systems and antilock braking systems
 
-\item Radiation therapy machines
+\item Приборы радиационной терапии
+%\item Radiation therapy machines
 
-\item Nuclear reactor controllers
+\item Контроллеры ядерных реакторов
+%\item Nuclear reactor controllers
 
 \end{itemize}
 
-These applications are said to be {\em safety critical}.
+Про такие задачи говорят, что они {\em жизненно важные}.
+%These applications are said to be {\em safety critical}.
 
 \end{rslide}
 
@@ -261,25 +286,39 @@ These applications are said to be {\em safety critical}.
 
 \begin{rslide}
 
-\heading{Testing and verification}
+\heading{Тестирование и верификация}
+%\heading{Testing and verification}
 
 \vspace*{0.2cm}
 
-One good way to track down bugs is through extensive testing.
+Один из хороших способов отыскания дефектов это всестороннее
+тестирование.
+%One good way to track down bugs is through extensive testing.
 
-But usually there are too many possible situations to try them all
-exhaustively, so there may still be bugs lying undetected.
+Однако, обычно бывает слишком много разных ситуаций, чтобы можно было
+полностью их все проверить, поэтому всё же возможно, что останутся
+не обнаруженные дефекты.
+%But usually there are too many possible situations to try them all
+%exhaustively, so there may still be bugs lying undetected.
 
-Program testing can be very useful for demonstrating the presence of bugs, but
-it is only in a few unusual cases where it can demonstrate their absence.
+Тестирование программ может служить доказательством наличия дефектов,
+но лишь в немногих случаях оно может служить доказательством отсутствия дефектов.
+%Program testing can be very useful for demonstrating the presence of bugs, but
+%it is only in a few unusual cases where it can demonstrate their absence.
 
-An alternative is {\em verification}, where we try to {\em prove} that a
-program behaves as required.
+Альтернатива тестированию это {\em верификация}, когда мы пытаемся {\em
+  доказать}, что программа работает так, как требуется.
+%An alternative is {\em verification}, where we try to {\em prove} that a
+%program behaves as required.
 
-Consider ordinary mathematical theorems, like
+Рассмотрим обычную математическую теорему:
 {\red $$ \Sigma_{n=0}^{n=N} n = \frac{N (N + 1)}{2} $$}
-We can {\em test} this for many particular values of $N$, but it is easier and
-more satisfactory simply to {\em prove} it (e.g. by induction).
+Мы можем {\em проверить} её для множества определённых значений $N$,
+но легче и приятнее {\em доказать} её (по индукции).
+%Consider ordinary mathematical theorems, like
+%{\red $$ \Sigma_{n=0}^{n=N} n = \frac{N (N + 1)}{2} $$}
+%We can {\em test} this for many particular values of $N$, but it is easier and
+%more satisfactory simply to {\em prove} it (e.g. by induction).
 
 \end{rslide}
 
@@ -287,27 +326,36 @@ more satisfactory simply to {\em prove} it (e.g. by induction).
 
 \begin{rslide}
 
-\heading{The limits of verification}
+\heading{Ограничения верификации}
+%\heading{The limits of verification}
 
 \vspace*{0.5cm}
 
-The enterprise of verification can be represented by this diagram:
+Верификацию можно представить в виде диаграммы:
+%The enterprise of verification can be represented by this diagram:
 
 {\green
 \bigskip
 \begin{picture}(140,140)(0,0)
-\put(40,0){\dashbox(150,25){Actual system}}
-\put(40,40){\framebox(150,25){Mathematical model}}
-\put(40,80){\framebox(150,25){Mathematical specification}}
-\put(40,120){\dashbox(150,25){Actual requirements}}
+\put(40,0){\dashbox(150,25){Существующая система}}
+%\put(40,0){\dashbox(150,25){Actual system}}
+\put(40,40){\framebox(150,25){Математическая модель}}
+%\put(40,40){\framebox(150,25){Mathematical model}}
+\put(40,80){\framebox(150,25){Математическая спецификация}}
+%\put(40,80){\framebox(150,25){Mathematical specification}}
+\put(40,120){\dashbox(150,25){Существующие требования}}
+%\put(40,120){\dashbox(150,25){Actual requirements}}
 \put(115,25){\vector(0,1){15}}
 \put(115,65){\thicklines \vector(0,1){15}}
 \put(115,105){\vector(0,1){15}}
 \end{picture}}
 \bigskip
 
-It is only the central link that is mathematically precise. The others are
-still informal --- all we can do is try to keep them small.
+Только центральная связь математически точна.  Остальные остаются
+неформальными~--- всё что мы можем сделать это постараться сохранять
+их несущественными.
+%It is only the central link that is mathematically precise. The others are
+%still informal --- all we can do is try to keep them small.
 
 \end{rslide}
 
@@ -315,20 +363,34 @@ still informal --- all we can do is try to keep them small.
 
 \begin{rslide}
 
-\heading{Verifying functional programs}
+\heading{
+\begin{tabular}{c}
+{Верификация функциональных}\\
+{программ}
+\end{tabular}}
+%\heading{Verifying functional programs}
 
 \vspace*{0.5cm}
 
-We suggested earlier that functional programs might be easier to reason about
-formally, because they correspond directly to the mathematical functions that
-they represent.
+Мы уже заметили раньше, что для функциональных программ легче
+проводить формальное доказательство, потому что они напрямую соответствуют математическим
+функциям, которые они представляют.
+%We suggested earlier that functional programs might be easier to reason about
+%formally, because they correspond directly to the mathematical functions that
+%they represent.
 
-This is arguable, but at least we will try to show that reasoning about some
-simple functional programs is straightforward.
+Это спорно, но мы попробуем по крайней мере показать, что
+достаточно легко доказывать простые функциональные программы.
+%This is arguable, but at least we will try to show that reasoning about some
+%simple functional programs is straightforward.
 
-We need to remember that, in general, functional programs are {\em partial}
-functions. Sometimes we need a separate argument to establish termination.
+Но надо помнить, что в основном функциональные программы это {\em
+  частичные} функции.  Иногда требуется отдельное доказательство того,
+что программа завершается.
+%We need to remember that, in general, functional programs are {\em partial}
+%functions. Sometimes we need a separate argument to establish termination.
 
+Часто доказательство происходит по индукции, XXX
 Often, the proofs proceed by induction, parallelling the definition of the
 functions involved by recursion.
 
@@ -338,11 +400,14 @@ functions involved by recursion.
 
 \begin{rslide}
 
-\heading{Exponentiation (1)}
+\heading{Возведение в степень (1)}
+%\heading{Exponentiation (1)}
 
 \vspace*{0.5cm}
 
-Recall the following simple definition of natural number exponentiation:
+Вспомним следующее простое определение функции потенцирования
+натуральных чисел:
+%Recall the following simple definition of natural number exponentiation:
 
 \begin{black}\begin{verbatim}
    #let rec exp x n =
@@ -350,14 +415,19 @@ Recall the following simple definition of natural number exponentiation:
      else x * exp x (n - 1);;
 \end{verbatim}\end{black}
 
-We will prove that this satisfies the following specification:
+Мы докажем, что она удовлетворяет следующим технической спецификации:
+%We will prove that this satisfies the following specification:
 
-{\red For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ terminates and
+{\red Для всех $n \geq 0$ и $x$, $\mbox{exp}\; x\; n$ завершается и
 $\mbox{exp}\; x\; n = x^n$}
+%{\red For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ terminates and
+%$\mbox{exp}\; x\; n = x^n$}
 
-The function is defined by (primitive) recursion.
+Функция определена посредством (примитивной) рекурсии.
+%The function is defined by (primitive) recursion.
 
-The proof is by (step-by-step, mathematical) induction.
+Доказательство проводится по (математической) индукции.
+%The proof is by (step-by-step, mathematical) induction.
 
 \end{rslide}
 
@@ -365,18 +435,24 @@ The proof is by (step-by-step, mathematical) induction.
 
 \begin{rslide}
 
-\heading{Exponentiation (2)}
+\heading{Возведение в степень (2)}
+%\heading{Exponentiation (2)}
 
 \vspace*{0.5cm}
 
 \begin{itemize}
 
-\item If {\red $n = 0$}, then by definition {\red $\mbox{exp}\; x\; n = 1$}.
-Since for any integer {\red $x$}, we have {\red $x^0 = 1$}, so the desired fact
-is established.
+\item Если {\red $n = 0$}, то по определению {\red $\mbox{exp}\; x\; n
+    = 1$}.  Так как для всех чисел {\red $x$}, мы имеем {\red $x^0 =
+    1$}, то есть желаемый факт установлен.
+%\item If {\red $n = 0$}, then by definition {\red $\mbox{exp}\; x\; n = 1$}.
+%Since for any integer {\red $x$}, we have {\red $x^0 = 1$}, so the desired fact
+%is established.
 
-\item Suppose we know {\red $\mbox{exp}\; x\; n = x^n$}. Because {\red $n \geq
-0$}, we also know {\red $n + 1 \not= 0$}. Therefore:
+\item Допустим что {\red $\mbox{exp}\; x\; n = x^n$} верно.  Так как {\red $n \geq
+0$}, то {\red $n + 1 \not= 0$} тоже верно.  Поэтому:
+%\item Suppose we know {\red $\mbox{exp}\; x\; n = x^n$}. Because {\red $n \geq
+%0$}, we also know {\red $n + 1 \not= 0$}. Therefore:
 {\red
 \begin{eqnarray*}
 \mbox{exp}\; x\; (n + 1)   & = & x * \mbox{exp}\; x\; ((n + 1) - 1)     \\
@@ -387,8 +463,10 @@ is established.
 \end{itemize}
 \qed
 
-Note that we assume {\red $0^0 = 1$}, an example of how one must state the
-specification precisely!
+Заметим, что мы приняли {\red $0^0 = 1$}.  Пример того, как точно
+надо составлять техническую спецификацию!
+%Note that we assume {\red $0^0 = 1$}, an example of how one must state the
+%specification precisely!
 
 
 \end{rslide}
@@ -397,12 +475,15 @@ specification precisely!
 
 \begin{rslide}
 
-\heading{Greatest common divisor (1)}
+\heading{Наибольший общий делитель (1)}
+%\heading{Greatest common divisor (1)}
 
 \vspace*{0.5cm}
 
-We define a function to calculate the gcd of two integers using Euclid's
-algorithm.
+Определим функцию для вычисления НОД двух целых чисел, используя
+алгоритм Евклида.
+%We define a function to calculate the gcd of two integers using Euclid's
+%algorithm.
 
 \begin{black}\begin{verbatim}
   #let rec gcd x y =
@@ -410,13 +491,18 @@ algorithm.
        else gcd y (x mod y);;
 \end{verbatim}\end{black}
 
-We want to prove:
+Мы хотим доказать что:
+%We want to prove:
 
-{\red For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates and returns
-a gcd of $x$ and $y$.}
+{\red Для любых $x$ и $y$, $\mbox{gcd}\; x\; y$ завершается и
+  возвращает НОД($x$, $y$).}
+%{\red For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates and returns
+%a gcd of $x$ and $y$.}
 
-Here we need to be even more careful about the specification. What is a gcd of
-two negative numbers?
+Тут нам надо быть аккуратными со спецификацией.  Каков НОД двух
+отрицательных чисел?
+%Here we need to be even more careful about the specification. What is a gcd of
+%two negative numbers?
 
 \end{rslide}
 
@@ -425,31 +511,44 @@ two negative numbers?
 
 \begin{rslide}
 
-\heading{Greatest common divisor (2)}
+\heading{Наибольший общий делитель (2)}
+%\heading{Greatest common divisor (2)}
 
 \vspace*{0.5cm}
 
-We write {\red $x | y$}, pronounced `{\red $x$} divides {\red $y$}', to mean
-that {\red $y$} is an integral multiple of {\red $x$}, i.e. there is some
-integer {\red $d$} with {\red $y = d x$}.
+Мы пишем {\red $x | y$} и говорим `{\red $x$} делит {\red $y$}', что
+означает что {\red $y$} является целочисленным делителем {\red $x$},
+то есть существует такое целое {\red $d$}, что {\red $y = d x$}.
+%We write {\red $x | y$}, pronounced `{\red $x$} divides {\red $y$}', to mean
+%that {\red $y$} is an integral multiple of {\red $x$}, i.e. there is some
+%integer {\red $d$} with {\red $y = d x$}.
 
-We say that {\red $d$} is a {\em common divisor} of {\red $x$} and {\red $y$}
-if {\red $d | x$} and {\red $d | y$}.
+Мы говорим что {\red $d$} это {\em общий делитель} {\red $x$} и {\red
+  $y$} если {\red $d | x$} и {\red $d | y$}.
+%We say that {\red $d$} is a {\em common divisor} of {\red $x$} and {\red $y$}
+%if {\red $d | x$} and {\red $d | y$}.
 
-We say that {\red $d$} is a {\em greatest} common divisor if:
+Мы говорим что {\red $d$} это {\em наибольший} общий делитель если:
+%We say that {\red $d$} is a {\em greatest} common divisor if:
 
 \begin{itemize}
 
-\item We have {\red $d | x$} and {\red $d | y$}
+\item Верно {\red $d | x$} и {\red $d | y$}
+%\item We have {\red $d | x$} and {\red $d | y$}
 
-\item For any other integer {\red $d'$}, if {\red $d' | x$} and {\red $d' | y$}
-then {\red $d' | d$}.
+\item Для любого другого {\red $d'$}, если {\red $d' | x$} и {\red $d'
+    | y$} то {\red $d' | d$}.
+%\item For any other integer {\red $d'$}, if {\red $d' | x$} and {\red $d' | y$}
+%then {\red $d' | d$}.
 
 \end{itemize}
 
-Note that unless {\red $x$} and {\red $y$} are both zero, we do not specify the
-sign of the gcd. The specification does not constrain the implementation
-completely.
+Заметим, что мы не указываем знак у НОД за исключением случая, когда
+оба {\red $x$} и {\red $y$} нули.  Спецификация совершенно не
+привязывает реализацию.
+%Note that unless {\red $x$} and {\red $y$} are both zero, we do not specify the
+%sign of the gcd. The specification does not constrain the implementation
+%completely.
 
 \end{rslide}
 
@@ -458,26 +557,39 @@ completely.
 
 \begin{rslide}
 
-\heading{Greatest common divisor (3)}
+\heading{Наибольший общий делитель (3)}
+%\heading{Greatest common divisor (3)}
 
 \vspace*{0.5cm}
 
-Now we come to the proof. The {\black \tt gcd} function is no longer defined by
-{\em primitive} recursion.
+Функция {\black \tt gcd} уже не задана через {\em примитивную} рекурсию.
+%Now we come to the proof. The {\black \tt gcd} function is no longer defined by
+%{\em primitive} recursion.
 
-In fact, {\black \tt gcd x y} is defined in terms of {\black \tt gcd y (x mod
-y)} in the step case.
+На шаге алгоритма Евклида, {\black \tt gcd x y} определена в терминах
+{\black \tt gcd y (x mod y)}.
+%In fact, {\black \tt gcd x y} is defined in terms of {\black \tt gcd y (x mod
+%y)} in the step case.
 
-We do not, therefore, proceed by step-by-step mathematical induction, but by
-{\em wellfounded} induction on {\red $|y|$}.
+Поэтому мы не прибегаем к пошаговой математической индукции, а
+используем {\em обоснованную} индукцию по {\red $|y|$}.
+%We do not, therefore, proceed by step-by-step mathematical induction, but by
+%{\em wellfounded} induction on {\red $|y|$}.
 
-The idea is that this quantity (often called a {\em measure}) decreases with
-each call. We can use it to prove termination, and as a handle for wellfounded
-induction.
+Идея в том, что эта величина (часто называемая {\em мера}) уменьшается
+с каждым вызовом.  Мы можем использовать это свойство, чтобы доказать
+что вызов функции завершается, а также как опору для обоснованной
+индукции.
+%The idea is that this quantity (often called a {\em measure}) decreases with
+%each call. We can use it to prove termination, and as a handle for wellfounded
+%induction.
 
-In complicated recursions, finding the right wellfounded ordering on the
-arguments can be tricky. But in many cases one can use this simple `measure'
-approach.
+В запутанных рекурсиях сложно найти подходящее обоснованное
+упорядочение аргументов.  Но в большинстве случаев можно использовать
+этот простой подход `меры'.
+%In complicated recursions, finding the right wellfounded ordering on the
+%arguments can be tricky. But in many cases one can use this simple `measure'
+%approach.
 
 \end{rslide}
 
@@ -485,25 +597,38 @@ approach.
 
 \begin{rslide}
 
-\heading{Greatest common divisor (4)}
+\heading{Наибольший общий делитель (4)}
+%\heading{Greatest common divisor (4)}
 
 \vspace*{0.5cm}
 
-Now we come to the proof. Fix some arbitrary {\red $n$}. We suppose that
-the theorem is established for all arguments {\red $x$} and {\red
-$y$} with {\red $|y| < n$}, and we try to prove it for all {\red
-$x$} and {\red $y$} with {\red $|y| = n$}. There are
-two cases.
+Теперь мы представим доказательство.  Возьмём произвольное {\red
+  $n$}.  Мы предполагаем что теорема верна для всех аргументов {\red
+  $x$}  и {\red $y$}, таких что {\red $|y| < n$}, и мы попробуем
+доказать её для всех  {\red $x$} и {\red $y$}, таких что {\red $|y| =
+  n$}.  Здесь два случая.
+%Now we come to the proof. Fix some arbitrary {\red $n$}. We suppose that
+%the theorem is established for all arguments {\red $x$} and {\red
+%$y$} with {\red $|y| < n$}, and we try to prove it for all {\red
+%$x$} and {\red $y$} with {\red $|y| = n$}. There are
+%two cases.
 
-First, suppose that {\red $y = 0$}. Then {\red $\mbox{gcd}\; x\; y
-= x$} by definition. Now trivially {\red $x | x$} and {\red $x |
-0$}, so it is a common divisor.
+Во-первых, предположим что {\red $y = 0$}.  Тогда {\red $\mbox{gcd}\;
+  x\; y = x$} по определению.  Очевидно что {\red $x | x$} и {\red $x
+  | 0$}, поэтому {\red $x$} и есть общий делитель.
+%First, suppose that {\red $y = 0$}. Then {\red $\mbox{gcd}\; x\; y
+%= x$} by definition. Now trivially {\red $x | x$} and {\red $x |
+%0$}, so it is a common divisor.
 
-Suppose {\red $d$} is another common divisor, i.e. {\red $d | x$}
-and {\red $d | 0$}. Then immediately we get {\red $d | x$}, so
-$x$ is a {\em greatest} common divisor.
+Предположим что {\red $d$} является ещё одним общим делителем, т.е.
+{\red $d | x$} и {\red $d | 0$}.  Тогда мы сразу получаем {\red $d |
+  x$}, поэтому {\red $x$} и есть {\em наибольший} общий делитель.
+%Suppose {\red $d$} is another common divisor, i.e. {\red $d | x$}
+%and {\red $d | 0$}. Then immediately we get {\red $d | x$}, so
+%$x$ is a {\em greatest} common divisor.
 
-This establishes the first part of the induction proof.
+Мы установили первую часть доказательства по индукции.
+%This establishes the first part of the induction proof.
 
 \end{rslide}
 
@@ -513,27 +638,44 @@ This establishes the first part of the induction proof.
 
 \begin{rslide}
 
-\heading{Greatest common divisor (5)}
+\heading{Наибольший общий делитель (5)}
+%\heading{Greatest common divisor (5)}
 
 \vspace*{0.5cm}
 
-Now suppose {\red $y \not= 0$}. We want to apply the inductive hypothesis to
-{\red $\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
+Теперь предположим, что {\red $y \not= 0$}.  Мы хотим применить
+предположение индукции к {\red $\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
+%Now suppose {\red $y \not= 0$}. We want to apply the inductive hypothesis to
+%{\red $\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
 
-We will write {\red $r = x\; \mbox{mod}\; y$} for short. The basic property of
-the {\tt mod} function that we use is that, since {\red $y \not= 0$}, for some
-integer {\red $q$} we have {\red $x = q y + r$} and {\red $|r| < |y|$}.
+Для краткости мы будем писать {\red $r = x\; \mbox{mod}\; y$}.
+Основное свойство функции {\tt mod}, которое мы будем использовать
+это, что для {\red $y \not= 0$}, найдётся такое {\red $q$},
+что {\red $x = q y + r$} и {\red $|r| < |y|$}.
+%We will write {\red $r = x\; \mbox{mod}\; y$} for short. The basic property of
+%the {\tt mod} function that we use is that, since {\red $y \not= 0$}, for some
+%integer {\red $q$} we have {\red $x = q y + r$} and {\red $|r| < |y|$}.
 
-Since {\red $|r| < |y|$}, the inductive hypothesis tells us that {\red $d =
-\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} is a gcd of {\red $y$} and {\red $r$}.
+Поскольку {\red $|r| < |y|$}, то согласно предположению индукции
+{\red $d = \mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} является НОД для
+{\red $y$} и {\red $r$}.
+%Since {\red $|r| < |y|$}, the inductive hypothesis tells us that {\red $d =
+%\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} is a gcd of {\red $y$} and {\red $r$}.
 
-We just need to show that it is a gcd of {\red $x$} and {\red $y$}. It is
-certainly a common divisor, since if {\red $d | y$} and {\red $d | r$} we have
-{\red $d | x$}, as {\red $x = q y + r$}.
+Нам осталось лишь показать, что он является НОД для {\red $x$} и {\red
+  $y$}.  Конечно же он общий делитель ибо при {\red $d | y$} и {\red
+  $d | r$} имеем {\red $d | x$} так как {\red $x = q y + r$}.
+%We just need to show that it is a gcd of {\red $x$} and {\red $y$}. It is
+%certainly a common divisor, since if {\red $d | y$} and {\red $d | r$} we have
+%{\red $d | x$}, as {\red $x = q y + r$}.
 
-Now suppose {\red $d' | x$} and {\red $d' | y$}. By the same equation, we find
-that {\red $d' | r$}. Thus {\red $d'$} is a common divisor of {\red $y$} and
-{\red $r$}, but then by the inductive hypothesis, {\red $d' | d$} as required.
+Теперь допустим {\red $d' | x$} и {\red $d' | y$}.  Согласно тому же
+уравнению мы видим, что {\red $d' | r$}.  Таким образом {\red $d'$}
+является общим делителем {\red $y$} и {\red $r$}, но в соответствии
+с предположением индукции получаем {\red $d' | d$} что и требовалось.
+%Now suppose {\red $d' | x$} and {\red $d' | y$}. By the same equation, we find
+%that {\red $d' | r$}. Thus {\red $d'$} is a common divisor of {\red $y$} and
+%{\red $r$}, but then by the inductive hypothesis, {\red $d' | d$} as required.
 
 \end{rslide}
 
@@ -546,9 +688,11 @@ that {\red $d' | r$}. Thus {\red $d'$} is a common divisor of {\red $y$} and
 
 \heading{Append (1)}
 
-\vspace*{0.5cm}
+%\vspace*{0.5cm}
 
-Now consider an example concerning lists rather than numbers. Define:
+Теперь лучше рассмотрим пример касательно списков, а не чисел.
+Зададим:
+%Now consider an example concerning lists rather than numbers. Define:
 
 \begin{black}\begin{verbatim}
   #let rec append l1 l2 =
@@ -557,17 +701,29 @@ Now consider an example concerning lists rather than numbers. Define:
      | (h::t) -> h::(append t l2);;
 \end{verbatim}\end{black}
 
-This is supposed to join together two lists. We want to prove that the
-operation is associative, i.e. for any three lists {\red $l_1$}, {\red $l_2$}
-and {\red $l_3$} we have:
+Предполагается, что эта функция объединяет два списка.  Мы хотим
+доказать, что эта операция ассоциативна, т.е. для любых трёх списков
+{\red $l_1$}, {\red $l_2$} и {\red $l_3$} имеем свойство:
 {\red $$ \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
 (\mbox{append}\; l_1\; l_2)\; l_3 $$}
-We can proceed by induction on the length of {\red $l_1$}, but since the
-function was defined by structural recursion over lists, it is more natural to
-prove the theorem by {\em structural induction}.
+Мы можем использовать индукцию по длине {\red $l_1$}, но так как
+функция была задана с помощью структурной рекурсии над списками, то
+естественнее доказывать теорему используя {\em структурную индукцию}.
+%This is supposed to join together two lists. We want to prove that the
+%operation is associative, i.e. for any three lists {\red $l_1$}, {\red $l_2$}
+%and {\red $l_3$} we have:
+%{\red $$ \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
+%(\mbox{append}\; l_1\; l_2)\; l_3 $$}
+%We can proceed by induction on the length of {\red $l_1$}, but since the
+%function was defined by structural recursion over lists, it is more natural to
+%prove the theorem by {\em structural induction}.
 
-The principle is: if a property holds for the empty list, and whenever it holds
-for {\red $t$} it holds for any {\red $h::t$}, then it holds for any list.
+Принцип такой: если свойство верно для пустого списка и при
+условии что оно верно для {\red $t$}, то оно также
+верно и для любого {\red $h::t$} то оно верно вообще
+для любого списка.
+%The principle is: if a property holds for the empty list, and whenever it holds
+%for {\red $t$} it holds for any {\red $h::t$}, then it holds for any list.
 
 \end{rslide}
 
@@ -582,8 +738,10 @@ for {\red $t$} it holds for any {\red $h::t$}, then it holds for any list.
 
 \vspace*{0.5cm}
 
-We proceed, then, by structural induction on {\red $l_1$}. There are two cases
-to consider. First, suppose {\red $l_1 = []$}. Then we have:
+Используем структурную индукцию по {\red $l_1$}.  Нам надо рассмотреть
+два случая.  Сначала, предположим что {\red $l_1 = []$}.  Тогда мы имеем:
+%We proceed, then, by structural induction on {\red $l_1$}. There are two cases
+%to consider. First, suppose {\red $l_1 = []$}. Then we have:
 
 {\red \begin{eqnarray*}
 & & \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)           \\
@@ -593,7 +751,8 @@ to consider. First, suppose {\red $l_1 = []$}. Then we have:
 & = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3
 \end{eqnarray*}}
 
-As required.
+Что и требовалось.
+%As required.
 
 \end{rslide}
 
@@ -604,21 +763,25 @@ As required.
 
 \vspace*{0.5cm}
 
-Now suppose {\red $l_1 = h::t$}. We may assume that for any {\red $l_2$}
-and {\red $l_3$} we have:
+Теперь допустим, что {\red $l_1 = h::t$}.  Мы в праве полагать, что для
+любого {\red $l_2$} и {\red $l_3$} выполняется:
+%Now suppose {\red $l_1 = h::t$}. We may assume that for any {\red $l_2$}
+%and {\red $l_3$} we have:
 {\red $$ \mbox{append}\; t\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
 (\mbox{append}\; t\; l_2)\; l_3 $$}
-\noindent Therefore:
+\noindent Поэтому:
+%\noindent Therefore:
 {\red \begin{eqnarray*}
 & & \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)           \\
 & = & \mbox{append}\; (h::t)\; (\mbox{append}\; l_2\; l_3)      \\
 & = & h::(\mbox{append}\; t\; (\mbox{append}\; l_2\; l_3))      \\
 & = & h::(\mbox{append}\; (\mbox{append}\; t\; l_2)\; l_3)      \\
-& = & \mbox{append}\; (h::(\mbox{append}\; t\; l_2))\; l_3)     \\
-& = & \mbox{append}\; (\mbox{append}\; (h::t)\; l_2)\; l_3)     \\
-& = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3)
+& = & \mbox{append}\; (h::(\mbox{append}\; t\; l_2))\; l_3     \\
+& = & \mbox{append}\; (\mbox{append}\; (h::t)\; l_2)\; l_3     \\
+& = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3
 \end{eqnarray*}}
-The theorem is proved.
+Теорема доказана.
+%The theorem is proved.
 
 \end{rslide}
 
@@ -634,7 +797,8 @@ The theorem is proved.
 
 \vspace*{0.2cm}
 
-For a final example, let us define a function to reverse a list:
+Для последнего примера определим функцию реверсирования списка.
+%For a final example, let us define a function to reverse a list:
 \begin{black}\begin{verbatim}
   #let rec rev =
      fun [] -> []
@@ -643,10 +807,14 @@ For a final example, let us define a function to reverse a list:
   #rev [1;2;3];;
   - : int list = [3; 2; 1]
 \end{verbatim}\end{black}
-We will prove that for any list {\red $l$} we have:
+Мы докажем, что для любого списка {\red $l$} верно следующее:
+%We will prove that for any list {\red $l$} we have:
 {\red $$ \mbox{rev} (\mbox{rev}\; l) = l $$}
-This is again a structural induction. However we require two lemmas, which can
-also be proved by structural induction (details in the notes):
+Опять же, тут структурная индукция.  Однако, нам потребуются две леммы,
+которые тоже можно доказать с помощью структурной индукции
+(подробности в конспектах):
+%This is again a structural induction. However we require two lemmas, which can
+%also be proved by structural induction (details in the notes):
 {\red
 \begin{eqnarray*}
 \mbox{append}\; l\; [] & = & l          \\
@@ -662,7 +830,9 @@ also be proved by structural induction (details in the notes):
 
 \vspace*{0.5cm}
 
-First suppose that {\red $l = []$}. Then the proof is easy:
+Сначала рассмотрим случай, когда {\red $l = []$}.  Доказательство
+просто:
+%First suppose that {\red $l = []$}. Then the proof is easy:
 
 {\red
 \begin{eqnarray*}
@@ -674,7 +844,8 @@ First suppose that {\red $l = []$}. Then the proof is easy:
 \end{eqnarray*}
 }
 
-Now suppose that {\red $l = h::t$} and we know that
+Теперь рассмотрим случай, когда {\red $l = h::t$}, и мы знаем, что
+%Now suppose that {\red $l = h::t$} and we know that
 
 {\red $$ \mbox{rev}(\mbox{rev}\; t) = t $$}
 
