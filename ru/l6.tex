@@ -516,9 +516,10 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 
 \vspace*{0.5cm}
 
-Мы зададим рекурсивную функцию, которая принимает два аргумента:
-положительное число {\red $n$} и функцию {\red $f$}, а возвращает {\red
-  $f^n$}, то есть {\red $f \circ \cdots \circ f$} ({\red $n$} раз):
+Мы определим рекурсивную функцию, которая принимает два аргумента:
+положительное число {\red $n$} и функцию {\red $f$}, а возвращает
+{\red $f^n$}, то есть {\red $f \circ \cdots \circ f$} ({\red $n$}
+раз):
 %We define by recursion a function that takes a positive integer {\red $n$}
 %and a function {\red $f$} and returns {\red $f^n$}, i.e. {\red $f \circ \cdots
 %\circ f$} ({\red $n$} times):
@@ -532,8 +533,8 @@ p \mbox{ or } q & {\red \defeq} & \mbox{if } p \mbox{ then true else } q
 \end{verbatim}\end{black}
 
 На самом деле {\black \tt funpow} переводит машинное число {\black \tt
-  n} в соответствующий нумерал Чёрча.  Мы легко можем задать обратную
-функцию следующим образом:
+  n} в соответствующий нумерал Чёрча.  Мы легко можем определить
+обратную функцию следующим образом:
 %In fact, {\black \tt funpow} takes a machine integer {\black \tt n} to the
 %corresponding Church numeral. We can easily define an inverse function that
 %goes the other way:
@@ -654,7 +655,7 @@ ML содержит средства определения новых типов и конструкторов типов.
 
 \end{enumerate}
 
-Благодаря этим свойствам мы можем задавать функции используя {\em
+Благодаря этим свойствам мы можем определять функции используя {\em
   сопоставление с образцом}.
 %Because of these properties, we can define functions by {\em pattern matching}.
 
@@ -712,8 +713,8 @@ $\lambda$-функциям более общие выражения, называемые {\em varstructs}.
 
 \vspace*{0.5cm}
 
-Вообще, мы можем задать частичную функцию которая определена не для
-всех допустимых значений.
+Вообще, мы можем определать частичную функцию, которая определена не
+для всех допустимых значений.
 %In fact, we can define partial functions that don't cover every case:
 
 \begin{black}\begin{verbatim}
@@ -903,8 +904,8 @@ $[1;2;3]$} записываются как:
 
 \vspace*{0.5cm}
 
-Теперь мы можем задать функции используя сопоставление с образцом.  Например,
-мы можем задать функции взятия головы и хвоста списка:
+Теперь мы можем определять функции используя сопоставление с образцом.
+Например, мы можем определить функции взятия головы и хвоста списка:
 %We can now define functions by pattern matching in the usual way. For example,
 %we can define functions to take the head and tail of a list:
 
@@ -957,10 +958,10 @@ ML предупреждает что возникнет ошибка если эти функции применить к
 \end{verbatim}\end{black}
 
 С другой стороны, эта функция может быть написана используя ранее
-заданные `деструктор' функции {\black \tt hd} и {\black \tt tl}.
-Такой стиль задания функций принят во многих языках, особенно в LISP,
-однако прямое использование сопоставления с образцом зачастую
-элегантнее.
+определённые `деструкторные' функции {\black \tt hd} и {\black \tt
+  tl}.  Такой стиль определения функций принят во многих языках,
+особенно в LISP, однако прямое использование сопоставления с образцом
+зачастую элегантнее.
 %Alternatively, this can be written in terms of our earlier `destructor'
 %functions {\black \tt hd} and {\black \tt tl}. This style of function definition is more
 %usual in many languages, notably LISP, but the direct use of pattern matching
