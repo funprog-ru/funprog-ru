@@ -183,8 +183,8 @@
 % The state is mainly modified by the {\em assignment} command,
 % written {\red \tt v = E} or {\red \tt v := E}.
 
-Мы можем выполнить одну команду за другой, написав их последовательно;
-разделив, например, точкой с запятой: {\red $C_1 \mbox{ ; } C_2$}.
+Мы можем выполнить одну команду за другой, написав их последовательно,
+возможно разделяя точкой с запятой: {\red $C_1 \mbox{ ; } C_2$}.
 
 %We can execute one command before another by writing them in
 %sequence, perhaps separated by a semicolon: {\red $C_1 \mbox{ ; }
@@ -241,7 +241,7 @@ $\sigma_n$}, содержащем результат(ы) работы программы.
 %$\sigma_n$}, containing the output(s) of the program.
 
 Состояние изменяется конечное число раз из {\red $\sigma_0$} в {\red
-$\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
+$\sigma_n$}; в принципе, каждая команда может изменить состояние.
 
 %The state passes through a finite sequence of changes to get from
 %{\red $\sigma_0$} to {\red $\sigma_n$}; in general, each command may
@@ -288,14 +288,14 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 \begin{itemize}
 
-\item Мы можем задавать {\red рекурсивные функции}, создавая что-то
-      наподобие циклов.
+\item Мы можем определять {\red рекурсивные функции}, создавая что-то
+  наподобие циклов.
 
 %\item We can have {\red recursive functions}, giving something
 %      comparable to repetition.
 
-\item Более гибкое использование функций, например, мы можем задавать
-      {\red функции высшего порядка}.
+\item Более гибкое использование функций, например, мы можем
+  определять {\red функции высшего порядка}.
 
 %\item Functions can be used much more flexibly, e.g. we can have
 %      {\red higher order functions}.
@@ -317,8 +317,8 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
 
 \vspace*{0.5cm}
 
-Мы можем задать функцию для вычисления факториала в императивном стиле
-на языке C следующим образом:
+Мы можем записать функцию для вычисления факториала в императивном
+стиле на языке C следующим образом:
 
 %The factorial function can be written imperatively in C as follows:
 
@@ -333,7 +333,7 @@ $\sigma_n$}; вообще говоря, каждая команда может изменить состояние.
   }
 \end{verbatim}\end{red}
 
-\noindent тогда как на ML зададим рекурсивную функцию:
+\noindent тогда как на ML это можно выразить рекурсивной фукнцией:
 
 %\noindent whereas it would be expressed in ML as a recursive
 %function:
@@ -502,7 +502,7 @@ $$ \sem{\mbox{fact}}(n) = \left\{ \begin{array}{ll}
 \vspace*{0.5cm}
 
 Чтобы создать надлежащую семантику для императивных программ, нам
-необходимо явно определить состояние.  Например, мы можем задать
+необходимо явно определить состояние.  Например, мы можем создавать
 команды как:
 
 %In order to give a corresponding semantics to imperative programs, we need to
@@ -755,7 +755,7 @@ $E[x]$}'.  Здесь {\red $E[x]$}~-- это выражение, которое содержит или не
 %In informal mathematics, when talking about a function, one normally gives it a
 %name: `define {\red $f(x) = E[x]$} \ldots then {\red $\cdots f \cdots$}'.
 
-Также, большинство языков программирования позволяют задать функцию
+Также, большинство языков программирования позволяют определить функцию
 только, если ей будет дано имя.
 
 % Similarly, most programming languages will only let you define
