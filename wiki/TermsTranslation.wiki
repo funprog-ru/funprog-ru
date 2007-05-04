@@ -38,6 +38,7 @@ Please keep terms in alphabet order.
   * *syntactic sugar* - синтаксическая обёртка
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tuple* - кортеж
+  * *type variables* - ??
   * *variable capture* - захват переменной
   * *verification* - проверка / верификация ??
 
