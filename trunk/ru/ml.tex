@@ -1,4 +1,4 @@
-\chapter{``Вкус'' ML}
+\chapter{``Вкус'' ТО}
 
 В предыдущих главах мы начали с чистого $lambda$-исчисления, а затем
 систематически расширяли его новыми возможностями.  Например, мы
@@ -14,11 +14,11 @@
 создания примитивов для них.  Так что мы получим новые примитивные
 типы, такие как {\tt bool} и {\tt int} (положительные и отрицательные
 целые числа) и новые конструктора типов, такие как $\times$,~--- шаг,
-который мы пречувствовали в последней главе.  С этими изменениями
+который мы предчувствовали в последней главе.  С этими изменениями
 также связаны новые константы и новые правила преобразования.
 Например, выражение $2 + 2$ вычисляется с использованием машинной
 арифметики, вместо преобразования его в нумералы Черча и выполнения
-$\beta$-преобразований.  Эти допольнительные преобразования,
+$\beta$-преобразований.  Эти дополнительные преобразования,
 рассматриваемые как расширение обычных $lambda$-операций, часто
 называются `$\delta$-преобразованиями'.  Мы увидим в течении курса как
 язык ML расширен по сравнению с чистым $lambda$-исчислением.  Первым
@@ -33,7 +33,7 @@ $\beta$-преобразований.  Эти допольнительные преобразования,
 (???this one will).\footnote{Эта стратегия подобна некоторым,
   используемым в традиционных языках, таких как Algol 60, где на нее
   ссылались как на {\em вызов по имени}.}  Однако, этот подход имеет
-некоторые практические дефекты.  Например, рассмотрим следуюшее
+некоторые практические дефекты.  Например, рассмотрим следующее
 выражение:
 
 $$ (\lamb{x} x + x + x)\; (10 + 5) $$
@@ -46,7 +46,7 @@ $$ (\lamb{x} x + x + x)\; (10 + 5) $$
 функционального программирования на два лагеря.
 
 Первым решением является придерживание нормального порядка редукции,
-но при этом пытаться оптимизовать реализацию так, чтобы множественные
+но при этом пытаться оптимизировать реализацию так, чтобы множественные
 подвыражения, возникающие при таком подходе, использовались совместно,
 и никогда не вычислялись более одного раза.  Внутри выражения
 представляются как связанные ацикличные графы, а не деревья.  Этот
@@ -62,7 +62,7 @@ $$ (\lamb{x} x + x + x)\; (10 + 5) $$
 нужны, например, $t$ в $(\lamb{x} y)\; t$.  Конечно, энергичное
 вычисление означает, что некоторые выражения могут зацикливаться,
 тогда как они могут завершаться при работе в ленивом режиме.  Но это
-считается допустими, поскольку этих вещей достаточно легко избежать на
+считается допустимым, поскольку этих вещей достаточно легко избежать на
 практике.  В любом случае, стратегия энергичного вычисления является
 стандартной для многих языков программирования, таких как C, где на
 нее ссылаются как на {\em вызов по значению (call by value)}.
@@ -71,10 +71,10 @@ ML использует энергичное вычисление по двум основным причинам.
 Управление редукцией и совместным использованием, которое возникает
 при ленивом вычислении, является достаточно сложным, и реализация
 может быть относительно неэффективной и усложненной.  Если программист
-не особо заботлив, то память может заполниться невычисленными
+не особо заботлив, то память может заполниться не вычисленными
 выражениями, и в общем тяжело понять потребление памяти программами.
 В действительности, многие реализации ленивого вычисления стараются
-оптимизовать их, путем использования энергичных вычислений в тех
+оптимизировать их, путем использования энергичных вычислений в тех
 местах, где семантика не отличается.\footnote{Они стараются выполнить
   {\em анализ строгости}~--- один из видов статического анализа,
   который часто помогает определить, что аргументы должны быть
@@ -94,8 +94,8 @@ ML использует энергичное вычисление по двум основным причинам.
 какое подвыражение вычисляется.  В энергичной системе ML, нужно лишь
 помнить простое правило вычисления.
 
-Однако важно осозновать, что стратегия вычислений ML  {\em не} просто
-снизу-вверх, в противоположность нормальному порядку редукции. В
+Однако важно осознавать, что стратегия вычислений ML  {\em не} просто
+снизу вверх, в противоположность нормальному порядку редукции. В
 действительности ML {\em никогда не вычисляет содержимое
   $lambda$-выражений}.  (В частности, он не когда не
 редуцирует$\eta$-???redexes, в только $\beta$-???redexes.)  При
@@ -144,7 +144,7 @@ $$ \mbox{let}\; x = s\; \mbox{in}\; t $$
 & \goesto & 8
 \end{eqnarray*}
 
-Заметьте, что подтерм $(\lamb{y} y + y)\; x$ is {\em не редуцируется},
+Заметьте, что под-терм $(\lamb{y} y + y)\; x$ {\em не редуцируется},
 поскольку он находится внутри $lambda$-выражения.  Однако,
 что редуцируемые термы, \emph{не} находящиеся внутри $lambda$-выражений
 обоих функций, а также аргумент, редуцируются до того, как вычисляется
@@ -256,13 +256,15 @@ Light по следующим причинам:
 ML уже установлен на рабочий сервер (Thor).  Для того, чтобы
 использовать его, вам необходимо поместить каталог с исполняемыми
 файлами CAML в переменную среды {\tt PATH}.  Это может быть сделано
-следующим образом (преполагая, что вы используете командный процессор
+следующим образом (предполагая, что вы используете командный процессор
 `bash' или что-то из его семейства):
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   PATH="$PATH:/home/jrh13/caml/bin"
   export PATH
-\end{verbatim}\end{boxed}%$
+\end{verbatim}
+\end{boxed}%$
 
 Чтобы не вводить эти команды при каждом заходе на сервер, вы можете
 вставить эти команды в конец вашего файла {\tt .bash\_profile}, или
@@ -271,36 +273,42 @@ ML уже установлен на рабочий сервер (Thor).  Для того, чтобы
 {\tt camllight}, и программа должна запуститься и выдать приглашение
 (`{\tt \#}'):
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   $ camllight
   >       Caml Light version 0.73
 
   #
-\end{verbatim}\end{boxed}%$
+\end{verbatim}
+\end{boxed}%$
 
 Для того, чтобы выйти из системы, просто наберите {\tt ctrl/d} или
 {\tt quit();;} в строке приглашения.  Если вы заинтересованы в
 установке CAML Light на ваш собственный компьютер, то вы должны
 прочитать следующую Web-страницу для получения подробной информации:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   http://pauillac.inria.fr/caml/
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \section{Взаимодействие с ML}
 
 Когда ML выдает вам строку приглашения, вы можете вводить выражения,
-завешаемые двумя последовательными знаками ``точка с запятой'', он
+завершаемые двумя последовательными знаками ``точка с запятой'', он
 будет вычислять их и выдавать результат.  На компьютерном жаргоне
 говорят, что ML находится в состоянии ``цикл read-eval-print
 (считать-вычислить-напечатать)???'': выражения считываются,
 вычисляются и печатаются результаты.  Например, ML может быть
 использован как простой калькулятор:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #10 + 5;;
   - : int = 15
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Система не только возвращает ответ, но также выдает  {\em тип}
 выражения, который определяется автоматически.  Система может сделать
@@ -310,87 +318,104 @@ ML уже установлен на рабочий сервер (Thor).  Для того, чтобы
 произошла ошибка.  В сложных случаях, сообщения об ошибках  достаточно
 тяжело понять.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #1 + true;;
   Toplevel input:
   >let it = 1 + true;;
   >             ^^^^
   This expression has type bool,
   but is used with type int.
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Поскольку ML является функциональным языком, то выражения могут иметь
 тип-функцию.  Для $lambda$-выражения $\lamb{x} t[x]$ ML предоставляет
 следующий синтаксис~--- {\tt fun x -> t[x]}.  Например, мы можем
 определить функцию ``следующий successor'':
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #fun x -> x + 1;;
   - : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Как и в предыдущем примере, тип выражения (сейчас это {\tt int ->
   int}), выводится из выдается на экран.  Однако сама функция не
 печатается; система лишь выдает {\tt <fun>}.  Это сделано потому, что
-внутренее представление функций не слишком читабельно.\footnote{CAML
+внутреннее представление функций не слишком читабельно.\footnote{CAML
   не хранит их как синтаксические деревья, а компилирует в байт-код.}
 Функции применяются к аргументам, также как и в $lambda$-исчислении,
 путем комбинирования.  Например:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #(fun x -> x + 1) 4;;
   - : int = 5
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Снова, как в $lambda$-исчислении, применение функции асоциируется
+Снова, как в $lambda$-исчислении, применение функции ассоциируется
 слева, и вы можете написать карированные функции, используя  то же
 самое соглашение по упрощению множественных $\lambda$-выражений (т.е.,
 {\tt fun}-й).  Например, все следующие выражения эквивалентны:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #((fun x -> (fun y -> x + y)) 1) 2;;
   - : int = 3
   #(fun x -> fun y -> x + y) 1 2;;
   - : int = 3
   #(fun x y -> x + y) 1 2;;
   - : int = 3
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \section{Связывания и объявления}
 
-It is not convenient, of course, to evaluate the whole expression in one go;
-rather, we want to use {\tt let} to bind useful subexpressions to names. This
-can be done as follows:
+Конечно, это не совсем удобно~--- вычислять все выражение за один шаг;
+вместо этого, мы можем использовать {\tt let} для связывания полезных
+подвыражений с именами. Это может быть сделано следующим образом:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let successor = fun x -> x + 1 in
    successor(successor(successor 0));;
   - : int = 3
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\noindent Function bindings may use the more elegant sugaring:
+\noindent Для связывания функций может использоваться более элегантная
+конструкция:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let successor x = x + 1 in
   successor(successor(successor 0));;
   - : int = 3
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\noindent and can be made recursive just by adding the {\tt rec} keyword:
+\noindent и можно использовать рекурсию, лишь добавлением ключевого
+слова {\tt rec}:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec fact n = if n = 0 then 1
                     else n * fact(n - 1) in
    fact 6;;
   - : int = 720
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-By using {\tt and}, we can make several binding simultaneously, and define
-mutually recursive functions. For example, here are two simple, though highly
-inefficient, functions to decide whether or not a natural number is odd or
-even:
+Использованием {\tt and}, мы можем сделать несколько связываний
+одновременно, и определить взаимно рекурсивные функции. Например, вот
+две простых, хотя сильно неэффективных, функций, которые определяют,
+является ли натуральное число четным или нечетным:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec even n = if n = 0 then true else odd (n - 1)
        and odd n  = if n = 0 then false else even (n - 1);;
   even : int -> bool = <fun>
@@ -399,39 +424,47 @@ even:
   - : bool = true
   #odd 14;;
   - : bool = false
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-In fact, any bindings can be performed separately from the final application.
-ML remembers a set of variable bindings, and the user can add to that set
-interactively. Simply omit the {\tt in} and terminate the phrase with a double
-semicolon:
+В действительности, любое связывание может быть сделано отдельно от
+его применения.  ML помнит набор связанных переменных и пользователь
+может пополнять данный набор интерактивно.  Просто уберите {\tt in} и
+завершите фразу двойной точкой с запятой:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let successor = fun x -> x + 1;;
   successor : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\noindent After this declaration, any later phrase may use the function {\tt
-successor}, e.g:
+\noindent После этого объявления, любая последующая фраза может
+использовать функцию {\tt successor}, например:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #successor 11;;
   - : int = 12
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Note that we are not making {\em assignments} to {\em variables}. Each binding
-is only done once when the system analyses the input; it cannot be repeated or
-modified. It can be overwritten by a new definition using the same name, but
-this is not assignment in the usual sense, since the sequence of events is only
-connected with the {\em compilation} process, not with the dynamics of program
-{\em execution}. Indeed, apart from the more interactive feedback from the
-system, we could equally replace all the double semicolons after the
-declarations by {\tt in} and evaluate everything at once. On this view we can
-see that the overwriting of a declaration really corresponds to the definition
-of a new local variable that hides the outer one, according to the usual lambda
-calculus rules. For example:
+Заметьте, что мы не делаем {\em присвоений} {\em переменных}.  Каждое
+связывание выполняется только раз, когда система анализирует введенные
+данные; оно не может быть повторено или изменено.  Оно может быть
+перезаписано новым определением с тем же именем, но это не присвоение,
+в своем обычном значении, поскольку последовательность событий связана
+только с процессом {\em компиляции}, а не с динамикой {\em выполнения}
+программы.  Конечно, отходя от интерактивного получения ответа от
+системы, мы можем полностью заменить все двойные точки с запятой,
+записанные после объявлений, на {\tt in} и вычислить все за раз.  В
+этом примере мы можем увидеть, что переписывание определений в
+действительности соответствует определению новой локальной переменной,
+которая ``прячет'' предыдущую, ``охватывающую'' переменную, в
+соответствии с обычными правилами $lambda$-исчисления.  Например:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let x = 1;;
   x : int = 1
   #let y = 2;;
@@ -440,24 +473,29 @@ calculus rules. For example:
   x : int = 3
   #x + y;;
   - : int = 5
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\noindent is the same as:
+\noindent является тем же самым, что и:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let x = 1 in
    let y = 2 in
    let x = 3 in
    x + y;;
   - : int = 5
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Note carefully that, also following lambda calculus, variable binding is {\em
-static}, i.e. the first binding of {\tt x} is still used until an inner binding
-occurs, and any uses of it until that point are not affected by the inner
-binding. For example:
+Обязательно заметьте, что следуя $lambda$-исчислению, связывание
+переменных является {\em статическим}, например, первое связывание
+{\tt x} используется до того, как будет сделано новое связывание, и
+любое его использование до нового определения, не будет затронуто
+новым определением.  Например:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let x = 1;;
   x : int = 1
   #let f w = w + x;;
@@ -466,82 +504,102 @@ binding. For example:
   x : int = 2
   #f 0;;
   - : int = 1
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-The first version of LISP, however, used {\em dynamic} binding, where a
-rebinding of a variable propagated to earlier uses of the variable, so that the
-analogous sequence to the above would return 2. This was in fact originally
-regarded as a bug, but soon programmers started to appreciate its convenience.
-It meant that when some low-level function was modified, the change propagated
-automatically to all applications of it in higher level functions, without the
-need for recompilation. The feature survived for a long time in many LISP
-dialects, but eventually the view that static binding is better prevailed. In
-Common LISP, static binding is the default, but dynamic binding is available if
-desired via the keyword {\tt special}.
+Первые версии LISP, однако, использовали {\em динамическое}
+связывание, когда переопределение переменной также распространялось на
+предыдущие использования этой переменной, так что аналогичная
+последовательность команд, должна будет вернуть число 2.  В
+действительности это считалось ошибкой, но скоро программисты начали
+использовать эту возможность.  Это означало, что когда некоторая
+низкоуровневая функция изменялась, то изменения распространялись на
+все ее применения в других функциях без необходимости в их
+перекомпиляции.  Эта возможность продолжала существовать долгое время
+во многих диалектах LISP, но в конечном счете победила идея, что
+статическое связывание лучше.  В Common LISP по умолчанию используется
+статическое связывание, но динамическое связывание можно разрешить,
+если необходимо, используя ключевое слово {\tt special}.
 
-\section{Polymorphic functions}
+\section{Полиморфические функции}
 
-We can define polymorphic functions, like the identity operator:
+Мы можем определить полиморфические функции, такие как оператор
+тождественного отображения:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let I = fun x -> x;;
   I : 'a -> 'a = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-ML prints type variables as {\tt 'a}, {\tt 'b} etc. These are supposed to be
-ASCII representations of $\alpha$, $\beta$ and so on. We can now use the
-polymorphic function several times with different types:
+ML печатает переменные типов (??? type variables) как {\tt 'a}, {\tt
+  'b} и~т.д.  Они должны быть ASCII-представлением для $\alpha$,
+$\beta$ и~т.д.  Мы можем использовать полиморфическую функцию с
+разными типами:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #I true;;
   - : bool = true
   #I 1;;
   - : int = 1
   #I I I I 12;;
   - : int = 12
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Each instance of {\tt I} in the last expression has a different type, and
-intuitively corresponds to a different function. In fact, let's define all the
-combinators:
+В данном примере каждое использование {\tt I} имеет отличающийся тип,
+и интуитивно соотносится к отдельной функции.  Давайте определим все
+комбинаторы:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let I x = x;;
   I : 'a -> 'a = <fun>
   #let K x y = x;;
   K : 'a -> 'b -> 'a = <fun>
   #let S f g x = (f x) (g x);;
   S : ('a -> 'b -> 'c) -> ('a -> 'b) -> 'a -> 'c = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Note that the system keeps track of the types for us, even though in the last
-case they were quite complicated. Now, recall that $I = S\; K\; K$; let us try
-this out in ML:\footnote{We remarked that from the untyped point of view, $S\;
-K\; A = I$ for any $A$. However, the reader may try, for example, $S\; K\; S$
-and see that the principal type is less general than expected.}
+Заметьте, что система сохраняет пути передачи типов, хотя, даже в
+последнем случае, они достаточно сложные.  Теперь, вспоминая, что $I =
+S\; K\; K$; давайте попробуем сделать это на ML:\footnote{Мы отмечаем,
+  что с точки зрения отсутствия типов, $S\; K\; A = I$ для любого $A$.
+  Однако, читатель может попробовать, например, $S\; K\; S$ и
+  убедиться, что основной тип, является менее общим, чем ожидалось.}
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let I' = S K K;;
   I' : '_a -> '_a = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\noindent It has the right type,\footnote{Ignore the underscores for now. This
-is connected with the typing of imperative features, and we will discuss it
-later.} and it may easily be checked in all concrete cases, e.g:
+\noindent Выражение имеет правильный тип,\footnote{Игнорируйте
+  подчеркивания.  Это связано с типизированием императивных
+  возможностей, и мы обсудим это позже.} и может быть легко проверено
+на конкретных случаях, например:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #I' 3 = 3;;
   - : bool = true
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-In the above examples of polymorphic functions, the system very quickly infers
-a most general type for each expression, and the type it infers is simple. This
-usually happens in practice, but there are pathological cases, e.g. the
-following example due to \citeN{mairson-ml}. The type of this expression takes
-about 10 seconds to calculate, and occupies over 4000 lines on an 80-column
-terminal.
+В приведенных примерах полиморфических функций, система очень быстро
+выводит наиболее общий тип для каждого выражения, и тип, который она
+выводит, является простым.  Это обычно и происходит на практике, но
+существуют патологические случаи, например, следующий пример,
+приведенный в \citeN{mairson-ml}.  Тип этого выражения вычисляется
+около 10 секунд, и занимает более 4000 строк на 80-символьном
+терминале.
 
-\begin{boxed}\begin{lstlisting}
+\begin{boxed}
+\begin{lstlisting}
   let pair x y = fun z -> z x y in
   let x1 = fun y -> pair y y in
   let x2 = fun y -> x1(x1 y) in
@@ -549,21 +607,25 @@ terminal.
   let x4 = fun y -> x3(x3 y) in
   let x5 = fun y -> x4(x4 y) in
   x5(fun z -> z);;
-\end{lstlisting}\end{boxed}
+\end{lstlisting}
+\end{boxed}
 
-We have said that the ML programmer need never enter a type. This is true in
-the sense that ML will already allocate as general a type as possible to an
-expression. However it may sometimes be convenient to {\em restrict} the
-generality of a type. This cannot make code work that didn't work before, but
-it may serve as documentation regarding the intended purpose of the code; it is
-also possible to use shorter synonyms for complicated types. Type restriction
-can be achieved in ML by adding {\em type annotations} after some
-expression(s). These type annotations consist of a colon followed by a type. It
-usually doesn't matter exactly where these annotations are added, provided they
-enforce the appropriate constraints. For example, here are some alternative
-ways of constraining the identity function to type {\tt int -> int}:
+Мы сказали, что программист на ML никогда не вводит тип.  Это правда в
+том смысле, что ML уже выделит наиболее общий тип для выражения.
+Однако, иногда бывает полезно {\em ограничить} вывод типа.  Это не
+заставит работать код, который до этого не работал, но может
+использоваться как документация для понимания того, для чего этот код
+предназначен; также возможно использовать более короткие синонимы для
+сложных типов.  Ограничение типа может быть задано в ML путем
+добавления {\em аннотации типа} после некоторого выражения(й).
+Аннотации типов состоят из двоеточия, за которым указан тип.  Обычно
+не имеет значения то, где эти аннотации добавлены, если они есть, то
+они заставляют использовать соответствующие ограничения.  Например,
+вот несколько альтернативных вариантов ограничения функции
+идентичности к типу {\tt int -> int}:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let I (x:int) = x;;
   I : int -> int = <fun>
   #let I x = (x:int);;
@@ -574,24 +636,28 @@ ways of constraining the identity function to type {\tt int -> int}:
   I : int -> int = <fun>
   #let I = ((fun x -> x):int->int);;
   I : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \section{Эквивалентность функций}
 
-Instead of comparing the actions of $I$ and $I'$ on particular arguments like
-$3$, it would seem that we can settle the matter definitively by comparing the
-functions themselves. However this doesn't work:
+Вместо сравнения действий $I$ и $I'$ на отдельные аргументы, такие как
+$3$, может показаться, что мы можем разрешить данный вопрос путем
+сравнения самих функций.  Однако, это не работает:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #I' = I;;
   Uncaught exception: Invalid_argument "equal: functional value"
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-It is in general {\em forbidden} to compare functions for equality, though a
-few special instances, where the functions are obviously the same, yield {\tt
-true}:
+В общем, {\em запрещено} сравнивать функции, хотя существует несколько
+специальных случаев, когда функции явно являются одинаковыми, приводя
+к получению {\tt true}:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let f x = x + 1;;
   f : int -> int = <fun>
   #let g x = x + 1;;
@@ -606,75 +672,91 @@ true}:
   Uncaught exception: Invalid_argument "equal: functional value"
   #h = g;;
   - : bool = true
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-Why these restrictions? Aren't functions supposed to be first-class objects in
-ML? Yes, but unfortunately, (extensional) function equality is not computable.
-This follows from a number of classic theorems in recursion theory, such as the
-{\em unsolvability of the halting problem} and {\em Rice's
-theorem}.\footnote{You will see these results proved in the Computation Theory
-course. Rice's theorem is an extremely strong undecidability result which
-asserts that {\em any} nontrivial property of the function corresponding to a
-program is uncomputable from its text. An excellent computation theory textbook
-is \citeN{davis-weyuker}.} Let us give a concrete illustration of why this
-might be so. It is still an open problem whether the following function
-terminates for all arguments, the assertion that it does being known as the
-{\em Collatz conjecture}:\footnote{A good survey of this problem, and attempts
-to solve it, is given by \citeN{lagarias-collatz}. Strictly, we should use
-unlimited precision integers rather than machine arithmetic. We will see later
-how to do this.}
+Почему существуют эти ограничения?  Разве в ML функции не являются
+объектами высшего порядка?  Да, но к сожалению, (extensional)
+эквивалентность функций не вычислима.  Это следует из различных
+классических теорем в теории рекурсии, таких как {\em Неразрешимости
+  проблемы остановки (unsolvability of the halting problem)} and {\em
+  Теорема Райса (Rice's theorem)}.\footnote{Вы увидете доказательства
+  в курсе теории вычеслений.  Теорема Райса~--- результат чрезвычайно
+  сильной неразрешимости, что предполагает, что {\em любое}
+  нетривиальное свойство функции, соответствующей программе,
+  невычислимо из ее текста.  Отличной книгой по теории вычислений
+  является~\citeN{davis-weyuker}.}  Позвольте нам дать конкретный
+пример, почему это может быть так.  Это все еще открытая проблема~---
+будет ли следующая функция завершена для всех ее аргументов,
+предположение, что это так, известно как {\em Гипотеза Коллатца
+  (Collatz conjecture)}:\footnote{Хороший обзор этой проблемы, и
+  попытки решить ее, приведены в~\citeN{lagarias-collatz}.  Честно
+  говоря, мы должны использовать целые числа с неограниченной
+  точностью, а не машинную арифметику.  Позже мы увидим как это
+  сделать.}
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec collatz n =
      if n <= 1 then 0
      else if even(n) then collatz(n / 2)
      else collatz(3 * n + 1);;
   collatz : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-What is clear, though, is that if it does halt it returns $0$. Now consider the
-following trivial function:
+Что ясно, хотя, что если оно завершается, то возвращает~$0$. Теперь
+рассмотрим следующую тривиальную функцию:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let f (x:int) = 0;;
   f : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-By deciding the equation {\tt collatz = f}, the computer would settle the
-Collatz conjecture. It is easy to concoct other examples for open mathematical
-problems.
+Решением уравнения {\tt collatz = f}, компьютер должен подтвердить
+гипотезу Коллатца.  Очень легко придумать другие примеры для открытых
+математических проблем.
 
-It is possible to trap out applications of the equality operator to functions
-and datatypes built up from them as part of typechecking, rather than at
-runtime. Types that do not involve functions in these ways are known as {\em
-equality types}, since it is always valid to test objects of such types for
-equality. On the negative side, this makes the type system much more
-complicated. However one might argue that static typechecking should be
-extended as far as feasibility allows.
+Представляется возможным перехватить применение оператора
+эквивалентности к функциям и типам, построенных из них, на этапе
+проверки типов, а не в момент выполнения.  Типы, которые не вовлекают
+использование функций такими способами, известны как {\em типы
+  эквивалентности (equality types)}, поскольку всегда возможно
+протестировать объекты таких типов на эквивалентность.  С другой
+стороны, это делает систему типов более сложной.  Однако, некоторые
+могут аргументировать, что статическая проверка типов должна быть
+расширена насколько это возможно.
 
-\section*{Further reading}
+\section*{Дополнительная литература}
 
-Many books on functional programming bear on the general issues we have
-discussed here, such as evaluation strategy. A good elementary introduction to
-CAML Light and functional programming is \citeN{mauny-tutorial}.
-\citeN{paulson-ml} is another good textbook, though based on Standard ML.
+Много книг о функциональном программировании содержат информацию об
+общих вещах, которые мы обсуждали, таких как стратегии вычислений.
+Хорошее элементарное введение в CAML Light и функциональное
+программирование можно найти в~\citeN{mauny-tutorial}.
+\citeN{paulson-ml}~также является хорошей книгой, хотя основывается на
+Standard~ML.
 
-\section*{Exercises}
+\section*{Примеры}
 
 \begin{enumerate}
 
-\item Suppose that a `conditional' function defined by {\tt ite(b,x,y) = if b
-then x else y} is the only function available that operates on arguments of
-type {\tt bool}. Is there any way to write a factorial function?
+\item Предположим, что `функция-условие', определенная {\tt ite(b,x,y)
+    = if b then x else y} является функцией, которая может работать с
+  аргументами типа {\tt bool}.  Существует ли способ написать функцию
+  факториала?
 
-\item Use the typing rules in the last chapter to write out a formal proof that
-the $S$ combinator has the type indicated by the ML system.
+\item Используйте правила типизирования приведенные в предыдущей главе
+  для того, чтобы вывести формальное доказательство, что
+  комбинатор~$S$ имеет тот тип, который выдается~ML.
 
-\item Write a simple recursively defined function to perform exponentiation of
-integers, i.e. calculate $x^n$ for $n \geq 0$. Write down two ML functions, the
-equality of which corresponds to the truth of Fermat's last theorem: there are
-no integers $x$, $y$, $z$ and natural number $n > 2$ with $x^n + y^n = z^n$
-except for the trivial case where $x = 0$ or $y = 0$.
+\item Напишите простую, рекурсивно определенную функцию для возведения
+  в степень целых чисел, т.е. вычисляющую $x^n$ для $n \geq 0$.
+  Напишите две функции на ML, эквивалентность которых соответствует
+  истинности последней теоремы Ферма: не существует целых чисел $x$,
+  $y$, $z$ и натурального числа $n > 2$, так что $x^n + y^n = z^n$, за
+  исключением тривиального случая, когда $x = 0$ или $y = 0$.
 
 \end{enumerate}
 
