@@ -18,13 +18,13 @@
   
 = Полностью переведённые =
 
-  * (e) *l1.tex* - перевод lg.zevlg, прочитали alexott, vshabanoff(не полностью)
-  * (e) *l2.tex* - перевод lg.zevlg, прочитали alexott
-  * (e) *l3.tex* - перевод lg.zevlg, прочитали alexott
-  * (e) *l4.tex* - перевод lg.zevlg, прочитали alexott
-  * (e) *l5.tex* - перевод lg.zevlg, прочитали alexott
-  * (e) *l6.tex* - перевод lg.zevlg, прочитали alexott
-  * (e) *l7.tex* - перевод lg.zevlg, прочитали
+  * (e) *l1.tex* - перевод lg, прочитали alexott, vshabanoff(не полностью)
+  * (e) *l2.tex* - перевод lg, прочитали alexott
+  * (e) *l3.tex* - перевод lg, прочитали alexott
+  * (e) *l4.tex* - перевод lg, прочитали alexott
+  * (e) *l5.tex* - перевод lg, прочитали alexott
+  * (e) *l6.tex* - перевод lg, прочитали alexott
+  * (e) *l7.tex* - перевод lg, прочитали
   * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью)
   * (e) *effect.tex* - перевод alexott, прочитали
   * (e) *preface.tex* - перевод pr.dimiii, прочитали
@@ -45,5 +45,5 @@
   * (t) *l8.tex* - перевод lg, прочитали
   * (t) *l9.tex* - перевод, прочитали
   * (t) *l10.tex* - перевод, прочитали
-  * (t) *l11.tex* - перевод Lambda Henchman, прочитали
+  * (t) *l11.tex* - перевод Lambda Henchman, прочитали lg
   * (t) *l12.tex* - перевод, прочитали
