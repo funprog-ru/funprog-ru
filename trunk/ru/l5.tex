@@ -227,7 +227,7 @@ $\lambda$-исчисление, например:
 
 \begin{itemize}
 
-\item Примитивную конструкцию {\tt let}, чтобы полиморфическая система
+\item Примитивную конструкцию {\tt let}, чтобы полиморфная система
   типов была более мощной.
 %\item The {\tt let} construct as primitive to make the
 %polymorphic type system more powerful.
@@ -309,9 +309,9 @@ $\lambda$-термов.
 \begin{itemize}
 
 \item {\bf Ленивое вычисление} выполняет нормальный порядок редукции,
-  но также использует хитрую технику разделения выражений, сохраняя их в
-  виде графа.  При таком способе выражения вычисляются только один раз
-  и только когда это понадобится.
+  но также использует хитрые способы совместного использования
+  выражений, сохраняя их в виде графа.  При таком способе выражения
+  вычисляются только один раз и только когда это понадобится.
 %\item {\bf Lazy evaluation} keeps normal order reduction but also uses clever
 %sharing techniques, storing expressions as a graph. In this way, an expression
 %is never evaluated until needed, and never more than once.
@@ -358,9 +358,9 @@ $\lambda$-термов.
 %inside them. In particular, there is no $\eta$-conversion.
 
 \item При вычислении комбинации {\red $s\; t$} {\em сначала}
-  вычисляются оба {\red $s$} и {\red $t$}.  Потом, при условии, что
+  вычисляются оба {\red $s$} и {\red $t$}.  Потом, при условии что
   вычисление {\red $s$} дало $\lambda$-абстракцию, производится
-  самая внешняя $\beta$-конверсия, и процесс продолжается.
+  самая внешняя $\beta$-конверсия, и процесс повторяется.
 %\item When evaluating a combination {\red $s\; t$}, then {\em first} both {\red
 %$s$} and {\red $t$} are evaluated. Then, assuming that the evaluated form of
 %{\red $s$} is a lambda abstraction, a toplevel $\beta$-conversion is performed
@@ -455,8 +455,7 @@ $\lambda$-термов.
 
 \item Мы делаем условное выражение примитивом языка и изменяем
   стандартную стратегию вычислений для него таким образом, что {\em сначала}
-  вычисляется булево выражение, а потом {\em только один} из нужных
-  рукавов.
+  вычисляется булево выражение, а потом {\em только одна} соответствующая ветвь.
 %\item We make the conditional statement a primitive of the language, and modify
 %the standard evaluation strategy so that {\em first} the boolean expression is
 %evaluated, and only then is {\em exactly one} of the two arms evaluated, as
@@ -612,10 +611,11 @@ ML знает тип встроенного оператора {\black \tt +}, и именно поэтому он
 
 \vspace*{0.5cm}
 
-Поскольку ML является функциональныи языком, то выражения могут иметь
+Поскольку ML является функциональным языком, то выражения могут иметь
 функциональный тип.  Синтаксис ML для обозначения $\lambda$-абстракции
 {\red $\lamb{x} t[x]$} выглядит как {\black \tt fun x -> t[x]}.
 Например мы можем определить функцию инкремента:
+% BUG# в ml.tex переведено как 'следующий'
 %Since ML is a functional language, expressions are allowed to have function
 %type. The ML syntax for a lambda abstraction {\red $\lamb{x} t[x]$} is {\black
 %\tt fun x -> t[x]}. For example we can define the successor function:
@@ -706,7 +706,8 @@ ML использует синтаксис подобный принятому в $\lambda$-исчислении
 \end{verbatim}
 \end{black}
 
-Когда связываются функции, то можно использовать более элегантную обёртку:
+Когда связываются функции, можно использовать более элегантную
+конструкцию:
 %When binding functions, one can also use the more elegant sugaring:
 
 \begin{black}
@@ -741,8 +742,8 @@ ML использует синтаксис подобный принятому в $\lambda$-исчислении
 
 \vspace*{0.5cm}
 
-По сути, набор связываний может быть дополнен интерактивно.  Просто
-уберите {\black \tt in} и завершите выражение:
+В действительности, набор связываний можно пополнять интерактивно.
+Просто уберите {\black \tt in} и завершите выражение:
 %In fact, the set of bindings can be augmented interactively. Simply omit the
 %{\black \tt in} and terminate the phrase:
 
@@ -785,13 +786,13 @@ ML использует синтаксис подобный принятому в $\lambda$-исчислении
 
 \begin{rslide}
 
-\heading{Полиморфические функции}
+\heading{Полиморфные функции}
 %\heading{Polymorphic functions}
 
 \vspace*{0.5cm}
 
-Мы можем определять полиморфические функции, такие как оператор
-тождества:
+Мы можем определять полиморфные функции, такие как оператор
+тождественного отображения:
 %We can define polymorphic functions, like the identity operator:
 
 \begin{black}
@@ -801,9 +802,9 @@ ML использует синтаксис подобный принятому в $\lambda$-исчислении
 \end{verbatim}
 \end{black}
 
-ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
-далее.  Предполагается, что они являются ASCII представлением для
-{\black $\alpha$}, {\black $\beta$} и так далее.  Теперь мы можем
+ML печатает типовые переменные как {\black \tt 'a}, {\black \tt 'b}
+и~т.д.  Предполагается, что они являются ASCII представлением для
+{\black $\alpha$}, {\black $\beta$} и~т.д.  Теперь мы можем
 использовать тождество с разными типами:
 %ML prints type variables as {\black \tt 'a},{\black \tt 'b} etc. These are
 %supposed to be ASCII representations of {\black $\alpha$}, {\black $\beta$} and
@@ -894,19 +895,19 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
 \end{black}
 
 В общем случае {\em запрещено} сравнивать функции на равенство.  Почему?
-Ведь предполагается, что функции являются объектами высшего порядка в ML?
+Разве в ML функции не являются объектами высшего порядка?
 %It is in general {\em forbidden} to compare functions for equality. Why? Aren't
 %functions supposed to be first-class objects in ML?
 
-Да, но к сожалению, (экстенсиональное) сравнение функций не
-вычислимо.  Это следствие из {\em теоремы Риса}, или просто из {\em
+Да, но к сожалению, (экстенсиональное) равенство функций невычислимо.
+Это следствие из {\em теоремы Райса}, или просто из {\em
   неразрешимости проблемы останова}.
 %Yes, but unfortunately, (extensional) function equality is not computable. This
 %is a consequence of {\em Rice's theorem}, or simply of the {\em unsolvability
 %of the halting problem}.
 
-Некоторые версии ML различают функции и другие `сравнимые
-типы' и фильтруют такие случаи во время проверки типов.
+Некоторые версии ML отличают функции от остальных `сравнимых типов' и
+фильтруют такие случаи во время проверки типов.
 %Some versions of ML distinguish between functions and other `equality types'
 %and filter out these cases during typechecking.
 
@@ -925,7 +926,7 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
 Во всех наших примерах система очень быстро выводит наиболее общий тип
 для каждого выражения и тип получается простым.  Так обычно и бывает
 на практике, но бывают и патологические случаи, например следующий
-вариант, предложенный Майерсоном:
+вариант, приведённый в Майерсоне:
 %In all our examples, the system very quickly infers a most general type for
 %each expression, and the type is simple. This usually happens in practice, but
 %there are pathological cases, e.g. the following example due to Mairson:
@@ -943,7 +944,7 @@ ML печатает тип переменных как {\black \tt 'a},{\black \tt 'b} и так
 \end{black}
 
 Чтобы вычислить тип этого выражения потребуется порядка 10 секунд, а
-печать займёт свыше 4000 строк на 80-ти столбцевом терминале.
+печать займёт свыше 4000 строк на 80-символьном терминале.
 %The type of this expression takes about 10 seconds to calculate, and occupies
 %over 4000 lines on an 80-column terminal.
 
