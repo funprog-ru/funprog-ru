@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{fp-slides}
-\LoadClass[12pt,portrait]{beamer}
+\LoadClass[10pt,portrait]{beamer}
 
 \newif\ifpdf 
 \ifx\pdfoutput\undefined 
@@ -48,8 +48,8 @@
 % \RequirePackage{notes}
 \RequirePackage{fancybox}
 \RequirePackage{amssymb}
-% \RequirePackage{}
-
+\RequirePackage{listings}
+\lstset{tabsize=2,language=ML}
 
 %%%%% commands from original slides
 \newcommand{\nat}{\mbox{$\protect\Bbb N$}}
@@ -119,5 +119,15 @@
 \frenchspacing
 \righthyphenmin=2
 \sloppy
+\author{Джон~Харрисон}
+\institute{Университет Кембриджа}
+\title{Введение в Функциональное программирование}
 }
+
+%\frame{
+%  \frametitle{}
+%
+%  \begin{itemize}
+%  \end{itemize}
+%}
 
