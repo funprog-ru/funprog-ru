@@ -1,6 +1,13 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{fp-slides}
-\LoadClass[10pt,portrait]{beamer}
+\LoadClass[11pt,portrait]{beamer}
+
+\usetheme{Warsaw}
+
+% uncomment second
+% !!! rewrite on ifx
+\newcommand{\maybepause}{}
+%\newcommand{\maybepause}{\pause}
 
 \newif\ifpdf 
 \ifx\pdfoutput\undefined 
