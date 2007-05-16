@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{fp-slides}
-\LoadClass[11pt,portrait]{beamer}
+\LoadClass[10pt,portrait]{beamer}
 
 \usetheme{Warsaw}
 
@@ -87,6 +87,15 @@
 \newcommand\leb{\lbrack\!\lbrack}
 \newcommand\reb{\rbrack\!\rbrack}
 \newcommand{\sem}[1]{\leb #1 \reb}
+\newcommand{\Union}{\cup}
+\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
+
+\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
+\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
+\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
+\def\goesto{\longrightarrow}
+
+\DefineNamedColor{named}{Green}   {cmyk}{1,0,1,0}
 
 % колонтитулы
 % \usepackage{fancyhdr}

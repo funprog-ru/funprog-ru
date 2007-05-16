@@ -1,926 +1,651 @@
-\documentclass[portrait,%
-              fancybox,%
-              notes,%
-              epsfig,%
-              alltt,%
-              semcolor,
-              alltt]{seminar}
-
-\usepackage[koi8-r]{inputenc}
-\usepackage[russian]{babel}
-
-\input amssym.def
-\input amssym
-
-\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
-\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
-\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
-\newcommand{\real}{\mbox{$\protect\Bbb R$}}
-\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
-\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
-
-\newcommand{\lamb}[1]{\lambda #1.\:}
-\newcommand{\eps}[1]{\varepsilon #1.\:}
-\newcommand{\all}[1]{\forall #1.\:}
-\newcommand{\ex}[1]{\exists #1.\:}
-\newcommand{\exu}[1]{\exists! #1.\:}
-
-\newcommand{\True}{\top}
-\newcommand{\False}{\bot}
-\newcommand{\Not}{\neg}
-\newcommand{\And}{\wedge}
-\newcommand{\Or}{\vee}
-\newcommand{\Imp}{\Rightarrow}
-\newcommand{\Iff}{\Leftrightarrow}
-
-\newcommand{\entails}{\vdash}
-\newcommand{\proves}{\vdash}
-
-\newcommand{\Ands}{\bigwedge}
-\newcommand{\Ors}{\bigvee}
-
-\newcommand{\BQ}{\mbox{$\ulcorner$}}
-\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
-\newcommand{\EQ}{\mbox{$\urcorner$}}
-\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
-
-\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
-\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
-\let\subset=\subseteq
-
-\newcommand{\powerset}{\wp}             % This is pretty dire...  %
-
-\newcommand{\Union}{\cup}
-\newcommand{\Inter}{\cap}
-\newcommand{\Unions}{\bigcup}
-\newcommand{\Inters}{\bigcap}
-
-\newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
-
-\newcommand{\Rule}{\infer}
-
-\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
-
-\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
-
-\newcommand\leb{\lbrack\!\lbrack}
-\newcommand\reb{\rbrack\!\rbrack}
-\newcommand{\sem}[1]{\leb #1 \reb}
-
-\newcommand{\BA}{\begin{array}[t]{l}}
-\newcommand{\EA}{\end{array}}
-\newcommand{\sqle}{\sqsubseteq}
-\newcommand{\sqlt}{\sqsubset}
-
-\newcommand{\too}{\twoheadrightarrow}
-
-\newcommand{\Los}{{\L}o{\'s}}
-
-% These are from Mike's notes
-
-\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
-\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
-\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
-
-\def\goesto{\longrightarrow}
-
-\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
-
-% Sizes
-
-\newenvironment{rslide}
-{\begin{slide*}[240mm,165mm] }
-{\end{slide*}}
-
-\renewcommand{\slidetopmargin}{0.8in}
-\renewcommand{\slidebottommargin}{0.8in}
-
-% Various combinations of one colour on another
-
-\newcommand{\greenonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
-
-\newcommand{\whiteonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\yellowonmagenta}[1]%
-{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
-
-\newcommand{\whiteonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\blackonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
-
-\newcommand{\blueonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\cyanonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
-
-\newcommand{\blueonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\redonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
-
-\newcommand{\heading}[1]%
-{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
-
-\newcommand{\emphatic}[1]{\blueonyellow{#1}}
-
-\newcommand{\veryemphatic}[1]%
-{\begin{center}{\emphatic{#1}}\end{center}}
-
-% Head and foot of slides
-
-\newpagestyle{ColourDemo}%
-  {\cyanonblack{Введение в Функциональное Программирование:
-                Лекция 4}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{Джон Харрисон}\hfil
-   \cyanonblack{Университет Кембриджа, 23 января 1997}}
-%\newpagestyle{ColourDemo}%
-%  {\cyanonblack{Introduction to Functional Programming:
-%                Lecture 4}\hfil\cyanonblack{\thepage}}
-%  {\cyanonblack{John Harrison}\hfil
-%   \cyanonblack{University of Cambridge, 23 January 1997}}
-
-\pagestyle{ColourDemo}
-
-\centerslidesfalse
-
-% Colour bullets
-
-\def\labelitemi{{\black$\bullet$}}
-\def\labelitemii{{\black--}}
-\def\labelitemiii{{\black$\ast$}}
-\def\labelitemiv{{\black$\cdot$}}
-
-% Start of document (default text colour is blue)
-
-\begin{document}\blue
-
-
-\begin{rslide}
-
-\heading{%
-\begin{tabular}{c}
-{\Large\red Введение в}\\
-{\Large\red Функциональное}\\
-{\Large\red Программирование}\\
-{\cyan Джон Харрисон}\\
-{\cyan Университет Кембриджа}\\
-{\green Лекция 4}\\
-{\green Типы}
-%{\LARGE\red Introduction to}\\
-%{\LARGE\red Functional Programming}\\
-%{\cyan John Harrison}\\
-%{\cyan University of Cambridge}\\
-%{\green Lecture 4}\\
-%{\green Types}
-\end{tabular}}
-
-\vspace*{0.1cm}
-
-Темы:
-%Topics covered:
-
-\begin{itemize}
-
-\item Зачем нужны типы? Ответы из программирования и логики
-%\item Why types? Answers from logic and programming
-
-\item Простое типизированное $\lambda$-исчисление
-%\item Simply typed lambda calculus
-
-\item Полиморфизм
-%\item Polymorphism
-
-\item Let-полиморфизм
-%\item Let polymorphism
-
-\item Наиболее общие типы и алгоритм Милнера
-%\item Most general types and Milner's algorithm
-
-\item Жёсткая нормализация; рекурсия.
-%\item Strong normalization; recursion.
-
-\end{itemize}
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Логическое обоснование типов}
-%\heading{Logical reasons for types}
-
-\vspace*{0.5cm}
-
-Так что же всё-таки `термы' {\em означают} в $\lambda$-исчислении?
-Какой смысл в применении функции к самой себе, как в {\red $f\; f$}?
-%Just what do the `terms' in $\lambda$-calculus really {\em mean}? How can it
-%make sense to apply a function to itself as in {\red $f\; f$}?
-
-Некоторый смысл есть для таких функций, как тождество {\red $\lamb{x}
-  x$} или константная функция {\red $\lamb{x} y$}.  Но, в основном, это
-выглядит подозрительно.
-%It makes some sense for functions like the identity {\red $\lamb{x} x$}
-%or constant functions {\red $\lamb{x} y$}. But in general it looks very
-%suspicious.
-
-Возможно, именно поэтому попытка расширить систему, чтобы включить
-теорию множеств, натыкается на парадокс Рассела.
-%Perhaps this is why the attempt to extend the system to include set theory hit
-%Russell's paradox.
-
-Вот поэтому Чёрч и разработал типизированное $\lambda$-исчисление,
-которое и по сей день успешно используется в роли основания для
-математики.
-%This is why Church developed typed lambda calculus, which is successfully used,
-%even to this day, as a foundation for mathematics.
-
-В настоящее время теория типов рассматривается как {\em альтернатива}
-теории множеств в роли основания математики.  Есть интересные связи
-между теорией типов и программированием (Мартин-Лёф и другие).
-%Type theory is now seen as an {\em alternative} to set theory as a foundation.
-%There are interesting links between type theory and programming (Martin-L\"of
-%and others).
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Обоснование типов в программировании}
-%\heading{Programming reasons for types}
-
-\vspace*{0.5cm}
-
-Типы были введены в программирование по ряду причин.  Мы можем (по
-крайней мере ретроспективно) выделить следующие преимущества:
-%Types were introduced in programming for a mixture of reasons. We can (at least
-%in retrospect) see the following advantages:
-
-\begin{itemize}
-
-\item Они помогают компьютеру генерировать более эффективный код и
-  эффективнее использовать память.
-%\item They can help the computer to generate more efficient code, and use space
-%more effectively.
-
-\item Они служат в роли некоторого `общего контроля' программ,
-  обнаруживая множество программистских ошибок ещё до исполнения
-  программы.
-%\item They serve as a kind of `sanity check' for programs, catching a lot of
-%programming errors before execution.
-
-\item Они служат как документация для людей.
-%\item They can serve as documentation for people.
-
-\item Они могут помочь в сокрытии данных и в модуляризации.
-%\item They can help with data hiding and modularization.
-
-\end{itemize}
-
-В то же время некоторые программисты считают их раздражающим
-ограничением.  Как нам достичь оптимального баланса?
-%At the same time, some programmers find them an irksome restriction. How can we
-%achieve the best balance?
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Различные способы типизирования}
-%\heading{Different typing methods}
-
-\vspace*{0.4cm}
-
-Мы можем различать:
-%We can distinguish between
-
-\begin{itemize}
-
-\item Сильную типизацию, как в Modula-3, где типы должны полностью
-  совпадать.
-%\item Strong typing, as in Modula-3, where types must match up exactly.
-
-\item Слабую типизацию, как в C, где допускается б\'{о}льшая свобода
-  (например, аргумент типа {\tt int} в функции ожидающей тип {\tt
-    float}).
-%\item Weak typing, as in C, where greater latitude is allowed (e.g. an argument
-%of type {\tt int} to a function expecting a {\tt float}).
-
-\end{itemize}
-
-а также
-%and also between
-
-\begin{itemize}
-
-\item Статическую типизацию, как в FORTRAN, которая осуществляется в
-  момент компиляции.
-%\item Static typing, as in FORTRAN, which happens during compilation
-
-\item Динамическую типизацию, как в LISP, которая осуществляется в
-  момент исполнения.
-%\item Dynamic typing, as in LISP, which happens during execution.
-
-\end{itemize}
-
-ML статически и сильно типизирован.  В то же время возможность {\em
-  полиморфизма} даёт много преимуществ слабой и динамической
-типизации.
-%ML is statically and strongly typed. At the same time, a feature called {\em
-%polymorphism} gives many benefits of weak or dynamic typing.
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Совокупность типов}
-%\heading{The stock of types}
-
-\vspace*{0.5cm}
-
-
-Допустим, что у нас есть некий набор {\red $Ptys$} константных
-типов, например {\red \tt int} и {\red \tt bool}, и мы можем создавать
-из них новые типы, используя конструктор функциональных типов,
-например
-{\red $$ \mbox{int} \to \mbox{int} $$}
-и
-{\red $$ (\mbox{int} \to \mbox{bool}) \to \mbox{int} \to \mbox{bool} $$}
-Оговорим, что функциональная стрелка обычно ассоциативна справа.
-%For now, we assume that we have some set {\red $Ptys$} of type constants, e.g.
-%{\red \tt int} and {\red \tt bool}, and we can build up new types from them
-%using only the function type constructor, e.g.
-%{\red $$ \mbox{int} \to \mbox{int} $$}
-%and
-%{\red $$ (\mbox{int} \to \mbox{bool}) \to \mbox{int} \to \mbox{bool} $$}
-%(We assume that the function arrow is normally right-associative.)
-
-Формально это ещё одно индуктивное определение.
-%Formally, this is another inductive definition.
-
-В дальнейшем мы введём другие конструкторы типов, такие как
-произведение типов {\red $\alpha \times \beta$}, а также типовые {\em
-  переменные}, участвующие в полиморфизме.  Обычно мы используем {\red
-  $\alpha$} и {\red $\beta$} для типовых переменных.
-%In due course we will introduce more type constructors, e.g. the product type
-%{\red $\alpha \times \beta$}, as well as type {\em variables}, involved in
-%polymorphism. We normally use {\red $\alpha$} and {\red $\beta$} for type
-%variables.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{
-\begin{tabular}{c}
-{Идея типизированного}\\
-{$\lambda$-исчисления}
-\end{tabular}}
-%\heading{The idea of typed $\lambda$-calculus}
-
-\vspace*{0.5cm}
-
-Тут мы просто каждому $\lambda$-терму задаём {\em тип} и осуществляем
-сильное типизирование.
-%Here we simply give every $\lambda$-term a {\em type}, and enforce
-%strong typing.
-
-Мы можем составить применение {\red $s\; t$} только, если типы
-совпадают, то есть {\red $s$} имеет функциональный тип {\red $\sigma
-  \to \tau$}, а {\red $t$} имеет тип {\red $\sigma$}.  В этом случае
-комбинация {\red $s\; t$} имеет тип {\red $\tau$}.
-%We can only form an application {\red $s\; t$} if the types match up, i.e.
-%{\red $s$} has function type {\red $\sigma \to \tau$} and {\red $t$} has type
-%{\red $\sigma$}. In that case, the combination {\red $s\; t$} has type {\red
-%$\tau$}.
-
-Мы используем запись {\red $t:\sigma$}, которая означает `{\red $t$}
-имеет тип {\red $\sigma$}'.
-%We use the notation {\red $t:\sigma$} to mean `{\red $t$} has type {\red
-%$\sigma$}'.
-
-Мы думаем о типах, как о множествах, в которых объекты обозначаются
-термами, и {\red $t:\sigma$} читается как {\red $t \in \sigma$}.  Такая
-математическая запись обычно используется в случае функциональных
-пространств.
-%We think of types as sets in which the objects denoted by terms live, and read
-%{\red $t:\sigma$} as {\red $t \in \sigma$}. This is the usual mathematical
-%notation in the case of function spaces.
-
-Однако, как обычно, это только эвристическое руководство, и мы ещё
-разработаем простое типизированное $\lambda$-исчисление как формальную
-систему.
-%However as usual, this interpretation is only a heuristic guide, and we develop
-%simply typed $\lambda$-calculus as a formal system.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Типизирование по Чёрчу}
-%\heading{Church typing}
-
-\vspace*{0.5cm}
-
-Это способ создания типов как структурной части термов.  Это система
-{\em явных} типов.
-%This is a way of making the types part of the term structure. It is a system of
-%{\em explicit} types.
-
-\begin{itemize}
-
-\item Каждая константа {\red $c:\sigma_c$} связана с определённым типом.
-%\item Every constant {\red $c:\sigma_c$} is associated with a particular type.
-
-\item Переменная может иметь любой тип; переменные с одинаковыми
-  именами, но разными типами являются различными термами.
-%\item A variable can have any type; identically-named variables with different
-%types are different terms.
-
-\item Если {\red $s:\sigma \to \tau$} и {\red $t:\sigma$}~-- термы, то
-  {\red $s\; t : \tau$} тоже терм.
-%\item If {\red $s:\sigma \to \tau$} and {\red $t:\sigma$} are terms, then
-%{\red $s\; t : \tau$} is a term.
-
-\item Если {\red $v:\sigma$}~-- переменная, а {\red $t:\tau$}~-- терм,
-  то {\red $\lamb{x} t : \sigma \to \tau$}~-- терм.
-%\item If {\red $v:\sigma$} is a variable and {\red $t:\tau$} is a term then
-%{\red $\lamb{x} t : \sigma \to \tau$} is a term.
-
-\end{itemize}
-
-Однако мы предпочитаем использовать {\em неявное} типизирование.  По
-сути, в ML никогда не надо указывать тип!
-%However we prefer to use {\em implicit} typing. In fact, in ML, the user never
-%has to write a type!
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Типизирование по Карри}
-%\heading{Curry typing}
-
-\vspace*{0.5cm}
-
-Здесь термы такие же, как и были раньше; кроме того, есть отдельное понятие
-типизирования.  Всё типизирование является {\em неявным}, и у терма
-может быть много типов.  Мы используем {\em контекст} {\red $\Gamma$},
-который задаёт назначение типов для переменных и констант:
-
-{\red $$ \Gamma \vdash t : \sigma $$}
-
-это означает, что `при условии задания типов из набора {\red $\Gamma$},
-{\red $t$} имеет тип {\red $\sigma$}'.
-
-В случае, когда контекст пустой, мы будем писать {\red $t : \sigma$}.
-
-%Here the terms are exactly the same as before, and there is a separate notion
-%of typing. All typing is {\em implicit}, and a term may have many types. We use
-%a {\em context} {\red $\Gamma$} which gives type assignments for variables and
-%constants. Now:
-
-%{\red $$ \Gamma \vdash t : \sigma $$}
-
-%means that `assuming all the type assignments in {\red $\Gamma$} hold, then
-%{\red $t$} has type {\red $\sigma$}'.
-
-%We will continue to write simply {\red $t : \sigma$} in cases where the context
-%is empty.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{
-\begin{tabular}{c}
-{Формальные правила}\\
-{типизирования}
-\end{tabular}}
-%\heading{Formal typing rules}
-
-\vspace*{0.5cm}
-
-Отношение к типам задаётся следующим образом:
-%The typing relation is defined inductively as follows:
-
-\begin{red}
-$$ \frac{v:\sigma \in \Gamma}{\Gamma \vdash v : \sigma} $$
-
-$$ \frac{c:\sigma \in \Gamma}{\Gamma \vdash c : \sigma} $$
-
-$$ \frac{\Gamma \vdash s : \sigma \to \tau \;\;\;\ \Gamma \vdash t : \sigma}
-        {\Gamma \vdash s\; t : \tau} $$
-
-$$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
-        {\Gamma \vdash \lamb{v} t : \sigma \to \tau} $$
-\end{red}
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Пример}
-%\heading{An example}
-
-\vspace*{0.5cm}
-
-Посмотрим, как присвоить тип функции тождества {\red $\lamb{x} x$}.
-Согласно первому правилу имеем:
-%Let us see how to assign a type to the identity function {\red $\lamb{x} x$}.
-%By the first rule we have:
-
-{\red $$ \{x:\sigma\} \vdash x:\sigma $$}
-
-поэтому, согласно последнему правилу, мы получим, как и ожидали:
-%and therefore by the last rule we get as expected
-
-{\red $$ \emptyset \vdash \lamb{x} x : \sigma \to \sigma $$}
-
-По соглашению, мы пишем просто {\red $\lamb{x} x : \sigma \to \sigma$}.
-%By convention, we just write {\red $\lamb{x} x : \sigma \to \sigma$}.
-
-Заметим, что контекст сыграл ключевую роль для `связи' разных вхождений
-одной и той же переменной.  В типизировании по Чёрчу это бы не
-понадобилось, ибо каждая переменная несёт в себе тип.
-%Note that the context was crucial to `link' different occurrences of the same
-%variable. In Church typing this would not have been needed as each variable
-%carries around its type.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Сохранение типа}
-%\heading{Type preservation}
-
-\vspace*{0.5cm}
-
-Правила преобразования ровно такие же, какие были в нетипизируемом
-случае.
-%The conversion rules are exactly the same as in the untyped case.
-
-Очень важное свойство~-- это {\em сохранение типа}.  Оно означает, что
-преобразования из нетипизируемого $\lambda$-исчисления сохраняют
-свойства типизируемости.
-%A very important property is {\em type preservation}. This says that the
-%conversion rules from untyped $\lambda$-calculus preserve the typability
-%properties.
-
-Например, если {\red $\Gamma \vdash t : \sigma$} и {\red $t \betas
-  t'$}, то также {\red $\Gamma \vdash t' : \sigma$}.
-%For example if {\red $\Gamma \vdash t : \sigma$} and {\red $t \betas t'$}, then
-%also {\red $\Gamma \vdash t' : \sigma$}.
-
-Похожие свойства поддерживаются и другими преобразованиями, и согласно
-структурной индукции мы видим, что если {\red $\Gamma \vdash t :
-  \sigma$} и {\red $t \goesto t'$}, то также {\red $\Gamma \vdash t' : \sigma$}.
-%Similar properties hold for the other conversions, and by structural induction
-%we find that if {\red $\Gamma \vdash t : \sigma$} and {\red $t \goesto t'$},
-%then also {\red $\Gamma \vdash t' : \sigma$}.
-
-Это означает, что статическое типизирование и динамическое исполнение
-не мешают друг другу.
-%This shows that static typing and dynamic execution don't interfere with each
-%other.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Добавление новых типов}
-%\heading{Adding new types}
-
-\vspace*{0.5cm}
-
-Описанная выше система продолжает работать, если мы добавим 
-примитивных типов и конструкторов типов.
-%The above system still works if we add more primitive types and type
-%constructors.
-
-Например, введём новый бинарный конструктор типов {\red
-  $\times$} для произведения типов.
-%For example, let us introduce a new binary type constructor {\red $\times$}
-%for product types.
-
-Мы также введём инфиксный оператор составления пары `{\red$,$}',
-который имеет тип {\red $\sigma \to \tau \to \sigma \times
-  \tau$}. Таким образом:
-%We also introduce the (infix) pairing operator `{\red$,$}', which has type
-%{\red $\sigma \to \tau \to \sigma \times \tau$}. Thus:
-
-{\red $$ (x:\sigma),(y:\tau) : \sigma \times \tau $$}
-
-Мы также можем ввести константы: {\red $\mbox{fst}:\sigma \times \tau \to
-\sigma$} и {\red $\mbox{snd}:\sigma \times \tau \to \tau$}.
-%We can also introduce constants {\red $\mbox{fst}:\sigma \times \tau \to
-%\sigma$} and {\red $\mbox{snd}:\sigma \times \tau \to \tau$}.
-
-В общем случае у нас может быть сколь угодно много конструкторов типов и
-любое количество констант, типы которых содержат эти конструкторы.
-Как мы увидим, ML позволяет нам создавать свои собственные
-конструкторы типов.
-%In general, we can have arbitrarily many type constructors, and arbitrary
-%constants whose types involve these constructors. As we shall see, ML lets us
-%define our own type constructors.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Полиморфизм}
-%\heading{Polymorphism}
-
-\vspace*{0.5cm}
-
-Типизирование по Карри уже даёт нам форму {\em полиморфизма}.  В том
-смысле, что данный терм может иметь разные типы.  Мы различаем:
-%The Curry typing system already gives us a form of {\em polymorphism}, in that
-%a given term may have different types. We distinguish between
-
-\begin{itemize}
-
-\item Истинный (`параметрический') полиморфизм, в котором все типы
-  несут в себе структурную взаимосвязь.
-%\item True (`parametric') polymorphism, where all the possible types bear a
-%structural relationship.
-
-\item Специальный полиморфизм или {\em перегрузка операций}, в
-  котором различные типы, которые может иметь терм, различны.
-  Например, использование {\red $+$} для различных систем счисления.
-%\item Ad hoc polymorphism, or {\em overloading}, where the different types a
-%term may have are different, e.g. the use of {\red $+$} over different number
-%systems.
-
-\end{itemize}
-
-У нас истинный, параметрический полиморфизм.  Например, функция
-тождества может иметь типы: {\red $\sigma \to \sigma$}, {\red $\tau
-  \to \tau$}, или {\red $(\sigma \to \tau) \to (\sigma \to \tau)$}.
-%We have true, parametric, polymorphism. For example, possible types for the
-%identity function are {\red $\sigma \to \sigma$}, {\red $\tau \to \tau$}, or
-%{\red $(\sigma \to \tau) \to (\sigma \to \tau)$}.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Let-полиморфизм (1)}
-%\heading{Let polymorphism (1)}
-
-\vspace*{0.5cm}
-
-У нашей системы есть печальное ограничение.  В одном и том же терме мы
-можем использовать одинаковые выражения разных типов , например:
-{\red $$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
-\mbox{else}\; 0 $$}
-Однако, если мы применим локальную привязку при помощи {\tt let},
-проблема исчезнет.
-Рассмотрим:
-{\red $$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I
-\; 1\; \mbox{else}\; 0 $$}
-\noindent Согласно нашему определению, это всего лишь синтаксическая
-обёртка для:
-{\red $$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\;
-0)\; (\lamb{x} x) $$}
-Это выражение не может быть типизировано согласно нашим правилам, ибо
-функция тождества тут {\em одна}, и ей должен быть задан {\em один} тип.
-
-%Our system has an unfortunate restriction. We can use the same expression with
-%different types in the same term, e.g:
-%{\red $$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
-%\mbox{else}\; 0 $$}
-%However if we use a local {\tt let} binding, this is no longer the case.
-%Consider:
-%{\red $$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I
-%\; 1\; \mbox{else}\; 0 $$}
-%\noindent According to our definitions, this is just syntactic sugar for:
-%{\red $$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\;
-%0)\; (\lamb{x} x) $$}
-%This cannot be typed according to our rules, since the {\em single} instance of
-%the identity function needs to be given a {\em single} type.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Let-полиморфизм (2)}
-%\heading{Let polymorphism (2)}
-
-\vspace*{0.5cm}
-
-С таким ограничением практическое использование функционального
-программирования невозможно.  Чтобы избежать его нам понадобится
-выполнить два действия.
-%This restriction is unbearable for practical functional programming. We take
-%two measures to avoid it.
-
-Во-первых, мы сделаем конструкцию {\tt let} {\em примитивной}, вместо
-того, чтобы отнести её к синтаксической обёртке, как мы делали раньше.
-%First, we make the {\tt let} construct {\em primitive}, instead of regarding it
-%as syntactic sugar, as before.
-
-Во-вторых, мы добавим новое правило типизирования:
-%Secondly, we add a new typing rule:
-
-{\red $$ \frac{\Gamma \vdash s : \sigma \;\;\; \Gamma \vdash t[s/x] : \tau}
-        {\Gamma \vdash \mbox{let}\; x = s\; \mbox{in}\; t : \tau} $$}
-
-Теперь мы можем записывать выражения, такие как в предыдущем слайде, в
-том виде, как мы и ожидали.
-%Now we can type expressions like the above in the way that we would expect.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Наиболее общие типы (1)}
-%\heading{Most general types (1)}
-
-\vspace*{0.5cm}
-
-Как мы уже сказали, различные типы терма структурно схожи.  Собственно
-говоря, существует {\em наиболее общий тип}, а все остальные типы
-всего лишь отдельные случаи такого типа.
-%We have said that the different types for a term bear a structural similarity.
-%In fact more is true: there is always a {\em most general type} and all other
-%types are instances of this type.
-
-Мы говорим, что тип {\red $\sigma$} более общий, нежели {\red
-  $\sigma'$}, и записываем {\red $\sigma \leq \sigma'$}, если мы можем
-подставить типы вместо типовых переменных в {\red $\sigma$} и получить
-{\red $\sigma'$}.
-%We say that a type {\red $\sigma$} is more general than {\red $\sigma'$}, and
-%write {\red $\sigma \leq \sigma'$}, when we can substitute types for type
-%variables in {\red $\sigma$} and get {\red $\sigma'$}.
-
-Формально определение подстановки в отношении типов достаточно просто,
-потому что тут нет понятия связанности.  Мы будем использовать ту же
-запись, что и для $\lambda$-выражений.  Например:
-%The formal definition of substitution at the type level is straightforward,
-%because there is no notion of binding. We will use the same notation. For
-%example:
-{\red $$ \alpha \to bool \leq (\tau \to \tau) \to bool $$}
-потому что
-%because
-{\red $$ (\alpha \to bool)[(\tau \to \tau)/\alpha] = (\tau \to \tau)
-\to bool $$}
-Но не наоборот.
-%But not conversely.
-
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Наиболее общие типы (2)}
-%\heading{Most general types (2)}
-
-\vspace*{0.5cm}
-
-У любого выражения в ML, которое имеет тип, есть наиболее общий тип.
-Первым в похожей ситуации это доказал Хиндли, а для нашего
-случая~-- Милнер.
-%Every expression in ML that has a type has a most general type. This was first
-%proved in a similar context by Hindley, and for the exact setup here by Milner.
-
-Более того, существует алгоритм нахождения наиболее общего типа для
-любого выражения, даже если оно вообще не содержит информации о типах.
-%What's more, there is an algorithm for finding the most general type of any
-%expression, even if it contains no type information at all.
-
-В ML используется этот алгоритм.  Поэтому в ML никогда не надо
-прописывать типы.  Всё типизировано неявно.
-%ML implementations use this algorithm. Therefore it is never necessary in ML to
-%write down a type. All typing is implicit.
-
-Таким образом, система типов в ML менее утомительна, чем во многих
-других языках, таких как Modula-3.  Нам никогда не надо задавать типы
-явно, {\em и} мы можем использовать один и тот же код с разными
-типами, так как компилятор всё сделает за нас.
-%Thus, the ML type system is much less irksome than in many languages like
-%Modula-3. We never have to specify types explicitly {\em and} we can often
-%re-use the same code with different types: the compiler will work everything
-%out for us.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Жёсткая нормализация}
-%\heading{Strong normalization}
-
-\vspace*{0.5cm}
-
-Вспомним наш пример терма, у которого нет нормальной формы.  Например,
-такой как:
-%Recall our examples of terms with no normal form, such as:
-
-\begin{red}
-\begin{eqnarray*}
-& & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
-& \goesto & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
-                            (\lamb{x} x\; x\; x))                           \\
-& \goesto & (\cdots)
-\end{eqnarray*}
-\end{red}
-В типизированном $\lambda$-исчислении такого не может произойти~--- у
-любого типизируемого терма есть нормальная форма, и все
-последовательности редукций завершаются на нормальной форме.  Это
-свойство называется {\em жёсткой нормализацией}.
-%In typed lambda calculus, this cannot happen --- every typable term has a
-%normal form and all reduction sequences terminate in that normal form. This
-%property is known as {\em strong normalization}.
-
-Это замечательно~--- любая программа завершается.  Однако, это
-означает, что мы не можем написать все вычислимые, или даже все
-интересные, функции.  Нам надо что-то добавить.
-%This sounds good --- every program terminates. Unfortunately this means that we
-%can't write all computable functions, or even all the interesting ones. We need
-%to add something.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Рекурсия}
-%\heading{Recursion}
-
-\vspace*{0.5cm}
-
-Мы не можем определять произвольные рекурсивные функции, иначе мы
-смогли бы определить функцию, которая никогда не завершается.
-%We can't define arbitrary recursive functions any more --- if we could then we
-%could create non-terminating functions.
-
-Очевидно, что функция {\red $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$}
-не полностью типизирована, так как она применяет {\red $x$} к самой себе.
-%Clearly {\red $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$} isn't
-%well-typed because it applies {\red $x$} to itself.
-
-Таким образом, нам надо найти способ определения произвольных
-рекурсивных функций, которые полностью типизированы.
-%So we simply add a way of defining arbitrary recursive functions that {\em is}
-%well-typed.
-
-Введём семейство полиморфных операторов рекурсии в виде:
-%Introduce a family of polymorphic recursion operators of the form:
-{\red $$ Rec : ((\alpha \to \beta) \to (\alpha \to \beta)) \to \alpha \to \beta
-$$}
-и дополнительное правило редукции, такое, что для любой функции {\red
-  $F:(\sigma \to \tau) \to (\sigma \to \tau)$}.  В итоге мы имеем:
-%and the extra reduction rule that for any {\red $F:(\sigma \to \tau) \to
-%(\sigma \to \tau)$} we have:
-{\red $$ Rec\; F \goesto F\; (Rec\;  F) $$}
-
-\end{rslide}
-
+\documentclass{fp-slides}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section*{Лекция 4. Типы}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+
+  \item Зачем нужны типы? Ответы из программирования и логики
+    % \item Why types? Answers from logic and programming
+    \maybepause
+
+  \item Простое типизированное $\lambda$-исчисление
+    % \item Simply typed lambda calculus
+    \maybepause
+
+  \item Полиморфизм
+    % \item Polymorphism
+    \maybepause
+
+  \item Let-полиморфизм
+    % \item Let polymorphism
+    \maybepause
+
+  \item Наиболее общие типы и алгоритм Милнера
+    % \item Most general types and Milner's algorithm
+    \maybepause
+
+  \item Жёсткая нормализация; рекурсия.
+    % \item Strong normalization; recursion.
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Логическое обоснование типов}
+  % \heading{Logical reasons for types}
+
+  Так что же всё-таки <<термы>> {\em означают} в $\lambda$-исчислении?
+  Какой смысл в применении функции к самой себе, как в \alert{$f\; f$}?
+  % Just what do the <<terms>> in $\lambda$-calculus really {\em
+  %   mean}? How can it make sense to apply a function to itself as in
+  % \alert{$f\; f$}?
+
+  Некоторый смысл есть для таких функций, как тождество \alert{$\lamb{x}
+    x$} или константная функция \alert{$\lamb{x} y$}.  Но, в основном, это
+  выглядит подозрительно.
+  % It makes some sense for functions like the identity
+  % \alert{$\lamb{x} x$} or constant functions \alert{$\lamb{x} y$}.
+  % But in general it looks very suspicious.
+
+  Возможно, именно поэтому попытка расширить систему, чтобы включить
+  теорию множеств, натыкается на парадокс Рассела.
+  % Perhaps this is why the attempt to extend the system to include
+  % set theory hit Russell's paradox.
+
+  Вот поэтому Чёрч и разработал типизированное $\lambda$-исчисление,
+  которое и по сей день успешно используется в роли основания для
+  математики.
+  % This is why Church developed typed lambda calculus, which is
+  % successfully used, even to this day, as a foundation for
+  % mathematics.
+
+  В настоящее время теория типов рассматривается как {\em альтернатива}
+  теории множеств в роли основания математики.  Есть интересные связи
+  между теорией типов и программированием (Мартин-Лёф и другие).
+  % Type theory is now seen as an {\em alternative} to set theory as a
+  % foundation.  There are interesting links between type theory and
+  % programming (Martin-L\"of and others).
+
+}
+
+\frame{
+  \frametitle{Обоснование типов в программировании}
+  % \heading{Programming reasons for types}
+
+  Типы были введены в программирование по ряду причин.  Мы можем (по
+  крайней мере ретроспективно) выделить следующие преимущества:
+  % Types were introduced in programming for a mixture of reasons. We
+  % can (at least in retrospect) see the following advantages:
+
+  \begin{itemize}
+  \item Они помогают компьютеру генерировать более эффективный код и
+    эффективнее использовать память.
+    % \item They can help the computer to generate more efficient
+    %   code, and use space more effectively.
+    \maybepause
+
+  \item Они служат в роли некоторого <<общего контроля>> программ,
+    обнаруживая множество программистских ошибок ещё до исполнения
+    программы.
+    % \item They serve as a kind of <<sanity check>> for programs,
+    %   catching a lot of programming errors before execution.
+    \maybepause
+
+  \item Они служат как документация для людей.
+    % \item They can serve as documentation for people.
+    \maybepause
+
+  \item Они могут помочь в сокрытии данных и в модуляризации.
+    % \item They can help with data hiding and modularization.
+    \maybepause
+
+  \end{itemize}
+
+  В то же время некоторые программисты считают их раздражающим
+  ограничением.  Как нам достичь оптимального баланса?
+  % At the same time, some programmers find them an irksome
+  % restriction. How can we achieve the best balance?
+}
+
+
+\frame{
+  \frametitle{Различные способы типизирования}
+  % \heading{Different typing methods}
+
+  Мы можем различать:
+  % We can distinguish between
+
+  \begin{itemize}
+  \item Сильную типизацию, как в Modula-3, где типы должны полностью
+    совпадать.
+    % \item Strong typing, as in Modula-3, where types must match up exactly.
+    \maybepause
+
+  \item Слабую типизацию, как в C, где допускается б\'{о}льшая свобода
+    (например, аргумент типа {\tt int} в функции ожидающей тип {\tt
+      float}).
+    % \item Weak typing, as in C, where greater latitude is allowed (e.g. an argument
+    %   of type {\tt int} to a function expecting a {\tt float}).
+    \maybepause
+
+  \end{itemize}
+
+  а также
+  % and also between
+
+  \begin{itemize}
+  \item Статическую типизацию, как в FORTRAN, которая осуществляется в
+    момент компиляции.
+    % \item Static typing, as in FORTRAN, which happens during compilation
+    \maybepause
+
+  \item Динамическую типизацию, как в LISP, которая осуществляется в
+    момент исполнения.
+    % \item Dynamic typing, as in LISP, which happens during execution.
+    \maybepause
+
+  \end{itemize}
+
+  ML статически и сильно типизирован.  В то же время возможность {\em
+    полиморфизма} даёт много преимуществ слабой и динамической
+  типизации.
+  % ML is statically and strongly typed. At the same time, a feature called {\em
+  %   polymorphism} gives many benefits of weak or dynamic typing.
+}
+
+\frame{
+  \frametitle{Совокупность типов}
+  % The stock of types
+
+  Допустим, что у нас есть некий набор \alert{$Ptys$} константных
+  типов, например \alert{\tt int} и \alert{\tt bool}, и мы можем создавать
+  из них новые типы, используя конструктор функциональных типов,
+  например
+  \alert{$$ \mbox{int} \to \mbox{int} $$}
+  и
+  \alert{$$ (\mbox{int} \to \mbox{bool}) \to \mbox{int} \to \mbox{bool} $$}
+  Оговорим, что функциональная стрелка обычно ассоциативна справа.
+  % For now, we assume that we have some set \alert{$Ptys$} of type constants, e.g.
+  % \alert{\tt int} and \alert{\tt bool}, and we can build up new types from them
+  % using only the function type constructor, e.g.
+  % \alert{$$ \mbox{int} \to \mbox{int} $$}
+  % and
+  % \alert{$$ (\mbox{int} \to \mbox{bool}) \to \mbox{int} \to \mbox{bool} $$}
+  % (We assume that the function arrow is normally right-associative.)
+
+  Формально это ещё одно индуктивное определение.
+  % Formally, this is another inductive definition.
+
+  В дальнейшем мы введём другие конструкторы типов, такие как
+  произведение типов \alert{$\alpha \times \beta$}, а также типовые {\em
+    переменные}, участвующие в полиморфизме.  Обычно мы используем \alert{
+    $\alpha$} и \alert{$\beta$} для типовых переменных.
+  % In due course we will introduce more type constructors, e.g. the product type
+  % \alert{$\alpha \times \beta$}, as well as type {\em variables}, involved in
+  % polymorphism. We normally use \alert{$\alpha$} and \alert{$\beta$} for type
+  % variables.
+
+}
+
+\frame{
+  \frametitle{Идея типизированного $\lambda$-исчисления}
+  % The idea of typed $ambda$-calculus
+
+
+  Тут мы просто каждому $\lambda$-терму задаём {\em тип} и осуществляем
+  сильное типизирование.
+  % Here we simply give every $\lambda$-term a {\em type}, and enforce
+  % strong typing.
+
+  Мы можем составить применение \alert{$s\; t$} только, если типы
+  совпадают, то есть \alert{$s$} имеет функциональный тип \alert{$\sigma
+    \to \tau$}, а \alert{$t$} имеет тип \alert{$\sigma$}.  В этом случае
+  комбинация \alert{$s\; t$} имеет тип \alert{$\tau$}.
+  % We can only form an application \alert{$s\; t$} if the types match up, i.e.
+  % \alert{$s$} has function type \alert{$\sigma \to \tau$} and \alert{$t$} has type
+  % \alert{$\sigma$}. In that case, the combination \alert{$s\; t$} has type \alert{
+  %   $\tau$}.
+
+  Мы используем запись \alert{$t:\sigma$}, которая означает <<alert{$t$}
+  имеет тип alert{$sigma$}>>.
+  % We use the notation \alert{$t:\sigma$} to mean <<alert{$t$} has type alert{
+  %   $sigma$}>>.
+
+  Мы думаем о типах, как о множествах, в которых объекты обозначаются
+  термами, и \alert{$t:\sigma$} читается как \alert{$t \in \sigma$}.  Такая
+  математическая запись обычно используется в случае функциональных
+  пространств.
+  % We think of types as sets in which the objects denoted by terms live, and read
+  % \alert{$t:\sigma$} as \alert{$t \in \sigma$}. This is the usual mathematical
+  % notation in the case of function spaces.
+
+  Однако, как обычно, это только эвристическое руководство, и мы ещё
+  разработаем простое типизированное $\lambda$-исчисление как формальную
+  систему.
+  % However as usual, this interpretation is only a heuristic guide, and we develop
+  % simply typed $\lambda$-calculus as a formal system.
+
+}
+
+\frame{
+  \frametitle{Типизирование по Чёрчу}
+  % Church typing
+
+  Это способ создания типов как структурной части термов.  Это система
+  {\em явных} типов.
+  % This is a way of making the types part of the term structure. It is a system of
+  % {\em explicit} types.
+
+  \begin{itemize}
+  \item Каждая константа \alert{$c:\sigma_c$} связана с определённым типом.
+    % \item Every constant \alert{$c:\sigma_c$} is associated with a particular type.
+    \maybepause
+
+  \item Переменная может иметь любой тип; переменные с одинаковыми
+    именами, но разными типами являются различными термами.
+    % \item A variable can have any type; identically-named variables with different
+    %   types are different terms.
+    \maybepause
+
+  \item Если \alert{$s:\sigma \to \tau$} и \alert{$t:\sigma$}~-- термы, то
+    \alert{$s\; t : \tau$} тоже терм.
+    % \item If \alert{$s:\sigma \to \tau$} and \alert{$t:\sigma$} are terms, then
+    %   \alert{$s\; t : \tau$} is a term.
+    \maybepause
+
+  \item Если \alert{$v:\sigma$}~-- переменная, а \alert{$t:\tau$}~-- терм,
+    то \alert{$\lamb{x} t : \sigma \to \tau$}~-- терм.
+    % \item If \alert{$v:\sigma$} is a variable and \alert{$t:\tau$} is a term then
+    %   \alert{$\lamb{x} t : \sigma \to \tau$} is a term.
+    \maybepause
+
+  \end{itemize}
+
+  Однако мы предпочитаем использовать {\em неявное} типизирование.  По
+  сути, в ML никогда не надо указывать тип!
+  % However we prefer to use {\em implicit} typing. In fact, in ML, the user never
+  % has to write a type!
+}
+
+\frame{
+  \frametitle{Типизирование по Карри}
+  % Curry typing
+
+  Здесь термы такие же, как и были раньше; кроме того, есть отдельное понятие
+  типизирования.  Всё типизирование является {\em неявным}, и у терма
+  может быть много типов.  Мы используем {\em контекст} \alert{$\Gamma$},
+  который задаёт назначение типов для переменных и констант:
+
+  \alert{$$ \Gamma \vdash t : \sigma $$}
+
+  это означает, что <<при условии задания типов из набора \alert{$\Gamma$},
+  \alert{$t$} имеет тип \alert{$\sigma$}>>.
+
+  В случае, когда контекст пустой, мы будем писать \alert{$t : \sigma$}.
+
+  % Here the terms are exactly the same as before, and there is a separate notion
+  % of typing. All typing is {\em implicit}, and a term may have many types. We use
+  % a {\em context} \alert{$\Gamma$} which gives type assignments for variables and
+  % constants. Now:
+
+  % \alert{$$ \Gamma \vdash t : \sigma $$}
+
+  % means that <<assuming all the type assignments in alert{$Gamma$} hold, then
+  % alert{$t$} has type alert{$sigma$}>>.
+
+  % We will continue to write simply \alert{$t : \sigma$} in cases where the context
+  % is empty.
+
+}
+
+\frame{
+  \frametitle{Формальные правила типизирования}
+  % Formal typing rules
+
+  Отношение к типам задаётся следующим образом:
+  % The typing relation is defined inductively as follows:
+
+  \alert{
+    $$ \frac{v:\sigma \in \Gamma}{\Gamma \vdash v : \sigma} $$
+
+    $$ \frac{c:\sigma \in \Gamma}{\Gamma \vdash c : \sigma} $$
+
+    $$ \frac{\Gamma \vdash s : \sigma \to \tau \;\;\;\ \Gamma \vdash t : \sigma}
+    {\Gamma \vdash s\; t : \tau} $$
+
+    $$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
+    {\Gamma \vdash \lamb{v} t : \sigma \to \tau} $$
+  }
+}
+
+\frame{
+  \frametitle{Пример}
+  % An example
+
+  Посмотрим, как присвоить тип функции тождества \alert{$\lamb{x} x$}.
+  Согласно первому правилу имеем:
+  % Let us see how to assign a type to the identity function \alert{$\lamb{x} x$}.
+  % By the first rule we have:
+
+  \alert{$$ \{x:\sigma\} \vdash x:\sigma $$}
+
+  поэтому, согласно последнему правилу, мы получим, как и ожидали:
+  % and therefore by the last rule we get as expected
+
+  \alert{$$ \emptyset \vdash \lamb{x} x : \sigma \to \sigma $$}
+
+  По соглашению, мы пишем просто \alert{$\lamb{x} x : \sigma \to \sigma$}.
+  % By convention, we just write \alert{$\lamb{x} x : \sigma \to \sigma$}.
+
+  Заметим, что контекст сыграл ключевую роль для <<связи>> разных вхождений
+  одной и той же переменной.  В типизировании по Чёрчу это бы не
+  понадобилось, ибо каждая переменная несёт в себе тип.
+  % Note that the context was crucial to <<link>> different occurrences of the same
+  % variable. In Church typing this would not have been needed as each variable
+  % carries around its type.
+}
+
+\frame{
+  \frametitle{Сохранение типа}
+  % Type preservation
+
+  Правила преобразования ровно такие же, какие были в нетипизируемом
+  случае.
+  % The conversion rules are exactly the same as in the untyped case.
+
+  Очень важное свойство~-- это {\em сохранение типа}.  Оно означает, что
+  преобразования из нетипизируемого $\lambda$-исчисления сохраняют
+  свойства типизируемости.
+  % A very important property is {\em type preservation}. This says
+  % that the conversion rules from untyped $\lambda$-calculus preserve
+  % the typability properties.
+
+  Например, если \alert{$\Gamma \vdash t : \sigma$} и \alert{$t \betas
+    t'$}, то также \alert{$\Gamma \vdash t' : \sigma$}.
+  % For example if \alert{$\Gamma \vdash t : \sigma$} and \alert{$t
+  %   \betas t'$}, then also \alert{$\Gamma \vdash t' : \sigma$}.
+
+  Похожие свойства поддерживаются и другими преобразованиями, и согласно
+  структурной индукции мы видим, что если \alert{$\Gamma \vdash t :
+    \sigma$} и \alert{$t \goesto t'$}, то также \alert{$\Gamma \vdash t' : \sigma$}.
+  % Similar properties hold for the other conversions, and by
+  % structural induction we find that if \alert{$\Gamma \vdash t :
+  %   \sigma$} and \alert{$t \goesto t'$}, then also \alert{$\Gamma
+  %   \vdash t' : \sigma$}.
+
+  Это означает, что статическое типизирование и динамическое исполнение
+  не мешают друг другу.
+  % This shows that static typing and dynamic execution don't
+  % interfere with each other.
+}
+
+\frame{
+  \frametitle{Добавление новых типов}
+  % Adding new types
+
+  Описанная выше система продолжает работать, если мы добавим 
+  примитивных типов и конструкторов типов.
+  % The above system still works if we add more primitive types and
+  % type constructors.
+
+  Например, введём новый бинарный конструктор типов \alert{
+    $\times$} для произведения типов.
+  % For example, let us introduce a new binary type constructor
+  % \alert{$\times$} for product types.
+
+  Мы также введём инфиксный оператор составления пары <<\alert{$,$}>>,
+  который имеет тип \alert{$\sigma \to \tau \to \sigma \times
+    \tau$}. Таким образом:
+  % We also introduce the (infix) pairing operator <<\alert{$,$}>>,
+  % which has type \alert{$\sigma \to \tau \to \sigma \times \tau$}.
+  % Thus:
+
+  \alert{$$ (x:\sigma),(y:\tau) : \sigma \times \tau $$}
+
+  Мы также можем ввести константы: \alert{$\mbox{fst}:\sigma \times \tau \to
+    \sigma$} и \alert{$\mbox{snd}:\sigma \times \tau \to \tau$}.
+  % We can also introduce constants \alert{$\mbox{fst}:\sigma \times \tau \to
+  %   \sigma$} and \alert{$\mbox{snd}:\sigma \times \tau \to \tau$}.
+
+  В общем случае у нас может быть сколь угодно много конструкторов типов и
+  любое количество констант, типы которых содержат эти конструкторы.
+  Как мы увидим, ML позволяет нам создавать свои собственные
+  конструкторы типов.
+  % In general, we can have arbitrarily many type constructors, and
+  % arbitrary constants whose types involve these constructors. As we
+  % shall see, ML lets us define our own type constructors.
+}
+
+\frame{
+  \frametitle{Полиморфизм}
+  % Polymorphism
+
+  Типизирование по Карри уже даёт нам форму {\em полиморфизма}.  В том
+  смысле, что данный терм может иметь разные типы.  Мы различаем:
+  % The Curry typing system already gives us a form of {\em
+  %   polymorphism}, in that a given term may have different types. We
+  % distinguish between
+
+  \begin{itemize}
+  \item Истинный (<<параметрический>>) полиморфизм, в котором все типы
+    несут в себе структурную взаимосвязь.
+    % \item True (<<parametric>>) polymorphism, where all the possible types bear a
+    %   structural relationship.
+    \maybepause
+
+  \item Специальный полиморфизм или {\em перегрузка операций}, в
+    котором различные типы, которые может иметь терм, различны.
+    Например, использование \alert{$+$} для различных систем счисления.
+    % \item Ad hoc polymorphism, or {\em overloading}, where the
+    %   different types a term may have are different, e.g. the use of
+    %   \alert{$+$} over different number systems.
+    \maybepause
+
+  \end{itemize}
+
+  У нас истинный, параметрический полиморфизм.  Например, функция
+  тождества может иметь типы: \alert{$\sigma \to \sigma$}, \alert{$\tau
+    \to \tau$}, или \alert{$(\sigma \to \tau) \to (\sigma \to \tau)$}.
+  % We have true, parametric, polymorphism. For example, possible types for the
+  % identity function are \alert{$\sigma \to \sigma$}, \alert{$\tau \to \tau$}, or
+  % \alert{$(\sigma \to \tau) \to (\sigma \to \tau)$}.
+}
+
+\frame{
+  \frametitle{Let-полиморфизм (1)}
+  % Let polymorphism (1)
+
+  У нашей системы есть печальное ограничение.  В одном и том же терме мы
+  можем использовать одинаковые выражения разных типов, например:
+  \alert{$$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
+    \mbox{else}\; 0 $$}
+  Однако, если мы применим локальную привязку при помощи {\tt let},
+  проблема исчезнет.
+  Рассмотрим:
+  \alert{$$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I
+    \; 1\; \mbox{else}\; 0 $$}
+  \noindent Согласно нашему определению, это всего лишь синтаксическая
+  обёртка для:
+  \alert{$$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\;
+    0)\; (\lamb{x} x) $$}
+  Это выражение не может быть типизировано согласно нашим правилам, ибо
+  функция тождества тут {\em одна}, и ей должен быть задан {\em один} тип.
+
+  % Our system has an unfortunate restriction. We can use the same expression with
+  % different types in the same term, e.g:
+  % \alert{$$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
+  %   \mbox{else}\; 0 $$}
+  % However if we use a local {\tt let} binding, this is no longer the case.
+  % Consider:
+  % \alert{$$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I
+  %   \; 1\; \mbox{else}\; 0 $$}
+  % \noindent According to our definitions, this is just syntactic sugar for:
+  % \alert{$$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\;
+  %   0)\; (\lamb{x} x) $$}
+  % This cannot be typed according to our rules, since the {\em single} instance of
+  % the identity function needs to be given a {\em single} type.
+}
+
+\frame{
+  \frametitle{Let-полиморфизм (2)}
+  % Let polymorphism (2)
+
+  С таким ограничением практическое использование функционального
+  программирования невозможно.  Чтобы избежать его нам понадобится
+  выполнить два действия.
+  % This restriction is unbearable for practical functional
+  % programming. We take two measures to avoid it.
+
+  Во-первых, мы сделаем конструкцию {\tt let} {\em примитивной}, вместо
+  того, чтобы отнести её к синтаксической обёртке, как мы делали раньше.
+  % First, we make the {\tt let} construct {\em primitive}, instead of
+  % regarding it as syntactic sugar, as before.
+
+  Во-вторых, мы добавим новое правило типизирования:
+  % Secondly, we add a new typing rule:
+
+  \alert{$$ \frac{\Gamma \vdash s : \sigma \;\;\; \Gamma \vdash t[s/x] : \tau}
+    {\Gamma \vdash \mbox{let}\; x = s\; \mbox{in}\; t : \tau} $$}
+
+  Теперь мы можем записывать выражения, такие как в предыдущем слайде, в
+  том виде, как мы и ожидали.
+  % Now we can type expressions like the above in the way that we
+  % would expect.
+}
+
+\frame{
+  \frametitle{Наиболее общие типы (1)}
+  % Most general types (1)
+
+  Как мы уже сказали, различные типы терма структурно схожи.  Собственно
+  говоря, существует {\em наиболее общий тип}, а все остальные типы
+  всего лишь отдельные случаи такого типа.
+  % We have said that the different types for a term bear a structural
+  % similarity.  In fact more is true: there is always a {\em most
+  %   general type} and all other types are instances of this type.
+
+  Мы говорим, что тип \alert{$\sigma$} более общий, нежели \alert{
+    $\sigma'$}, и записываем \alert{$\sigma \leq \sigma'$}, если мы можем
+  подставить типы вместо типовых переменных в \alert{$\sigma$} и получить
+  \alert{$\sigma'$}.
+  % We say that a type \alert{$\sigma$} is more general than
+  % \alert{$\sigma'$}, and write \alert{$\sigma \leq \sigma'$}, when
+  % we can substitute types for type variables in \alert{$\sigma$} and
+  % get \alert{$\sigma'$}.
+
+  Формально определение подстановки в отношении типов достаточно просто,
+  потому что тут нет понятия связанности.  Мы будем использовать ту же
+  запись, что и для $\lambda$-выражений.  Например:
+  % The formal definition of substitution at the type level is
+  % straightforward, because there is no notion of binding. We will
+  % use the same notation. For example:
+  \alert{$$ \alpha \to bool \leq (\tau \to \tau) \to bool $$}
+  потому что
+  % because
+  \alert{$$ (\alpha \to bool)[(\tau \to \tau)/\alpha] = (\tau \to \tau)
+    \to bool $$}
+  Но не наоборот.
+  % But not conversely.
+}
+
+\frame{
+  \frametitle{Наиболее общие типы (2)}
+  % Most general types (2)
+
+  У любого выражения в ML, которое имеет тип, есть наиболее общий тип.
+  Первым в похожей ситуации это доказал Хиндли, а для нашего
+  случая~-- Милнер.
+  % Every expression in ML that has a type has a most general type. This was first
+  % proved in a similar context by Hindley, and for the exact setup here by Milner.
+
+  Более того, существует алгоритм нахождения наиболее общего типа для
+  любого выражения, даже если оно вообще не содержит информации о типах.
+  % What's more, there is an algorithm for finding the most general type of any
+  % expression, even if it contains no type information at all.
+
+  В ML используется этот алгоритм.  Поэтому в ML никогда не надо
+  прописывать типы.  Всё типизировано неявно.
+  % ML implementations use this algorithm. Therefore it is never necessary in ML to
+  % write down a type. All typing is implicit.
+
+  Таким образом, система типов в ML менее утомительна, чем во многих
+  других языках, таких как Modula-3.  Нам никогда не надо задавать типы
+  явно, {\em и} мы можем использовать один и тот же код с разными
+  типами, так как компилятор всё сделает за нас.
+  % Thus, the ML type system is much less irksome than in many languages like
+  % Modula-3. We never have to specify types explicitly {\em and} we can often
+  % re-use the same code with different types: the compiler will work everything
+  % out for us.
+}
+
+\frame{
+  \frametitle{Жёсткая нормализация}
+  % Strong normalization
+
+  Вспомним наш пример терма, у которого нет нормальной формы.  Например,
+  такой как:
+  % Recall our examples of terms with no normal form, such as:
+
+  \alert{
+    \begin{eqnarray*}
+      & & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
+      & \goesto & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
+      (\lamb{x} x\; x\; x))                           \\
+      & \goesto & (\cdots)
+    \end{eqnarray*}
+  }
+  В типизированном $\lambda$-исчислении такого не может произойти~--- у
+  любого типизируемого терма есть нормальная форма, и все
+  последовательности редукций завершаются на нормальной форме.  Это
+  свойство называется {\em жёсткой нормализацией}.
+  % In typed lambda calculus, this cannot happen --- every typable term has a
+  % normal form and all reduction sequences terminate in that normal form. This
+  % property is known as {\em strong normalization}.
+
+  Это замечательно~--- любая программа завершается.  Однако, это
+  означает, что мы не можем написать все вычислимые, или даже все
+  интересные, функции.  Нам надо что-то добавить.
+  % This sounds good --- every program terminates. Unfortunately this means that we
+  % can't write all computable functions, or even all the interesting ones. We need
+  % to add something.
+}
+
+\frame{
+  \frametitle{Рекурсия}
+  % Recursion
+
+  Мы не можем определять произвольные рекурсивные функции, иначе мы
+  смогли бы определить функцию, которая никогда не завершается.
+  % We can't define arbitrary recursive functions any more --- if we could then we
+  % could create non-terminating functions.
+
+  Очевидно, что функция \alert{$Y = \lamb{f} (\lamb{x} f(x\; x))
+    (\lamb{x} f(x\; x))$} не полностью типизирована, так как она
+  применяет \alert{$x$} к самой себе.
+  % Clearly \alert{$Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$} isn't
+  % well-typed because it applies \alert{$x$} to itself.
+
+  Таким образом, нам надо найти способ определения произвольных
+  рекурсивных функций, которые полностью типизированы.
+  % So we simply add a way of defining arbitrary recursive functions that {\em is}
+  % well-typed.
+
+  Введём семейство полиморфных операторов рекурсии в виде:
+  % Introduce a family of polymorphic recursion operators of the form:
+  \alert{$$ Rec : ((\alpha \to \beta) \to (\alpha \to \beta)) \to \alpha \to \beta
+    $$}
+  и дополнительное правило редукции, такое, что для любой функции \alert{
+    $F:(\sigma \to \tau) \to (\sigma \to \tau)$}.  В итоге мы имеем:
+  % and the extra reduction rule that for any \alert{$F:(\sigma \to \tau) \to
+  %   (\sigma \to \tau)$} we have:
+  \alert{$$ Rec\; F \goesto F\; (Rec\;  F) $$}
+}
 
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
