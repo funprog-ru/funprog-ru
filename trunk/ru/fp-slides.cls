@@ -95,7 +95,8 @@
 \def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
 \def\goesto{\longrightarrow}
 
-\DefineNamedColor{named}{Green}   {cmyk}{1,0,1,0}
+\DefineNamedColor{named}{Green} {cmyk}{1,0,1,0}
+\DefineNamedColor{named}{Gray} {cmyk}{0,0,0,0.50}
 
 % колонтитулы
 % \usepackage{fancyhdr}
