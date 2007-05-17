@@ -1,19 +1,33 @@
-\chapter{Further ML}
+\chapter{Более подробно о ML}
 
-In this chapter, we consolidate the previous examples by specifying the basic
-facilities of ML and the syntax of phrases more precisely, and then go on to
-treat some additional features such as recursive types. We might start by
-saying more about interaction with the system.
+В этой главе закрепим предыдущие примеры более точно определив синтаксис и
+основные возможности ML, а затем перейдём к рассмотрению некоторых дополнительных 
+возможностей, таких как рекурсивные типы. Но начнём мы с обсуждения взаимодействия 
+с системой. 
+%%In this chapter, we consolidate the previous examples by specifying the basic
+%%facilities of ML and the syntax of phrases more precisely, and then go on to
+%%treat some additional features such as recursive types. We might start by
+%%saying more about interaction with the system.
 
-So far, we have just been typing phrases into ML's toplevel read-eval-print
-loop and observing the result. However this is not a good method for writing
-nontrivial programs. Typically, you should write the expressions and
-declarations in a file. To try things out as you go, they can be inserted in
-the ML window using `cut and paste'. This operation can be performed using
-X-windows and similar systems, or in an editor like Emacs with multiple
-buffers. However, this becomes laborious and time-consuming for large programs.
-Instead, you can use ML's {\tt include} function to read in the file directly.
-For example, if the file {\tt myprog.ml} contains:
+До сих пор мы печатали команды в интерпретатор, получая от него результат. 
+Однако, это не лучший способ писать нетривиальные программы. Обычно вам
+следует записывать все выражения и объявления в файл.
+После этого повторное использование кода обеспечивается операцией `вырезать и вставить` 
+Эта операция может быть выполнена  с помощью X-Windows и схожих систем, 
+или в редакторе типа Emacs. Такой подход, однако, становится кропотливым и неэффективным 
+для больших программ. Вместо этого вы можете использовать функцию {\tt include}
+для непосредственного чтения из файла.
+Например, если файл {\tt myprog.ml} содержит: 
+
+%%So far, we have just been typing phrases into ML's toplevel read-eval-print
+%%loop and observing the result. However this is not a good method for writing
+%%nontrivial programs. Typically, you should write the expressions and
+%%declarations in a file. To try things out as you go, they can be inserted in
+%%the ML window using `cut and paste'. This operation can be performed using
+%%X-windows and similar systems, or in an editor like Emacs with multiple
+%%buffers. However, this becomes laborious and time-consuming for large programs.
+%%Instead, you can use ML's {\tt include} function to read in the file directly.
+%%For example, if the file {\tt myprog.ml} contains:
 
 \begin{boxed}\begin{lstlisting}
   let pythag x y z =
@@ -26,7 +40,7 @@ For example, if the file {\tt myprog.ml} contains:
   pythag 1 2 3;;
 \end{lstlisting}\end{boxed}
 
-\noindent then the toplevel phrase {\tt include "myprog.ml";;} results in:
+\noindent то введя в интерперетатор {\tt include "myprog.ml";;} вы получите:
 
 \begin{boxed}\begin{verbatim}
   #include "myprog.ml";;
@@ -37,12 +51,18 @@ For example, if the file {\tt myprog.ml} contains:
   - : unit = ()
 \end{verbatim}\end{boxed}
 
-That is, the ML system responds just as if the phrases had been entered at the
-top level. The final line is the result of evaluating the {\tt include}
-expression itself.
+То есть, вывод системы ML получился такой же, как если бы вы печатали
+содержимое файла в консоль. Последняя линия вывода - это результат 
+вычисления самого выражения {\tt include}  
 
-In large programs, it is often helpful to include comments. In ML, these are
-written between the symbols {\tt (*} and {\tt *)}, e.g.
+%%That is, the ML system responds just as if the phrases had been entered at the
+%%top level. The final line is the result of evaluating the {\tt include}
+%%expression itself.
+
+В больших программах часто полезно включать комментарии. В ML они записываются
+между символами {\tt (*} и {\tt *)}, например.
+%%In large programs, it is often helpful to include comments. In ML, these are
+%%written between the symbols {\tt (*} and {\tt *)}, e.g.
 
 \begin{boxed}\begin{lstlisting}
   (* ------------------------------------------------------ *)
@@ -56,40 +76,65 @@ written between the symbols {\tt (*} and {\tt *)}, e.g.
   (* and (* can (* be (* nested *) quite *) arbitrarily *) *);;
 \end{lstlisting}\end{boxed}
 
-\section{Basic datatypes and operations}
+\section{Основные типы данных и операции}
 
-ML features several built-in primitive types. From these, composite types may
-be built using various type constructors. For the moment, we will only use the
-function space constructor {\verb+->+} and the Cartesian product constructor
-{\verb+*+}, but we will see in due course which others are provided, and how to
-define new types and type constructors. The primitive types that concern us now
-are:
+ML представляет несколько встроенных примитивных типов. Из них, с помощью
+конструкторов типов могут быть построены составные типы. Пока мы будем использовать
+только конструктор функций  {\verb+->+} и конструктор декартового произведения {\verb+*+},
+но в своё время мы рассмотрим и другие конструкторы, а также как определять
+новые типы и конструкторы типов. Примитивные типы, которые интересуют нас, это:
+
+%%ML features several built-in primitive types. From these, composite types may
+%%be built using various type constructors. For the moment, we will only use the
+%%function space constructor {\verb+->+} and the Cartesian product constructor
+%%{\verb+*+}, but we will see in due course which others are provided, and how to
+%%define new types and type constructors. The primitive types that concern us now
+%%are:
 
 \begin{itemize}
 
-\item The type {\tt unit}. This is a 1-element type, whose only element is
-written {\tt ()}. Obviously, something of type {\tt unit} conveys no
-information, so it is commonly used as the return type of imperatively written
-`functions' that perform a side-effect, such as {\tt include} above. It is also
-a convenient argument where the only use of a function type is to delay
-evaluation.
+\item Тип {\tt unit}, можно называть его процедурным. 
+Это одноэлементый тип, единственный элемент которого записывается как {\tt ()}. 
+Очевидно, использование типа {\tt unit} не передаёт какой - либо информации,
+так  что он часто используется как возвращаемый тип императивно записанных
+`функций', результат которых не значение вычислений, а какой -либо побочный эффект. 
+Например, таких как {\tt include}.  Это также подходящий тип для аргумента  
+FIX (?It is also a convenient argument where the only use of a function type is to delay
+evaluation.?)
 
-\item The type {\tt bool}. This is a 2-element type of booleans (truth-values)
-whose elements are written {\tt true} and {\tt false}.
+%%\item The type {\tt unit}. This is a 1-element type, whose only element is
+%%written {\tt ()}. Obviously, something of type {\tt unit} conveys no
+%%information, so it is commonly used as the return type of imperatively written
+%%`functions' that perform a side-effect, such as {\tt include} above. It is also
+%%a convenient argument where the only use of a function type is to delay
+%%evaluation.
 
-\item The type {\tt int}. This contains some finite subset of the positive and
-negative integers. Typically the permitted range is from $-2^{30}$
-($-1073741824$) up to $2^{30}-1$ ($1073741823$).\footnote{This is even more
-limited than expected for machine arithmetic because a bit is stolen for the
+\item Тип {\tt bool}. Двухэлементный тип булевых значений (значений истинности).
+Элементы этого типа: {\tt true} и {\tt false}.
+
+%%\item The type {\tt bool}. This is a 2-element type of booleans (truth-values)
+%%whose elements are written {\tt true} and {\tt false}.
+
+\item Тип {\tt int}. Содержит конечное подмножество отрицательных и неотрицательных
+чисел. Обычно значения варьируются от $-2^{30}$ ($-1073741824$) до $2^{30}-1$ ($1073741823$).
+\footnote{This is even more limited than expected for machine arithmetic because a bit is stolen for the
 garbage collector. We will see later how to use an alternative type of integers
-with unlimited precision.} The numerals are written in the usual way,
-optionally with a negation sign, e.g. {\tt 0}, {\tt 32}, {\tt -25}.
+with unlimited precision.} Элементы записываются обычным способом,
+например: {\tt 0}, {\tt 32}, {\tt -25}.
 
-\item The type {\tt string} contains strings (i.e. finite sequences) of
-characters. They are written and printed between double quotes,
-e.g. \lstinline!"hello"!. In order to encode include special characters in strings, C-like
-escape sequences are used. For example, \lstinline!"! is the double quote itself,
-and {\verb+\n+} is the newline character.
+%%\item The type {\tt int}. This contains some finite subset of the positive and
+%%negative integers. Typically the permitted range is from $-2^{30}$
+%%($-1073741824$) up to $2^{30}-1$ ($1073741823$).\footnote{This is even more
+%%limited than expected for machine arithmetic because a bit is stolen for the
+%%garbage collector. We will see later how to use an alternative type of integers
+%%with unlimited precision.} The numerals are written in the usual way,
+%%optionally with a negation sign, e.g. {\tt 0}, {\tt 32}, {\tt -25}.
+
+%%\item The type {\tt string} contains strings (i.e. finite sequences) of
+%%characters. They are written and printed between double quotes,
+%%e.g. \lstinline!"hello"!. In order to encode include special characters in strings, C-like
+%%escape sequences are used. For example, \lstinline!"! is the double quote itself,
+%%and {\verb+\n+} is the newline character.
 
 \end{itemize}
 
@@ -105,6 +150,19 @@ reversed for it: {\tt not not p} means {\tt not (not p)}. User-defined
 functions may be granted infix status via the {\tt \#infix} directive. For
 example, here is a definition of a function performing composition of
 functions:
+
+%%The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
+%%to be regarded as constants in the lambda calculus sense. There are other
+%%constants corresponding to {\em operations} on the basic types. Some of these
+%%may be written as infix operators, for the sake of familiarity. These have a
+%%notion of precedence so that expressions are grouped together as one would
+%%expect. For example, we write {\tt x + y} rather than {\tt + x y} and {\tt x <
+%%2 * y + z} rather than {\tt < x (+ (* 2 y) z)}. The logical operator {\tt not}
+%%also has a special parsing status, in that the usual left-associativity rule is
+%%reversed for it: {\tt not not p} means {\tt not (not p)}. User-defined
+%%functions may be granted infix status via the {\tt \#infix} directive. For
+%%example, here is a definition of a function performing composition of
+%%functions:
 
 \begin{boxed}\begin{lstlisting}
   #let successor x = x + 1;;
@@ -122,12 +180,12 @@ functions:
   - : int = 3
 \end{lstlisting}\end{boxed}
 
-It is not possible to specify the precedence of user-defined infixes, nor to
-make user-defined non-infix functions right-associative. Note that the implicit
-operation of `function application' has a higher precedence than any binary
-operator, so {\tt successor 1 * 2} parses as {\tt (successor 1) * 2}. If it is
-desired to use a function with special status as an ordinary constant, simply
-precede it by {\tt prefix}. For example:
+%%It is not possible to specify the precedence of user-defined infixes, nor to
+%%make user-defined non-infix functions right-associative. Note that the implicit
+%%operation of `function application' has a higher precedence than any binary
+%%operator, so {\tt successor 1 * 2} parses as {\tt (successor 1) * 2}. If it is
+%%desired to use a function with special status as an ordinary constant, simply
+%%precede it by {\tt prefix}. For example:
 
 \begin{boxed}\begin{verbatim}
   #o successor successor;;
@@ -141,9 +199,9 @@ precede it by {\tt prefix}. For example:
   - : int -> int = <fun>
 \end{verbatim}\end{boxed}
 
-With these questions of concrete syntax out of the way, let us present a
-systematic list of the operators on the basic types above. The unary operators
-are:
+%%With these questions of concrete syntax out of the way, let us present a
+%%systematic list of the operators on the basic types above. The unary operators
+%%are:
 
 \bigskip
 \begin{tabular}{|l|l|l|}
@@ -156,8 +214,8 @@ Operator   & Type                             & Meaning               \\
 \end{tabular}
 \bigskip
 
-\noindent and the binary operators, in approximately decreasing order of
-precedence, are:
+%%\noindent and the binary operators, in approximately decreasing order of
+%%precedence, are:
 
 \bigskip
 \begin{tabular}{|l|l|l|}
@@ -182,34 +240,34 @@ Operator   & Type                             & Meaning               \\
 \end{tabular}
 \bigskip
 
-For example, {\tt x > 0 \& x < 1} is parsed as {\tt \& (> x 0) (< x 1)}. Note
-that all the comparisons, not just the equality relation, are polymorphic. They
-not only order integers in the expected way, and strings alphabetically, but
-all other primitive types and composite types in a fairly natural way. Once
-again, however, they are not in general allowed to be used on functions.
+%%For example, {\tt x > 0 \& x < 1} is parsed as {\tt \& (> x 0) (< x 1)}. Note
+%%that all the comparisons, not just the equality relation, are polymorphic. They
+%%not only order integers in the expected way, and strings alphabetically, but
+%%all other primitive types and composite types in a fairly natural way. Once
+%%again, however, they are not in general allowed to be used on functions.
 
-The two boolean operations {\tt \&} and {\tt or} have their own special
-evaluation strategy, like the conditional expression. In fact, they can be
-regarded as synonyms for conditional expressions:
+%%The two boolean operations {\tt \&} and {\tt or} have their own special
+%%evaluation strategy, like the conditional expression. In fact, they can be
+%%regarded as synonyms for conditional expressions:
 
 \begin{eqnarray*}
 p \mbox{ \& } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
 p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
 \end{eqnarray*}
 
-Thus, the `and' operation evaluates its first argument, and only if it is true,
-evaluates its second. Conversely, the `or' operation evaluates its first
-argument, and only if it is false evaluates its second.
+%%Thus, the `and' operation evaluates its first argument, and only if it is true,
+%%evaluates its second. Conversely, the `or' operation evaluates its first
+%%argument, and only if it is false evaluates its second.
 
-\section{Syntax of ML phrases}
+%%\section{Syntax of ML phrases}
 
-Expressions in ML can be built up from constants and variables; any identifier
-that is not currently bound is treated as a variable. Declarations bind names
-to values of expressions, and declarations can occur locally inside
-expressions. Thus, the syntax classes of expressions and declarations are
-mutually recursive. We can represent this by the following BNF
-grammar.\footnote{We neglect many constructs that we won't be concerned with. A
-few will be introduced later. See the CAML manual for full details.}
+%%Expressions in ML can be built up from constants and variables; any identifier
+%%that is not currently bound is treated as a variable. Declarations bind names
+%%to values of expressions, and declarations can occur locally inside
+%%expressions. Thus, the syntax classes of expressions and declarations are
+%%mutually recursive. We can represent this by the following BNF
+%%grammar.\footnote{We neglect many constructs that we won't be concerned with. A
+%%few will be introduced later. See the CAML manual for full details.}
 
 \begin{eqnarray*}
 expression    & ::= & variable       \\
@@ -231,14 +289,14 @@ variables     & ::= & variable                                                  
               & |   & variable \; variables
 \end{eqnarray*}
 
-The syntax class $pattern$ will be expanded and explained more thoroughly later
-on. For the moment, all the cases we are concerned with are either just
-$variable$ or $variable \; variable \cdots variable$. In the first case we
-simply bind an expression to a name, while the second uses the special
-syntactic sugar for function declarations, where the arguments are written
-after the function name to the left of the equals sign. For example, the
-following is a valid declaration of a function {\tt add4}, which can be used to
-add 4 to its argument:
+%%The syntax class $pattern$ will be expanded and explained more thoroughly later
+%%on. For the moment, all the cases we are concerned with are either just
+%%$variable$ or $variable \; variable \cdots variable$. In the first case we
+%%simply bind an expression to a name, while the second uses the special
+%%syntactic sugar for function declarations, where the arguments are written
+%%after the function name to the left of the equals sign. For example, the
+%%following is a valid declaration of a function {\tt add4}, which can be used to
+%%add 4 to its argument:
 
 \begin{boxed}\begin{verbatim}
   #let add4 x =
@@ -251,15 +309,15 @@ add 4 to its argument:
   - : int = 5
 \end{verbatim}\end{boxed}
 
-It is instructive to unravel this declaration according to the above grammar. A
-toplevel phrase, terminated by two successive semicolons, may be either an
-expression or a declaration.
+%%It is instructive to unravel this declaration according to the above grammar. A
+%%toplevel phrase, terminated by two successive semicolons, may be either an
+%%expression or a declaration.
 
-\section{Further examples}
+\section{Дальнейшие примеры}
 
-It is easy to define by recursion a function that takes a positive integer $n$
-and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
-times):
+%%It is easy to define by recursion a function that takes a positive integer $n$
+%%and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
+%%times):
 
 \begin{boxed}\begin{verbatim}
   #let rec funpow n f x =
