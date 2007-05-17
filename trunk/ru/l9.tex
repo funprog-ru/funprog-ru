@@ -161,7 +161,8 @@
 
 \begin{document}\blue
 
-
+
+
 \begin{rslide}
 
 \heading{%
@@ -185,19 +186,27 @@
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
 
 \begin{itemize}
 
-\item Symbolic computation
+\item Символьные вычисления
 
-\item Data representation
+%%\item Symbolic computation
+
+\item Представление данных
+
+%%\item Data representation
 
 \item Prettyprinting
 
-\item Differentiation
+\item Дифференцирование
 
-\item Simplification by rewriting
+%%\item Differentiation
+
+\item Упрощение переписыванием
+
+%%\item Simplification by rewriting
 
 \end{itemize}
 
@@ -205,43 +214,62 @@ Topics covered:
 
 
 
-
+
+
 \begin{rslide}
 
-\heading{Symbolic computation}
+\heading{Символьные вычисления}
 
 \vspace*{0.5cm}
 
-This covers applications where manipulation of mathematical {\em expressions},
-in general containing variables, is emphasized at the expense of actual
-numerical calculation.
+Речь о приложениях в которых манипуляции над математическими {\em выражениями },
+в общем случае содержащими переменные
 
-There are several successful `computer algebra systems' such as
-Axiom, Maple and Mathematica, which can do certain symbolic operations that are
-useful in mathematics.
+%%This covers applications where manipulation of mathematical {\em expressions},
+%%in general containing variables, is emphasized at the expense of actual
+%%numerical calculation.
 
-Examples include factorizing polynomials and differentiating and integrating
-expressions.
+Есть несколько удачных `систем компьютерной алгебры' таких как 
+Axiom, Maple and Mathematica, которые могут выполнять определённые символические операции, полезные в математических расчётах.
 
-We will show how ML can be used for such applications. Our example will be
-symbolic differentiation.
+%% There are several successful `computer algebra systems' such as
+%%Axiom, Maple and Mathematica, which can do certain symbolic operations that %%are useful in mathematics.
+
+Примеры включают разложение полиномов, дифференцирование и интегрирование выражений.
+
+%%Examples include factorizing polynomials and differentiating and integrating
+%%expressions.
+
+Мы покажем как ML может использоваться для таких приложений. В качестве примера рассмотрим символьное дифференцирование.
+
+%%We will show how ML can be used for such applications. Our example will be
+%%symbolic differentiation.
 
 This will illustrate all the typical components of symbolic computation
 systems: data representation, internal algorithms, parsing and prettyprinting.
 
+%%This will illustrate all the typical components of symbolic computation
+%%systems: data representation, internal algorithms, parsing and prettyprinting.
+
 \end{rslide}
 
-
+
+
 \begin{rslide}
 
-\heading{Data representation}
+\heading{Представление данных}
 
 \vspace*{0.5cm}
 
 We will allow mathematical expressions to be built up from variables and
 constants by the application of $n$-ary operators.
 
-Therefore we define a recursive type as follows:
+%We will allow mathematical expressions to be built up from variables and
+%constants by the application of $n$-ary operators.
+
+Следовательно мы задаём рекурсивный тип следующим образом:
+
+%%Therefore we define a recursive type as follows:
 
 \begin{black}\begin{verbatim}
   #type term = Var of string
@@ -250,8 +278,9 @@ Therefore we define a recursive type as follows:
   Type term defined.
 \end{verbatim}\end{black}
 
-For example the expression {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} is
-represented by:
+Например, выражение {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} представляется:
+
+%%For example the expression {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} %%is represented by:
 
 \begin{black}\begin{footnotesize}\begin{verbatim}
  Fn("-",
@@ -266,7 +295,8 @@ represented by:
 \end{rslide}
 
 
-
+
+
 \begin{rslide}
 
 \heading{The need for parsing and printing}
@@ -294,7 +324,8 @@ However we will now write a simple printer for our expressions.
 \end{rslide}
 
 
-
+
+
 \begin{rslide}
 
 \heading{Prettyprinting expressions}
@@ -324,7 +355,8 @@ brackets.
 \end{rslide}
 
 
-
+
+
 \begin{rslide}
 
 \heading{Storing precedences}
@@ -361,7 +393,8 @@ applications.
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{Making precedences modifiable}
@@ -396,7 +429,8 @@ This setup is not purely functional, but is perhaps more natural.
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{Finding if an operator is infix}
@@ -430,7 +464,8 @@ out whether the application of its first argument to its seconds succeeds::
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{The printer: explanation}
@@ -457,7 +492,8 @@ functions of the form {\red  $f(x_1,\ldots,x_n)$}.
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{The printer: code}
@@ -492,7 +528,8 @@ functions of the form {\red  $f(x_1,\ldots,x_n)$}.
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{The printer: installing}
@@ -524,10 +561,11 @@ sure that our printer interacts with the toplevel loop.
 
 
 
-
+
+
 \begin{rslide}
 
-\heading{Before and after}
+\heading{До и после }
 
 \vspace*{0.1cm}
 
@@ -564,42 +602,59 @@ x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
 
 
 
-
+
+
 \begin{rslide}
 
-\heading{Differentiation: algorithm}
+\heading{Дифференцирование: алгоритм}
 
 \vspace*{0.1cm}
 
-There is a well-known method (taught in schools) to differentiate complicated
-expressions.
+Есть хорошо известные правила (изучаемые в школе) дифференцирования сложных выражений.
+
+%%There is a well-known method (taught in schools) to differentiate complicated
+%%expressions.
 
 \begin{itemize}
 
 \item If the expression is one of the standard functions applied to an
 argument, e.g. {\red $sin(x)$}, return the known derivative.
 
+%\item If the expression is one of the standard functions applied to an
+%argument, e.g. {\red $sin(x)$}, return the known derivative.
+
 \item If the expression is of the form {\red $f(x) + g(x)$} then apply the rule
 for sums, returning {\red $f'(x) + g'(x)$}. Likewise for subtraction etc.
 
+%\item If the expression is of the form {\red $f(x) + g(x)$} then apply the rule
+%for sums, returning {\red $f'(x) + g'(x)$}. Likewise for subtraction etc.
+
 \item If the expression is of the form {\red $f(x) * g(x)$} then apply the
 product rule, i.e. return {\red $f'(x) * g(x) + f(x) * g'(x)$}.
+
+%\item If the expression is of the form {\red $f(x) * g(x)$} then apply the
+%product rule, i.e. return {\red $f'(x) * g(x) + f(x) * g'(x)$}.
 
 \item If the expression is one of the standard functions applied to a composite
 argument, say {\red $f(g(x))$} then apply the Chain Rule and so give {\red
 $g'(x) * f'(g(x))$}.
 
+%\item If the expression is one of the standard functions applied to a composite
+%argument, say {\red $f(g(x))$} then apply the Chain Rule and so give {\red
+%$g'(x) * f'(g(x))$}.
+
 \end{itemize}
 
-This translates very easily into a recursive computer algorithm.
+Они очень легко переводятся в рекурсивные алгоритмы.
 
 \end{rslide}
 
 
-
+
+
 \begin{rslide}
 
-\heading{Differentiation: code}
+\heading{Дифференцирование: код}
 
 \begin{black}\begin{footnotesize}\begin{verbatim}
 let rec differentiate x tm = match tm with
@@ -634,14 +689,17 @@ and chain x t u =  Fn("*",[differentiate x t; u]);;
 
 
 
-
+
+
 \begin{rslide}
 
-\heading{Differentiation examples}
+\heading{Примеры дифференцирования}
 
 \vspace*{0.2cm}
 
-Let's try a few examples:
+Попробуем несколько примеров:
+
+%%Let's try a few examples:
 
 \begin{black}\begin{verbatim}
   #let t1 = Fn("sin",[Fn("*",[Const "2";
@@ -665,14 +723,19 @@ Let's try a few examples:
 
 \end{rslide}
 
-
+
+
 \begin{rslide}
 
-\heading{Simplification}
+\heading{Упрощение}
 
 It seems to work OK, but it isn't making certain obvious simplifications,
 like {\red $0 * x = 0$}. These arise partly because we apply the recursive
 rules like the chain rule even in trivial cases. We'll write a simplifier:
+
+%%It seems to work OK, but it isn't making certain obvious simplifications,
+%%like {\red $0 * x = 0$}. These arise partly because we apply the recursive
+%%rules like the chain rule even in trivial cases. We'll write a simplifier:
 
 \begin{black}\begin{footnotesize}\begin{verbatim}
 #let simp = fun
@@ -699,7 +762,8 @@ rules like the chain rule even in trivial cases. We'll write a simplifier:
 
 
 
-
+
+
 \begin{rslide}
 
 \heading{Simplification examples}
@@ -739,3 +803,4 @@ inv(cos(x)) = 1$}. Good algebraic simplification is a difficult problem!
 %%% Local Variables:
 %%% TeX-master: "all"
 %%% End:
+
