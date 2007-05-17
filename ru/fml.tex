@@ -1,23 +1,24 @@
-\chapter{аНКЕЕ ОНДПНАМН Н ML}
+\chapter{Более подробно о ML}
 
-б ЩРНИ ЦКЮБЕ ГЮЙПЕОХЛ ОПЕДШДСЫХЕ ОПХЛЕПШ АНКЕЕ РНВМН НОПЕДЕКХБ ЯХМРЮЙЯХЯ Х
-НЯМНБМШЕ БНГЛНФМНЯРХ ML, Ю ГЮРЕЛ ОЕПЕИД╦Л Й ПЮЯЯЛНРПЕМХЧ МЕЙНРНПШУ ДНОНКМХРЕКЭМШУ 
-БНГЛНФМНЯРЕИ, РЮЙХУ ЙЮЙ ПЕЙСПЯХБМШЕ РХОШ. мН МЮВМ╦Л ЛШ Я НАЯСФДЕМХЪ БГЮХЛНДЕИЯРБХЪ 
-Я ЯХЯРЕЛНИ. 
+В этой главе закрепим предыдущие примеры, более точно определив
+синтаксис и основные возможности ML, а затем перейдём к рассмотрению
+некоторых дополнительных возможностей, таких как рекурсивные типы. Но
+начнём мы с обсуждения взаимодействия с системой.
 %%In this chapter, we consolidate the previous examples by specifying the basic
 %%facilities of ML and the syntax of phrases more precisely, and then go on to
 %%treat some additional features such as recursive types. We might start by
 %%saying more about interaction with the system.
 
-дН ЯХУ ОНП ЛШ ОЕВЮРЮКХ ЙНЛЮМДШ Б ХМРЕПОПЕРЮРНП, ОНКСВЮЪ НР МЕЦН ПЕГСКЭРЮР. 
-нДМЮЙН, ЩРН МЕ КСВЬХИ ЯОНЯНА ОХЯЮРЭ МЕРПХБХЮКЭМШЕ ОПНЦПЮЛЛШ. нАШВМН БЮЛ
-ЯКЕДСЕР ГЮОХЯШБЮРЭ БЯЕ БШПЮФЕМХЪ Х НАЗЪБКЕМХЪ Б ТЮИК.
-оНЯКЕ ЩРНЦН ОНБРНПМНЕ ХЯОНКЭГНБЮМХЕ ЙНДЮ НАЕЯОЕВХБЮЕРЯЪ НОЕПЮЖХЕИ `БШПЕГЮРЭ Х БЯРЮБХРЭ` 
-щРЮ НОЕПЮЖХЪ ЛНФЕР АШРЭ БШОНКМЕМЮ  Я ОНЛНЫЭЧ X-Windows Х ЯУНФХУ ЯХЯРЕЛ, 
-ХКХ Б ПЕДЮЙРНПЕ РХОЮ Emacs. рЮЙНИ ОНДУНД, НДМЮЙН, ЯРЮМНБХРЯЪ ЙПНОНРКХБШЛ Х МЕЩТТЕЙРХБМШЛ 
-ДКЪ АНКЭЬХУ ОПНЦПЮЛЛ. бЛЕЯРН ЩРНЦН БШ ЛНФЕРЕ ХЯОНКЭГНБЮРЭ ТСМЙЖХЧ {\tt include}
-ДКЪ МЕОНЯПЕДЯРБЕММНЦН ВРЕМХЪ ХГ ТЮИКЮ.
-мЮОПХЛЕП, ЕЯКХ ТЮИК {\tt myprog.ml} ЯНДЕПФХР: 
+До сих пор мы печатали команды в интерпретатор, получая от него
+результат.  Однако, это не лучший способ писать нетривиальные
+программы. Обычно вам следует записывать все выражения и объявления в
+файл.  После этого повторное использование кода обеспечивается
+операцией <<вырезать и вставить>>.  Эта операция может быть выполнена
+с помощью X Window System и схожих систем, или в редакторе типа Emacs.
+Такой подход, однако, становится кропотливым и неэффективным для
+больших программ. Вместо этого вы можете использовать функцию {\tt
+  include} для непосредственного чтения из файла.  Например, если файл
+{\tt myprog.ml} содержит:
 
 %%So far, we have just been typing phrases into ML's toplevel read-eval-print
 %%loop and observing the result. However this is not a good method for writing
@@ -40,7 +41,7 @@
   pythag 1 2 3;;
 \end{lstlisting}\end{boxed}
 
-\noindent РН ББЕДЪ Б ХМРЕПОЕПЕРЮРНП {\tt include "myprog.ml";;} БШ ОНКСВХРЕ:
+\noindent то введя в интерпретатор {\tt include "myprog.ml";;} вы получите:
 
 \begin{boxed}\begin{verbatim}
   #include "myprog.ml";;
@@ -51,16 +52,17 @@
   - : unit = ()
 \end{verbatim}\end{boxed}
 
-рН ЕЯРЭ, БШБНД ЯХЯРЕЛШ ML ОНКСВХКЯЪ РЮЙНИ ФЕ, ЙЮЙ ЕЯКХ АШ БШ ОЕВЮРЮКХ
-ЯНДЕПФХЛНЕ ТЮИКЮ Б ЙНМЯНКЭ. оНЯКЕДМЪЪ КХМХЪ БШБНДЮ - ЩРН ПЕГСКЭРЮР 
-БШВХЯКЕМХЪ ЯЮЛНЦН БШПЮФЕМХЪ {\tt include}  
+То есть, вывод системы ML получился такой же, как если бы вы печатали
+содержимое файла в консоль. Последняя линия вывода~-- это результат 
+вычисления самого выражения {\tt include}  
+% BUG# вместо 'линия вывода' может лучше 'строка вывода'? --lg
 
 %%That is, the ML system responds just as if the phrases had been entered at the
 %%top level. The final line is the result of evaluating the {\tt include}
 %%expression itself.
 
-б АНКЭЬХУ ОПНЦПЮЛЛЮУ ВЮЯРН ОНКЕГМН БЙКЧВЮРЭ ЙНЛЛЕМРЮПХХ. б ML НМХ ГЮОХЯШБЮЧРЯЪ
-ЛЕФДС ЯХЛБНКЮЛХ {\tt (*} Х {\tt *)}, МЮОПХЛЕП.
+В больших программах часто полезно включать комментарии. В ML они
+записываются между символами {\tt (*} и {\tt *)}, например:
 %%In large programs, it is often helpful to include comments. In ML, these are
 %%written between the symbols {\tt (*} and {\tt *)}, e.g.
 
@@ -76,13 +78,15 @@
   (* and (* can (* be (* nested *) quite *) arbitrarily *) *);;
 \end{lstlisting}\end{boxed}
 
-\section{нЯМНБМШЕ РХОШ ДЮММШУ Х НОЕПЮЖХХ}
+\section{Основные типы данных и операции}
 
-ML ОПЕДЯРЮБКЪЕР МЕЯЙНКЭЙН БЯРПНЕММШУ ОПХЛХРХБМШУ РХОНБ. хГ МХУ, Я ОНЛНЫЭЧ
-ЙНМЯРПСЙРНПНБ РХОНБ ЛНЦСР АШРЭ ОНЯРПНЕМШ ЯНЯРЮБМШЕ РХОШ. оНЙЮ ЛШ АСДЕЛ ХЯОНКЭГНБЮРЭ
-РНКЭЙН ЙНМЯРПСЙРНП ТСМЙЖХИ  {\verb+->+} Х ЙНМЯРПСЙРНП ДЕЙЮПРНБНЦН ОПНХГБЕДЕМХЪ {\verb+*+},
-МН Б ЯБН╦ БПЕЛЪ ЛШ ПЮЯЯЛНРПХЛ Х ДПСЦХЕ ЙНМЯРПСЙРНПШ, Ю РЮЙФЕ ЙЮЙ НОПЕДЕКЪРЭ
-МНБШЕ РХОШ Х ЙНМЯРПСЙРНПШ РХОНБ. оПХЛХРХБМШЕ РХОШ, ЙНРНПШЕ ХМРЕПЕЯСЧР МЮЯ, ЩРН:
+ML представляет несколько встроенных примитивных типов. Из них, с
+помощью конструкторов типов, могут быть построены составные типы. Пока
+мы будем использовать только конструктор функциональных типов
+{\verb+->+} и конструктор декартового произведения типов {\verb+*+}.
+В своё время мы рассмотрим и другие конструкторы, а также узнаем как
+определять новые типы и конструкторы типов. Примитивные типы, которые
+интересуют нас, это:
 
 %%ML features several built-in primitive types. From these, composite types may
 %%be built using various type constructors. For the moment, we will only use the
@@ -93,14 +97,15 @@ ML ОПЕДЯРЮБКЪЕР МЕЯЙНКЭЙН БЯРПНЕММШУ ОПХЛХРХБМШУ РХОНБ. хГ МХУ, Я ОНЛНЫЭЧ
 
 \begin{itemize}
 
-\item рХО {\tt unit}, ЛНФМН МЮГШБЮРЭ ЕЦН ОПНЖЕДСПМШЛ. 
-щРН НДМНЩКЕЛЕМРШИ РХО, ЕДХМЯРБЕММШИ ЩКЕЛЕМР ЙНРНПНЦН ГЮОХЯШБЮЕРЯЪ ЙЮЙ {\tt ()}. 
-нВЕБХДМН, ХЯОНКЭГНБЮМХЕ РХОЮ {\tt unit} МЕ ОЕПЕДЮ╦Р ЙЮЙНИ - КХАН ХМТНПЛЮЖХХ,
-РЮЙ  ВРН НМ ВЮЯРН ХЯОНКЭГСЕРЯЪ ЙЮЙ БНГБПЮЫЮЕЛШИ РХО ХЛОЕПЮРХБМН ГЮОХЯЮММШУ
-`ТСМЙЖХИ', ПЕГСКЭРЮР ЙНРНПШУ МЕ ГМЮВЕМХЕ БШВХЯКЕМХИ, Ю ЙЮЙНИ -КХАН ОНАНВМШИ ЩТТЕЙР. 
-мЮОПХЛЕП, РЮЙХУ ЙЮЙ {\tt include}.  щРН РЮЙФЕ ОНДУНДЪЫХИ РХО ДКЪ ЮПЦСЛЕМРЮ  
-FIX (?It is also a convenient argument where the only use of a function type is to delay
-evaluation.?)
+\item Тип {\tt unit}, можно называть его процедурным.  Это
+  одноэлементный тип, единственный элемент которого записывается как
+  {\tt ()}.  Очевидно, использование типа {\tt unit} не передаёт
+  какой-либо информации, так что он часто используется как
+  возвращаемый тип императивно записанных <<функций>>, результат
+  которых не значение вычислений, а какой-либо побочный эффект.
+  Например, таких как {\tt include}.  Это также подходящий тип для
+  аргумента FIX (?It is also a convenient argument where the only use
+  of a function type is to delay evaluation.?)
 
 %%\item The type {\tt unit}. This is a 1-element type, whose only element is
 %%written {\tt ()}. Obviously, something of type {\tt unit} conveys no
@@ -109,18 +114,20 @@ evaluation.?)
 %%a convenient argument where the only use of a function type is to delay
 %%evaluation.
 
-\item рХО {\tt bool}. дБСУЩКЕЛЕМРМШИ РХО АСКЕБШУ ГМЮВЕМХИ (ГМЮВЕМХИ ХЯРХММНЯРХ).
-щКЕЛЕМРШ ЩРНЦН РХОЮ: {\tt true} Х {\tt false}.
+\item Тип {\tt bool}. Двухэлементный тип булевых значений (значений
+  истинности).  Элементы этого типа: {\tt true} и {\tt false}.
 
 %%\item The type {\tt bool}. This is a 2-element type of booleans (truth-values)
 %%whose elements are written {\tt true} and {\tt false}.
 
-\item рХО {\tt int}. яНДЕПФХР ЙНМЕВМНЕ ОНДЛМНФЕЯРБН НРПХЖЮРЕКЭМШУ Х МЕНРПХЖЮРЕКЭМШУ
-ВХЯЕК. нАШВМН ГМЮВЕМХЪ БЮПЭХПСЧРЯЪ НР $-2^{30}$ ($-1073741824$) ДН $2^{30}-1$ ($1073741823$).
-\footnote{This is even more limited than expected for machine arithmetic because a bit is stolen for the
-garbage collector. We will see later how to use an alternative type of integers
-with unlimited precision.} щКЕЛЕМРШ ГЮОХЯШБЮЧРЯЪ НАШВМШЛ ЯОНЯНАНЛ,
-МЮОПХЛЕП: {\tt 0}, {\tt 32}, {\tt -25}.
+\item Тип {\tt int}. Содержит конечное подмножество отрицательных и
+  неотрицательных чисел. Обычно значения варьируются от $-2^{30}$
+  ($-1073741824$) до $2^{30}-1$ ($1073741823$).  \footnote{This is
+    even more limited than expected for machine arithmetic because a
+    bit is stolen for the garbage collector. We will see later how to
+    use an alternative type of integers with unlimited precision.}
+  Элементы записываются обычным способом, например: {\tt 0}, {\tt 32},
+  {\tt -25}.
 
 %%\item The type {\tt int}. This contains some finite subset of the positive and
 %%negative integers. Typically the permitted range is from $-2^{30}$
@@ -313,7 +320,7 @@ variables     & ::= & variable                                                  
 %%toplevel phrase, terminated by two successive semicolons, may be either an
 %%expression or a declaration.
 
-\section{дЮКЭМЕИЬХЕ ОПХЛЕПШ}
+\section{Дальнейшие примеры}
 
 %%It is easy to define by recursion a function that takes a positive integer $n$
 %%and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
