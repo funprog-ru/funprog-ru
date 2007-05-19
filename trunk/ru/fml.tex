@@ -30,7 +30,8 @@
 %%Instead, you can use ML's {\tt include} function to read in the file directly.
 %%For example, if the file {\tt myprog.ml} contains:
 
-\begin{boxed}\begin{lstlisting}
+\begin{boxed}
+\begin{lstlisting}
   let pythag x y z =
     x * x + y * y = z * z;;
 
@@ -39,18 +40,21 @@
   pythag 5 12 13;;
 
   pythag 1 2 3;;
-\end{lstlisting}\end{boxed}
+\end{lstlisting}
+\end{boxed}
 
 \noindent то введя в интерпретатор {\tt include "myprog.ml";;} вы получите:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #include "myprog.ml";;
   pythag : int -> int -> int -> bool = <fun>
   - : bool = true
   - : bool = true
   - : bool = false
   - : unit = ()
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 То есть, вывод системы ML получился такой же, как если бы вы печатали
 содержимое файла в консоль. Последняя линия вывода~-- это результат 
@@ -66,7 +70,8 @@
 %%In large programs, it is often helpful to include comments. In ML, these are
 %%written between the symbols {\tt (*} and {\tt *)}, e.g.
 
-\begin{boxed}\begin{lstlisting}
+\begin{boxed}
+\begin{lstlisting}
   (* ------------------------------------------------------ *)
   (* This function tests if (x,y,z) is a Pythagorean triple *)
   (* ------------------------------------------------------ *)
@@ -76,7 +81,8 @@
 
   (*comments*) pythag (*can*) 3 (*go*) 4 (*almost*) 5 (*anywhere*)
   (* and (* can (* be (* nested *) quite *) arbitrarily *) *);;
-\end{lstlisting}\end{boxed}
+\end{lstlisting}
+\end{boxed}
 
 \section{Основные типы данных и операции}
 
@@ -171,7 +177,8 @@ functions:
 %%example, here is a definition of a function performing composition of
 %%functions:
 
-\begin{boxed}\begin{lstlisting}
+\begin{boxed}
+\begin{lstlisting}
   #let successor x = x + 1;;
   successor : int -> int = <fun>
   #let o f g = fun x -> f(g x);;
@@ -185,7 +192,8 @@ functions:
   add3' : int -> int = <fun>
   #add3' 0;;
   - : int = 3
-\end{lstlisting}\end{boxed}
+\end{lstlisting}
+\end{boxed}
 
 %%It is not possible to specify the precedence of user-defined infixes, nor to
 %%make user-defined non-infix functions right-associative. Note that the implicit
@@ -194,7 +202,8 @@ functions:
 %%desired to use a function with special status as an ordinary constant, simply
 %%precede it by {\tt prefix}. For example:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #o successor successor;;
   Toplevel input:
   >o successor successor;;
@@ -204,7 +213,8 @@ functions:
   - : int -> int = <fun>
   #(prefix o) successor successor;;
   - : int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 %%With these questions of concrete syntax out of the way, let us present a
 %%systematic list of the operators on the basic types above. The unary operators
@@ -305,7 +315,8 @@ variables     & ::= & variable                                                  
 %%following is a valid declaration of a function {\tt add4}, which can be used to
 %%add 4 to its argument:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let add4 x =
     let y = successor x in
     let z = let w = successor y in
@@ -314,7 +325,8 @@ variables     & ::= & variable                                                  
   add4 : int -> int = <fun>
   #add4 1;;
   - : int = 5
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 %%It is instructive to unravel this declaration according to the above grammar. A
 %%toplevel phrase, terminated by two successive semicolons, may be either an
@@ -326,36 +338,43 @@ variables     & ::= & variable                                                  
 %%and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
 %%times):
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec funpow n f x =
      if n = 0 then x
      else funpow (n - 1) f (f x);;
   funpow : int -> ('a -> 'a) -> 'a -> 'a = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 In fact, a little thought will show that the function {\tt funpow} takes a
 machine integer $n$ and returns the Church numeral corresponding to $n$. Since
 functions aren't printed, we can't actually look at the lambda expression
 representing a Church numeral:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #funpow 6;;
   - : ('_a -> '_a) -> '_a -> '_a = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 However it is straightforward to define an inverse function to {\tt funpow}
 that takes a Church numeral back to a machine integer:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let defrock n = n (fun x -> x + 1) 0;;
   defrock : ((int -> int) -> int -> 'a) -> 'a = <fun>
   #defrock(funpow 32);;
   - : int = 32
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \noindent We can try out some of the arithmetic operations on Church numerals:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let add m n f x = m f (n f x);;
   add : ('a -> 'b -> 'c) -> ('a -> 'd -> 'b) -> 'a -> 'd -> 'c = <fun>
   #let mul m n f x = m (n f) x;;
@@ -373,24 +392,28 @@ that takes a Church numeral back to a machine integer:
   - : int = 20
   #test exp 2 10;;
   - : int = 1024
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 The above is not a very efficient way of performing arithmetic operations. ML
 does not have a function for exponentiation, but it is easy to define one by
 recursion:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
    #let rec exp x n =
      if n = 0 then 1
      else x * exp x (n - 1);;
    exp : int -> int -> int = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 However this performs $n$ multiplications to calculate $x^n$. A more efficient
 way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
 (x^n)^2$ as follows:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let square x = x * x;;
   square : int -> int = <fun>
   #let rec exp x n =
@@ -403,12 +426,14 @@ way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
   - : int = 1024
   #2 exp 20;;
   - : int = 1048576
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Another classic operation on natural numbers is to find their greatest common
 divisor (highest common factor) using Euclid's algorithm:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec gcd x y =
        if y = 0 then x else gcd y (x mod y);;
   gcd : int -> int -> int = <fun>
@@ -418,31 +443,36 @@ divisor (highest common factor) using Euclid's algorithm:
   - : int = 1
   #gcd 24 60;;
   - : int = 12
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 We have used a notional recursion operator {\tt Rec} to explain recursive
 definitions. We can actually define such a thing, and use it:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec Rec f = f(fun x -> Rec f x);;
   Rec : (('a -> 'b) -> 'a -> 'b) -> 'a -> 'b = <fun>
   #let fact = Rec (fun f n -> if n = 0 then 1 else n * f(n - 1));;
   fact : int -> int = <fun>
   #fact 3;;
   it : int = 6
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Note, however, that the lambda was essential, otherwise the expression {\tt Rec
 f} goes into an infinite recursion before it is even applied to its argument:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec Rec f = f(Rec f);;
   Rec : ('a -> 'a) -> 'a = <fun>
   #let fact = Rec (fun f n -> if n = 0 then 1 else n * f(n - 1));;
   Uncaught exception: Out_of_memory
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
-\section{Type definitions}
+\section{Определения типов}
 
 We have promised that ML has facilities for declaring new type constructors, so
 that composite types can be built up out of existing ones. In fact, ML goes
@@ -454,10 +484,12 @@ ones and itself. We will illustrate this by a few examples. The first one is
 the definition of a {\em sum} type, intended to correspond to the disjoint
 union of two existing types.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type ('a,'b)sum = inl of 'a | inr of 'b;;
   Type sum defined.
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Roughly, an object of type {\verb+('a,'b)sum+} is {\em either} something of
 type {\verb+'a+} {\em or} something of type {\verb+'b+}. More formally,
@@ -467,7 +499,8 @@ are functions that take objects of the component types and inject them into the
 new type. Indeed, we can see their types in the ML system and apply them to
 objects:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #inl;;
   - : 'a -> ('a, 'b) sum = <fun>
   #inr;;
@@ -476,7 +509,8 @@ objects:
   - : (int, 'a) sum = inl 5
   #inr false;;
   - : ('a, bool) sum = inr false
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 We can visualize the situation via the following diagram. Given two existing
 types $\alpha$ and $\beta$, the type $(\alpha,\beta)sum$ is composed precisely
@@ -530,11 +564,13 @@ The second and third properties of constructors justify our using {\em pattern
 matching}. This is done by using more general {\em varstructs} as the arguments
 in a lambda, e.g.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #fun (inl n) -> n > 6
      | (inr b) -> b;;
   - : (int, bool) sum -> bool = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \noindent This function has the property, naturally enough, that when applied
 to {\tt inl n} it returns {\verb+n > 6+} and when applied to {\tt inr b} it
@@ -550,19 +586,22 @@ will fall under one pattern or the other, so the function is defined
 everywhere. Actually, it is permissible to relax this last property by omitting
 certain patterns, though the ML system then issues a warning:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #fun (inr b) -> b;;
   Toplevel input:
   >fun (inr b) -> b;;
   >^^^^^^^^^^^^^^^^
   Warning: this matching is not exhaustive.
   - : ('a, 'b) sum -> 'b = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 If this function is applied to something of the form {\tt inl x}, then it will
 not work:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let f = fun (inr b) -> b;;
   Toplevel input:
   >let f = fun (inr b) -> b;;
@@ -571,38 +610,45 @@ not work:
   f : ('a, 'b) sum -> 'b = <fun>
   #f (inl 3);;
   Uncaught exception: Match_failure ("", 452, 468)
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Though booleans are built into ML, they are effectively defined by a rather
 trivial instance of a recursive type, often called an {\em enumerated type},
 where the constructors take no arguments:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type bool = false | true;;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Indeed, it is perfectly permissible to define things by matching over the truth
 values. The following two phrases are completely equivalent:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #if 4 < 3 then 1 else 0;;
   - : int = 0
   #(fun true -> 1 | false -> 0) (4 < 3);;
   - : int = 0
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Pattern matching is, however, not limited to casewise definitions over elements
 of recursive types, though it is particularly convenient there. For example, we
 can define a function that tells us whether an integer is zero as follows:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #fun 0 -> true | n -> false;;
   - : int -> bool = <fun>
   #(fun 0 -> true | n -> false) 0;;
   - : bool = true
   #(fun 0 -> true | n -> false) 1;;
   - : bool = false
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 In this case we no longer have mutual exclusivity of patterns, since {\tt 0}
 matches either pattern. The patterns are examined in order, one by one, and the
@@ -615,7 +661,8 @@ Note that only {\em constructors} may be used in the above special way as
 components of patterns. Ordinary constants will be treated as new variables
 bound inside the pattern. For example, consider the following:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let true_1 = true;;
   true_1 : bool = true
   #let false_1 = false;;
@@ -626,7 +673,8 @@ bound inside the pattern. For example, consider the following:
   >                   ^^^^^^^
   Warning: this matching case is unused.
   - : int = 1
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 In general, the unit element {\tt ()}, the truth values, the integer numerals,
 the string constants and the pairing operation (infix comma) have constructor
@@ -649,26 +697,30 @@ $$ \mbox{let}\; pattern \mbox{ = } expression $$
 
 \noindent but in this case only a single pattern is allowed.
 
-\subsection{Recursive types}
+\subsection{Рекурсивные типы}
 
 The previous examples have all been recursive only vacuously, in that we have
 not defined a type in terms of itself. For a more interesting example, we will
 declare a type of lists (finite ordered sequences) of elements of type {\tt
 'a}.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type ('a)list = Nil | Cons of 'a * ('a)list;;
   Type list defined.
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \noindent Let us examine the types of the constructors:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #Nil;;
   - : 'a list = Nil
   #Cons;;
   - : 'a * 'a list -> 'a list = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 The constructor {\tt Nil}, which takes no arguments, simply creates some object
 of type {\verb+('a)list+} which is to be thought of as the empty list. The
@@ -677,7 +729,8 @@ of the new type {\tt ('a)list} and gives another, which we think of as arising
 from the old list by adding one element to the front of it. For example, we can
 consider the following:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #Nil;;
   - : 'a list = Nil
   #Cons(1,Nil);;
@@ -686,7 +739,8 @@ consider the following:
   - : int list = Cons (1, Cons (2, Nil))
   #Cons(1,Cons(2,Cons(3,Nil)));;
   - : int list = Cons (1, Cons (2, Cons (3, Nil)))
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Because the constructors are distinct and injective, it is easy to see that all
 these values, which we think of as lists $[]$, $[1]$, $[1;2]$ and $[1;2;3]$,
@@ -697,7 +751,8 @@ difference is syntactic: the empty list is written {\verb+[]+} and the
 recursive constructor {\verb+::+}, has infix status. Thus, the above lists are
 actually written:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #[];;
   - : 'a list = []
   #1::[];;
@@ -706,7 +761,8 @@ actually written:
   - : int list = [1; 2]
   #1::2::3::[];;
   - : int list = [1; 2; 3]
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 The lists are printed in an even more natural notation, and this is also
 allowed for input. Nevertheless, when the exact expression in terms of
@@ -714,7 +770,8 @@ constructors is needed, it must be remembered that this is only a surface
 syntax. For example, we can define functions to take the head and tail of a
 list, using pattern matching.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let hd (h::t) = h;;
   Toplevel input:
   >let hd (h::t) = h;;
@@ -727,26 +784,30 @@ list, using pattern matching.
   >    ^^^^^^^^^^^^^
   Warning: this matching is not exhaustive.
   tl : 'a list -> 'a list = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 The compiler warns us that these both fail when applied to the empty list,
 since there is no pattern to cover it (remember that the constructors are
 distinct). Let us see them in action:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #hd [1;2;3];;
   - : int = 1
   #tl [1;2;3];;
   - : int list = [2; 3]
   #hd [];;
   Uncaught exception: Match_failure
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Note that the following is not a correct definition of {\tt hd}. In fact, it
 constrains the input list to have exactly two elements for matching to succeed,
 as can be seen by thinking of the version in terms of the constructors:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let hd [x;y] = x;;
   Toplevel input:
   >let hd [x;y] = x;;
@@ -757,12 +818,14 @@ as can be seen by thinking of the version in terms of the constructors:
   - : int = 5
   #hd [5;6;7];;
   Uncaught exception: Match_failure
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Pattern matching can be combined with recursion. For example, here is a
 function to return the length of a list:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec length =
      fun [] -> 0
        | (h::t) -> 1 + length t;;
@@ -771,21 +834,24 @@ function to return the length of a list:
   - : int = 0
   #length [5;3;1];;
   - : int = 3
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Alternatively, this can be written in terms of our earlier `destructor'
 functions {\tt hd} and {\tt tl}:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec length l =
      if l = [] then 0
      else 1 + length(tl l);;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 This latter style of function definition is more usual in many languages,
 notably LISP, but the direct use of pattern matching is often more elegant.
 
-\subsection{Tree structures}
+\subsection{Древовидные структуры}
 
 It is often helpful to visualize the elements of recursive types as tree
 structures, with the recursive constructors at the branch nodes and the other
@@ -814,10 +880,12 @@ spindly and one-sided, with the list {\tt [1;2;3;4]} being represented as:
 It is not difficult to define recursive types which allow more balanced trees,
 e.g.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type ('a)btree = Leaf of 'a
                   | Branch of ('a)btree * ('a)btree;;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 In general, there can be several different recursive constructors, each with a
 different number of descendants. This gives a very natural way of representing
@@ -825,15 +893,18 @@ the {\em syntax trees} of programming (and other formal) languages. For
 example, here is a type to represent arithmetical expressions built up from
 integers by addition and multiplication:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type expression = Integer of int
                    | Sum of expression * expression
                    | Product of expression * expression;;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \noindent and here is a recursive function to evaluate such expressions:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec eval =
      fun (Integer i) -> i
        | (Sum(e1,e2)) -> eval e1 + eval e2
@@ -841,7 +912,8 @@ integers by addition and multiplication:
   eval : expression -> int = <fun>
   #eval (Product(Sum(Integer 1,Integer 2),Integer 5));;
   - : int = 15
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Such abstract syntax trees are a useful representation which allows all sorts
 of manipulations. Often the first step programming language compilers and
@@ -853,26 +925,31 @@ write ML versions of the formal rules of lambda calculus that we were
 considering earlier. First, the following type is used to represent lambda
 terms:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type term = Var of string
              | Const of string
              | Comb of term * term
              | Abs of string * term;;
   Type term defined.
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Note that we make {\tt Abs} take a variable name and a term rather than two
 terms in order to prohibit the formation of terms that aren't valid. For
 example, we represent the term $\lamb{x\; y} y\; (x\; x\; y)$ by:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   Abs("x",Abs("y",Comb(Var "y",Comb(Comb(Var "x",Var "x"),Var "y"))))
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Here is the recursive definition of a function {\tt free\_in} to decide whether
 a variable is free in a term:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec free_in x =
       fun (Var v) -> x = v
         | (Const c) -> false
@@ -883,14 +960,16 @@ a variable is free in a term:
   - : bool = true
   #free_in "x" (Abs("x",Comb(Var "x",Var "y")));;
   - : bool = false
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Similarly, we can define substitution by recursion. First, though, we need a
 function to rename variables to avoid name clashes. We want the ability to
 convert an existing variable name to a new one that is not free in some given
 expression. The renaming is done by adding prime characters.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec variant x t =
      if free_in x t then variant (x^"'") t
      else x;;
@@ -901,11 +980,13 @@ expression. The renaming is done by adding prime characters.
   - : string = "x"
   #variant "x" (Comb(Var "f",Comb(Var "x",Var "x'")));;
   - : string = "x''"
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 \noindent Now we can define substitution just as we did in abstract terms:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let rec subst u (t,x) =
     match u with
       Var y -> if x = y then t else Var y
@@ -917,7 +998,8 @@ expression. The renaming is done by adding prime characters.
                     Abs(z,subst (subst s (Var y,z)) (t,x))
                   else Abs(y,subst s (t,x));;
   subst : term -> term * string -> term = <fun>
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Note the very close parallels between the standard mathematical presentation of
 lambda calculus, as we presented earlier, and the ML version here. All we
@@ -931,10 +1013,12 @@ features.
 A recursive type may contain nested instances of other type constructors,
 including the function space constructor. For example, consider the following:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type ('a)embedding = K of ('a)embedding->'a;;
   Type embedding defined.
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 If we stop to think about the underlying semantics, this looks disquieting.
 Consider for example the special case when {\verb+'a+} is {\verb+bool+}. We
@@ -962,7 +1046,8 @@ let} is only used for the sake of efficiency, but we {\em do} need the
 $\eta$-redex involving {\tt z} in order to prevent looping under ML's
 evaluation strategy.
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #let Y h =
     let g (K x) z = h (x (K x)) z in
     g (K g);;
@@ -971,12 +1056,14 @@ evaluation strategy.
   fact : int -> int = <fun>
   #fact 6;;
   - : int = 720
-\end{verbatim}\end{boxed}
+\end{verbatim}
+
+\end{boxed}
 
 Thus, recursive types are a powerful addition to the language, and allow us to
 back off the change of making the recursion operator a primitive.
 
-\section*{Exercises}
+\section*{Упражнения}
 
 \begin{enumerate}
 
@@ -991,9 +1078,11 @@ back off the change of making the recursion operator a primitive.
 \item It would be possible, though inefficient, to define natural numbers using
 the following recursive type:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type num = Zero | Suc of num;;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Define functions to perform arithmetic on natural numbers in this form.
 
@@ -1008,9 +1097,11 @@ formed, but otherwise map down to the primitive constructors.
 
 \item Consider a type of binary trees with strings at the nodes defined by:
 
-\begin{boxed}\begin{verbatim}
+\begin{boxed}
+\begin{verbatim}
   #type stree = Leaf | Branch of stree * string * stree;;
-\end{verbatim}\end{boxed}
+\end{verbatim}
+\end{boxed}
 
 Write a function {\tt strings} to return a list of the strings occurring in the
 tree in left-to-right order, i.e. at each node it appends the list resulting
@@ -1030,9 +1121,11 @@ operator?\footnote{The answer lies in the `Curry-Howard isomorphism' --- see
 \citeN{girard-prat} for example.} What is the type of the following recursive
 function?
 
-\begin{boxed}\begin{lstlisting}
+\begin{boxed}
+\begin{lstlisting}
   let rec f i = (i o f) (i o i);;
-\end{lstlisting}\end{boxed}
+\end{lstlisting}
+\end{boxed}
 
 Show how it can be used to write down ML expressions with completely
 polymorphic type $\alpha$. Can you write a terminating expression with this
