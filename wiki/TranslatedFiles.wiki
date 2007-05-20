@@ -27,7 +27,7 @@
   * (e) *l7.tex* - перевод lg, прочитали
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью)
-  * (e) *effect.tex* - перевод alexott, прочитали
+  * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали
   * (e) *ml.tex* - перевод alexott, прочитали lg
 
@@ -47,3 +47,19 @@
   * (t) *types.tex* - перевод, прочитали
   * (t) *l10.tex* - перевод, прочитали
   * (t) *l12.tex* - перевод, прочитали
+
+= File links =
+
+При правке файлов нужно иметь ввиду, что исправления в одном файле
+могут привести к необходимости исправлений в других файлах.  Вот часто
+используемые связи:
+
+intro.tex -- l1.tex -- plan.tex
+lamb.tex -- l2.tex -- plan.tex
+prog.tex -- l3.tex -- plan.tex
+types.tex -- l4.tex -- plan.tex
+ml.tex -- l5.tex -- plan.tex
+fml.tex -- l6.tex -- plan.tex
+proving.tex -- l7.tex -- plan.tex
+effect.tex -- l8.tex -- plan.tex
+examples.tex -- l9.tex -- l10.tex -- l11.tex -- l12.tex -- plan.tex
