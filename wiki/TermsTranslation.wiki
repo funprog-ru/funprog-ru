@@ -72,7 +72,7 @@ currying - у Х/Ф переводится как ''карринг''.  Если 
 Голосование:
 
 {{{
-    каррирование - 2 (lg.zevlg, dimiii)
+    каррирование - 3 (lg.zevlg, dimiii, vshabanoff)
     карринг      - 1 (dimitri.timofeev)
 }}}
 
