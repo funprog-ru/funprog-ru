@@ -25,6 +25,7 @@
   * (e) *l5.tex* - перевод lg, прочитали alexott
   * (e) *l6.tex* - перевод lg, прочитали alexott
   * (e) *l7.tex* - перевод lg, прочитали
+  * (e) *l8.tex* - перевод lg, прочитали
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью)
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
@@ -35,7 +36,6 @@
 
   * (t) *fml.tex* - перевод pr.dimiii, прочитали lg
   * (t) *l9.tex* - перевод pr.dimiii, прочитали
-  * (t) *l8.tex* - перевод lg, прочитали
   * (t) *proving.tex* - перевод Lambda Henchman, прочитали
 
   * (t) *plan.tex* - перевод, прочитали
