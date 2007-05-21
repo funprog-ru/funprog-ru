@@ -474,15 +474,26 @@ f} goes into an infinite recursion before it is even applied to its argument:
 
 \section{Определения типов}
 
-We have promised that ML has facilities for declaring new type constructors, so
-that composite types can be built up out of existing ones. In fact, ML goes
-further and allows a composite type to be built up not only out of preexisting
-types but also from the composite type itself. Such types, naturally enough,
-are said to be {\em recursive}. They are declared using the {\tt type} keyword
-followed by an equation indicating how the new type is built up from existing
-ones and itself. We will illustrate this by a few examples. The first one is
-the definition of a {\em sum} type, intended to correspond to the disjoint
-union of two existing types.
+Мы уже говорили о том, что ML имеет возможности для объявления новых
+конструкторов типов, так что сложные типы данных могут быть построены
+на базе существующих.  В действительности, ML позволяет создавать типы
+не только из существующих типов, но и из самих сложных типов данных.
+Такие типы называются {\em рекурсивными}.  Они объявляются с помощью
+ключевого слова {\tt type}, за которым выражение, описывающее как тип
+создается из существующих типов и себя.  Мы покажем это на нескольких
+примеров.  Первым примером будет определение типа {\em sum}, которые
+должен соответствовать disjoint???? объединению двух существующих
+типов.
+
+% We have promised that ML has facilities for declaring new type constructors, so
+% that composite types can be built up out of existing ones. In fact, ML goes
+% further and allows a composite type to be built up not only out of preexisting
+% types but also from the composite type itself. Such types, naturally enough,
+% are said to be {\em recursive}. They are declared using the {\tt type} keyword
+% followed by an equation indicating how the new type is built up from existing
+% ones and itself. We will illustrate this by a few examples. The first one is
+% the definition of a {\em sum} type, intended to correspond to the disjoint
+% union of two existing types.
 
 \begin{boxed}
 \begin{verbatim}
@@ -491,13 +502,21 @@ union of two existing types.
 \end{verbatim}
 \end{boxed}
 
-Roughly, an object of type {\verb+('a,'b)sum+} is {\em either} something of
-type {\verb+'a+} {\em or} something of type {\verb+'b+}. More formally,
-however, all these things have different types. The type declaration also
-declares the so-called {\em constructors} {\verb+inl+} and {\verb+inr+}. These
-are functions that take objects of the component types and inject them into the
-new type. Indeed, we can see their types in the ML system and apply them to
-objects:
+Грубо говоря, объект типа {\verb+('a,'b)sum+} является {\em либо}
+чем-то типа {\verb+'a+}, {\em либо} чем-то типа {\verb+'b+}.  Однако,
+говоря более формально, все эти объяекты имеют разные типы.
+Объявление типа, также определяет так называемые {\em конструкторы}
+{\verb+inl+} и {\verb+inr+}.  Это функции, которые получают объекты с
+типами компонентов, и встраивают ?????inject их в новый тип.  Мы
+действительно можем видеть их типы в ML и применять их к объектам:
+
+% Roughly, an object of type {\verb+('a,'b)sum+} is {\em either} something of
+% type {\verb+'a+} {\em or} something of type {\verb+'b+}. More formally,
+% however, all these things have different types. The type declaration also
+% declares the so-called {\em constructors} {\verb+inl+} and {\verb+inr+}. These
+% are functions that take objects of the component types and inject them into the
+% new type. Indeed, we can see their types in the ML system and apply them to
+% objects:
 
 \begin{boxed}
 \begin{verbatim}
@@ -512,10 +531,15 @@ objects:
 \end{verbatim}
 \end{boxed}
 
-We can visualize the situation via the following diagram. Given two existing
-types $\alpha$ and $\beta$, the type $(\alpha,\beta)sum$ is composed precisely
-of separate copies of $\alpha$ and $\beta$, and the two constructors map onto
-the respective copies:
+Мы можем показать данную ситуацию с помощью следующей диаграммы.  При
+наличии двух существующих типов $\alpha$ и $\beta$, тип
+$(\alpha,\beta)sum$ создается из точных отдельных копий $\alpha$ и
+$\beta$, и два конструктора отображаются на соответствующие копии:
+
+% We can visualize the situation via the following diagram. Given two existing
+% types $\alpha$ and $\beta$, the type $(\alpha,\beta)sum$ is composed precisely
+% of separate copies of $\alpha$ and $\beta$, and the two constructors map onto
+% the respective copies:
 
 \bigskip
 {\thicklines
@@ -533,14 +557,22 @@ the respective copies:
 }
 \bigskip
 
-This is similar to a {\tt union} in C, but in ML the copies of the component
-types are kept apart and one always knows which of these an element of the
-union belongs to. By contrast, in C the component types are overlapped, and the
-programmer is responsible for this book-keeping.
+Это аналогично использованию {\tt union} в языке C, но в ML копии
+типов компонентов хранятся отдельно и кто-то всегда знает, к какому из
+этих элементов относится объединение.  В противоположность этому, в C
+типы компонентов пересекаются и программист отвечает за корректность
+работы с ними.
 
-\subsection{Pattern matching}
+% This is similar to a {\tt union} in C, but in ML the copies of the component
+% types are kept apart and one always knows which of these an element of the
+% union belongs to. By contrast, in C the component types are overlapped, and the
+% programmer is responsible for this book-keeping.
 
-The constructors in such a definition have three very important properties:
+\subsection{Сопоставление с образцом}
+
+Конструкторы в таком определении имеют три очень важных качества:
+
+% The constructors in such a definition have three very important properties:
 
 \begin{itemize}
 
