@@ -1,9 +1,9 @@
 \chapter{Более подробно о ML}
 
-В этой главе закрепим предыдущие примеры, более точно определив
+В этой главе мы закрепим предыдущие примеры, более точно определив
 синтаксис и основные возможности ML, а затем перейдём к рассмотрению
 некоторых дополнительных возможностей, таких как рекурсивные типы. Но
-начнём мы с обсуждения взаимодействия с системой.
+начнём обсуждения взаимодействия с системой.
 %%In this chapter, we consolidate the previous examples by specifying the basic
 %%facilities of ML and the syntax of phrases more precisely, and then go on to
 %%treat some additional features such as recursive types. We might start by
@@ -57,7 +57,7 @@
 \end{boxed}
 
 То есть, вывод системы ML получился такой же, как если бы вы печатали
-содержимое файла в консоль. Последняя линия вывода~-- это результат 
+содержимое файла в консоль. Последняя строка вывода~-- это результат 
 вычисления самого выражения {\tt include}  
 % BUG# вместо 'линия вывода' может лучше 'строка вывода'? --lg
 
@@ -127,13 +127,13 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 %%whose elements are written {\tt true} and {\tt false}.
 
 \item Тип {\tt int}. Содержит конечное подмножество отрицательных и
-  неотрицательных чисел. Обычно значения варьируются от $-2^{30}$
-  ($-1073741824$) до $2^{30}-1$ ($1073741823$).  \footnote{This is
-    even more limited than expected for machine arithmetic because a
-    bit is stolen for the garbage collector. We will see later how to
-    use an alternative type of integers with unlimited precision.}
-  Элементы записываются обычным способом, например: {\tt 0}, {\tt 32},
-  {\tt -25}.
+ неотрицательных чисел. Обычно значения варьируются от $-2^{30}$
+ ($-1073741824$) до $2^{30}-1$ ($1073741823$). \footnote{На самом
+ деле, в машинной арифметике значения ещё более ограничены,
+ поскольку один бит используется сборщиком мусора (см.
+ определения). Далее мы увидим, как использовать альтернативный
+ тип целых с неограниченной точностью.} Элементы записываются
+ обычным способом, например: {\tt 0}, {\tt 32}, {\tt -25}.
 
 %%\item The type {\tt int}. This contains some finite subset of the positive and
 %%negative integers. Typically the permitted range is from $-2^{30}$
@@ -143,6 +143,13 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 %%with unlimited precision.} The numerals are written in the usual way,
 %%optionally with a negation sign, e.g. {\tt 0}, {\tt 32}, {\tt -25}.
 
+\item Тип {\tt string} содержит строки (т.е. конечные
+ последовательности) символов. Они записываются и печатаются в
+ двойных кавычках, вот так: \lstinline!"hello"!. Для записи
+ специальных символов используется экранирование в стиле языка С.
+ Например, (FIX) \lstinline!"! - запись двойной кавычки,
+ {\verb+\n+} - символ перевода строки.
+
 %%\item The type {\tt string} contains strings (i.e. finite sequences) of
 %%characters. They are written and printed between double quotes,
 %%e.g. \lstinline!"hello"!. In order to encode include special characters in strings, C-like
@@ -151,18 +158,20 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 
 \end{itemize}
 
-The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
-to be regarded as constants in the lambda calculus sense. There are other
-constants corresponding to {\em operations} on the basic types. Some of these
-may be written as infix operators, for the sake of familiarity. These have a
-notion of precedence so that expressions are grouped together as one would
-expect. For example, we write {\tt x + y} rather than {\tt + x y} and {\tt x <
-2 * y + z} rather than {\tt < x (+ (* 2 y) z)}. The logical operator {\tt not}
-also has a special parsing status, in that the usual left-associativity rule is
-reversed for it: {\tt not not p} means {\tt not (not p)}. User-defined
-functions may be granted infix status via the {\tt \#infix} directive. For
-example, here is a definition of a function performing composition of
-functions:
+Значения, такие как {\tt ()}, {\tt false}, {\tt 7} и
+ \lstinline!"caml"!,  в смысле $\lambda-$исчисления рассматриваются 
+как константы. Другие константы соответствуют {\em операциям} на
+ основных типах. Некоторые из них, из соображений привычности,
+ могут быть записаны как инфиксные. Для операций определено понятие
+ приоритета, поэтому выражения группируются так, как ожидается.
+ Например, мы пишем {\tt x + y} вместо {\tt + x y}, и
+ {\tt x < 2 * y + z} вместо {\tt < x (+ (* 2 y) z)}. Логический
+ оператор {\tt not} выделяется тем, что имеет особое правило разбора,
+ для него не выполняется обычное правило ассоциативности слева:
+ {\tt not not p} означает {\tt not (not p)}. Функцию, определённую
+ пользователем, можно задать как инфиксную, с помощью директивы
+ {\tt \#infix}.(FIX в окамле () используется + ещё какие - то условия)
+ Например, вот определение функции, выполняющей композицию функций:
 
 %%The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
 %%to be regarded as constants in the lambda calculus sense. There are other
@@ -195,6 +204,15 @@ functions:
 \end{lstlisting}
 \end{boxed}
 
+В ML нет возможностей задавать приоритет для инфиксных операций,
+ определённых пользователем, а также определять неинфиксные операции
+ как правоассоциативные. Также обратите внимание, что неявная
+ операция 'аппликация функции'(FIX check in wiki) имеет приоритет
+ выше, чем у любой бинарной операции, так что {\tt successor 1 * 2}
+ разбирается как {\tt (successor 1) * 2}. Если хотите использовать
+ функцию со специальным статусом (FIX что ещё за статус???) как
+ обычную константу, вам потребуется {\tt prefix}:
+
 %%It is not possible to specify the precedence of user-defined infixes, nor to
 %%make user-defined non-infix functions right-associative. Note that the implicit
 %%operation of `function application' has a higher precedence than any binary
@@ -216,6 +234,9 @@ functions:
 \end{verbatim}
 \end{boxed}
 
+Разобравшись с этими деталями синтаксиса, давайте рассмотрим список операций
+ на основных типах. Унарные операции:
+
 %%With these questions of concrete syntax out of the way, let us present a
 %%systematic list of the operators on the basic types above. The unary operators
 %%are:
@@ -223,45 +244,55 @@ functions:
 \bigskip
 \begin{tabular}{|l|l|l|}
 \hline
-Operator   & Type                             & Meaning               \\
+Оператор   & Тип                             & Значение               \\
 \hline
-{\tt -}       & {\tt int -> int}    & Numeric negation                \\
-{\tt not}     & {\tt bool -> bool}  & Logical negation                \\
+{\tt -}       & {\tt int -> int}    & Численное отрицание                \\
+{\tt not}     & {\tt bool -> bool}  & Логическое отрицание             \\
 \hline
 \end{tabular}
 \bigskip
 
-%%\noindent and the binary operators, in approximately decreasing order of
+\noindent и бинарные операции, в порядке убывания приоритета:
+
+%\noindent and the binary operators, in approximately decreasing order of
 %%precedence, are:
 
 \bigskip
 \begin{tabular}{|l|l|l|}
 \hline
-Operator   & Type                             & Meaning               \\
+Оператор   & Тип                             & Значение               \\
 \hline
-{\tt mod}  & {\tt int -> int -> int}          & Modulus (remainder)   \\
-{\tt *}    & {\tt int -> int -> int}          & Multiplication        \\
-{\tt /}    & {\tt int -> int -> int}          & Truncating division   \\
-{\tt +}    & {\tt int -> int -> int}          & Addition              \\
-{\tt -}    & {\tt int -> int -> int}          & Subtraction           \\
-{\verb+^+} & {\tt string -> string -> string} & String concatenation  \\
-{\tt =}    & {\tt 'a -> 'a -> bool}           & Equality              \\
-{\tt <>}   & {\tt 'a -> 'a -> bool}           & Inequality            \\
-{\tt <}    & {\tt 'a -> 'a -> bool}           & Less than             \\
-{\tt <=}   & {\tt 'a -> 'a -> bool}           & Less than or equal    \\
-{\tt >}    & {\tt 'a -> 'a -> bool}           & Greater than          \\
-{\tt >=}   & {\tt 'a -> 'a -> bool}           & Greater than or equal \\
-{\tt \&}   & {\tt bool -> bool -> bool}       & Boolean `and'         \\
-{\tt or}   & {\tt bool -> bool -> bool}       & Boolean `or'          \\
+{\tt mod}  & {\tt int -> int -> int}          & Взятие модуля   \\
+{\tt *}    & {\tt int -> int -> int}          & Произведение        \\
+{\tt /}    & {\tt int -> int -> int}          & Целочисленное деление  \\
+{\tt +}    & {\tt int -> int -> int}          & Сложение              \\
+{\tt -}    & {\tt int -> int -> int}          & Вычитание           \\
+{\verb+^+} & {\tt string -> string -> string} & Склейка строк  \\
+{\tt =}    & {\tt 'a -> 'a -> bool}           & Равенство              \\
+{\tt <>}   & {\tt 'a -> 'a -> bool}           & Неравенство            \\
+{\tt <}    & {\tt 'a -> 'a -> bool}           & Меньше чем             \\
+{\tt <=}   & {\tt 'a -> 'a -> bool}           & Меньше или равно    \\
+{\tt >}    & {\tt 'a -> 'a -> bool}           & Больше чем          \\
+{\tt >=}   & {\tt 'a -> 'a -> bool}           & Больше или равно \\
+{\tt \&}   & {\tt bool -> bool -> bool}       & Логическое `и'         \\
+{\tt or}   & {\tt bool -> bool -> bool}       & Логическое `или'          \\
 \hline
 \end{tabular}
 \bigskip
+
+Например, {\tt x > 0 \& x < 1} парсится как {\tt \& (> x 0) (< x 1)}.
+ Заметьте, что все сравнения, не только по равенству, полиморфны. Они не 
+только соответствующим образом упорядочивают числа и строчки, но также и 
+остальные примитивные, и составные типы. Однако, они не применимы к функциям.
 
 %%For example, {\tt x > 0 \& x < 1} is parsed as {\tt \& (> x 0) (< x 1)}. Note
 %%that all the comparisons, not just the equality relation, are polymorphic. They
 %%not only order integers in the expected way, and strings alphabetically, but
 %%all other primitive types and composite types in a fairly natural way. Once
 %%again, however, they are not in general allowed to be used on functions.
+
+Две логические операции {\tt \&} и {\tt or} имеют особую стратегию
+ вычисления. В сущности, их можно рассматривать как синонимы условных выражений:
 
 %%The two boolean operations {\tt \&} and {\tt or} have their own special
 %%evaluation strategy, like the conditional expression. In fact, they can be
@@ -271,6 +302,10 @@ Operator   & Type                             & Meaning               \\
 p \mbox{ \& } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
 p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
 \end{eqnarray*}
+
+Следовательно, операция `and' вычисляет первый аргумент, и только если его
+ значение true, вычисляет следующий. Напротив, `or' вычисляет первый аргумент,
+ и только если это false, вычисляет второй.
 
 %%Thus, the `and' operation evaluates its first argument, and only if it is true,
 %%evaluates its second. Conversely, the `or' operation evaluates its first
@@ -1169,3 +1204,4 @@ property? What about an arbitrary function type $\alpha \to \beta$?
 %%% Local Variables:
 %%% TeX-master: "all"
 %%% End:
+
