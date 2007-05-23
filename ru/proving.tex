@@ -1,188 +1,348 @@
-\chapter{Proving programs correct}
+\chapter{Доказательство корректности программ}
+%\chapter{Proving programs correct}
 
-As programmers know through bitter personal experience, it can be very
-difficult to write a program that is {\em correct}, i.e. performs its intended
-function. Most large programs have bugs. The consequences of these bugs can
-vary widely. Some bugs are harmless, some merely irritating. Some are deadly.
-For example the programs inside heart pacemakers, aircraft autopilots, car
-engine management systems and antilock braking systems, radiation therapy
-machines and nuclear reactor controllers are {\em safety critical}. An error in
-one of them can lead directly to loss of life, possibly on a large scale. As
-computers become ever more pervasive in society, the number of ways in which
-program bugs can kill people increases.\footnote{Similar remarks apply to
-hardware, but we will focus on software.}
+Программисты не раз убеждались на своём горьком опыте как бывает сложно
+написать {\em корректную} программу, то есть такую, которая делает в 
+точности то, что требуется. Подавляющее большинство крупных программ содержит
+ошибки, последствия которых могут быть самыми различными. Некоторые ошибки
+безобидны, другие~--- раздражают, а некоторые~--- смертельно опасны. К примеру,
+программное обеспечение кардиостимуляторов, автопилотов, систем управления
+двигателями, антиблокировочных тормозных систем, аппаратуры радиационной 
+терапии, систем управления ядерных реакторов {\em критично к наличию ошибок}. 
+Ошибки, допущенные при разработке таких программ, могут повлечь за собой 
+массовые человеческие жертвы. Чем глубже проникновение компьютеров во все 
+сферы жизни человечества, тем серьезнее возможная угроза жизни людей, 
+порождаемая ошибками в программах.
+\footnote{Аппаратное обеспечение подвержено схожим проблемам, но мы
+будем рассматривать исключительно программы.}
+%As programmers know through bitter personal experience, it can be very
+%difficult to write a program that is {\em correct}, i.e. performs its intended
+%function. Most large programs have bugs. The consequences of these bugs can
+%vary widely. Some bugs are harmless, some merely irritating. Some are deadly.
+%For example the programs inside heart pacemakers, aircraft autopilots, car
+%engine management systems and antilock braking systems, radiation therapy
+%machines and nuclear reactor controllers are {\em safety critical}. An error in
+%one of them can lead directly to loss of life, possibly on a large scale. As
+%computers become ever more pervasive in society, the number of ways in which
+%program bugs can kill people increases.\footnote{Similar remarks apply to
+%hardware, but we will focus on software.}
 
-How can we make sure a program is correct? One very useful method is simply to
-test it in a variety of situations. One tries the program out on inputs
-designed to exercise many different parts of it and reveal possible bugs. But
-usually there are too many possible situations to try them all exhaustively, so
-there may still be bugs lying undetected. As repeatedly emphasized by various
-writers, notably Dijkstra, program testing can be very useful for demonstrating
-the presence of bugs, but it is only in a few unusual cases where it can
-demonstrate their absence.
+Каким образом мы можем убедиться в корректной работе программы? Одним из
+полезных методов будет тестирование программы на обширном наборе планируемых
+сценариев её использования. При этом входные данные для тестов подбираются так,
+чтобы проверить различные составляющие программы в поисках возможных ошибок.
+В реальности оказывается, что потенциальных вариантов использования слишком 
+много, чтобы полностью проверить все из них, так что многие ошибки могут быть 
+пропущены в ходе тестирования. Как неоднократно подчеркивают многие авторы,
+в частности, Дейкстра, тестирование программ может быть полезным для 
+демонстрации наличия ошибок, но показать их отсутствие оно в состоянии лишь 
+в отдельных редких случаях.
+%How can we make sure a program is correct? One very useful method is simply to
+%test it in a variety of situations. One tries the program out on inputs
+%designed to exercise many different parts of it and reveal possible bugs. But
+%usually there are too many possible situations to try them all exhaustively, so
+%there may still be bugs lying undetected. As repeatedly emphasized by various
+%writers, notably Dijkstra, program testing can be very useful for demonstrating
+%the presence of bugs, but it is only in a few unusual cases where it can
+%demonstrate their absence.
 
-Instead of testing a program, one can try to {\em verify} it mathematically. A
-program in a sufficiently precisely defined programming language has a definite
-mathematical meaning. Similarly, the requirements on a program can be expressed
-using mathematics and logic as a precise {\em specification}. One can then try
-to perform a mathematical {\em proof} that the program meets its specification.
+Альтернативой тестированию программ служит возможность их математической
+{\em верификации}. Программа, реализованная на достаточно точно определённом
+языке программирования, имеет однозначное математическое толкование. 
+Аналогично, требования к программе могут быть выражены на языке математики
+и логики как точная {\em спецификация}. Такая формализация открывает 
+возможность строгого {\em доказательства} соответствия программы и спецификации.
+%Instead of testing a program, one can try to {\em verify} it mathematically. A
+%program in a sufficiently precisely defined programming language has a definite
+%mathematical meaning. Similarly, the requirements on a program can be expressed
+%using mathematics and logic as a precise {\em specification}. One can then try
+%to perform a mathematical {\em proof} that the program meets its specification.
 
-One can contrast testing and verification of programs by considering the
-following simple mathematical assertion:
-
-$$ \Sigma_{n=0}^{N} n = \frac{N (N + 1)}{2} $$
-
-It is claimed that this holds for any $N$. We can certainly test it for any
-number of particular values of $N$. This may lead to our intuitive confidence
-in the formula, such that we can hardly believe it could ever fail. However in
-general a preponderance of numerical evidence can be deceptive; there are well
-known cases in number theory where things turned out to be false against the
-weight of many particular cases.\footnote{For example, Littlewood proved in
-1914 that $\pi(n) - li(n)$ changes sign infinitely often, where $\pi(n)$ is the
-number of primes $\leq n$ and $li(n) = \int_0^n du / ln(u)$. This came as a
-surprise since not a single sign change had been found despite extensive
-testing up to $10^{10}$.} A more reliable procedure is to {\em prove} the above
-formula mathematically. This can easily be done using induction on $N$. In the
-same way, we hope to replace testing a program on a range of inputs by some
-completely general proof that it always works correctly. It is important,
-however, to appreciate two limitations of program proofs.
+Чтобы лучше ощутить разницу между тестированием и верификацией, рассмотрим
+следующее простое отношение:
+$$
+ \Sigma_{n=0}^{N} n = \frac{N (N + 1)}{2} 
+$$
+Утверждается, что оно справедливо для произвольных значений~$N$. Мы, очевидно,
+в состоянии проверить его для любого количества избранных~$N$. Такая проверка 
+может привести нас к интуитивной уверенности в корректности формулы, поскольку
+выглядит маловероятным, что она когда-либо окажется ложной. Однако, в общем
+случае попытки сделать выводы по свойствам эмпирических данных
+могут ввести в заблуждение. В теории чисел известно немало примеров утверждений,
+которые в итоге опровергались, несмотря на множество положительных частных
+случаев.
+\footnote{Например, Литлвуд доказал в 1914~г., что 
+выражение~$\pi(n) - li(n)$, где $\pi(n)$ обозначено количество простых 
+чисел, не превышающих~$n$, а~$li(n) = \int_0^n du / ln(u)$, меняет свой знак 
+бесконечное количество раз. Его результат оказался крайней неожиданностью, 
+поскольку в ходе вычисления этого выражения вплоть до~$n=10^{10}$ не было
+обнаружено ни одной смены его знака.
+} 
+Более надежный подход~--- математическое {\em доказательство} справедливости
+приведенного утверждения, что легко достигается путем индукции по 
+переменной~$N$. Аналогично, мы можем надеяться заменить тестирование программы
+на некотором конечном множестве входных данных формальным доказательством
+корректности её функционирования в общем случае. В то же время, следует 
+признать, что верификация имеет свои границы применимости.
+%One can contrast testing and verification of programs by considering the
+%following simple mathematical assertion:
+%
+%$$ \Sigma_{n=0}^{N} n = \frac{N (N + 1)}{2} $$
+%
+%It is claimed that this holds for any $N$. We can certainly test it for any
+%number of particular values of $N$. This may lead to our intuitive confidence
+%in the formula, such that we can hardly believe it could ever fail. However in
+%general a preponderance of numerical evidence can be deceptive; there are well
+%known cases in number theory where things turned out to be false against the
+%weight of many particular cases.\footnote{For example, Littlewood proved in
+%1914 that $\pi(n) - li(n)$ changes sign infinitely often, where $\pi(n)$ is the
+%number of primes $\leq n$ and $li(n) = \int_0^n du / ln(u)$. This came as a
+%surprise since not a single sign change had been found despite extensive
+%testing up to $10^{10}$.} A more reliable procedure is to {\em prove} the above
+%formula mathematically. This can easily be done using induction on $N$. In the
+%same way, we hope to replace testing a program on a range of inputs by some
+%completely general proof that it always works correctly. It is important,
+%however, to appreciate two limitations of program proofs.
 
 \begin{itemize}
 
-\item One has no guarantee that the execution of the program on the computer
-corresponds exactly to the abstract mathematical model. One must be on the
-lookout for discrepancies, caused perhaps by bugs in compilers and operating
-systems, or physical defects in the underlying technology. This is, of course,
-a general problem in applications of mathematics to science. For example,
-assuming that arithmetic operations correspond exactly to their mathematical
-counterparts is a natural simplifying assumption, just as one might neglect air
-resistance in the analysis of a simple dynamical system. But both can be
-invalid in certain cases.
+\item Требуется гарантировать, что процесс выполнения программы компьютером
+в точности соответствует абстрактной математической модели. Возможной причиной 
+расхождений могут стать ошибки в компиляторах или операционных системах, а 
+также физические дефекты аппаратуры. Такие проблемы, безусловно, присущи
+любым попыткам применения математики в естественных науках. К примеру, 
+предположение точного соответствия между машинной реализацией арифметических
+операций и их математическими прообразами является естественным упрощением
+моделей, подобно тому, как при анализе простых динамических систем 
+пренебрегают сопротивлением воздуха. В то же время, оба эти предположения 
+могут оказаться неверными в некоторых случаях.
+%\item One has no guarantee that the execution of the program on the computer
+%corresponds exactly to the abstract mathematical model. One must be on the
+%lookout for discrepancies, caused perhaps by bugs in compilers and operating
+%systems, or physical defects in the underlying technology. This is, of course,
+%a general problem in applications of mathematics to science. For example,
+%assuming that arithmetic operations correspond exactly to their mathematical
+%counterparts is a natural simplifying assumption, just as one might neglect air
+%resistance in the analysis of a simple dynamical system. But both can be
+%invalid in certain cases.
 
-\item The program is to be verified by proof against a mathematical
-specification. It is possible that this specification does not capture
-accurately what is actually wanted in the real world. In fact, it can be
-remarkably difficult to arrive at a precise mathematical version of informal
-requirements. There is evidence that many of the serious problems in computer
-systems are caused not by coding errors in the usual sense, but by a mistaken
-impression of what is actually wanted. Just formalizing the requirements is
-often valuable in itself.
+
+\item Верификация программы опирается на её математическую спецификацию.
+Возможна ситуация, когда спецификация не соответствует в точности тем 
+требованиям, которые в действительности предъявляются к программе. На самом
+деле, зачастую оказывается особенно трудно сформулировать математически
+корректную версию неформальных требований. Имеется достаточное количество
+свидетельств того, что существенные проблемы компьютерных систем вызваны не
+ошибками в их реализации, а ложным пониманием ожиданий пользователей. Попытка
+формализации требований часто бывает полезной сама по себе. 
+%\item The program is to be verified by proof against a mathematical
+%specification. It is possible that this specification does not capture
+%accurately what is actually wanted in the real world. In fact, it can be
+%remarkably difficult to arrive at a precise mathematical version of informal
+%requirements. There is evidence that many of the serious problems in computer
+%systems are caused not by coding errors in the usual sense, but by a mistaken
+%impression of what is actually wanted. Just formalizing the requirements is
+%often valuable in itself.
 
 \end{itemize}
 
-\noindent We can represent this situation by the following diagram:
+\noindent Сложившаяся ситуация может быть представлена диаграммой:
+%\noindent We can represent this situation by the following diagram:
 
 \bigskip
 \begin{picture}(140,140)(0,0)
-\put(120,0){\dashbox(150,25){Actual system}}
-\put(120,40){\framebox(150,25){Mathematical model}}
-\put(120,80){\framebox(150,25){Mathematical specification}}
-\put(120,120){\dashbox(150,25){Actual requirements}}
+\put(75,0){\dashbox(240,25){Реальная система}}
+\put(75,40){\framebox(240,25){Математическая модель системы}}
+\put(75,80){\framebox(240,25){Математическая спецификация требований}}
+\put(75,120){\dashbox(240,25){Реальные требования}}
+%\put(120,0){\dashbox(150,25){Actual system}}
+%\put(120,40){\framebox(150,25){Mathematical model}}
+%\put(120,80){\framebox(150,25){Mathematical specification}}
+%\put(120,120){\dashbox(150,25){Actual requirements}}
 \put(195,25){\vector(0,1){15}}
 \put(195,65){\thicklines \vector(0,1){15}}
 \put(195,105){\vector(0,1){15}}
 \end{picture}
 \bigskip
 
-We are trying to establish a link between the bottom and top boxes, i.e. the
-actual system and the actual requirements in real life. To do this, we proceed
-by producing a mathematical version of each. It is only the central link,
-between the mathematical model of the system and the mathematical version of
-the specification, that is mathematically precise. The other links remain
-informal. All we can do is try to keep them small by using a realistic model of
-the system and a high-level mathematical specification that is reasonably
-readable.
+Мы пытаемся установить связь между верхним и нижним элементами диаграммы,
+т.~е.\ между реальными требованиями к программе и её реальной реализацией.
+Чтобы добиться этой цели, нам придётся формализовать и то, и другое. Лишь
+одна связь на диаграмме, между математическими моделями, обладает 
+математической же точностью, прочие связи остаются неформальными. Всё, что 
+мы можем с ними сделать~--- использовать реалистичную модель системы и 
+высокуровневую достаточно читабельную спецификацию.
+%We are trying to establish a link between the bottom and top boxes, i.e. the
+%actual system and the actual requirements in real life. To do this, we proceed
+%by producing a mathematical version of each. It is only the central link,
+%between the mathematical model of the system and the mathematical version of
+%the specification, that is mathematically precise. The other links remain
+%informal. All we can do is try to keep them small by using a realistic model of
+%the system and a high-level mathematical specification that is reasonably
+%readable.
 
-These reservations notwithstanding, program proving has considerable merit.
-Compared with testing, it establishes correctness once and for all, possibly
-for a whole class of programs at once (e.g. controlled by the setting of some
-parameter). Moreover because it is a more principled analytical approach, the
-process of proving a program (or failing to do so) can lead to a deeper
-appreciation of the program and of the task in hand.
+Однако, несмотря на эти ограничения, верификация обладает существенными
+достоинствами. В отличие от тестирования, она устанавливает корректность
+раз и навсегда, причем, возможно, для целого класса программ одновременно
+(к примеру, различающихся некоторыми параметрами). Более того, аналитический
+характер процесса верификации может привести (даже в случае неудачи) к более
+глубокому пониманию не только программы, но и задачи в целом.
+%These reservations notwithstanding, program proving has considerable merit.
+%Compared with testing, it establishes correctness once and for all, possibly
+%for a whole class of programs at once (e.g. controlled by the setting of some
+%parameter). Moreover because it is a more principled analytical approach, the
+%process of proving a program (or failing to do so) can lead to a deeper
+%appreciation of the program and of the task in hand.
 
-\section{Functional programs as mathematical objects}
+\section{Функциональные программы как математические объекты}
+%\section{Functional programs as mathematical objects}
 
-In the introduction, we remarked that (pure) functional programs really
-correspond directly to functions in the mathematical sense. For this reason, it
-is often suggested that they are more amenable to formal proof than imperative
-programs. Even if this is true, and many would dispute it, it is worth
-realizing that the gap between this mathematical abstraction and the final
-execution in hardware is greater than for typical imperative languages. In
-particular, there can be substantial storage requirements hidden in the
-eventual realization on the computer. So one may just be getting easier proofs
-because they prove less about what really matters. We won't settle this
-argument here, but we want to show that reasoning about simple functional
-programs {\em is} often fairly straightforward.
+Во введении было отмечено, что (чистые) функциональные программы напрямую
+соответствуют математическому понятию функции. Из этого факта зачастую делается
+вывод, что функциональные программы легче поддаются формальному доказательству
+корректности, чем императивные. Если даже это и справедливо (с~чем многие не
+согласятся), не следует забывать, что разрыв между математической абстракцией
+и выполнением программы аппаратным обеспечением в случае функционального 
+подхода гораздо больше, чем для типичных императивных языков. В частности,
+может оказаться, что в глубинах реализации скрываются неприемлемые требования
+к объему доступной памяти. Таким образом легкость доказательства может 
+достигаться исключением из рассмотрения существенно важных аспектов. 
+Мы не будем обсуждать этот вопрос в данной работе, а сосредоточимся на
+демонстрации того, что рассуждения о простых функциональных программах
+зачастую оказываются тривиальными.
+%In the introduction, we remarked that (pure) functional programs really
+%correspond directly to functions in the mathematical sense. For this reason, it
+%is often suggested that they are more amenable to formal proof than imperative
+%programs. Even if this is true, and many would dispute it, it is worth
+%realizing that the gap between this mathematical abstraction and the final
+%execution in hardware is greater than for typical imperative languages. In
+%particular, there can be substantial storage requirements hidden in the
+%eventual realization on the computer. So one may just be getting easier proofs
+%because they prove less about what really matters. We won't settle this
+%argument here, but we want to show that reasoning about simple functional
+%programs {\em is} often fairly straightforward.
 
-The example at the end of the previous chapter showed that a naive association
-of function spaces of ML and function spaces of mathematics is not quite
-accurate. However, if we stay away from the higher reaches of recursive types
-and are not concerned with the space of {\em all} functions, only with some
-particular ones, we can safely identify the objects of ML with those of
-abstract mathematical realms.\footnote{We will neglect arithmetic overflow
-whenever we use arithmetic. There is a facility in CAML for arbitrary precision
-arithmetic, at the cost of, in principle, unlimited storage requirements.}
+В предыдущем разделе был приведен пример, который демонстрирует неточность
+наивного отождествления of function spaces of ML and function spaces of 
+mathematics (??). Однако, если мы не будем углубляться в подробности теории
+рекурсивных типов и не рассматриваем пространство {\em произвольных} функций,
+а ограничимся лишь некоторыми из них, то в этом случае возможно отождествление
+понятий языка~ML с математическими.
+\footnote{Будем игнорировать возможность арифметического переполнения. 
+CAML поддерживает арифметику произвольной разрядности ценой, в общем случае,
+неограниченного расхода памяти.}
+%The example at the end of the previous chapter showed that a naive association
+%of function spaces of ML and function spaces of mathematics is not quite
+%accurate. However, if we stay away from the higher reaches of recursive types
+%and are not concerned with the space of {\em all} functions, only with some
+%particular ones, we can safely identify the objects of ML with those of
+%abstract mathematical realms.\footnote{We will neglect arithmetic overflow
+%whenever we use arithmetic. There is a facility in CAML for arbitrary precision
+%arithmetic, at the cost of, in principle, unlimited storage requirements.}
 
-We intend to model functional programs as mathematical functions. Given the
-equations --- typically recursive --- that define an ML function, we want to
-interpret them as `axioms' about the corresponding mathematical objects. For
-example, we would assume from the definition of the factorial function:
-
+Сопоставим функциональным программам математические функции. 
+Располагая уравнениями (обычно рекурсивными), которые определяют функции
+на языке~ML, мы хотим интерпретировать их как аксиоматику соответствующих
+математических объектов. Например, из определения функции факториала 
+%We intend to model functional programs as mathematical functions. Given the
+%equations --- typically recursive --- that define an ML function, we want to
+%interpret them as `axioms' about the corresponding mathematical objects. For
+%example, we would assume from the definition of the factorial function:
+%
 \begin{boxed}\begin{verbatim}
   #let rec fact = fun 0 -> 1
                     | n -> n * fact(n - 1);;
 \end{verbatim}\end{boxed}
+%
+следует, что~$\mbox{fact}(0) = 1$ и что для произвольных~$n \not= 0$ мы 
+имеем~$\mbox{fact}(n) = n * \mbox{fact}(n - 1)$. Эти утверждения верны, но
+в дополнение к ним мы должны проявить особое внимание к проблеме завершимости.
+Для отрицательных значений~$n$ программа зацикливается, поэтому второе 
+равенство можно полагать истинным лишь в том смысле, что обе его части будут
+неопределенными. Анализ всюду определённых функций менее трудоёмок, поэтому
+иногда вводится дополнительный аргумент (???), гарантирующий завершимость.
+В примерах, которые приводятся ниже, это делается параллельно с доказательством
+корректности, т.~е.\ для каждого аргумента мы должны показать, что вычисления
+завершаются, причём результат удовлетворяет спецификации.
+%\noindent that $\mbox{fact}(0) = 1$ and that for all $n \not= 0$ we have
+%$\mbox{fact}(n) = n * \mbox{fact}(n - 1)$. This is right, but we need to tread
+%carefully because of the question of termination. For negative $n$, the program
+%fails to terminate, so the second equation is true only in the vacuous sense
+%that both sides are `undefined'. It is much easier to reason about functions
+%when we know they are total, so sometimes one uses a separate argument to
+%establish termination. In the examples that follow, this is done in parallel
+%with the correctness proof, i.e. we prove together that for each argument, the
+%function terminates and the result satisfies our specification.
 
-\noindent that $\mbox{fact}(0) = 1$ and that for all $n \not= 0$ we have
-$\mbox{fact}(n) = n * \mbox{fact}(n - 1)$. This is right, but we need to tread
-carefully because of the question of termination. For negative $n$, the program
-fails to terminate, so the second equation is true only in the vacuous sense
-that both sides are `undefined'. It is much easier to reason about functions
-when we know they are total, so sometimes one uses a separate argument to
-establish termination. In the examples that follow, this is done in parallel
-with the correctness proof, i.e. we prove together that for each argument, the
-function terminates and the result satisfies our specification.
+В общем случае процесс доказательства может потребовать применения самых
+различных математических приёмов. Однако, очень часто свойства функций 
+(включая завершимость), определенных рекурсивно, можно доказать по индукции 
+в силу двойственности этих двух понятий. Более того, различные формы индукции
+(арифметическая, структурная, трансфинитная) обычно прямо соответствуют видам
+рекурсии, применённой в определении. Ниже будут изложены примеры, поясняющие
+это утверждение.
+%As for the actual proof that the function obeys the specification, this can be
+%a mathematical proof in the most general sense. However it often happens that
+%when functions are defined by recursion, properties of them, dually, can be
+%proved by induction; this includes termination. Moreover, the exact form of
+%induction (arithmetical, structural, wellfounded) usually corresponds to the
+%mode of recursion used in the definition. This should become clearer when we
+%have seen a few examples.
 
-As for the actual proof that the function obeys the specification, this can be
-a mathematical proof in the most general sense. However it often happens that
-when functions are defined by recursion, properties of them, dually, can be
-proved by induction; this includes termination. Moreover, the exact form of
-induction (arithmetical, structural, wellfounded) usually corresponds to the
-mode of recursion used in the definition. This should become clearer when we
-have seen a few examples.
+\section{Вычисление степени}
+%\section{Exponentiation}
 
-\section{Exponentiation}
-
-Recall our simple definition of exponentiation:
-
+Напомним нашу простую реализацию вычисления степени:
+%Recall our simple definition of exponentiation:
+%
 \begin{boxed}\begin{verbatim}
    #let rec exp x n =
      if n = 0 then 1
      else x * exp x (n - 1);;
 \end{verbatim}\end{boxed}
-
-\noindent We will prove the following property of {\tt exp}:
+%
+Докажем, что {\tt exp}~обладает следующим свойством:
+%\noindent We will prove the following property of {\tt exp}:
 
 \begin{theorem}
-For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ is defined and $\mbox{exp}\;
-x\; n = x^n$.
+Для любого~$n \geq 0$ и произвольного~$x$ функция~$\mbox{exp}\; x\; n$ 
+определена и принимает значение~$x^n$.
 
-\proof The ML function {\tt exp} was defined by primitive, step-by-step,
-recursion. It is therefore no surprise that our proof proceeds by ordinary,
-step-by-step induction. We prove that it holds for $n = 0$ and then that if it
-holds for any $n \geq 0$ it also holds for $n + 1$.
+%For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ is defined and $\mbox{exp}\;
+%x\; n = x^n$.
+
+\proof Функция~{\tt exp} была определена при помощи примитивной пошаговой 
+рекурсии. Как следствие, для доказательства уместно будет воспользоваться 
+пошаговой индукцией. Покажем, что наше утверждение справедливо для~$n = 0$, 
+а затем, предположив его справедливость для произвольных~$n \geq 0$, докажем
+его также и для~$n + 1$.
+%\proof The ML function {\tt exp} was defined by primitive, step-by-step,
+%recursion. It is therefore no surprise that our proof proceeds by ordinary,
+%step-by-step induction. We prove that it holds for $n = 0$ and then that if it
+%holds for any $n \geq 0$ it also holds for $n + 1$.
 
 \begin{enumerate}
 
-\item If $n = 0$, then by definition $\mbox{exp}\; x\; n = 1$. By definition,
-for any integer $x$, we have $x^0 = 1$, so the desired fact is established.
-Note that we assume $0^0 = 1$, an example of how one must state the
-specification precisely --- what does $x^n$ mean in general? --- and how it
-might surprise some people.
+\item При~$n = 0$ наша реализация даёт~$\mbox{exp}\; x\; n = 1$. 
+По определению, для произвольного целого~$x$ имеем~$x^0 = 1$, таким образом
+базис индукции выполняется. Заметим, что мы неявно предполагаем 
+справедливость~$0^0 = 1$~--- хороший пример того, как тщательно нужно 
+составлять спецификации, разрешая неоднозначности (каково значение~$x^n$ 
+в общем случае?), при этом учитывая, что некоторые люди могут быть немало 
+удивлены нашим выбором.
+%\item If $n = 0$, then by definition $\mbox{exp}\; x\; n = 1$. By definition,
+%for any integer $x$, we have $x^0 = 1$, so the desired fact is established.
+%Note that we assume $0^0 = 1$, an example of how one must state the
+%specification precisely --- what does $x^n$ mean in general? --- and how it
+%might surprise some people.
 
-\item Suppose that for $n \geq 0$ we have $\mbox{exp}\; x\; n = x^n$. Since $n
-\geq 0$, we have $n + 1 \not= 0$ and so by definition $\mbox{exp}\; x\; (n + 1)
-= x * \mbox{exp}\; x\; ((n + 1) - 1)$. Therefore:
+\item Предположим, что при~$n \geq 0$ мы имеем~$\mbox{exp}\; x\; n = x^n$. 
+Из~$n \geq 0$ следует, что~$n + 1 \not= 0$ и, по определению, 
+$\mbox{exp}\; x\; (n + 1) = x * \mbox{exp}\; x\; ((n + 1) - 1)$. 
+Отсюда
+%\item Suppose that for $n \geq 0$ we have $\mbox{exp}\; x\; n = x^n$. Since $n
+%\geq 0$, we have $n + 1 \not= 0$ and so by definition $\mbox{exp}\; x\; (n + 1)
+%= x * \mbox{exp}\; x\; ((n + 1) - 1)$. Therefore:
 
 \begin{eqnarray*}
 \mbox{exp}\; x\; (n + 1)   & = & x * \mbox{exp}\; x\; ((n + 1) - 1)     \\
@@ -197,89 +357,160 @@ might surprise some people.
 
 \end{theorem}
 
-\section{Greatest common divisor}
+\section{Вычисление наибольшего общего делителя}
+%\section{Greatest common divisor}
 
-Recall our function to calculate the greatest common divisor $gcd(m,n)$ of two
-natural numbers $m$ and $n$:
-
+Рассмотрим нашу реализацию вычисления наибольшего общего делителя~$gcd(m,n)$ 
+двух натуральных чисел~$m$ и~$n$:
+%Recall our function to calculate the greatest common divisor $gcd(m,n)$ of two
+%natural numbers $m$ and $n$:
+%
 \begin{boxed}\begin{verbatim}
   #let rec gcd x y =
        if y = 0 then x else gcd y (x mod y);;
 \end{verbatim}\end{boxed}
-
-In fact, we claim this works for any integers, not just positive ones. However,
-one needs to understand the precise definition of $gcd$ in that case. Let us
-define the relation `$u | v$', or `$u$ divides $v$' for any two integers $u$
-and $v$ to mean `$v$ is an integral multiple of $u$', i.e. there is some
-integer $d$ with $v = d u$. For example, $0 | 0$, $1 | 11$, $-2 | 4$ but $0
-\not| 1$, $3 \not| 5$. We will say that {\em $d$ is a greatest common divisor
-of $x$ and $y$} precisely if:
+%
+Будем утверждать, что в действительности эта функция применима к любым целым 
+числам, а не только положительным. Однако, в этом случае нам понадобится
+расширенное определение понятия НОД. Определим отношение~`$u | v$', 
+либо `$u$ является делителем $v$', в которое входят всевозможные пары целых
+чисел~$u$ и~$v$, для которых `$v$ кратно~$u$', т.~е.\ найдется такое целое
+число~$d$, что~$v = d u$. Например, $0 | 0$, $1 | 11$, $-2 | 4$, 
+но~$0 \not| 1$, $3 \not| 5$. Будем говорить, что 
+{\em $d$~является наибольшим общим делителем~$x$ и~$y$}, если:
+%In fact, we claim this works for any integers, not just positive ones. However,
+%one needs to understand the precise definition of $gcd$ in that case. Let us
+%define the relation `$u | v$', or `$u$ divides $v$' for any two integers $u$
+%and $v$ to mean `$v$ is an integral multiple of $u$', i.e. there is some
+%integer $d$ with $v = d u$. For example, $0 | 0$, $1 | 11$, $-2 | 4$ but $0
+%\not| 1$, $3 \not| 5$. We will say that {\em $d$ is a greatest common divisor
+%of $x$ and $y$} precisely if:
 
 \begin{itemize}
 
-\item $d | x$ and $d | y$
+\item $d | x$ и~$d | y$
+%\item $d | x$ and $d | y$
 
-\item For any other integer $d'$, if $d' | x$ and $d' | y$ then $d' | d$.
+\item Для любых других целых~$d'$, если~$d' | x$ и~$d' | y$, то~$d' | d$.
+%\item For any other integer $d'$, if $d' | x$ and $d' | y$ then $d' | d$.
 
 \end{itemize}
 
-Note that we say $d' | d$ not $d' \leq d$. This belies the use of `greatest',
-but it is in fact the standard definition in algebra books. Observe that any
-pair of numbers (except $0$ and $0$) has two gcds, since if $d$ is a gcd of $x$
-and $y$, so is $-d$.
+Отметим, что мы используем в определении~$d' | d$, а не~$d' \leq d$. 
+Тем самым понятие <<наибольший>> делитель лишается смысла, но именно так 
+вводится его определение в алгебре. Также заметим, что любая пара чисел
+(за исключением~$0$ и~$0$) имеет два наибольших делителя, поскольку из 
+определения следует, что если число~$d$ является НОД~$x$ и~$y$, то это 
+же справедливо и для~$-d$.
+%Note that we say $d' | d$ not $d' \leq d$. This belies the use of `greatest',
+%but it is in fact the standard definition in algebra books. Observe that any
+%pair of numbers (except $0$ and $0$) has two gcds, since if $d$ is a gcd of $x$
+%and $y$, so is $-d$.
 
-Our specification is now: {\em for any integers $x$ and $y$, $d = \mbox{gcd}\;
-x\; y$ is a gcd of $x$ and $y$}. This is another good example of how providing
-a precise specification, even for such a simple function, is harder than it
-looks. This specification also exemplifies the common property that it does not
-completely specify the answer, merely places certain constraints on it. If we
-defined:
-
+С учётом сказанного выше, наша спецификация примет такой вид: 
+{\em для произвольных целых чисел~$x$ и~$y$, $d = \mbox{gcd}\;x\; y$ 
+является наибольшим общим делителем~$x$ и~$y$}. На её примере можно ещё раз 
+убедиться, что разработка спецификации даже такой простой функции зачастую 
+оказывается сложнее, чем ожидалось. Кроме того, данная спецификация типична
+ещё и в том, что не определяет однозначно результат вычислений, а лишь задаёт
+определённые ограничения. Если мы определим функцию~{\tt ngcd} как
+%
 \begin{boxed}\begin{verbatim}
   #let rec ngcd x y = -(gcd x y);;
 \end{verbatim}\end{boxed}
+%
+то она будет точно так же удовлетворять спецификации, как и~{\tt gcd}. 
+Безусловно, мы можем при необходимости сделать спецификацию более строгой.
+Например, если мы ограничимся положительными значениями~$x$ и~$y$, функция 
+будет в полной мере соответствовать понятию наибольшего общего делителя.
+%Our specification is now: {\em for any integers $x$ and $y$, $d = \mbox{gcd}\;
+%x\; y$ is a gcd of $x$ and $y$}. This is another good example of how providing
+%a precise specification, even for such a simple function, is harder than it
+%looks. This specification also exemplifies the common property that it does not
+%completely specify the answer, merely places certain constraints on it. If we
+%defined:
+%
+%\begin{boxed}\begin{verbatim}
+%  #let rec ngcd x y = -(gcd x y);;
+%\end{verbatim}\end{boxed}
+%
+%\noindent then the function {\tt ngcd} would satisfy the specification just as
+%well as {\tt gcd}. Of course, we are free to tighten the specification if we
+%wish, e.g. insist that if $x$ and $y$ are positive, so is the gcd returned.
 
-\noindent then the function {\tt ngcd} would satisfy the specification just as
-well as {\tt gcd}. Of course, we are free to tighten the specification if we
-wish, e.g. insist that if $x$ and $y$ are positive, so is the gcd returned.
+Функция~{\tt gcd} не определяется исключительно посредством примитивной 
+рекурсии. На деле, {\tt gcd x y} выражается пошагово 
+через~{\tt gcd y (x mod y)}. Соответственно, вместо пошаговой индукции будет
+уместно применить трансфинитную. Нам потребуется определить подходящее для 
+этого вида индукции отношение, причём такое, что результаты последующих 
+рекурсивных вызовов предшествуют предыдущим; это гарантирует завершимость 
+алгоритма. В общем случае, для этого могут понадобиться сложные отношения,
+заданные на аргументах, но часто бывает достаточно придумать {\em меру},
+которая отображает аргументы на натуральные числа и убывает в ходе рекурсии.
+В данном случае такой мерой может служить~$|y|$.
+%The {\tt gcd} function is not defined simply by primitive recursion. In
+%fact, {\tt gcd x y} is defined in terms of {\tt gcd y (x mod y)} in the step
+%case. Correspondingly, we do not use step-by-step induction, but wellfounded
+%induction. We want a wellfounded relation that decreases over recursive calls;
+%this will guarantee termination and act as a handle for proofs by wellfounded
+%induction. In general, complicated relations on the arguments are required. But
+%often it is easy to concoct a {\em measure} that maps the arguments to natural
+%numbers such that the measure decreases over recursive calls. Such is the case
+%here: the measure is $|y|$.
 
-The {\tt gcd} function is not defined simply by primitive recursion. In
-fact, {\tt gcd x y} is defined in terms of {\tt gcd y (x mod y)} in the step
-case. Correspondingly, we do not use step-by-step induction, but wellfounded
-induction. We want a wellfounded relation that decreases over recursive calls;
-this will guarantee termination and act as a handle for proofs by wellfounded
-induction. In general, complicated relations on the arguments are required. But
-often it is easy to concoct a {\em measure} that maps the arguments to natural
-numbers such that the measure decreases over recursive calls. Such is the case
-here: the measure is $|y|$.
+\begin{theorem} Для произвольных целых~$x$ и~$y$, 
+вычисление~$\mbox{gcd}\; x\; y$ завершается с результатом, равным НОД~$x$ и~$y$.
+%\begin{theorem} For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates
+%in a gcd of $x$ and $y$.
 
-\begin{theorem} For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates
-in a gcd of $x$ and $y$.
-
-\proof Take some arbitrary $n$, and suppose that for all $x$ and $y$ with $|y|
-< n$ we have that $\mbox{gcd}\; x\; y$ terminates with a gcd of $x$ and $y$,
-and try to prove that the same holds for all $x$ and $y$ with $|y| = n$. This
-suffices for the main result, since any $y$ will have {\em some} $n$ with $|y|
-= n$. So, let us consider an $x$ and $y$ with $|y| = n$. There are two cases to
-consider, according to the case split used in the definition.
+\proof Предположим для некоторого~$n$, что для произвольного значения~$x$ 
+и~$y$ такого, что~$|y| < n$ теорема справедлива. Основываясь на этом 
+предположении, попробуем доказать, что она справедлива также для 
+произвольного~$x$ при~$|y| = n$. Этого будет достаточно, чтобы считать теорему
+доказанной, поскольку для любого~$y$ найдется {\em некоторое}~$n$ такое,
+что~$|y| = n$. Согласно определению функции, доказательство разбивается на
+два частных случая.
+%\proof Take some arbitrary $n$, and suppose that for all $x$ and $y$ with $|y|
+%< n$ we have that $\mbox{gcd}\; x\; y$ terminates with a gcd of $x$ and $y$,
+%and try to prove that the same holds for all $x$ and $y$ with $|y| = n$. This
+%suffices for the main result, since any $y$ will have {\em some} $n$ with $|y|
+%= n$. So, let us consider an $x$ and $y$ with $|y| = n$. There are two cases to
+%consider, according to the case split used in the definition.
 
 \begin{itemize}
 
-\item Suppose $y = 0$. Then $\mbox{gcd}\; x\; y = x$ by definition. Now
-trivially $x | x$ and $x | 0$, so it is a common divisor. Suppose $d$ is
-another common divisor, i.e. $d | x$ and $d | 0$. Then indeed we have $d | x$
-immediately, so $x$ must be a greatest common divisor.
+\item Предположим, что~$y = 0$. В этом случае по определению 
+функции~$\mbox{gcd}\; x\; y = x$. Очевидно,~$x | x$ и~$x | 0$, т.~е.\ является
+общим делителем. Предположим, что найдется ещё один общий делитель~$d$,
+для которого справедливо~$d | x$ и~$d | 0$. Отсюда немедленно следует~$d | x$,
+из чего, в свою очередь, вытекает то, что~$x$ является НОД.
+%\item Suppose $y = 0$. Then $\mbox{gcd}\; x\; y = x$ by definition. Now
+%trivially $x | x$ and $x | 0$, so it is a common divisor. Suppose $d$ is
+%another common divisor, i.e. $d | x$ and $d | 0$. Then indeed we have $d | x$
+%immediately, so $x$ must be a greatest common divisor.
 
-\item Suppose $y \not= 0$. We want to apply the inductive hypothesis to
-$\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$. We will write $r = x\; \mbox{mod}\; y$
-for short. The basic property of the {\tt mod} function is that, since $y \not=
-0$, for some integer $q$ we have $x = q y + r$ and $|r| < |y|$. Since $|r| <
-|y|$ the inductive hypothesis tells us that $d = \mbox{gcd}\; y\; (x\;
-\mbox{mod}\; y)$ is a gcd of $y$ and $r$. We just need to show that it is a gcd
-of $x$ and $y$. It is certainly a common divisor, since if $d | y$ and $d | r$
-we have $d | x$, as $x = q y + r$. Now suppose $d' | x$ and $d' | y$. By the
-same equation, we find that $d' | r$. Thus $d'$ is a common divisor of $y$ and
-$r$, but then by the inductive hypothesis, $d' | d$ as required.
+\item Рассмотрим случай~$y \not= 0$. Мы хотим применить индуктивное 
+предположение к~$\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$. Введем сокращенное
+обозначение~$r = x\; \mbox{mod}\; y$. Основным свойством функции~{\tt mod} 
+является то, что при~$y \not= 0$ для некоторого целого числа~$q$ мы 
+имеем~$x = q y + r$ и~$|r| < |y|$. Поскольку~$|r| < |y|$, из индуктивного
+предположения следует, что~$d = \mbox{gcd}\; y\; (x\;\mbox{mod}\; y)$ 
+является НОД~$y$ и~$r$. Остаётся показать, что он является НОД также и 
+для~$x$ и~$y$. Очевидно, это также справедливо, поскольку при~$d | y$ 
+и~$d | r$ мы имеем~$d | x$, так как~$x = q y + r$. Предположим, что~$d' | x$ 
+и~$d' | y$. Аналогично сказанному выше, обнаруживаем, что~$d' | r$. Таким
+образом, $d'$~является общим делителем~$y$ и~$r$, а по индуктивному 
+предположению~$d' | d$, что и требовалось.
+%\item Suppose $y \not= 0$. We want to apply the inductive hypothesis to
+%$\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$. We will write $r = x\; \mbox{mod}\; y$
+%for short. The basic property of the {\tt mod} function is that, since $y \not=
+%0$, for some integer $q$ we have $x = q y + r$ and $|r| < |y|$. Since $|r| <
+%|y|$ the inductive hypothesis tells us that $d = \mbox{gcd}\; y\; (x\;
+%\mbox{mod}\; y)$ is a gcd of $y$ and $r$. We just need to show that it is a gcd
+%of $x$ and $y$. It is certainly a common divisor, since if $d | y$ and $d | r$
+%we have $d | x$, as $x = q y + r$. Now suppose $d' | x$ and $d' | y$. By the
+%same equation, we find that $d' | r$. Thus $d'$ is a common divisor of $y$ and
+%$r$, but then by the inductive hypothesis, $d' | d$ as required.
 
 \end{itemize}
 
@@ -287,18 +518,31 @@ $r$, but then by the inductive hypothesis, $d' | d$ as required.
 
 \end{theorem}
 
-Note that the basic property of the modulus operation that we used needs
-careful checking against the specification of {\tt mod} in the CAML manual.
-There are well known differences between languages, and between implementations
-of the same language, when moduli involving negative numbers are concerned. If
-ever one is in doubt over the validity of a necessary assumption, it can be
-made explicit in the theorem: `if \ldots then \ldots'.
+Отметим, что в доказательстве было использовано основное свойство операции 
+вычисления остатка. Её реализация (функция~{\tt mod}) в конкретных 
+CAML-системах требует тщательной проверки соответствия теоретическому 
+определению. Хорошо известно, что различные языки программирования 
+(и даже реализации одного и того же языка) зачастую различаются в трактовке 
+операции вычисления остатка в случае отрицательных аргументов. Если отсутствует 
+уверенность в надёжности неявных предположений, их можно добавить в теорему 
+в явной форме.
+%Note that the basic property of the modulus operation that we used needs
+%careful checking against the specification of {\tt mod} in the CAML manual.
+%There are well known differences between languages, and between implementations
+%of the same language, when moduli involving negative numbers are concerned. If
+%ever one is in doubt over the validity of a necessary assumption, it can be
+%made explicit in the theorem: `if \ldots then \ldots'.
 
-\section{Appending}
+\section{Конкатенация списков}
+%\section{Appending}
 
-We will now have an example of a function defined over lists. The function {\tt
-append} is intended, not surprisingly, to append, or join together, two lists.
-For example, if we append $[3;2;5]$ and $[6;3;1]$ we get $[3;2;5;6;3;1]$.
+Рассмотрим пример верификации функции, оперирующей списками. 
+Функция~{\tt append} предназначена, как это следует из её названия, для 
+конкатенации (сцепления) двух списков. Например, результатом применения
+этой операции к спискам~$[3;2;5]$ и~$[6;3;1]$ будет~$[3;2;5;6;3;1]$.
+%We will now have an example of a function defined over lists. The function {\tt
+%append} is intended, not surprisingly, to append, or join together, two lists.
+%For example, if we append $[3;2;5]$ and $[6;3;1]$ we get $[3;2;5;6;3;1]$.
 
 \begin{boxed}\begin{verbatim}
   #let rec append l1 l2 =
@@ -307,28 +551,45 @@ For example, if we append $[3;2;5]$ and $[6;3;1]$ we get $[3;2;5;6;3;1]$.
      | (h::t) -> h::(append t l2);;
 \end{verbatim}\end{boxed}
 
-This is defined by primitive recursion over the type of lists. It is defined on
-the empty list, and then for $h::t$ in terms of the value for $t$.
-Consequently, when proving theorems about it, it is natural to use the
-corresponding principle of structural induction for lists: if a property holds
-for the empty list, and whenever it holds for $t$ it holds for any $h::t$, then
-it holds for any list. However this is not obligatory, and if preferred, we
-could proceed by mathematical induction on the length of the list. We will aim
-at proving that the append operation is associative.
+Данная функция вводится при помощи примитивной рекурсии over the type of lists.
+Она определяется для случая пустого списка и, затем, для списка вида~$h::t$,
+причем в последнем случае используется значение этой же функции для аргумента~$t$.
+Следовательно, доказательства теорем о её свойствах удобно строить на 
+соответствующем принципе структурной индукции для списков: если некоторое
+утверждение справедливо для пустого списка и, если из предположения, что оно 
+выполняется для~$t$ следует, что данное утверждение справедливо и для~$h::t$, 
+то мы можем заключить, что оно справедливо для любого списка. Однако, такой
+подход не обязателен~--- при желании можно воспользоваться математической
+индукцией по длине списка. Докажем с учётом сказанного выше, что операция 
+конкатенации ассоциативна.
+%This is defined by primitive recursion over the type of lists. It is defined on
+%the empty list, and then for $h::t$ in terms of the value for $t$.
+%Consequently, when proving theorems about it, it is natural to use the
+%corresponding principle of structural induction for lists: if a property holds
+%for the empty list, and whenever it holds for $t$ it holds for any $h::t$, then
+%it holds for any list. However this is not obligatory, and if preferred, we
+%could proceed by mathematical induction on the length of the list. We will aim
+%at proving that the append operation is associative.
 
 \begin{theorem}
 
-For any three lists $l_1$, $l_2$ and $l_3$ we have:
+Для трёх произвольных списков~$l_1$, $l_2$ и~$l_3$ справедливо:
+%For any three lists $l_1$, $l_2$ and $l_3$ we have:
+%
+$$ 
+\mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) 
+ = \mbox{append}\;(\mbox{append}\; l_1\; l_2)\; l_3 
+$$
 
-$$ \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
-(\mbox{append}\; l_1\; l_2)\; l_3 $$
-
-\proof By structural induction on $l_1$, we prove this holds for any $l_2$ and
-$l_3$.
+\proof Применяя структурную индукцию к~$l_1$, докажем, что требуемое свойство
+выполняется для произвольных~$l_2$ и~$l_3$.
+%\proof By structural induction on $l_1$, we prove this holds for any $l_2$ and
+%$l_3$.
 
 \begin{itemize}
 
-\item If $l_1 = []$ then:
+\item Если~$l_1 = []$, то:
+%\item If $l_1 = []$ then:
 
 \begin{eqnarray*}
 \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)
@@ -338,13 +599,18 @@ $l_3$.
 & = & \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3
 \end{eqnarray*}
 
-\item Now suppose $l_1 = h::t$. We may assume that for any $l_2$ and $l_3$ we
-have:
-
-$$ \mbox{append}\; t\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
-(\mbox{append}\; t\; l_2)\; l_3 $$
-
-\noindent Therefore:
+\item Рассмотрим случай~$l_1 = h::t$. Предположим, что для~$l_2$ и~$l_3$ 
+мы имеем
+%\item Now suppose $l_1 = h::t$. We may assume that for any $l_2$ and $l_3$ we
+%have:
+%
+$$ 
+  \mbox{append}\; t\; (\mbox{append}\; l_2\; l_3) 
+    = \mbox{append}\;(\mbox{append}\; t\; l_2)\; l_3 
+$$
+%
+Отсюда следует
+%\noindent Therefore:
 
 \begin{eqnarray*}
 \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3)
@@ -362,10 +628,12 @@ $$ \mbox{append}\; t\; (\mbox{append}\; l_2\; l_3) = \mbox{append}\;
 
 \end{theorem}
 
-\section{Reversing}
+\section{Обращение списков}
+%\section{Reversing}
 
-It is not difficult to define a function to reverse a list:
-
+Определить функцию обращения списков несложно:
+%It is not difficult to define a function to reverse a list:
+%
 \begin{boxed}\begin{verbatim}
   #let rec rev =
      fun [] -> []
@@ -374,23 +642,31 @@ It is not difficult to define a function to reverse a list:
   #rev [1;2;3];;
   - : int list = [3; 2; 1]
 \end{verbatim}\end{boxed}
+%
+Докажем, что функция~{\tt rev} является инволюцией, т.~е.\ что
+%\noindent We will prove that {\tt rev} is an involution, i.e. that
+%
+$$ 
+ \mbox{rev} (\mbox{rev}\; l) = l 
+$$
 
-\noindent We will prove that {\tt rev} is an involution, i.e. that
-
-$$ \mbox{rev} (\mbox{rev}\; l) = l $$
-
-However, if we try to tackle this directly by list induction, we find that we
-need a couple of additional lemmas. We will prove these first.
+Однако, если мы попытаемся напрямую применить структурную индукцию, 
+оказывается, что нам понадобится сперва доказать пару дополнительных лемм. 
+%However, if we try to tackle this directly by list induction, we find that we
+%need a couple of additional lemmas. We will prove these first.
 
 \begin{lemma}
 
-For any list $l$ we have $\mbox{append}\; l\; [] = l$.
+Для произвольного списка~$l$ справедливо~$\mbox{append}\; l\; [] = l$.
+%For any list $l$ we have $\mbox{append}\; l\; [] = l$.
 
-\proof Structural induction on $l$.
+\proof Воспользуемся структурной индукцией по~$l$.
+%\proof Structural induction on $l$.
 
 \begin{itemize}
 
-\item If $l = []$ we have:
+\item Для~$l = []$ имеем:
+%\item If $l = []$ we have:
 
 \begin{eqnarray*}
 \mbox{append}\; l\; []
@@ -399,9 +675,9 @@ For any list $l$ we have $\mbox{append}\; l\; [] = l$.
 & = & l
 \end{eqnarray*}
 
-\item Now suppose $l = h::t$ and we know that $\mbox{append}\; t\; [] = t$. We
-find:
-
+\item Пусть $l = h::t$. Предполагая, что~$\mbox{append}\; t\; [] = t$, получим
+%\item Now suppose $l = h::t$ and we know that $\mbox{append}\; t\; [] = t$. We
+%find:
 \begin{eqnarray*}
 \mbox{append}\; l\; []
 & = & \mbox{append}\; (h::t)\; []                                       \\
@@ -420,17 +696,23 @@ find:
 
 \begin{lemma}
 
-For any lists $l_1$ and $l_2$ we have
+Для произвольных списков~$l_1$ и~$l_2$ справедливо
+%For any lists $l_1$ and $l_2$ we have
+%
+$$
+  \mbox{rev}(\mbox{append}\; l_1\; l_2) 
+    = \mbox{append}\; (\mbox{rev}\;l_2)\; (\mbox{rev}\; l_1)
+$$
 
-$$\mbox{rev}(\mbox{append}\; l_1\; l_2) = \mbox{append}\; (\mbox{rev}\;
-l_2)\; (\mbox{rev}\; l_1)$$
-
-\proof Structural induction on $l_1$.
+\proof Для доказательства этой леммы также воспользуемся структурной индукцией 
+по~$l_1$.
+%\proof Structural induction on $l_1$.
 
 \begin{itemize}
 
-\item If $l_1 = []$ we have:
-
+\item При~$l_1 = []$ получаем
+%\item If $l_1 = []$ we have:
+%
 \begin{eqnarray*}
 \mbox{rev}(\mbox{append}\; l_1\; l_2)
 & = & \mbox{rev}(\mbox{append}\; []\; l_2)                          \\
@@ -439,13 +721,17 @@ l_2)\; (\mbox{rev}\; l_1)$$
 & = & \mbox{append}\; (\mbox{rev}\; l_2)\; (\mbox{rev}\; [])
 \end{eqnarray*}
 
-\item Now suppose $l_1 = h::t$ and we know that
-
-$$\mbox{rev}(\mbox{append}\; t\; l_2) = \mbox{append}\; (\mbox{rev}\;
-l_2)\; (\mbox{rev}\; t)$$
-
-\noindent then we find:
-
+\item Если~$l_1 = h::t$ и мы знаем, что
+%\item Now suppose $l_1 = h::t$ and we know that
+%
+$$
+  \mbox{rev}(\mbox{append}\; t\; l_2) 
+    = \mbox{append}\; (\mbox{rev}\;l_2)\; (\mbox{rev}\; t)
+$$
+%
+то из этого следует
+%\noindent then we find:
+%
 \begin{eqnarray*}
 \mbox{rev}(\mbox{append}\; l_1\; l_2)
 & = & \mbox{rev}(\mbox{append}\; (h::t)\; l_2)                      \\
@@ -468,14 +754,17 @@ l_2)\; (\mbox{rev}\; t)$$
 
 \begin{theorem}
 
-For any list $l$ we have $\mbox{rev}(\mbox{rev}\; l) = l$.
+Для произвольного списка~$l$ справедливо~$\mbox{rev}(\mbox{rev}\; l) = l$.
+%For any list $l$ we have $\mbox{rev}(\mbox{rev}\; l) = l$.
 
-\proof Structural induction on $l$.
+\proof Применим структурную индукцию по~$l$.
+%\proof Structural induction on $l$.
 
 \begin{itemize}
 
-\item If $l = []$ we have:
-
+\item При~$l = []$ имеем:
+%\item If $l = []$ we have:
+%
 \begin{eqnarray*}
 \mbox{rev}(\mbox{rev}\; l)
 & = & \mbox{rev}(\mbox{rev}\; [])                               \\
@@ -484,12 +773,16 @@ For any list $l$ we have $\mbox{rev}(\mbox{rev}\; l) = l$.
 & = & l
 \end{eqnarray*}
 
-\item Now suppose $l = h::t$ and we know that
-
-$$ \mbox{rev}(\mbox{rev}\; t) = t $$
-
-\noindent then we find:
-
+\item Пусть~$l = h::t$ и справедливо, что
+%\item Now suppose $l = h::t$ and we know that
+%
+$$ 
+ \mbox{rev}(\mbox{rev}\; t) = t 
+$$
+%
+в этом случае мы получим:
+%\noindent then we find:
+%
 \begin{eqnarray*}
 \mbox{rev}(\mbox{rev}\; l)
 & = & \mbox{rev}(\mbox{rev}\; (h::t))                           \\
@@ -512,36 +805,62 @@ $$ \mbox{rev}(\mbox{rev}\; t) = t $$
 
 \end{theorem}
 
-There are lots of theorems relating the list operations that can be proved in a
-similar style. Generally, one proceeds by list induction. In subtler cases, one
-has to split off lemmas which are themselves proved inductively, and sometimes
-to generalize the theorem before proceeding by induction. There are plenty of
-examples in the exercises for readers to try their hand at.
+Большое количество теорем о свойствах операций над списками может быть доказано
+в аналогичном стиле. Доказательство в целом базируется на структурной индукции,
+применяемой к списку. В некоторых случаях может оказаться удобным выделить
+части рассуждений в отдельные леммы, которые также доказываются индуктивно,
+кроме того, задача может потребовать обобщения, прежде чем индукция окажется
+применимой. Некоторые примеры таких задач приведены в упражнениях.
+%There are lots of theorems relating the list operations that can be proved in a
+%similar style. Generally, one proceeds by list induction. In subtler cases, one
+%has to split off lemmas which are themselves proved inductively, and sometimes
+%to generalize the theorem before proceeding by induction. There are plenty of
+%examples in the exercises for readers to try their hand at.
 
-\section*{Further reading}
+\section*{Дополнительная литература}
+%\section*{Further reading}
 
-\citeN{neumann-risks} catalogues the dangers arising from the use of computers
-in society, including those arising from software bugs. A very readable
-discussion of the issues, with extensive discussion of some interesting
-examples, is given by \citeN{peterson-defect}. The general issue of software
-verification was at one time controversial, with \citeN{demillo-social} among
-others arguing against it. A cogent discussion is given by
-\citeN{barwise-correctness}. There is now a large literature in software
-verification, though much of it is concerned with imperative programs. Many
-introductory functional programming books such as \citeN{paulson-ml} and
-\citeN{reade-efp} give some basic examples like the ones here. It is also worth
-looking at the work of \citeN{boyer-acl} on verifying properties of pure LISP
-functions expressed inside their theorem prover. One of the largest real proofs
-of the type we consider here is the verification by \citeN{aagaard-pbs} of a
-boolean simplifier used in VLSI logic synthesis.
+В работе~\citeN{neumann-risks} приведен обзор рисков, связанных как с 
+распространением компьютеров в обществе в целом, так и с последствиями
+программных ошибок в частности. Очень интересная дискуссия с примерами 
+на эту же тему даётся в~\citeN{peterson-defect}. Применимость верификации
+являлась в своё время предметом споров; некоторые аргументы против этого
+подхода изложены в~\citeN{demillo-social}. Также заслуживает внимания 
+обоснованное обсуждение~\citeN{barwise-correctness}. На данный момент 
+количество публикаций по верификации велико, но в большинстве своём они 
+рассматривают императивные программы. Некоторые учебники функционального
+программирования для начинающих, такие как~\citeN{paulson-ml} 
+и~\citeN{reade-efp}, включают базовые примеры наподобие рассмотренных в данной
+книге. Представляет интерес работа~\citeN{boyer-acl}, авторы которой провели
+верификацию свойств определений чистых функций на языке LISP при помощи своей
+системы автоматизированного доказательства теорем. Одним из самых масштабных
+опытов по верификации, наподобие рассмотренных здесь, служит применение данной
+методики к программе упрощения логических выражений, которая используется
+в синтезе СБИС~\citeN{aagaard-pbs}.
+%\citeN{neumann-risks} catalogues the dangers arising from the use of computers
+%in society, including those arising from software bugs. A very readable
+%discussion of the issues, with extensive discussion of some interesting
+%examples, is given by \citeN{peterson-defect}. The general issue of software
+%verification was at one time controversial, with \citeN{demillo-social} among
+%others arguing against it. A cogent discussion is given by
+%\citeN{barwise-correctness}. There is now a large literature in software
+%verification, though much of it is concerned with imperative programs. Many
+%introductory functional programming books such as \citeN{paulson-ml} and
+%\citeN{reade-efp} give some basic examples like the ones here. It is also worth
+%looking at the work of \citeN{boyer-acl} on verifying properties of pure LISP
+%functions expressed inside their theorem prover. One of the largest real proofs
+%of the type we consider here is the verification by \citeN{aagaard-pbs} of a
+%boolean simplifier used in VLSI logic synthesis.
 
-\section*{Exercises}
+\section*{Упражнения}
+%\section*{Exercises}
 
 \begin{enumerate}
 
-\item Prove the correctness of the more efficient program we gave for
-performing exponentiation:
-
+\item Докажите корректность более эффективного алгоритма возведения в степень:
+%\item Prove the correctness of the more efficient program we gave for
+%performing exponentiation:
+%
 \begin{boxed}\begin{verbatim}
   #let square x = x * x;;
   #let rec exp x n =
@@ -550,54 +869,74 @@ performing exponentiation:
     else x * square(exp x (n / 2));;
 \end{verbatim}\end{boxed}
 
-\item Recall the definition of {\tt length}:
-
+\item Пусть функция~{\tt length} определена как
+%\item Recall the definition of {\tt length}:
+%
 \begin{boxed}\begin{verbatim}
   #let rec length =
      fun [] -> 0
        | (h::t) -> 1 + length t;;
 \end{verbatim}\end{boxed}
 
-Prove that $\mbox{length}(\mbox{rev}\; l) = \mbox{length}\; l$ and that
-$\mbox{length}(\mbox{append}\; l_1\; l_2) = \mbox{length}\; l_1 +
-\mbox{length}\; l_2$.
+Докажите, что~$\mbox{length}(\mbox{rev}\; l) = \mbox{length}\; l$ 
+и что~$\mbox{length}(\mbox{append}\; l_1\; l_2) = \mbox{length}\; l_1 + \mbox{length}\; l_2$.
+%Prove that $\mbox{length}(\mbox{rev}\; l) = \mbox{length}\; l$ and that
+%$\mbox{length}(\mbox{append}\; l_1\; l_2) = \mbox{length}\; l_1 +
+%\mbox{length}\; l_2$.
 
-\item Define the {\tt map} function, which applies a function to each element
-of a list, as follows:
-
+\item Определим функцию~{\tt map}, которая применяет заданную функцию к 
+каждому элементу списка, следующим образом:
+%\item Define the {\tt map} function, which applies a function to each element
+%of a list, as follows:
+%
 \begin{boxed}\begin{verbatim}
   #let rec map f =
      fun [] -> []
        | (h::t) -> (f h)::(map f t);;
 \end{verbatim}\end{boxed}
 
-Prove that if $l \not= []$ then $\mbox{hd}(\mbox{map}\; f\; l) = f(\mbox{hd}\;
-l)$, and that $\mbox{map}\; f\; (\mbox{rev}\; l) = \mbox{rev}\;
-(\mbox{map}\; f\; l)$. Recall the definition of function composition:
-
+Докажите, что если~$l \not= []$ то~$\mbox{hd}(\mbox{map}\; f\; l) = f(\mbox{hd}\;l)$
+и~$\mbox{map}\; f\; (\mbox{rev}\; l) = \mbox{rev}\;(\mbox{map}\; f\; l)$. 
+Далее, используя следующее определение композиции функций,
+%Prove that if $l \not= []$ then $\mbox{hd}(\mbox{map}\; f\; l) = f(\mbox{hd}\;
+%l)$, and that $\mbox{map}\; f\; (\mbox{rev}\; l) = \mbox{rev}\;
+%(\mbox{map}\; f\; l)$. Recall the definition of function composition:
+%
 \begin{boxed}\begin{verbatim}
   #let o f g = fun x -> f(g x);;
   #infix "o";;
 \end{verbatim}\end{boxed}
+%
+докажите, что~$\mbox{map}\; f\; (\mbox{map}\; g\; l) = \mbox{map}\; (f \circ g)\;l$.
+%Prove that $\mbox{map}\; f\; (\mbox{map}\; g\; l) = \mbox{map}\; (f \circ g)\;
+%l$.
 
-Prove that $\mbox{map}\; f\; (\mbox{map}\; g\; l) = \mbox{map}\; (f \circ g)\;
-l$.
-
-\item McCarthy's `91 function' can be defined by:
+\item Функция <<91>> Мак-Карти может быть определена так:
+%\item McCarthy's `91 function' can be defined by:
 
 \begin{boxed}\begin{verbatim}
   #let rec f x = if x > 100 then x - 10
                  else f(f(x + 11));;
 \end{verbatim}\end{boxed}
 
-Prove that for $n \leq 101$, we have $f(n) = 91$. Pay careful attention to
-establishing termination. (Hint: a possible measure is $101 - x$.)
+Докажите, что для~$n \leq 101$ справедливо~$f(n) = 91$. Особое внимание следует
+уделить доказательству завершимости. (Указание: возможно использовать 
+меру~$101 - x$.)
+%Prove that for $n \leq 101$, we have $f(n) = 91$. Pay careful attention to
+%establishing termination. (Hint: a possible measure is $101 - x$.)
 
-\item The problem of the Dutch National Flag is to sort a list of `colours'
-(red, white and blue) so that the reds come first, then the whites and then the
-blues. However, the only method permitted is to swap adjacent elements. Here is
-an ML solution. The function {\tt dnf} returns `true' iff it has made a change,
-and this function is then repeated until no change occurs.
+\item Задача о голландском флаге состоит в сортировке списка <<цветов>> 
+(красный, белый, синий) так, чтобы цвета расположились в данном порядке.
+Требуется решить задачу, используя исключительно перестановку соседних
+элементов. Пример решения на языке~ML приводится ниже. Функция~{\tt dnf} 
+возвращает значение true тогда и только тогда, когда порядок следования 
+элементов изменился; её вычисление повторяется, пока на некотором этапе
+не окажется, что изменений не обнаружено.
+%\item The problem of the Dutch National Flag is to sort a list of `colours'
+%(red, white and blue) so that the reds come first, then the whites and then the
+%blues. However, the only method permitted is to swap adjacent elements. Here is
+%an ML solution. The function {\tt dnf} returns `true' iff it has made a change,
+%and this function is then repeated until no change occurs.
 
 \begin{boxed}\begin{lstlisting}
 type colour = Red | White | Blue;;
@@ -614,19 +953,23 @@ let rec flag l =
   if changed then flag l' else l';;
 \end{lstlisting}\end{boxed}
 
-\noindent For example:
-
+Например,
+%\noindent For example:
+%
 \begin{boxed}\begin{verbatim}
 #flag [White; Red; Blue; Blue; Red; White; White; Blue; Red];;
 - : colour list =
   [Red; Red; Red; White; White; White; Blue; Blue; Blue]
 \end{verbatim}\end{boxed}
 
-Prove that the function {\tt flag} always terminates with a correctly sorted
-list.
+Докажите, что функция~{\tt flag} всегда завершается, и её результатом будет
+корректно упорядоченный список.
+%Prove that the function {\tt flag} always terminates with a correctly sorted
+%list.
 
-\item (*) Define the following functions:
-
+\item (*) Определите следующие функции:
+%\item (*) Define the following functions:
+%
 \begin{boxed}\begin{verbatim}
   #let rec sorted =
      fun [] -> true
@@ -648,10 +991,14 @@ list.
 
   #let permuted l1 l2 = permutes l1 l2 l1;;
 \end{verbatim}\end{boxed}
-
-\noindent What do they all do? Implement a sorting function {\tt sort} and
-prove that for all lists $l$ one has $\mbox{sorted}(\mbox{sort}\; l) =
+%
+Определите назначение этих функций. Реализуйте функцию сортировки~{\tt sort} 
+и докажите, что для произвольных списков~$l$ справедливо, 
+что~$\mbox{sorted}(\mbox{sort}\; l) =
 \mbox{true}$ and $\mbox{permuted}\; l\; (\mbox{sort}\; l) = \mbox{true}$.
+%\noindent What do they all do? Implement a sorting function {\tt sort} and
+%prove that for all lists $l$ one has $\mbox{sorted}(\mbox{sort}\; l) =
+%\mbox{true}$ and $\mbox{permuted}\; l\; (\mbox{sort}\; l) = \mbox{true}$.
 
 \end{enumerate}
 
