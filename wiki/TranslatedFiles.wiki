@@ -31,12 +31,12 @@
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали
   * (e) *ml.tex* - перевод alexott, прочитали lg
+  * (e) *proving.tex* - перевод Lambda Henchman, прочитали
 
 = Остальные =
 
   * (t) *fml.tex* - перевод pr.dimiii, прочитали lg
   * (t) *l9.tex* - перевод pr.dimiii, прочитали
-  * (t) *proving.tex* - перевод Lambda Henchman, прочитали
 
   * (t) *plan.tex* - перевод, прочитали
   * (t) *comb.tex* - перевод, прочитали
