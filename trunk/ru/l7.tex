@@ -51,7 +51,7 @@
     % \item Testing and verification
     \maybepause
 
-  \item Завершение и полнота
+  \item Завершимость и полнота
     % \item Termination and totality
     \maybepause
 
@@ -59,7 +59,7 @@
     % \item Exponential and gcd
     \maybepause
 
-  \item Добавление элемента и реверсирование
+  \item Конкатенация и обращение списков
     % \item Appending and reversing
     \maybepause
 
@@ -73,7 +73,7 @@
   \frametitle{Проблема корректности}
   % \heading{The correctness problem}
 
-  Программы пишутся, чтобы они выполняли определённую задачу.
+  Программы пишут, чтобы они выполняли определённую задачу.
   % Programs are written to perform some particular task.
 
   Однако, программисты знают, что зачастую достаточно сложно написать
@@ -81,18 +81,18 @@
   % However, it is often very hard to write a program that performs
   % its intended function --- as programmers know well.
 
-  На практике, в большинстве объёмных программ есть <<дефекты>>.
+  На практике, в большинстве объёмных программ есть <<ошибки>>.
   % In practice, most large programs have <<bugs>>.
 
-  Некоторые дефекты безобидные, другие просто раздражают.
+  Некоторые ошибки безобидны, другие~--- раздражают.
   % Some bugs are harmless, others merely irritating.
 
   Они могут вызвать финансовые катастрофы или проблемы отношений между
-  компаниями (например дефект Pentium FDIV).
+  компаниями (например ошибка Pentium FDIV).
   % They can cause financial and public relations disasters (e.g. the
   % Pentium FDIV bug).
 
-  Иногда дефекты могут быть смертельно опасными.
+  Иногда ошибки могут быть смертельно опасными.
   % In some situation bugs can be deadly.
 
   {\color{Green} Питер Ньюман: <<Компьютерные риски>>}
@@ -101,14 +101,14 @@
 }
 
 \frame{
-  \frametitle{Опасные дефекты}
+  \frametitle{Опасные ошибки}
   % \heading{Dangerous bugs}
 
-  Вот несколько задач, где дефекты могут быть смертельно опасными:
+  Вот несколько задач, где ошибки могут быть смертельно опасными:
   % Some situations where bugs can be deadly include:
 
   \begin{itemize}
-  \item Электронный стимулятор сердца
+  \item Электрокардиостимулятор
     % \item Heart pacemakers
     \maybepause
 
@@ -116,8 +116,8 @@
     % \item Aircraft autopilots
     \maybepause
 
-  \item Системы управления двигателем автомобиля и противоблокирующее
-    устройство тормозной системы
+  \item Системы управления двигателем и антиблокировочные тормозные
+    системы
     % \item Car engine management systems and antilock braking systems
     \maybepause
 
@@ -125,13 +125,13 @@
     % \item Radiation therapy machines
     \maybepause
 
-  \item Контроллеры ядерных реакторов
+  \item Системы управления ядерных реакторов
     % \item Nuclear reactor controllers
     \maybepause
 
   \end{itemize}
 
-  Про такие задачи говорят, что они {\em жизненно важные}.
+  Про такие задачи говорят, что они {\em критичны к наличию ошибок}.
   % These applications are said to be {\em safety critical}.
 }
 
@@ -139,19 +139,20 @@
   \frametitle{Тестирование и верификация}
   % \heading{Testing and verification}
 
-  Один из хороших способов отыскания дефектов это всестороннее
+  Один из хороших способов отыскания ошибок это всестороннее
   тестирование.
   % One good way to track down bugs is through extensive testing.
 
-  Однако, обычно бывает слишком много разных ситуаций, чтобы можно было
-  полностью их все проверить, поэтому всё же возможно, что останутся
-  не обнаруженные дефекты.
+  Однако, обычно оказывается, что потенциальных вариантов
+  использования слишком много, чтобы можно было полностью их все
+  проверить, поэтому всё же возможно, что останутся не обнаруженные
+  ошибки.
   % But usually there are too many possible situations to try them all
   % exhaustively, so there may still be bugs lying undetected.
 
-  Тестирование программ может служить доказательством наличия
-  дефектов, но лишь в немногих случаях оно может служить
-  доказательством отсутствия дефектов.
+  Тестирование программ может быть полезным для демонстрации наличия
+  ошибок, но показать их отсутствие оно в состоянии лишь в отдельных
+  редких случаях.
   % Program testing can be very useful for demonstrating the presence of bugs, but
   % it is only in a few unusual cases where it can demonstrate their absence.
 
@@ -160,10 +161,10 @@
   % An alternative is {\em verification}, where we try to {\em prove} that a
   % program behaves as required.
 
-  Рассмотрим обычную математическую теорему: \alert{$$
+  Рассмотрим простое математическое отношение: \alert{$$
     \Sigma_{n=0}^{n=N} n = \frac{N (N + 1)}{2} $$} Мы можем {\em
-    проверить} её для множества определённых значений $N$, но легче и
-  приятнее {\em доказать} её (по индукции).
+    проверить} его для множества определённых значений~$N$, но проще и
+  надёжнее {\em доказать} её (по индукции).
   % Consider ordinary mathematical theorems, like
   % \alert{$$ \Sigma_{n=0}^{n=N} n = \frac{N (N + 1)}{2} $$}
   % We can {\em test} this for many particular values of $N$, but it is easier and
@@ -183,9 +184,9 @@
     \begin{picture}(140,140)(0,0)
       \put(40,0){\dashbox(150,25){Существующая система}}
       % \put(40,0){\dashbox(150,25){Actual system}}
-      \put(40,40){\framebox(150,25){Математическая модель}}
+      \put(40,40){\framebox(150,25){Математическая модель системы}}
       % \put(40,40){\framebox(150,25){Mathematical model}}
-      \put(40,80){\framebox(150,25){Математическая спецификация}}
+      \put(40,80){\framebox(150,25){Математическая спецификация требований}}
       % \put(40,80){\framebox(150,25){Mathematical specification}}
       \put(40,120){\dashbox(150,25){Существующие требования}}
       % \put(40,120){\dashbox(150,25){Actual requirements}}
@@ -195,7 +196,7 @@
     \end{picture}}
   \bigskip
 
-  Только центральная связь математически точна.  Остальные остаются
+  Лишь центральная связь математически точна.  Остальные остаются
   неформальными~--- всё что мы можем сделать это постараться сохранять
   их несущественными.
   % It is only the central link that is mathematically precise. The others are
@@ -224,13 +225,15 @@
 
   Но надо помнить, что в основном функциональные программы это {\em
     частичные} функции.  Иногда требуется отдельное доказательство
-  того, что программа завершается.
+  завершимости вычислений.
   % We need to remember that, in general, functional programs are {\em partial}
   % functions. Sometimes we need a separate argument to establish termination.
 
-  Часто доказательство происходит по индукции, XXX
-  Often, the proofs proceed by induction, parallelling the definition of the
-  functions involved by recursion.
+  Часто свойства функций (включая завершимость), определённых
+  рекурсивно, можно доказать по индукции в силу двойственности этих
+  двух понятий.
+  % Often, the proofs proceed by induction, parallelling the
+  % definition of the functions involved by recursion.
 }
 
 \frame{
@@ -244,11 +247,11 @@
 
   \ExampleExp
 
-  Мы докажем, что она удовлетворяет следующим технической спецификации:
+  Мы докажем, что она удовлетворяет следующей спецификации:
   % We will prove that this satisfies the following specification:
 
-  \alert{Для всех $n \geq 0$ и $x$, $\mbox{exp}\; x\; n$ завершается и
-    $\mbox{exp}\; x\; n = x^n$}
+  \alert{Для любого $n \geq 0$ и произвольного~$x$ функция
+    $\mbox{exp}\; x\; n$ завершается и $\mbox{exp}\; x\; n = x^n$}
   % \alert{For all $n \geq 0$ and $x$, $\mbox{exp}\; x\; n$ terminates and
   %   $\mbox{exp}\; x\; n = x^n$}
 
@@ -264,8 +267,8 @@
 
   \begin{itemize}
   \item Если \alert{$n = 0$}, то по определению \alert{$\mbox{exp}\;
-      x\; n = 1$}.  Так как для всех чисел \alert{$x$}, мы имеем
-    \alert{$x^0 = 1$}, то есть желаемый факт установлен.
+      x\; n = 1$}.  Так как для любого целого \alert{$x$}, мы имеем
+    \alert{$x^0 = 1$}, таким образом базис индукции выполняется.
     % \item If \alert{$n = 0$}, then by definition
     %   \alert{$\mbox{exp}\; x\; n = 1$}.  Since for any integer
     %   \alert{$x$}, we have \alert{$x^0 = 1$}, so the desired fact is
@@ -309,8 +312,8 @@
   Мы хотим доказать что:
   % We want to prove:
 
-  \alert{Для любых $x$ и $y$, $\mbox{gcd}\; x\; y$ завершается и
-    возвращает НОД($x$, $y$).}
+  \alert{Для любых $x$ и $y$, вычисление $\mbox{gcd}\; x\; y$
+    завершается с результатом равным НОД($x$, $y$).}
   % \alert{For any integers $x$ and $y$, $\mbox{gcd}\; x\; y$ terminates and returns
   %   a gcd of $x$ and $y$.}
 
@@ -370,20 +373,20 @@
   % Now we come to the proof. The {\tt gcd} function is no longer defined by
   % {\em primitive} recursion.
 
-  На шаге алгоритма Евклида, {\tt gcd x y} определена в терминах
+  На шаге алгоритма Евклида {\tt gcd x y} определена в терминах
   {\tt gcd y (x mod y)}.
   % In fact, {\tt gcd x y} is defined in terms of {\tt gcd y (x mod
   %   y)} in the step case.
 
   Поэтому мы не прибегаем к пошаговой математической индукции, а
-  используем {\em обоснованную} индукцию по \alert{$|y|$}.
+  используем {\em трансфинитную} индукцию по \alert{$|y|$}.
   % We do not, therefore, proceed by step-by-step mathematical induction, but by
   % {\em wellfounded} induction on \alert{$|y|$}.
 
-  Идея в том, что эта величина (часто называемая {\em мера})
-  уменьшается с каждым вызовом.  Мы можем использовать это свойство,
-  чтобы доказать что вызов функции завершается, а также как опору для
-  обоснованной индукции.
+  Идея в том, что эта величина (часто называемая {\em мера}) убывает в
+  ходе рекурсии.  Мы можем использовать это свойство, чтобы доказать
+  что вызов функции завершается, а также как опору для трансфинитной
+  индукции.
   % The idea is that this quantity (often called a {\em measure}) decreases with
   % each call. We can use it to prove termination, and as a handle for wellfounded
   % induction.
@@ -400,11 +403,17 @@
   \frametitle{Наибольший общий делитель (4)}
   % \heading{Greatest common divisor (4)}
 
-  Теперь мы представим доказательство.  Возьмём произвольное \alert{
-    $n$}.  Мы предполагаем что теорема верна для всех аргументов
-  \alert{ $x$} и \alert{$y$}, таких что \alert{$|y| < n$}, и мы
-  попробуем доказать её для всех \alert{$x$} и \alert{$y$}, таких что
-  \alert{$|y| = n$}.  Здесь два случая.
+  Теперь мы представим доказательство.  
+Возьмём
+  некоторого~$n$, что для произвольного значения~$x$ и~$y$ такого,
+  что~$|y| < n$ теорема справедлива. Основываясь на этом
+  предположении, попробуем доказать, что она справедлива также для
+  произвольного~$x$ при~$|y| = n$.  Здесь два частных случая.
+
+  Возьмём произвольное \alert{ $n$}.  Предположим что теорема верна
+  для всех аргументов \alert{$x$} и \alert{$y$}, таких что \alert{$|y|
+    < n$}, и мы попробуем доказать её для всех \alert{$x$} и
+  \alert{$y$}, таких что \alert{$|y| = n$}.  Здесь два случая.
   % Now we come to the proof. Fix some arbitrary \alert{$n$}. We suppose that
   % the theorem is established for all arguments \alert{$x$} and \alert{
   %   $y$} with \alert{$|y| < n$}, and we try to prove it for all \alert{
@@ -436,7 +445,8 @@
   % \heading{Greatest common divisor (5)}
 
   Теперь предположим, что \alert{$y \not= 0$}.  Мы хотим применить
-  предположение индукции к \alert{$\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
+  индуктивное предположение к \alert{$\mbox{gcd}\; y\; (x\;
+    \mbox{mod}\; y)$}.
   % Now suppose \alert{$y \not= 0$}. We want to apply the inductive
   % hypothesis to \alert{$\mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$}.
 
@@ -449,17 +459,17 @@
   % since \alert{$y \not= 0$}, for some integer \alert{$q$} we have
   % \alert{$x = q y + r$} and \alert{$|r| < |y|$}.
 
-  Поскольку \alert{$|r| < |y|$}, то согласно предположению индукции
+  Поскольку \alert{$|r| < |y|$}, то согласно индуктивному предположению
   \alert{$d = \mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} является НОД для
   \alert{$y$} и \alert{$r$}.
   % Since \alert{$|r| < |y|$}, the inductive hypothesis tells us that
   % \alert{$d = \mbox{gcd}\; y\; (x\; \mbox{mod}\; y)$} is a gcd of
   % \alert{$y$} and \alert{$r$}.
 
-  Нам осталось лишь показать, что он является НОД для \alert{$x$} и
-  \alert{ $y$}.  Конечно же он общий делитель ибо при \alert{$d | y$}
-  и \alert{ $d | r$} имеем \alert{$d | x$} так как \alert{$x = q y +
-    r$}.
+  Нам осталось лишь показать, что он является НОД также и для
+  \alert{$x$} и \alert{$y$}.  Конечно же он общий делитель ибо при
+  \alert{$d | y$} и \alert{ $d | r$} имеем \alert{$d | x$} так как
+  \alert{$x = q y + r$}.
   % We just need to show that it is a gcd of \alert{$x$} and
   % \alert{$y$}. It is certainly a common divisor, since if \alert{$d
   %   | y$} and \alert{$d | r$} we have \alert{$d | x$}, as \alert{$x
@@ -468,7 +478,7 @@
   Теперь допустим \alert{$d' | x$} и \alert{$d' | y$}.  Согласно тому
   же уравнению мы видим, что \alert{$d' | r$}.  Таким образом
   \alert{$d'$} является общим делителем \alert{$y$} и \alert{$r$}, но
-  в соответствии с предположением индукции получаем \alert{$d' | d$}
+  в соответствии с индуктивным предположением получаем \alert{$d' | d$}
   что и требовалось.
   % Now suppose \alert{$d' | x$} and \alert{$d' | y$}. By the same
   % equation, we find that \alert{$d' | r$}. Thus \alert{$d'$} is a
@@ -477,24 +487,24 @@
 }
 
 \frame{
-  \frametitle{Append (1)}
+  \frametitle{Конкатенация списков (1)}
 
   Теперь лучше рассмотрим пример касательно списков, а не чисел.
-  Зададим:
+  Определим:
   % Now consider an example concerning lists rather than numbers.
   % Define:
 
   \ExampleAppend
 
-  Предполагается, что эта функция объединяет два списка.  Мы хотим
-  доказать, что эта операция ассоциативна, т.е. для любых трёх списков
-  \alert{$l_1$}, \alert{$l_2$} и \alert{$l_3$} имеем свойство:
-  \alert{$$ \mbox{append}\; l_1\; (\mbox{append}\; l_2\; l_3) =
-    \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3 $$} Мы можем
-  использовать индукцию по длине \alert{$l_1$}, но так как функция
-  была задана с помощью структурной рекурсии над списками, то
-  естественнее доказывать теорему используя {\em структурную
-    индукцию}.
+  Предполагается, что эта функция для конкатенации (сцепления) двух
+  списков.  Мы хотим доказать, что эта операция ассоциативна, т.е. для
+  любых трёх списков \alert{$l_1$}, \alert{$l_2$} и \alert{$l_3$}
+  имеем свойство: \alert{$$ \mbox{append}\; l_1\; (\mbox{append}\;
+    l_2\; l_3) = \mbox{append}\; (\mbox{append}\; l_1\; l_2)\; l_3 $$}
+  Мы можем использовать математическую индукцию по длине
+  \alert{$l_1$}, но так как функция была задана с помощью структурной
+  рекурсии над списками, то естественнее доказывать теорему используя
+  {\em структурную индукцию}.
   % This is supposed to join together two lists. We want to prove that the
   % operation is associative, i.e. for any three lists \alert{$l_1$}, \alert{$l_2$}
   % and \alert{$l_3$} we have:
@@ -513,7 +523,7 @@
 }
 
 \frame{
-  \frametitle{Append (2)}
+  \frametitle{Конкатенация списков (2)}
 
   Используем структурную индукцию по \alert{$l_1$}.  Нам надо рассмотреть
   два случая.  Сначала, предположим что \alert{$l_1 = []$}.  Тогда мы имеем:
@@ -534,7 +544,7 @@
 }
 
 \frame{
-  \frametitle{Append (3)}
+  \frametitle{Конкатенация списков (3)}
 
   Теперь допустим, что \alert{$l_1 = h::t$}.  Мы в праве полагать, что
   для любого \alert{$l_2$} и \alert{$l_3$} выполняется:
@@ -558,9 +568,9 @@
 }
 
 \frame{
-  \frametitle{Reverse (1)}
+  \frametitle{Обращение списков (1)}
 
-  Для последнего примера определим функцию реверсирования списка.
+  Для последнего примера определим функцию обращения списков.
   % For a final example, let us define a function to reverse a list:
   \ExampleRev
   Мы докажем, что для любого списка \alert{$l$} верно следующее:
@@ -579,7 +589,7 @@
 }
 
 \frame{
-  \frametitle{Reverse (2)}
+  \frametitle{Обращение списков (2)}
 
   Сначала рассмотрим случай, когда \alert{$l = []$}.  Доказательство
   просто:
@@ -602,7 +612,7 @@
 }
 
 \frame{
-  \frametitle{Reverse (3)}
+  \frametitle{Обращение списков (3)}
 
   \alert{
     \begin{eqnarray*}
