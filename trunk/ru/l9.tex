@@ -1,806 +1,1 @@
-\documentclass[portrait,%
-              fancybox,%
-              notes,%
-              epsfig,%
-              alltt,%
-              semcolor,
-              alltt]{seminar}
-
-\usepackage[koi8-r]{inputenc}
-\usepackage[russian]{babel}
-
-\input amssym.def
-\input amssym
-
-\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
-\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
-\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
-\newcommand{\real}{\mbox{$\protect\Bbb R$}}
-\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
-\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
-
-\newcommand{\lamb}[1]{\lambda #1.\:}
-\newcommand{\eps}[1]{\varepsilon #1.\:}
-\newcommand{\all}[1]{\forall #1.\:}
-\newcommand{\ex}[1]{\exists #1.\:}
-\newcommand{\exu}[1]{\exists! #1.\:}
-
-\newcommand{\True}{\top}
-\newcommand{\False}{\bot}
-\newcommand{\Not}{\neg}
-\newcommand{\And}{\wedge}
-\newcommand{\Or}{\vee}
-\newcommand{\Imp}{\Rightarrow}
-\newcommand{\Iff}{\Leftrightarrow}
-
-\newcommand{\entails}{\vdash}
-\newcommand{\proves}{\vdash}
-
-\newcommand{\Ands}{\bigwedge}
-\newcommand{\Ors}{\bigvee}
-
-\newcommand{\BQ}{\mbox{$\ulcorner$}}
-\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
-\newcommand{\EQ}{\mbox{$\urcorner$}}
-\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
-
-\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
-\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
-\let\subset=\subseteq
-
-\newcommand{\powerset}{\wp}             % This is pretty dire...  %
-
-\newcommand{\Union}{\cup}
-\newcommand{\Inter}{\cap}
-\newcommand{\Unions}{\bigcup}
-\newcommand{\Inters}{\bigcap}
-
-\newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
-
-\newcommand{\Rule}{\infer}
-
-\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
-
-\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
-
-\newcommand\leb{\lbrack\!\lbrack}
-\newcommand\reb{\rbrack\!\rbrack}
-\newcommand{\sem}[1]{\leb #1 \reb}
-
-\newcommand{\BA}{\begin{array}[t]{l}}
-\newcommand{\EA}{\end{array}}
-\newcommand{\sqle}{\sqsubseteq}
-\newcommand{\sqlt}{\sqsubset}
-
-\newcommand{\too}{\twoheadrightarrow}
-
-\newcommand{\Los}{{\L}o{\'s}}
-
-% These are from Mike's notes
-
-\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
-\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
-\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
-
-\def\goesto{\longrightarrow}
-
-\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
-
-% Sizes
-
-\newenvironment{rslide}
-{\begin{slide*}[240mm,165mm] }
-{\end{slide*}}
-
-\renewcommand{\slidetopmargin}{0.8in}
-\renewcommand{\slidebottommargin}{0.8in}
-
-% Various combinations of one colour on another
-
-\newcommand{\greenonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
-
-\newcommand{\whiteonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\yellowonmagenta}[1]%
-{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
-
-\newcommand{\whiteonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\blackonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
-
-\newcommand{\blueonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\cyanonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
-
-\newcommand{\blueonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\redonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
-
-\newcommand{\heading}[1]%
-{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
-
-\newcommand{\emphatic}[1]{\blueonyellow{#1}}
-
-\newcommand{\veryemphatic}[1]%
-{\begin{center}{\emphatic{#1}}\end{center}}
-
-% Head and foot of slides
-
-\newpagestyle{ColourDemo}%
-  {\cyanonblack{Введение в Функциональное Программирование:
-                Лекция 9}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{Джон Харрисон}\hfil
-   \cyanonblack{Университет Кембриджа, 4 февраля 1997}}
-%\newpagestyle{ColourDemo}%
-%  {\cyanonblack{Introduction to Functional Programming:
-%                Lecture 9}\hfil\cyanonblack{\thepage}}
-%  {\cyanonblack{John Harrison}\hfil
-%   \cyanonblack{University of Cambridge, 4 February 1997}}
-
-\pagestyle{ColourDemo}
-
-\centerslidesfalse
-
-% Colour bullets
-
-\def\labelitemi{{\black$\bullet$}}
-\def\labelitemii{{\black--}}
-\def\labelitemiii{{\black$\ast$}}
-\def\labelitemiv{{\black$\cdot$}}
-
-% Start of document (default text colour is blue)
-
-\begin{document}\blue
-
-
-
-\begin{rslide}
-
-\heading{%
-\begin{tabular}{c}
-{\Large\red Введение в}\\
-{\Large\red Функциональное}\\
-{\Large\red Программирование}\\
-{\cyan Джон Харрисон}\\
-{\cyan Университет Кембриджа}\\
-{\green Лекция 9}\\
-{\green Примеры на ML I:}\\
-{\green Символьное Дифференцирование}
-%{\LARGE\red Introduction to}\\
-%{\LARGE\red Functional Programming}\\
-%{\cyan John Harrison}\\
-%{\cyan University of Cambridge}\\
-%{\green Lecture 9}\\
-%{\green ML examples I:}\\
-%{\green Symbolic Differentiation}
-\end{tabular}}
-
-\vspace*{0.5cm}
-
-Темы:
-
-\begin{itemize}
-
-\item Символьные вычисления
-
-%%\item Symbolic computation
-
-\item Представление данных
-
-%%\item Data representation
-
-\item Prettyprinting
-
-\item Дифференцирование
-
-%%\item Differentiation
-
-\item Упрощение переписыванием
-
-%%\item Simplification by rewriting
-
-\end{itemize}
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Символьные вычисления}
-
-\vspace*{0.5cm}
-
-Речь о приложениях в которых манипуляции над математическими {\em выражениями },
-в общем случае содержащими переменные
-
-%%This covers applications where manipulation of mathematical {\em expressions},
-%%in general containing variables, is emphasized at the expense of actual
-%%numerical calculation.
-
-Есть несколько удачных `систем компьютерной алгебры' таких как 
-Axiom, Maple and Mathematica, которые могут выполнять определённые символические операции, полезные в математических расчётах.
-
-%% There are several successful `computer algebra systems' such as
-%%Axiom, Maple and Mathematica, which can do certain symbolic operations that %%are useful in mathematics.
-
-Примеры включают разложение полиномов, дифференцирование и интегрирование выражений.
-
-%%Examples include factorizing polynomials and differentiating and integrating
-%%expressions.
-
-Мы покажем как ML может использоваться для таких приложений. В качестве примера рассмотрим символьное дифференцирование.
-
-%%We will show how ML can be used for such applications. Our example will be
-%%symbolic differentiation.
-
-This will illustrate all the typical components of symbolic computation
-systems: data representation, internal algorithms, parsing and prettyprinting.
-
-%%This will illustrate all the typical components of symbolic computation
-%%systems: data representation, internal algorithms, parsing and prettyprinting.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Представление данных}
-
-\vspace*{0.5cm}
-
-We will allow mathematical expressions to be built up from variables and
-constants by the application of $n$-ary operators.
-
-%We will allow mathematical expressions to be built up from variables and
-%constants by the application of $n$-ary operators.
-
-Следовательно мы задаём рекурсивный тип следующим образом:
-
-%%Therefore we define a recursive type as follows:
-
-\begin{black}\begin{verbatim}
-  #type term = Var of string
-             | Const of string
-             | Fn of string * (term list);;
-  Type term defined.
-\end{verbatim}\end{black}
-
-Например, выражение {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} представляется:
-
-%%For example the expression {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} %%is represented by:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
- Fn("-",
-    [Fn("/",[Fn("sin",[Fn("+",[Var "x";
-                               Var "y"])]);
-             Fn("cos",[Fn("-",[Var "x";
-                               Fn("exp",
-                                  [Var "y"])])])]);
-     Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
-\end{verbatim}\end{footnotesize}\end{black}
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{The need for parsing and printing}
-
-\vspace*{0.5cm}
-
-Reading and writing expressions in their raw form is rather unpleasant. This is
-a general problem in all symbolic computation systems. Typically one wants:
-
-\begin{itemize}
-
-\item A {\em parser} to accept input in human-readable form and translate it
-into the internal representation
-
-\item A {\em prettyprinter} to translate output from the internal
-representation back to a human-readable form.
-
-\end{itemize}
-
-We will use parsing as another major example of functional programming, so we
-will defer that for now.
-
-However we will now write a simple printer for our expressions.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Prettyprinting expressions}
-
-\vspace*{0.5cm}
-
-How do we want to print expressions?
-
-\begin{itemize}
-
-\item Variables and constants are just written as their names.
-
-\item Ordinary $n$-ary functions applied to arguments are written by
-juxtaposing the function and a bracketed list of arguments, e.g. {\red
-$f(x_1,\ldots,x_n)$}.
-
-\item Infix binary functions like {\red $+$} are written in between their
-arguments.
-
-\item Brackets are used where necessary for disambiguation.
-
-\item Infix operators have a notion of precedence to reduce the need for
-brackets.
-
-\end{itemize}
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Storing precedences}
-
-\vspace*{0.5cm}
-
-We can have a list of binary operators together with their precedences,
-e.g.
-
-\begin{black}\begin{verbatim}
-  #let infixes =
-     ["+",10; "-",10; "*",20; "/",20];;
-\end{verbatim}\end{black}
-
-This sort of list, associating data with keys, is called an {\em association
-list}. To get the data associated with a key we use the following:
-
-\begin{black}\begin{verbatim}
-  #let rec assoc a ((x,y)::rest) =
-     if a = x then y else assoc a rest;;
-\end{verbatim}\end{black}
-
-In our case, we define:
-
-\begin{black}\begin{verbatim}
-  #let get_precedence s = assoc s infixes;;
-\end{verbatim}\end{black}
-
-This procedure of linear search is inefficient, but it is simple and adequate
-for small examples. Techniques like hashing are better for heavyweight
-applications.
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Making precedences modifiable}
-
-\vspace*{0.3cm}
-
-Because of static binding, changing the list of infixes does not change
-{\black \tt get\_precedence}.
-
-However we can make {\black \tt infixes} a reference instead and then it is
-modifiable:
-
-\begin{black}\begin{verbatim}
-  #let infixes =
-     ref ["+",10; "-",10; "*",20; "/",20];;
-...
-  #let get_precedence s =
-     assoc s (!infixes);;
-  get_precedence : string -> int = <fun>
-  #get_precedence "^";;
-  Uncaught exception: Match_failure
-  #infixes := ("^",30)::(!infixes);;
-  - : unit = ()
-  #get_precedence "^";;
-  - : int = 30
-\end{verbatim}\end{black}
-
-This setup is not purely functional, but is perhaps more natural.
-
-\end{rslide}
-
-
-
-
-
-
-\begin{rslide}
-
-\heading{Finding if an operator is infix}
-
-\vspace*{0.5cm}
-
-We will treat an operator as infix just if it appears in the list of infixes
-with a precedence. We can do:
-
-\begin{black}\begin{verbatim}
-  #let is_infix s =
-     try get_precedence s; true
-     with _ -> false;;
-\end{verbatim}\end{black}
-
-\noindent because {\black \verb+get_precedence+} fails on non-infixes. An
-alternative coding is to use an auxiliary function {\black \tt can} which finds
-out whether the application of its first argument to its seconds succeeds::
-
-\begin{black}\begin{verbatim}
-  #let can f x =
-     try f x; true
-     with _ -> false;;
-  can : ('a -> 'b) -> 'a -> bool = <fun>
-  #let is_infix = can get_precedence;;
-  is_infix : string -> bool = <fun>
-\end{verbatim}\end{black}
-
-\end{rslide}
-
-
-
-
-
-
-\begin{rslide}
-
-\heading{The printer: explanation}
-
-\vspace*{0.5cm}
-
-The printer consists of two mutually recursive functions.
-
-The function {\black\verb+string_of_term+} takes two arguments. The first is a
-`currently active precedence', and the second is the term.
-
-For example, in printing the right-hand argument of {\black \tt x * (y + z)},
-the currently active precedence is the precedence of {\black \tt *}. If the
-function prints an application of an infix operator (here {\black \tt +}), it
-puts brackets round it unless its own precedence is higher.
-
-We have a second, mutually recursive, function, to print a list of terms
-separated by commas. This is for the argument lists of non-unary and non-infix
-functions of the form {\red  $f(x_1,\ldots,x_n)$}.
-
-\end{rslide}
-
-
-
-
-
-
-
-\begin{rslide}
-
-\heading{The printer: code}
-
-\vspace*{0.5cm}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
-  #let rec string_of_term prec =
-     fun (Var s) -> s
-       | (Const c) -> c
-       | (Fn(f,args)) ->
-           if length args = 2 & is_infix f then
-             let prec' = get_precedence f in
-             let s1 = string_of_term prec'
-                        (hd args)
-             and s2 = string_of_term prec'
-                        (hd(tl args)) in
-             let ss = s1^" "^f^" "^s2 in
-             if prec' <= prec then "("^ss^")" else ss
-           else
-             f^"("^(string_of_terms args)^")"
-
-   and string_of_terms t =
-     match t with
-         [] -> ""
-       | [t] -> string_of_term 0 t
-       | (h::t) -> (string_of_term 0 h)^","^
-                   (string_of_terms t);;
-\end{verbatim}\end{footnotesize}\end{black}
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{The printer: installing}
-
-\vspace*{0.5cm}
-
-CAML Light has special facilities for installing user-defined printers in the
-toplevel read-eval-print loop.
-
-Once our printer is installed, anything of type {\black \tt term} will be
-printed using it.
-
-We use some special functions from the CAML Light {\tt format} library to make
-sure that our printer interacts with the toplevel loop.
-
-\begin{black}\begin{verbatim}
-  ##open "format";;
-  #let print_term s =
-     open_hvbox 0;
-     print_string
-      ("`"^(string_of_term 0 s)^"`");
-     close_box();;
-  print_term : term -> unit = <fun>
-  #install_printer "print_term";;
-  - : unit = ()
-\end{verbatim}\end{black}
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{До и после }
-
-\vspace*{0.1cm}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
-#t;;
-t : term =
- Fn
-  ("-",
-   [Fn
-     ("/",
-      [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
-       Fn ("cos", [Fn ("-", [Var "x"; Fn ("exp",
-                                      [Var "y"])])])]);
-    Fn ("ln", [Fn ("+", [Const "1"; Var "x"])])])
-#install_printer "print_term";;
-- : unit = ()
-#t;;
-t : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
-#let x = t;;
-x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
-#(x,t);;
-- : term * term =
- `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`,
- `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
-#[x; t; x];;
-- : term list =
- [`sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;
-  `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;
-  `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`]
-\end{verbatim}\end{footnotesize}\end{black}
-
-\end{rslide}
-
-
-
-
-
-
-\begin{rslide}
-
-\heading{Дифференцирование: алгоритм}
-
-\vspace*{0.1cm}
-
-Есть хорошо известные правила (изучаемые в школе) дифференцирования сложных выражений.
-
-%%There is a well-known method (taught in schools) to differentiate complicated
-%%expressions.
-
-\begin{itemize}
-
-\item If the expression is one of the standard functions applied to an
-argument, e.g. {\red $sin(x)$}, return the known derivative.
-
-%\item If the expression is one of the standard functions applied to an
-%argument, e.g. {\red $sin(x)$}, return the known derivative.
-
-\item If the expression is of the form {\red $f(x) + g(x)$} then apply the rule
-for sums, returning {\red $f'(x) + g'(x)$}. Likewise for subtraction etc.
-
-%\item If the expression is of the form {\red $f(x) + g(x)$} then apply the rule
-%for sums, returning {\red $f'(x) + g'(x)$}. Likewise for subtraction etc.
-
-\item If the expression is of the form {\red $f(x) * g(x)$} then apply the
-product rule, i.e. return {\red $f'(x) * g(x) + f(x) * g'(x)$}.
-
-%\item If the expression is of the form {\red $f(x) * g(x)$} then apply the
-%product rule, i.e. return {\red $f'(x) * g(x) + f(x) * g'(x)$}.
-
-\item If the expression is one of the standard functions applied to a composite
-argument, say {\red $f(g(x))$} then apply the Chain Rule and so give {\red
-$g'(x) * f'(g(x))$}.
-
-%\item If the expression is one of the standard functions applied to a composite
-%argument, say {\red $f(g(x))$} then apply the Chain Rule and so give {\red
-%$g'(x) * f'(g(x))$}.
-
-\end{itemize}
-
-Они очень легко переводятся в рекурсивные алгоритмы.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Дифференцирование: код}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
-let rec differentiate x tm = match tm with
-    Var y -> if y = x then Const "1" else Const "0"
-  | Const c -> Const "0"
-  | Fn("-",[t]) -> Fn("-",[differentiate x t])
-  | Fn("+",[t1;t2]) -> Fn("+",[differentiate x t1;
-                                differentiate x t2])
-  | Fn("-",[t1;t2]) -> Fn("-",[differentiate x t1;
-                                differentiate x t2])
-  | Fn("*",[t1;t2]) ->
-     Fn("+",[Fn("*",[differentiate x t1; t2]);
-             Fn("*",[t1; differentiate x t2])])
-  | Fn("inv",[t]) -> chain x t
-     (Fn("-",[Fn("inv",[Fn("^",[t;Const "2"])])]))
-  | Fn("^",[t;n]) -> chain x t
-    (Fn("*",[n; Fn("^",[t; Fn("-",[n; Const "1"])])]))
-  | Fn("exp",[t]) -> chain x t tm
-  | Fn("ln",[t]) -> chain x t (Fn("inv",[t]))
-  | Fn("sin",[t]) -> chain x t (Fn("cos",[t]))
-  | Fn("cos",[t]) -> chain x t
-     (Fn("-",[Fn("sin",[t])]))
-  | Fn("/",[t1;t2]) -> differentiate x
-     (Fn("*",[t1; Fn("inv",[t2])]))
-  | Fn("tan",[t]) -> differentiate x
-     (Fn("/",[Fn("sin",[t]); Fn("cos",[t])]))
-and chain x t u =  Fn("*",[differentiate x t; u]);;
-\end{verbatim}\end{footnotesize}\end{black}
-
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Примеры дифференцирования}
-
-\vspace*{0.2cm}
-
-Попробуем несколько примеров:
-
-%%Let's try a few examples:
-
-\begin{black}\begin{verbatim}
-  #let t1 = Fn("sin",[Fn("*",[Const "2";
-                              Var "x"])]);;
-  t1 : term = `sin(2 * x)`
-  #differentiate "x" t1;;
-  - : term = `(0 * x + 2 * 1) * cos(2 * x)`
-  #let t2 = Fn("tan",[Var "x"]);;
-  t2 : term = `tan(x)`
-  #differentiate "x" t2;;
-  - : term =
-   `(1 * cos(x)) * inv(cos(x)) +
-    sin(x) * ((1 * -(sin(x))) *
-    -(inv(cos(x) ^ 2)))`
-  #differentiate "y" t2;;
-  - : term =
-   `(0 * cos(x)) * inv(cos(x)) +
-    sin(x) * ((0 * -(sin(x))) *
-    -(inv(cos(x) ^ 2)))`
-\end{verbatim}\end{black}
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Упрощение}
-
-It seems to work OK, but it isn't making certain obvious simplifications,
-like {\red $0 * x = 0$}. These arise partly because we apply the recursive
-rules like the chain rule even in trivial cases. We'll write a simplifier:
-
-%%It seems to work OK, but it isn't making certain obvious simplifications,
-%%like {\red $0 * x = 0$}. These arise partly because we apply the recursive
-%%rules like the chain rule even in trivial cases. We'll write a simplifier:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
-#let simp = fun
-    (Fn("+",[Const "0"; t])) -> t
-  | (Fn("+",[t; Const "0"])) -> t
-  | (Fn("-",[t; Const "0"])) -> t
-  | (Fn("-",[Const "0"; t])) -> Fn("-",[t])
-  | (Fn("+",[t1; Fn("-",[t2])])) -> Fn("-",[t1; t2])
-  | (Fn("*",[Const "0"; t])) -> Const "0"
-  | (Fn("*",[t; Const "0"])) -> Const "0"
-  | (Fn("*",[Const "1"; t])) -> t
-  | (Fn("*",[t; Const "1"])) -> t
-  | (Fn("*",[Fn("-",[t1]); Fn("-",[t2])])) ->
-       Fn("*",[t1; t2])
-  | (Fn("*",[Fn("-",[t1]); t2])) ->
-       Fn("-",[Fn("*",[t1; t2])])
-  | (Fn("*",[t1; Fn("-",[t2])])) ->
-       Fn("-",[Fn("*",[t1; t2])])
-  | (Fn("-",[Fn("-",[t])])) -> t
-  | t -> t;;
-\end{verbatim}\end{footnotesize}\end{black}
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Simplification examples}
-
-We need to apply {\black \tt simp} recursively, bottom-up:
-
-\begin{black}\begin{verbatim}
-  #let rec dsimp = fun
-     (Fn(fn,args)) ->
-          simp(Fn(fn,map dsimp args))
-   | t -> simp t;;
-\end{verbatim}\end{black}
-
-Now we get better results:
-
-\begin{black}\begin{verbatim}
-  #dsimp(differentiate "x" t1);;
-  - : term = `2 * cos(2 * x)`
-  #dsimp(differentiate "x" t2);;
-  - : term = `cos(x) * inv(cos(x)) +
-              sin(x) *
-              (sin(x) * inv(cos(x) ^ 2))`
-  #dsimp(differentiate "y" t);;
-  - : term = `0`
-\end{verbatim}\end{black}
-
-There are still other simplifications to be made, e.g. {\red $cos(x) *
-inv(cos(x)) = 1$}. Good algebraic simplification is a difficult problem!
-
-\end{rslide}
-
-
-
-
-\end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
-
+\documentclass{fp-slides}\begin{document}%%%%%%%%%%%%%%% Define code blocks\defverbatim[colored]\factCcode{  \begin{lstlisting}[frame=single,language=C]    int fact(int n)    { int x = 1;      while (n > 0)      { x = x * n;        n = n - 1;      }      return x;    }  \end{lstlisting}}\defverbatim[colored]\DefRecExpr{  \begin{lstlisting}[frame=single]    #type term = Var of string               | Const of string               | Fn of string * (term list);;    Type term defined.  \end{lstlisting}}\defverbatim[colored]\UsingExpr{  \begin{lstlisting}[frame=single]  Fn("-",    [Fn("/",[Fn("sin",[Fn("+",[Var "x";                               Var "y"])]);             Fn("cos",[Fn("-",[Var "x";                               Fn("exp",                                  [Var "y"])])])]);     Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;  \end{lstlisting}}\defverbatim[colored]\KeepPrecCode1{  \begin{lstlisting}[frame=single]  #let infixes =     ["+",10; "-",10; "*",20; "/",20];;  \end{lstlisting}}\defverbatim[colored]\KeepPrecCode2{  \begin{lstlisting}[frame=single]  #let rec assoc a ((x,y)::rest) =     if a = x then y else assoc a rest;;  \end{lstlisting}}\defverbatim[colored]\KeepPrecCode3{  \begin{lstlisting}[frame=single]  #let get_precedence s = assoc s infixes;;  \end{lstlisting}}\defverbatim[colored]\PrecModifCode{  \begin{lstlisting}[frame=single]  #let infixes =     ref ["+",10; "-",10; "*",20; "/",20];;  ...  #let get_precedence s =     assoc s (!infixes);;  get_precedence : string -> int = <fun>  #get_precedence "^";;  Uncaught exception: Match_failure  #infixes := ("^",30)::(!infixes);;  - : unit = ()  #get_precedence "^";;  - : int = 30  \end{lstlisting}}\defverbatim[colored]\FindInfixCode1{  \begin{lstlisting}[frame=single]  #let is_infix s =     try get_precedence s; true     with _ -> false;;  \end{lstlisting}}\defverbatim[colored]\FindInfixCode2{  \begin{lstlisting}[frame=single]  #let can f x =     try f x; true     with _ -> false;;  can : ('a -> 'b) -> 'a -> bool = <fun>  #let is_infix = can get_precedence;;  is_infix : string -> bool = <fun>  \end{lstlisting}}\defverbatim[colored]\PrintCode{  \begin{lstlisting}[frame=single]  #let rec string_of_term prec =     fun (Var s) -> s       | (Const c) -> c       | (Fn(f,args)) ->           if length args = 2 & is_infix f then             let prec' = get_precedence f in             let s1 = string_of_term prec'                        (hd args)             and s2 = string_of_term prec'                        (hd(tl args)) in             let ss = s1^" "^f^" "^s2 in             if prec' <= prec then "("^ss^")" else ss           else             f^"("^(string_of_terms args)^")"   and string_of_terms t =     match t with         [] -> ""       | [t] -> string_of_term 0 t       | (h::t) -> (string_of_term 0 h)^","^                   (string_of_terms t);;  \end{lstlisting}}  \defverbatim[colored]\PrintInstCode{  ##open "format";;  #let print_term s =     open_hvbox 0;     print_string      ("`"^(string_of_term 0 s)^"`");     close_box();;  print_term : term -> unit = <fun>  #install_printer "print_term";;  - : unit = ()  \end{lstlisting}}\defverbatim[colored]\BeforeAfterCode{  \begin{lstlisting}[frame=single]  #t;;  t : term =   Fn    ("-",     [Fn       ("/",        [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);         Fn ("cos", [Fn ("-", [Var "x"; Fn ("exp",                                      [Var "y"])])])]);      Fn ("ln", [Fn ("+", [Const "1"; Var "x"])])])  #install_printer "print_term";;  - : unit = ()  #t;;  t : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`  #let x = t;;  x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`  #(x,t);;  - : term * term =  `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`,  `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`  #[x; t; x];;  - : term list =   [`sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;    `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;    `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`]  \end{lstlisting}}\defverbatim[colored]\DiffCode{  \begin{lstlisting}[frame=single]  let rec differentiate x tm = match tm with    Var y -> if y = x then Const "1" else Const "0"  | Const c -> Const "0"  | Fn("-",[t]) -> Fn("-",[differentiate x t])  | Fn("+",[t1;t2]) -> Fn("+",[differentiate x t1;                                differentiate x t2])  | Fn("-",[t1;t2]) -> Fn("-",[differentiate x t1;                                differentiate x t2])  | Fn("*",[t1;t2]) ->     Fn("+",[Fn("*",[differentiate x t1; t2]);             Fn("*",[t1; differentiate x t2])])  | Fn("inv",[t]) -> chain x t     (Fn("-",[Fn("inv",[Fn("^",[t;Const "2"])])]))  | Fn("^",[t;n]) -> chain x t    (Fn("*",[n; Fn("^",[t; Fn("-",[n; Const "1"])])]))  | Fn("exp",[t]) -> chain x t tm  | Fn("ln",[t]) -> chain x t (Fn("inv",[t]))  | Fn("sin",[t]) -> chain x t (Fn("cos",[t]))  | Fn("cos",[t]) -> chain x t     (Fn("-",[Fn("sin",[t])]))  | Fn("/",[t1;t2]) -> differentiate x     (Fn("*",[t1; Fn("inv",[t2])]))  | Fn("tan",[t]) -> differentiate x     (Fn("/",[Fn("sin",[t]); Fn("cos",[t])]))  and chain x t u =  Fn("*",[differentiate x t; u]);;  \end{lstlisting}}\defverbatim[colored]\DiffSample{ \begin{lstlisting}[frame=single]  #let t1 = Fn("sin",[Fn("*",[Const "2";                              Var "x"])]);;  t1 : term = `sin(2 * x)`  #differentiate "x" t1;;  - : term = `(0 * x + 2 * 1) * cos(2 * x)`  #let t2 = Fn("tan",[Var "x"]);;  t2 : term = `tan(x)`  #differentiate "x" t2;;  - : term =   `(1 * cos(x)) * inv(cos(x)) +    sin(x) * ((1 * -(sin(x))) *    -(inv(cos(x) ^ 2)))`  #differentiate "y" t2;;  - : term =   `(0 * cos(x)) * inv(cos(x)) +    sin(x) * ((0 * -(sin(x))) *    -(inv(cos(x) ^ 2)))`\end{lstlisting}}\defverbatim[colored]\SimplCode1{ \begin{lstlisting}[frame=single]  #let simp = fun    (Fn("+",[Const "0"; t])) -> t  | (Fn("+",[t; Const "0"])) -> t  | (Fn("-",[t; Const "0"])) -> t  | (Fn("-",[Const "0"; t])) -> Fn("-",[t])  | (Fn("+",[t1; Fn("-",[t2])])) -> Fn("-",[t1; t2])  | (Fn("*",[Const "0"; t])) -> Const "0"  | (Fn("*",[t; Const "0"])) -> Const "0"  | (Fn("*",[Const "1"; t])) -> t  | (Fn("*",[t; Const "1"])) -> t  | (Fn("*",[Fn("-",[t1]); Fn("-",[t2])])) ->       Fn("*",[t1; t2])  | (Fn("*",[Fn("-",[t1]); t2])) ->       Fn("-",[Fn("*",[t1; t2])])  | (Fn("*",[t1; Fn("-",[t2])])) ->       Fn("-",[Fn("*",[t1; t2])])  | (Fn("-",[Fn("-",[t])])) -> t  | t -> t;;\end{lstlisting}}\defverbatim[colored]\SimplSample1{  \begin{lstlisting}[frame=single]    #let rec dsimp = fun     (Fn(fn,args)) ->          simp(Fn(fn,map dsimp args))   | t -> simp t;; \end{lstlisting}}\defverbatim[colored]\SimplSample2{  \begin{lstlisting}[frame=single]  #dsimp(differentiate "x" t1);;  - : term = `2 * cos(2 * x)`  #dsimp(differentiate "x" t2);;  - : term = `cos(x) * inv(cos(x)) +              sin(x) *              (sin(x) * inv(cos(x) ^ 2))`  #dsimp(differentiate "y" t);;  - : term = `0` \end{lstlisting}}%%%%%%%%%%%%%%%\frame{\titlepage}\section*{Лекция 9. Примеры на ML I: Символьное Дифференцирование}\frame{  \frametitle{Темы}  \begin{itemize}  \item Символьные вычисления    %\item Symbolic computation    \maybepause  \item Представление данных         %\item Data representation    \maybepause  \item Система вывода         %\item Prettyprinting    \maybepause  \item Дифференцирование         %%\item Differentiation    \maybepause  \item Упрощение посредством переписывания         %%\item Simplification by rewriting    \maybepause  \end{itemize}}\frame{  \frametitle{ Символьные вычисления }  Сейчас мы обсудим приложения, в которых проводятся манипуляции над  математическими {\em выражениями }, в общем случае содержащими переменные.  В этих программах упор, в отличие от численных расчётов, делается именно на    символьные преобразования.   %%This covers applications where manipulation of mathematical   %%{\em expressions},in general containing variables, is emphasized at the  %%expense of actual numerical calculation.  Есть несколько удачных <<систем компьютерной алгебры>>, таких как   Axiom, Maple и Mathematica, которые могут выполнять определённые символьные   операции, полезные в математической работе.  %%There are several successful `computer algebra systems' such as  %%Axiom, Maple and Mathematica, which can do certain symbolic operations that   %%are useful in mathematics.  Примерами могут быть: разложение полиномов, дифференцирование и интегрирование   выражений.  %%Examples include factorizing polynomials and differentiating and integrating  %%expressions.  Мы покажем, как ML может использоваться для таких задач. Давайте рассмотрим   задачу символьного дифференцирования.  %%We will show how ML can be used for such applications. Our example will be  %%symbolic differentiation.  Это проиллюстрирует все типичные части систем символьных вычислений, как то:   представление данных, внутренние алгоритмы, разбор и вывод результатов.  %%This will illustrate all the typical components of symbolic computation  %%systems: data representation, internal algorithms, parsing and    %%prettyprinting.}\frame{  \frametitle{ Представление данных }  Мы  будем рассматривать выражения, которые строятся из переменных, констант    и $n$-арных операторов.  %%We will allow mathematical expressions to be built up from variables and  %%constants by the application of $n$-ary operators.  Следовательно, мы задаём рекурсивный тип следующим образом:  %%Therefore we define a recursive type as follows:  \DefRecExpr   Например, выражение {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$}   представляется:  %%For example the expression {\red $sin(x + y) / cos(x - exp(y)) - ln(1 + x)$}   %%is represented by:   \UsingExpr }\frame{  \frametitle{ Нам требуется разбор и печать }  Чтение и запись выражений в сыром виде довольно неудобно. Это общая проблема  для всех систем символьных вычислений. Обычно требуются:   %%Reading and writing expressions in their raw form is rather unpleasant.   %%This is a general problem in all symbolic computation systems. Typically one   %%wants:  \begin{itemize}  \item {\em Парсер}, принимающий ввод в человеко - читаемой форме,  и транслирующий его во внутренние структуры.  %%\item A {\em parser} to accept input in human-readable form and translate it  %%into the internal representation     \item {\em Система вывода}, переводящая вывод из внутреннего представления  в форму, удобную для пользователя.  \end{itemize}  Мы будем использовать синтаксический разбор как ещё один важный пример    функционального программирования, поэтому мы отложим обсуждение этого вопроса    на некоторое время.   %%We will use parsing as another major example of functional programming, so  %%we will defer that for now.  Однако сейчас мы напишем простенькую систему вывода для наших выражений.  %%However we will now write a simple printer for our expressions.}\frame{  \frametitle{ Вывод выражений }  Как мы хотим печатать сообщения?      %%How do we want to print expressions?  \begin{itemize}  \item Переменные и константы записываются по их именам.  \item Variables and constants are just written as their names.  \item Обычные $n$-арные функции, выводятся в виде   {\red $f(x_1,\ldots,x_n)$}, т.е. записывается имя функции и рядом, в скобках  список аргументов.  %%\item Ordinary $n$-ary functions applied to arguments are written by  %%juxtaposing the function and a bracketed list of arguments, e.g. {\red  %%$f(x_1,\ldots,x_n)$}.  \item Инфиксные бинарные функции, такие как {\red $+$} записываются между  аргументами.  %%\item Infix binary functions like {\red $+$} are written in between their  %%arguments.  \item Скобки используются по необходимости.    %%\item Brackets are used where necessary for disambiguation.  \item В целях сокращения использования скобок, для инфиксных операторов    вводится понятие предшествования.    %%\item Infix operators have a notion of precedence to reduce the need for  %%brackets.  \end{itemize}}\frame{  \frametitle{ Сохранение предшествования }  We can have a list of binary operators together with their precedences,  e.g.  \KeepPrecCode1  This sort of list, associating data with keys, is called an {\em association  list}. To get the data associated with a key we use the following:  \KeepPrecCode2    In our case, we define:  \KeepPrecCode3    This procedure of linear search is inefficient, but it is simple and adequate  for small examples. Techniques like hashing are better for heavyweight  applications.}\frame{  \frametitle{ Making precedences modifiable }  Because of static binding, changing the list of infixes does not change  {\black \tt get\_precedence}.  However we can make {\black \tt infixes} a reference instead and then it is  modifiable:  %%Because of static binding, changing the list of infixes does not change  %%{\black \tt get\_precedence}.  %%However we can make {\black \tt infixes} a reference instead and then it is  %%modifiable:  \PrecModifCode   This setup is not purely functional, but is perhaps more natural.  %%This setup is not purely functional, but is perhaps more natural.}\frame{  \frametitle{ Finding if an operator is infix }  We will treat an operator as infix just if it appears in the list of infixes  with a precedence. We can do:  %%We will treat an operator as infix just if it appears in the list of infixes  %%with a precedence. We can do:  \FindInfixCode1  \noindent because {\black \verb+get_precedence+} fails on non-infixes. An  alternative coding is to use an auxiliary function {\black \tt can} which   finds out whether the application of its first argument to its seconds   succeeds:    %%\noindent because {\black \verb+get_precedence+} fails on non-infixes. An  %%alternative coding is to use an auxiliary function {\black \tt can} which   %%finds out whether the application of its first argument to its seconds   %%succeeds::  \FindInfixCode2}\frame{  \frametitle{ Печать: обсуждение }  The printer consists of two mutually recursive functions.  The function {\black\verb+string_of_term+} takes two arguments. The first is a  `currently active precedence', and the second is the term.  For example, in printing the right-hand argument of {\black \tt x * (y + z)},  the currently active precedence is the precedence of {\black \tt *}. If the  function prints an application of an infix operator (here {\black \tt +}), it  puts brackets round it unless its own precedence is higher.  We have a second, mutually recursive, function, to print a list of terms  separated by commas. This is for the argument lists of non-unary and non-infix  functions of the form {\red  $f(x_1,\ldots,x_n)$}.  %%The printer consists of two mutually recursive functions.  %%The function {\black\verb+string_of_term+} takes two arguments. The first   %%is a `currently active precedence', and the second is the term.  %%For example, in printing the right-hand argument of {\black \tt x * (y +   %%z)},  the currently active precedence is the precedence of {\black \tt *}.     %%If the function prints an application of an infix operator (here {\black \tt  %% +}), it puts brackets round it unless its own precedence is higher.  %%We have a second, mutually recursive, function, to print a list of terms  %%separated by commas. This is for the argument lists of non-unary and   %%non-infix  functions of the form {\red  $f(x_1,\ldots,x_n)$}.}\frame{  \frametitle{ Печать: код }  \PrintCode }\frame{  \frametitle{ Печать: установка }  CAML Light has special facilities for installing user-defined printers in   the toplevel read-eval-print loop.  %%CAML Light has special facilities for installing user-defined printers in   %%the toplevel read-eval-print loop.  Once our printer is installed, anything of type {\black \tt term} will   be printed using it.  %%Once our printer is installed, anything of type {\black \tt term} will   %%be printed using it.  We use some special functions from the CAML Light {\tt format} library to   make sure that our printer interacts with the toplevel loop.  %%We use some special functions from the CAML Light {\tt format} library to   %%make sure that our printer interacts with the toplevel loop.  \PrintInstCode }\frame{  \frametitle{ До и после }  \BeforeAfterCode }\frame{  \frametitle{ Дифференцирование: алгоритм }  Есть хорошо известные (изучаемые в школе) правила дифференцирования сложных    выражений.  %%There is a well-known method (taught in schools) to differentiate   %%complicated expressions.  \begin{itemize}  \item Если выражение - одна из элементарных функций одного аргумента, например   {\red $sin(x)$},   то результат дифференцирования - известная производная этой функции.  %\item If the expression is one of the standard functions applied to an  %argument, e.g. {\red $sin(x)$}, return the known derivative.  \item Если выражение представимо в форме {\red $f(x) + g(x)$}, то по правилу   суммы, результат дифференцирования есть  {\red $f'(x) + g'(x)$}.   Аналогично для разности.  %\item If the expression is of the form {\red $f(x) + g(x)$} then apply   %the rule for sums, returning {\red $f'(x) + g'(x)$}. Likewise for   %subtraction etc.  \item Если выражение задано в форме {\red $f(x) * g(x)$}, применяется правило  Лейбница, т.е. возвращается {\red $f'(x) * g(x) + f(x) * g'(x)$}.  %\item If the expression is of the form {\red $f(x) * g(x)$} then apply the  %product rule, i.e. return {\red $f'(x) * g(x) + f(x) * g'(x)$}.  \item Если выражение является одной из композицией стандартных функций:    {\red $f(g(x))$}, то применяется правило последовательного   дифференцирования, результат которого: {\red $g'(x) * f'(g(x))$}.  %\item If the expression is one of the standard functions applied to a   %composite argument, say {\red $f(g(x))$} then apply the Chain Rule and so    %give {\red $g'(x) * f'(g(x))$}.  \end{itemize}  Эти правила очень легко переводятся в рекурсивные алгоритмы.}\frame{  \frametitle{ Дифференцирование: код }  \DiffCode }\frame{  \frametitle{ Примеры дифференцирования }  Попробуем несколько примеров:  %%Let's try a few examples:  \DiffSample }\frame{  \frametitle{ Упрощение }  Кажется, всё хорошо работает, но при этом не делается некоторых очевидных  упрощений, таких как: {\red $0 * x = 0$}. Так получается частично от того,   что  мы применяем рекурсивные правила, такие как the chain rule даже в     тривиальных случаях. Запишем функцию, выполняющую упрощение:  %%It seems to work OK, but it isn't making certain obvious simplifications,  %%like {\red $0 * x = 0$}. These arise partly because we apply the recursive  %%rules like the chain rule even in trivial cases. We'll write a simplifier:  \SimplCode1}\frame{  \frametitle{ Примеры упрощения }  Мы должны применить {\black \\t simp} рекурсивно, по индукции:    %We need to apply {\black \tt simp} recursively, bottom-up:  \SimplSample1    Теперь мы получаем результаты получше:    %Now we get better results:    \SimplSample2    Есть ещё и другие способы упрощения, например    {\red $cos(x) * inv(cos(x)) =  1$}.   Хорошее алгебраическое упрощение - это сложная задача!    %%There are still other simplifications to be made, e.g. {\red $cos(x) *  %%inv(cos(x)) = 1$}. Good algebraic simplification is a difficult problem!}\end{document}
