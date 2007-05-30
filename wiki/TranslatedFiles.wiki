@@ -27,7 +27,7 @@
   * (e) *l7.tex* - перевод lg, прочитали
   * (e) *l8.tex* - перевод lg, прочитали
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
-  * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью)
+  * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью),dimiii
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали
   * (e) *ml.tex* - перевод alexott, прочитали lg
