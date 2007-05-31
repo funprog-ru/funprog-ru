@@ -59,7 +59,7 @@
 То есть, вывод системы ML получился такой же, как если бы вы печатали
 содержимое файла в консоль. Последняя строка вывода~-- это результат 
 вычисления самого выражения {\tt include}  
-% BUG# вместо 'линия вывода' может лучше 'строка вывода'? --lg
+% BUG# вместо 'линия вывода' может лучше 'строка вывода'? ?lg FIXED
 
 %%That is, the ML system responds just as if the phrases had been entered at the
 %%top level. The final line is the result of evaluating the {\tt include}
@@ -109,9 +109,10 @@ ML представляет несколько встроенных примитивных типов. Из них, с
   какой-либо информации, так что он часто используется как
   возвращаемый тип императивно записанных <<функций>>, результат
   которых не значение вычислений, а какой-либо побочный эффект.
-  Например, таких как {\tt include}.  Это также подходящий тип для
-  аргумента FIX (?It is also a convenient argument where the only use
-  of a function type is to delay evaluation.?)
+  Например, таких как {\tt include}.  
+
+  %% BUG# It is also a convenient argument where the only use 
+  %% of a function type is to delay evaluation. ? трудности перевода ? dimiii
 
 %%\item The type {\tt unit}. This is a 1-element type, whose only element is
 %%written {\tt ()}. Obviously, something of type {\tt unit} conveys no
@@ -121,7 +122,7 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 %%evaluation.
 
 \item Тип {\tt bool}. Двухэлементный тип булевых значений (значений
-  истинности).  Элементы этого типа: {\tt true} и {\tt false}.
+  истинности). Элементы этого типа: {\tt true} и {\tt false}.
 
 %%\item The type {\tt bool}. This is a 2-element type of booleans (truth-values)
 %%whose elements are written {\tt true} and {\tt false}.
@@ -147,7 +148,7 @@ ML представляет несколько встроенных примитивных типов. Из них, с
  последовательности) символов. Они записываются и печатаются в
  двойных кавычках, вот так: \lstinline!"hello"!. Для записи
  специальных символов используется экранирование в стиле языка С.
- Например, (FIX) \lstinline!"! - запись двойной кавычки,
+ Например, \lstinline!"! - запись двойной кавычки,
  {\verb+\n+} - символ перевода строки.
 
 %%\item The type {\tt string} contains strings (i.e. finite sequences) of
@@ -170,7 +171,8 @@ ML представляет несколько встроенных примитивных типов. Из них, с
  для него не выполняется обычное правило ассоциативности слева:
  {\tt not not p} означает {\tt not (not p)}. Функцию, определённую
  пользователем, можно задать как инфиксную, с помощью директивы
- {\tt \#infix}.(FIX в окамле () используется + ещё какие - то условия)
+ {\tt \#infix}.
+ %% BUG# в окамле () используется + ещё какие - то условия. Переписать. --dimiii
  Например, вот определение функции, выполняющей композицию функций:
 
 %%The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
@@ -207,11 +209,12 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 В ML нет возможностей задавать приоритет для инфиксных операций,
  определённых пользователем, а также определять неинфиксные операции
  как правоассоциативные. Также обратите внимание, что неявная
- операция 'аппликация функции'(FIX check in wiki) имеет приоритет
+ операция <<аппликация функции>> имеет приоритет
  выше, чем у любой бинарной операции, так что {\tt successor 1 * 2}
  разбирается как {\tt (successor 1) * 2}. Если хотите использовать
- функцию со специальным статусом (FIX что ещё за статус???) как
- обычную константу, вам потребуется {\tt prefix}:
+ функцию со специальным статусом 
+ %% BUG# что ещё за статус??? Проверить. --dimiii 
+ как обычную константу, вам потребуется {\tt prefix}:
 
 %%It is not possible to specify the precedence of user-defined infixes, nor to
 %%make user-defined non-infix functions right-associative. Note that the implicit
@@ -274,8 +277,8 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 {\tt <=}   & {\tt 'a -> 'a -> bool}           & Меньше или равно    \\
 {\tt >}    & {\tt 'a -> 'a -> bool}           & Больше чем          \\
 {\tt >=}   & {\tt 'a -> 'a -> bool}           & Больше или равно \\
-{\tt \&}   & {\tt bool -> bool -> bool}       & Логическое `и'         \\
-{\tt or}   & {\tt bool -> bool -> bool}       & Логическое `или'          \\
+{\tt \&}   & {\tt bool -> bool -> bool}       & Логическое <<и>>         \\
+{\tt or}   & {\tt bool -> bool -> bool}       & Логическое <<или>>          \\
 \hline
 \end{tabular}
 \bigskip
@@ -303,15 +306,23 @@ p \mbox{ \& } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
 p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
 \end{eqnarray*}
 
-Следовательно, операция `and' вычисляет первый аргумент, и только если его
- значение true, вычисляет следующий. Напротив, `or' вычисляет первый аргумент,
+Следовательно, операция <<and>> вычисляет первый аргумент, и только если его
+ значение true, вычисляет следующий. Напротив, <<or>> вычисляет первый аргумент,
  и только если это false, вычисляет второй.
 
 %%Thus, the `and' operation evaluates its first argument, and only if it is true,
 %%evaluates its second. Conversely, the `or' operation evaluates its first
 %%argument, and only if it is false evaluates its second.
 
-%%\section{Syntax of ML phrases}
+%%\section{Синтаксис ML}
+
+Выражения в ML строятся из констант и переменных; любой идентификатор, не 
+связанный на текущий момент выполнения программы рассматривается как 
+переменная. Объявления связывают имена со значениями выражений, при этом
+в состав выражений могут входить другие объявления. Следовательно,
+синтаксические классы выражений и объявлений взаимно рекурсивны. Мы можем 
+выразить это следующей БНФ - грамматикой.\footnote{Мы отбросили многие 
+конструкции, которые нами не будут использоваться. За подробностями обращайтесь к руководству по OCAML.}
 
 %%Expressions in ML can be built up from constants and variables; any identifier
 %%that is not currently bound is treated as a variable. Declarations bind names
@@ -341,6 +352,15 @@ variables     & ::= & variable                                                  
               & |   & variable \; variables
 \end{eqnarray*}
 
+
+Позже мы более подробно обсудим синтаксический класс $pattern$. До сих пор
+мы имели дело только с $variable$ или $variable \; variable \cdots variable$. 
+В первом случае мы просто связываем выражение с именем, тогда как во втором,
+для объявления функций, используется специальный синтаксический сахар. 
+Аргументы функции записываются после имени функции, слева от знака равенства
+Например, вот объявление функции, {\tt add4}, которая  может использоваться 
+для прибавления 4 к её аргументу:
+
 %%The syntax class $pattern$ will be expanded and explained more thoroughly later
 %%on. For the moment, all the cases we are concerned with are either just
 %%$variable$ or $variable \; variable \cdots variable$. In the first case we
@@ -363,6 +383,8 @@ variables     & ::= & variable                                                  
 \end{verbatim}
 \end{boxed}
 
+Приведённая выше грамматика помогает распутать это объявление. 
+
 %%It is instructive to unravel this declaration according to the above grammar. A
 %%toplevel phrase, terminated by two successive semicolons, may be either an
 %%expression or a declaration.
@@ -381,6 +403,12 @@ variables     & ::= & variable                                                  
   funpow : int -> ('a -> 'a) -> 'a -> 'a = <fun>
 \end{verbatim}
 \end{boxed}
+
+In fact, a little thought will show that the function {\tt funpow} takes a
+machine integer $n$ and returns the Church numeral corresponding to $n$. Since
+functions aren't printed, we can't actually look at the lambda expression
+representing a Church numeral:
+
 
 In fact, a little thought will show that the function {\tt funpow} takes a
 machine integer $n$ and returns the Church numeral corresponding to $n$. Since
@@ -519,6 +547,8 @@ f} goes into an infinite recursion before it is even applied to its argument:
 примеров.  Первым примером будет определение типа {\em sum}, которые
 должен соответствовать disjoint???? объединению двух существующих
 типов.
+% BUG# disjoint union ? наверное, несвязное объединение - \sqcup, когда попарно не пересекаются объединяемые множества -- dimiii 
+
 
 % We have promised that ML has facilities for declaring new type constructors, so
 % that composite types can be built up out of existing ones. In fact, ML goes
