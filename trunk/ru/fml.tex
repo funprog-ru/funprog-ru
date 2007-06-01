@@ -545,10 +545,8 @@ f} goes into an infinite recursion before it is even applied to its argument:
 ключевого слова {\tt type}, за которым выражение, описывающее как тип
 создается из существующих типов и себя.  Мы покажем это на нескольких
 примеров.  Первым примером будет определение типа {\em sum}, которые
-должен соответствовать disjoint???? объединению двух существующих
+должен соответствовать несвязному объединению ($\sqcup$) двух существующих
 типов.
-% BUG# disjoint union ? наверное, несвязное объединение - \sqcup, когда попарно не пересекаются объединяемые множества -- dimiii 
-
 
 % We have promised that ML has facilities for declaring new type constructors, so
 % that composite types can be built up out of existing ones. In fact, ML goes
@@ -641,25 +639,42 @@ $\beta$, и два конструктора отображаются на соответствующие копии:
 
 \begin{itemize}
 
-\item They are exhaustive, i.e. every element of the new type is obtainable
-either by  {\tt inl x} for some {\tt x} or {\tt inr y} for some {\tt y}. That
-is, the new type contains nothing besides copies of the component types.
+\item Они полные (????exhaustive), т.е., каждый элемент нового типа может быть получен
+  через {\tt inl x} для некоторого~{\tt x} или через {\tt inr y} для некоторого~{\tt y}.
+  Так что, новый тип не содержит ничего, кроме копий типов компонент.
 
-\item They are injective, i.e. an equality test {\tt inl x = inl y} is true if
-and only if {\tt x = y}, and similarly for {\tt inr}. That is, the new type
-contains a faithful copy of each component type without identifying any
-elements.
+% \item They are exhaustive, i.e. every element of the new type is obtainable
+% either by  {\tt inl x} for some {\tt x} or {\tt inr y} for some {\tt y}. That
+% is, the new type contains nothing besides copies of the component types.
 
-\item They are distinct, i.e. their ranges are disjoint. More concretely this
-means in the above example that {\tt inl x = inr y} is false whatever {\tt x}
-and {\tt y} might be. That is, the copy of each component type is kept apart in
-the new type.
+\item Они являются инъективными, т.е. тест на равенство {\tt inl x = inl y} дает истинный
+  результат, если, и только если {\tt x = y}, и аналогичным образом, для {\tt inr}.  Так
+  что, новый тип содержит точную копию типа каждого компонента, без идентификации любого
+  из элементов.
+
+% \item They are injective, i.e. an equality test {\tt inl x = inl y} is true if
+% and only if {\tt x = y}, and similarly for {\tt inr}. That is, the new type
+% contains a faithful copy of each component type without identifying any
+% elements.
+
+\item Они индивидуальны, т.е. их диапазоны несвязны.  Это означает, что в предыдущем
+  примере {\tt inl x = inr y} будет ложным, независимо от того, чем являются {\tt x} и
+  {\tt y}.  Так что, копия типа каждого компонента в новом типе, хранится независимо.
+
+% \item They are distinct, i.e. their ranges are disjoint. More concretely this
+% means in the above example that {\tt inl x = inr y} is false whatever {\tt x}
+% and {\tt y} might be. That is, the copy of each component type is kept apart in
+% the new type.
 
 \end{itemize}
 
-The second and third properties of constructors justify our using {\em pattern
-matching}. This is done by using more general {\em varstructs} as the arguments
-in a lambda, e.g.
+Второе и третье свойство конструкторов выравнивает (???justify) наше использование {\em
+  сопоставления с образцом}.  Это выполняется за счет использования более общих {\em
+  varstructs ????} как аргументов в $lambda$-выражениях, например:
+
+% The second and third properties of constructors justify our using {\em pattern
+% matching}. This is done by using more general {\em varstructs} as the arguments
+% in a lambda, e.g.
 
 \begin{boxed}
 \begin{verbatim}
@@ -678,10 +693,24 @@ n} and {\tt b} from {\tt inr b}. Because the constructors are distinct, we know
 that the two clauses cannot be mutually inconsistent, since no value can
 correspond to both patterns.
 
+% \noindent This function has the property, naturally enough, that when applied
+% to {\tt inl n} it returns {\verb+n > 6+} and when applied to {\tt inr b} it
+% returns {\tt b}. It is precisely because of the second and third properties of
+% the constructors that we know this does give a welldefined function. Because
+% the constructors are injective, we can uniquely recover {\tt n} from {\tt inl
+% n} and {\tt b} from {\tt inr b}. Because the constructors are distinct, we know
+% that the two clauses cannot be mutually inconsistent, since no value can
+% correspond to both patterns.
+
 In addition, because the constructors are exhaustive, we know that each value
 will fall under one pattern or the other, so the function is defined
 everywhere. Actually, it is permissible to relax this last property by omitting
 certain patterns, though the ML system then issues a warning:
+
+% In addition, because the constructors are exhaustive, we know that each value
+% will fall under one pattern or the other, so the function is defined
+% everywhere. Actually, it is permissible to relax this last property by omitting
+% certain patterns, though the ML system then issues a warning:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1105,7 +1134,7 @@ terms in some more readable form, rather than by explicitly invoking the
 constructors. We will return to this issue later, and see how to add these
 features.
 
-\subsection{The subtlety of recursive types}
+\subsection{Мощь (хитрости????subtlety) рекурсивных типов}
 
 A recursive type may contain nested instances of other type constructors,
 including the function space constructor. For example, consider the following:
