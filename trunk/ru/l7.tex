@@ -37,7 +37,7 @@
 
 \frame{\titlepage}
 
-\section*{Лекция 7. Доказательство корректности программы}
+\section*{Лекция 7. Доказательство корректности программ}
 
 \frame{
   \frametitle{Темы}
@@ -55,7 +55,7 @@
     % \item Termination and totality
     \maybepause
 
-  \item Показательная функция и НОД
+  \item Вычисление степени и~НОД
     % \item Exponential and gcd
     \maybepause
 
@@ -182,13 +182,13 @@
   {\color{Green}
     \bigskip
     \begin{picture}(140,140)(0,0)
-      \put(40,0){\dashbox(150,25){Существующая система}}
+      \put(40,0){\dashbox(150,25){Реализация системы}}
       % \put(40,0){\dashbox(150,25){Actual system}}
       \put(40,40){\framebox(150,25){Математическая модель системы}}
       % \put(40,40){\framebox(150,25){Mathematical model}}
       \put(40,80){\framebox(150,25){Математическая спецификация требований}}
       % \put(40,80){\framebox(150,25){Mathematical specification}}
-      \put(40,120){\dashbox(150,25){Существующие требования}}
+      \put(40,120){\dashbox(150,25){Требования к системе}}
       % \put(40,120){\dashbox(150,25){Actual requirements}}
       \put(115,25){\vector(0,1){15}}
       \put(115,65){\thicklines \vector(0,1){15}}
@@ -197,8 +197,8 @@
   \bigskip
 
   Лишь центральная связь математически точна.  Остальные остаются
-  неформальными~--- всё что мы можем сделать это постараться сохранять
-  их несущественными.
+  неформальными~--- всё, что мы можем сделать, это постараться сохранять
+  их максимально простыми и прозрачными.
   % It is only the central link that is mathematically precise. The others are
   % still informal --- all we can do is try to keep them small.
 }
@@ -237,7 +237,7 @@
 }
 
 \frame{
-  \frametitle{Возведение в степень (1)}
+  \frametitle{Вычисление степени (1)}
   % \heading{Exponentiation (1)}
 
   Вспомним следующее простое определение функции потенцирования
@@ -262,7 +262,7 @@
   % The proof is by (step-by-step, mathematical) induction.
 }
 \frame{
-  \frametitle{Возведение в степень (2)}
+  \frametitle{Вычисление степени (2)}
   % \heading{Exponentiation (2)}
 
   \begin{itemize}
@@ -299,7 +299,7 @@
 }
 
 \frame{
-  \frametitle{Наибольший общий делитель (1)}
+  \frametitle{Вычисление~НОД (1)}
   % \heading{Greatest common divisor (1)}
 
   Определим функцию для вычисления НОД двух целых чисел, используя
@@ -324,7 +324,7 @@
 }
 
 \frame{
-  \frametitle{Наибольший общий делитель (2)}
+  \frametitle{Вычисление~НОД (2)}
   % \heading{Greatest common divisor (2)}
 
   Мы пишем \alert{$x | y$} и говорим <<alert{$x$} делит alert{$y$}>>,
@@ -365,7 +365,7 @@
 }
 
 \frame{
-  \frametitle{Наибольший общий делитель (3)}
+  \frametitle{Вычисление~НОД (3)}
   % \heading{Greatest common divisor (3)}
 
   Функция {\tt gcd} уже не определена через {\em примитивную}
@@ -400,7 +400,7 @@
 }
 
 \frame{
-  \frametitle{Наибольший общий делитель (4)}
+  \frametitle{Вычисление~НОД (4)}
   % \heading{Greatest common divisor (4)}
 
   Теперь мы представим доказательство.  
@@ -441,7 +441,7 @@
 }
 
 \frame{
-  \frametitle{Наибольший общий делитель (5)}
+  \frametitle{Вычисление~НОД (5)}
   % \heading{Greatest common divisor (5)}
 
   Теперь предположим, что \alert{$y \not= 0$}.  Мы хотим применить
@@ -452,7 +452,7 @@
 
   Для краткости мы будем писать \alert{$r = x\; \mbox{mod}\; y$}.
   Основное свойство функции {\tt mod}, которое мы будем использовать
-  это, что для \alert{$y \not= 0$}, найдётся такое \alert{$q$},
+  это, что для \alert{$y \not= 0$}, найдётся такое целое~\alert{$q$},
   что \alert{$x = q y + r$} и \alert{$|r| < |y|$}.
   % We will write \alert{$r = x\; \mbox{mod}\; y$} for short. The
   % basic property of the {\tt mod} function that we use is that,
