@@ -306,26 +306,26 @@
   %%expense of actual numerical calculation.
 
   Есть несколько удачных <<систем компьютерной алгебры>>, таких как 
-  Axiom, Maple и Mathematica, которые могут выполнять определённые символьные 
+  Axiom, Maple и Mathematica, все они могут выполнять определённые символьные 
   операции, полезные в математической работе.
 
   %%There are several successful `computer algebra systems' such as
   %%Axiom, Maple and Mathematica, which can do certain symbolic operations that 
   %%are useful in mathematics.
 
-  Примерами могут быть: разложение полиномов, дифференцирование и интегрирование 
-  выражений.
+  Примеры таких операций: разложение полиномов, дифференцирование и 
+  интегрирование  выражений.
 
   %%Examples include factorizing polynomials and differentiating and integrating
   %%expressions.
 
-  Мы покажем, как ML может использоваться для таких задач. Давайте рассмотрим 
+  Мы покажем, как ML может использоваться для подобных задач. Давайте рассмотрим 
   задачу символьного дифференцирования.
 
   %%We will show how ML can be used for such applications. Our example will be
   %%symbolic differentiation.
 
-  Это проиллюстрирует все типичные части систем символьных вычислений, как то: 
+  Это проиллюстрирует все типичные части систем символьных вычислений, как - то: 
   представление данных, внутренние алгоритмы, разбор и вывод результатов.
 
   %%This will illustrate all the typical components of symbolic computation
@@ -480,7 +480,7 @@
 \frame{
   \frametitle{ Делаем приоритеты изменяемыми }
 
-  Из ? за статического связывания, изменение списка инфиксных операторов не 
+  Из - за статического связывания, изменение списка инфиксных операторов не 
   Меняет {\tt get\_precedence}.
 
   %%Because of static binding, changing the list of infixes does not change
@@ -493,7 +493,8 @@
 
   \PrecModifCode 
 
-  Такое решение не является чисто функциональным, но, возможно, более естественно.
+  Такое решение не является чисто функциональным, но, возможно, более 
+  естественно.
   %% BUG# Может всё же стоит заменить код на pure functional way, во избежание
   %% использования ссылок до их определения??? -- dimiii
 
@@ -505,17 +506,19 @@
 \frame{
   \frametitle{ Определение инфиксных операторов }
 
-  Мы будем считать оператор инфиксным, только если он встречается в списке infixes
-  с приоритетом. Мы можем сделать:
+  Мы будем считать оператор инфиксным, только если он встречается в списке 
+  infixes с приоритетом. Мы можем записать:
 
   %%We will treat an operator as infix just if it appears in the list of infixes
   %%with a precedence. We can do:
 
   \FindInfixCodeOne
 
-   \noindent потому что {\tt get\_precedence} не определена на неинфиксных 
-   операторах. Альтернативный код использует функцию {\tt can},
-   которая проверяет успешность применения её первого аргумента ко второму:
+  
+  \noindent поскольку {\black \verb+get_precedence+} не определена на   
+  неинфиксных операторах, и, поэтому, выбросит исключение. Альтернативный ( и 
+  более  правильный) способ использует вспомогательную функцию {\black \tt can}, 
+  которая проверяет успешность применения её первого аргумента ко второму:
   
   %%\noindent because {\verb+get_precedence+} fails on non-infixes. An
   %%alternative coding is to use an auxiliary function {\tt can} which 
@@ -530,31 +533,29 @@
 \frame{
   \frametitle{ Печать: обсуждение }
 
-  The printer consists of two mutually recursive functions.
-
-   The function {\tt string\_of\_term} takes two arguments. The first is a
-   `currently active precedence', and the second is the term.
-
-  For example, in printing the right-hand argument of {\tt x * (y + z)},
-  the currently active precedence is the precedence of {\tt *}. If the
-  function prints an application of an infix operator (here {\tt +}), it
-  puts brackets round it unless its own precedence is higher.
-
-  We have a second, mutually recursive, function, to print a list of terms
-  separated by commas. This is for the argument lists of non-unary and non-infix
-  functions of the form \alert{ $f(x_1,\ldots,x_n)$}.
-
+  Печать задаётся двумя взаимно рекурсивными функциями.
 
   %%The printer consists of two mutually recursive functions.
 
+  Функция {\black\verb+string_of_term+} принимает два аргумента. Первый ? это
+  <<приоритетный оператор>>,  а второй - терм.
+
   %%The function {\verb+string_of_term+} takes two arguments. The first 
   %%is a `currently active precedence', and the second is the term.
+
+  Например, при печати правого аргумента из {\black \tt x * (y + z)},
+  приоритетным оператором является {\black \tt *} - произведение. При этом, если
+  второй аргумент является аппликацией инфиксного оператора (в нашем случае 
+  {\black \tt +}), и меньшего приоритета, то он окружается скобками.
 
   %%For example, in printing the right-hand argument of {\tt x * (y + 
   %%z)},  the currently active precedence is the precedence of {\tt *}.   
   %%If the function prints an application of an infix operator (here {\tt
   %% +}), it puts brackets round it unless its own precedence is higher.
 
+  Вторая функция через запятую печатает список термов. Это нужно для вывода 
+  списка аргументов  функций вида {\red  $f(x_1,\ldots,x_n), n > 2$}.
+  
   %%We have a second, mutually recursive, function, to print a list of terms
   %%separated by commas. This is for the argument lists of non-unary and 
   %%non-infix  functions of the form \alert{ $f(x_1,\ldots,x_n)$}.
@@ -567,24 +568,23 @@
   \PrintCode 
 }
 
-
 \frame{
   \frametitle{ Печать: установка }
 
-  CAML Light has special facilities for installing user-defined printers in 
-  the toplevel read-eval-print loop.
+  CAML Light поддерживает установку системы печати, задаваемой пользователем.
 
   %%CAML Light has special facilities for installing user-defined printers in 
   %%the toplevel read-eval-print loop.
 
-  Once our printer is installed, anything of type {\tt term} will 
-  be printed using it.
+  После того, как система печати установлена пользователем, работа в 
+  интерпретаторе будет проходить через неё и каждый терм, введённый 
+  пользователем, будет выводится ею.
 
   %%Once our printer is installed, anything of type {\tt term} will 
   %%be printed using it.
 
-  We use some special functions from the CAML Light {\tt format} library to 
-  make sure that our printer interacts with the toplevel loop.
+  Для взаимодействия с интерпетатором мы используем некоторые специальные  
+  функции из библиотеки {\t format}  CAML  Light.
 
   %%We use some special functions from the CAML Light {\tt format} library to 
   %%make sure that our printer interacts with the toplevel loop.
@@ -669,7 +669,7 @@
 
 
 \frame{
-  \frametitle{ Упрощение }
+  \frametitle{ Упрощение выражений }
 
   Кажется, всё хорошо работает, но при этом не делается некоторых очевидных
   упрощений, таких как: \alert{$0 * x = 0$}. Так получается частично от того, 
