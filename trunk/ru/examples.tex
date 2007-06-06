@@ -1013,44 +1013,86 @@ comprehensible exception for the user, rather than raise {\tt Noparse} and
 perhaps initiate several other pointless attempts to parse the expression in a
 different way.
 
-\section{Exact real arithmetic}
+\section{Точная арифметика вещественных чисел}
+%\section{Exact real arithmetic}
 
-Real arithmetic on computers is normally done via floating point
-approximations. In general, we can only manipulate a real number, either
-ourselves or inside a computer, via some sort of finite representation. Some
-question how numbers can be said to `exist' if they have no finite
-representation. For example, Kronecker accepted integers and rationals because
-they can be written down explicitly, and even {\em algebraic}
-numbers\footnote{Algebraic numbers are those that are roots of polynomials with
-integer coefficients, e.g. $\sqrt{2}$, and transcendental numbers are ones that
-aren't.} because they can be represented using the polynomials of which they
-are solutions. However he rejected transcendental numbers because apparently
-they could not be represented finitely. Allegedly he he greeted the famous
-proof by \citeN{lindemann-pi} that $\pi$ is transcendental with the remark that
-this was `interesting, except that $\pi$ does not exist'.
+Машинная реализация вещественной арифметики обычно использует приближённое
+представление чисел в формате с плавающей точкой. В общем случае, мы можем 
+оперировать вещественными числами (либо вручную, либо при помощи компьютера) 
+лишь в том случае, когда они имеют то или иное конечное представление.
+Возникает вопрос, уместно ли говорить о `существовании' чисел, которые
+% ISSUE #4 -- quotation marks           ^^^^^^^^^^^^^^^
+не представимы в конечной форме. Например, Кронекер признавал целые и 
+рациональные числа, поскольку их можно задать точно, а также 
+{\em алгебраические} числа%
+\footnote{Вещественное число называется алгебраическим, если оно является 
+корнем полинома с целыми коэффициентами (например, $\sqrt{2}$), 
+в противном случае это число~--- трансцендентное.}, 
+представимые многочленами, корнями которых они являются. Однако, он отвергал 
+трансцендентные числа, как не имеющие конечного представления. Говорят, что 
+когда Кронекеру попалось на глаза известное доказательство трансцендентности 
+числа~$\pi$~\citeN{lindemann-pi}, он якобы отозвался о нем так: <<интересно,
+если не принимать во внимание того, что числа~$\pi$ не существует>>.
 
-However, given our modern perspective, we can say that after all many more
-numbers than Kronecker would have accepted {\em do} have a finite
-representation, namely the program, or in some more abstract sense the {\em
-rule}, used to calculate them to greater and greater precision. For example, we
-can write a program that will produce for any argument $n$ the first $n$ digits
-of $\pi$. Alternatively it can produce a rational number $r$ such that $|\pi -
-r| < 2^{-n}$. Whatever approach is taken to the successive approximation of a
-real number, the key point is that its representation, the program itself, is
-finite.
+%Real arithmetic on computers is normally done via floating point
+%approximations. In general, we can only manipulate a real number, either
+%ourselves or inside a computer, via some sort of finite representation. Some
+%question how numbers can be said to `exist' if they have no finite
+%representation. For example, Kronecker accepted integers and rationals because
+%they can be written down explicitly, and even {\em algebraic}
+%numbers\footnote{Algebraic numbers are those that are roots of polynomials with
+%integer coefficients, e.g. $\sqrt{2}$, and transcendental numbers are ones that
+%aren't.} because they can be represented using the polynomials of which they
+%are solutions. However he rejected transcendental numbers because apparently
+%they could not be represented finitely. Allegedly he he greeted the famous
+%proof by \citeN{lindemann-pi} that $\pi$ is transcendental with the remark that
+%this was `interesting, except that $\pi$ does not exist'.
 
-This works particularly nicely in a language like ML where higher order
-functions are available. What we have called a `program' above will just be an
-ML function. We can actually represent the arithmetic operations on numbers as
-higher order functions that, given functions for approximating $x$ and $y$,
-will produce new ones for approximating $x + y$, $x y$, $sin(x)$ and so on, for
-a wide range of functions. In an ordinary programming language, we would need
-to define a concrete representation for programs, e.g. `G\"odel numbering', and
-write an interpreter for this representation.\footnote{Effectively, we are
+Учитывая современные достижения, мы можем сказать, что конечное представление
+в принципе возможно для гораздо большего количества чисел, чем те, 
+существование которых признавалось Кронекером. Этим представлением являются 
+программы (или, вообще говоря, {\em правила}) вычисления требуемых чисел с
+произвольной заданной разрядностью. Например, мы можем написать программу, 
+вычисляющую для заданного~$n$ первые $n$~знаков числа~$\pi$ или же 
+рациональное число~$r$ такое, что~$|\pi - r| < 2^{-n}$. Независимо от того, 
+какой из подходов был выбран для последовательного уточнения вещественного 
+числа, важнейшим его свойством является конечность программы-представления.
+
+%However, given our modern perspective, we can say that after all many more
+%numbers than Kronecker would have accepted {\em do} have a finite
+%representation, namely the program, or in some more abstract sense the {\em
+%rule}, used to calculate them to greater and greater precision. For example, we
+%can write a program that will produce for any argument $n$ the first $n$ digits
+%of $\pi$. Alternatively it can produce a rational number $r$ such that $|\pi -
+%r| < 2^{-n}$. Whatever approach is taken to the successive approximation of a
+%real number, the key point is that its representation, the program itself, is
+%finite.
+
+Такой подход особенно хорошо реализуется на языках, подобных~ML, при помощи
+функций высших порядков. То, что мы называли выше <<программой>>, в 
+ML-реализации становится просто функцией. Арифметические операции при этом
+представимы функциями высших порядков, которые по заданным 
+аппроксимациям~$x$ и~$y$ конструируют аппроксимации для~$x + y$, $x y$, 
+$sin(x)$ и~т.д. В более традиционных языках программирования нам пришлось
+бы задать конкретное представление программ, например, G\"odel numbering,
+и реализовать для него интерпретатор.%
+\footnote{Effectively, we are
 manipulating functions `in extension' rather than `in intension', i.e. not
 concerning ourselves with their representation.}
 
-\subsection{Representation of real numbers}
+%This works particularly nicely in a language like ML where higher order
+%functions are available. What we have called a `program' above will just be an
+%ML function. We can actually represent the arithmetic operations on numbers as
+%higher order functions that, given functions for approximating $x$ and $y$,
+%will produce new ones for approximating $x + y$, $x y$, $sin(x)$ and so on, for
+%a wide range of functions. In an ordinary programming language, we would need
+%to define a concrete representation for programs, e.g. `G\"odel numbering', and
+%write an interpreter for this representation.\footnote{Effectively, we are
+%manipulating functions `in extension' rather than `in intension', i.e. not
+%concerning ourselves with their representation.}
+
+\subsection{Выбор представления вещественных чисел}
+%\subsection{Representation of real numbers}
 
 Our approach is to represent a real $x$ by a function $f_x:\nat \to \num$ that
 for each $n \in \nat$ returns an approximation of $x$ to within $2^{-n}$,
