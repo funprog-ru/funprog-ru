@@ -398,7 +398,7 @@
 
 Помимо унарных, в наше распоряжение предоставлен стандартный набор бинарных
 операций. Операции целочисленного деления и вычисления остатка, 
-обозначеные~{\black \tt quo\_num} и~{\black \tt mod\_num}, не являются
+обозначенные~{\black \tt quo\_num} и~{\black \tt mod\_num}, не являются
 инфиксными. В то же время, большинство прочих бинарных операций определены
 как инфиксные с именами, полученными добавлением символа~``{\black \verb!/!}''
 к именам аналогичных операций над типом~{\black \tt int}.
@@ -510,11 +510,12 @@
 \end{verbatim}\end{black}
 Компилятор для этой функции выводит более общий тип, чем требуется, но это
 не создаст трудностей. Достаточно легко убедиться, что критерий аппроксимации
-не нарушается. Если нам известно, что для любого~{\red $n$} такого, что:
+не нарушается. Если нам известно, что для любого~{\red $n$} справедливо
+%% ISSUE: check this
 %The compiler generalizes the type more than intended, but this will not trouble
 %us. It is almost as easy to see that the approximation criterion is preserved.
 %If we know that for each {\red $n$}:
-{\red $$ |f_x(n) - 2^n x| < 1 $$}%
+{\red $$ |f_x(n) - 2^n x| < 1, $$}%
 то из этого следует:
 %\noindent then we have for any {\red $n$}:
 {\red \begin{eqnarray*}

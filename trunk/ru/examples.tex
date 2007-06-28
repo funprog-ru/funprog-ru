@@ -1073,8 +1073,8 @@ different way.
 ML-реализации становится просто функцией. Арифметические операции при этом
 представимы функциями высших порядков, которые по заданным 
 аппроксимациям~$x$ и~$y$ конструируют аппроксимации для~$x + y$, $x y$, 
-$sin(x)$ и~т.д. В более традиционных языках программирования нам пришлось
-бы задать конкретное представление программ, например, G\"odel numbering,
+$\sin(x)$ и~т.д. В более традиционных языках программирования нам пришлось
+бы задать конкретное представление программ, например, гёделеву нумерацию,
 и реализовать для него интерпретатор.%
 \footnote{Effectively, we are
 manipulating functions `in extension' rather than `in intension', i.e. not
@@ -1094,75 +1094,151 @@ concerning ourselves with their representation.}
 \subsection{Выбор представления вещественных чисел}
 %\subsection{Representation of real numbers}
 
-Our approach is to represent a real $x$ by a function $f_x:\nat \to \num$ that
-for each $n \in \nat$ returns an approximation of $x$ to within $2^{-n}$,
-appropriately scaled. In fact, we have:
+Каждому вещественному числу~$x$ поставим в соответствие 
+функцию~$f_x:\nat \to \num$, которая для произвольного~$n \in \nat$
+возвращает масштабированное приближенное значение~$x$ с точностью~$2^{-n}$:
+$$ 
+ |f_x(n) - 2^n x| < 1.
+$$
+В свою очередь, данное выражение 
+эквивалентно~$|{f_x(n) \over 2^n} - x| < {1 \over 2^n}$. Также возможно
+непосредственное вычисление рационального приближенного значения, но для
+удобства вычислений важно, чтобы знаменатели всех вычисляемых величин
+были представимы в виде степеней некоторого числа. Подобное ограничение 
+позволит избежать лавинообразного роста общего знаменателя при суммировании.
+Явное масштабирование упрощает реализацию операций, позволяя ограничиться
+лишь целочисленной арифметикой. Выбор~$2$ в качестве основания произволен.
+Малые основания предпочтительнее тем, что позволяют подбирать подходящую
+точность более гибко. Например, выбор основания~$10$ ведёт к тому, что даже
+при необходимости небольшого увеличения точности представления мы вынуждены
+увеличивать её в 10~раз.
+%Our approach is to represent a real $x$ by a function $f_x:\nat \to \num$ that
+%for each $n \in \nat$ returns an approximation of $x$ to within $2^{-n}$,
+%appropriately scaled. In fact, we have:
+%
+%$$ |f_x(n) - 2^n x| < 1 $$
+%
+%This is of course equivalent to $|{f_x(n) \over 2^n} - x| < {1 \over 2^n}$. We
+%could return a rational approximation directly, but it would still be
+%convenient for the rationals to have denominators that are all powers of some
+%number, so that common denominators arising during addition don't get too big.
+%Performing the scaling directly seems simpler, requiring only integer
+%arithmetic. Our choice of the base $2$ is largely arbitrary. A lower base is
+%normally advantageous because it minimizes the {\em granularity} of the
+%achievable accuracies. For example, if we used base 10, then even if we only
+%need to increase the accuracy of an approximation slightly, we have to step up
+%the requested accuracy by a factor of 10.
 
-$$ |f_x(n) - 2^n x| < 1 $$
+\subsection{Целые числа произвольной разрядности}
+%\subsection{Arbitrary-precision integers}
 
-This is of course equivalent to $|{f_x(n) \over 2^n} - x| < {1 \over 2^n}$. We
-could return a rational approximation directly, but it would still be
-convenient for the rationals to have denominators that are all powers of some
-number, so that common denominators arising during addition don't get too big.
-Performing the scaling directly seems simpler, requiring only integer
-arithmetic. Our choice of the base $2$ is largely arbitrary. A lower base is
-normally advantageous because it minimizes the {\em granularity} of the
-achievable accuracies. For example, if we used base 10, then even if we only
-need to increase the accuracy of an approximation slightly, we have to step up
-the requested accuracy by a factor of 10.
-
-\subsection{Arbitrary-precision integers}
-
-CAML's standard integers (type {\tt int}) have a severely limited range, so
-first of all we need to set up a type of unlimited-precision integers. This is
-not so difficult to program, but is slightly tedious. Fortunately, the CAML
-release includes a library that gives a fast implementation of arbitrary
-precision integer (and in fact rational) arithmetic. A version of CAML Light
-with this library pre-loaded is installed on Thor. Assuming you have used the
-following path setting:
-
+Стандартный целочисленный тип ({\tt int}) в CAML имет довольно ограниченный 
+диапазон представимых значений, поэтому нам прежде всего потребуется 
+возможность оперировать целыми числами неограниченной разрядности.
+Программная реализация подобной арифметики не слишком сложна, но несколько
+утомительна. К счастью, версия CAML Light, установленная на Thor, уже включает 
+в себя библиотеку быстрых алгоритмов целочисленной (на самом деле, рациональной) 
+арифметики. Предположим, что конфигурация системы задает следующие пути поиска
+исполнимых файлов:
+%
 \begin{boxed}\begin{lstlisting}[language=sh]
   PATH="$PATH:/home/jrh13/caml/bin"
   export PATH
 \end{lstlisting}\end{boxed}
-
-\noindent then the augmented version of CAML Light can be fired up using:
-
+%
+В этом случае CAML-система с поддержкой <<длинной>> арифметики запускается 
+командой:
 \begin{boxed}\begin{verbatim}
   $ camllight my_little_caml
 \end{verbatim}\end{boxed}
 
-When the system returns its prompt, use the {\verb+#open+} directive to make
-the library functions available:
+%CAML's standard integers (type {\tt int}) have a severely limited range, so
+%first of all we need to set up a type of unlimited-precision integers. This is
+%not so difficult to program, but is slightly tedious. Fortunately, the CAML
+%release includes a library that gives a fast implementation of arbitrary
+%precision integer (and in fact rational) arithmetic. A version of CAML Light
+%with this library pre-loaded is installed on Thor. Assuming you have used the
+%following path setting:
+%
+%\begin{boxed}\begin{lstlisting}[language=sh]
+%  PATH="$PATH:/home/jrh13/caml/bin"
+%  export PATH
+%\end{lstlisting}\end{boxed}
+%
+%\noindent then the augmented version of CAML Light can be fired up using:
+%
+%\begin{boxed}\begin{verbatim}
+%  $ camllight my_little_caml
+%\end{verbatim}\end{boxed}
 
+После запуска системы используйте директиву~{\verb+#open+} для получения 
+доступа ко всем функциям библиотеки:
+%
 \begin{boxed}\begin{verbatim}
   ##open "num";;
 \end{verbatim}\end{boxed}
 
-This library sets up a new type {\tt num} of arbitrary precision rational
-numbers; we will just use the integer subset. CAML does not provide
-overloading, so it is necessary to use different symbols for the usual
-arithmetic operations over {\tt num}.
+%When the system returns its prompt, use the {\verb+#open+} directive to make
+%the library functions available:
+%
+%\begin{boxed}\begin{verbatim}
+%  ##open "num";;
+%\end{verbatim}\end{boxed}
 
-Note that small constants of type {\tt num} must be written as {\tt Int k}
-rather than simply {\tt k}. In fact {\tt Int} is a type constructor for {\tt
-num} used in the case when the number is a machine-representable integer.
-Larger ones use {\tt Big\_int}.
+В библиотеке определяется новый тип данных {\tt num}, представляющий
+рациональные числа произвольной разрядности, среди которых нам понадобится 
+лишь подмножество целых чисел. Язык CAML не предоставляет возможности 
+перегрузки операций, поэтому для обозначения арифметических действий 
+над~{\tt num} приходится использовать другие символы.
 
-The unary negation on type {\tt num} is written {\tt minus\_num}. Another handy
-unary operator is {\tt abs\_num}, which finds absolute values, i.e. given $x$
-returns $|x|$.
+%This library sets up a new type {\tt num} of arbitrary precision rational
+%numbers; we will just use the integer subset. CAML does not provide
+%overloading, so it is necessary to use different symbols for the usual
+%arithmetic operations over {\tt num}.
 
-The usual binary operations are also available. The (truncating) division and
-modulus function, called {\tt quo\_num} and {\tt mod\_num}, do not have infix
-status. However most of the other binary operators are infixes, and the names
-are derived from the usual ones by adding a slash `{\verb!/!}'. It is important
-to realize that in general, one must use {\tt =/} to compare numbers for
-equality. This is because the constructors of the type {\tt num} are, as
-always, distinct by definition, yet in terms of the underlying meaning they may
-overlap. For example we get different result from using truncating division and
-true division on $2^{30}$ and $2$, even though they are numerically the same.
-One uses type constructor {\tt Int} and the other {\tt Ratio}.
+Отметим, что числа-константы типа~{\tt num} должны задаваться как~{\tt Int k}, 
+а не просто~{\tt k}. Фактически, {\tt Int}~является конструктором 
+типа~{\tt num} и применяется в случае, когда число имеет прямое машинное 
+представление. Большие числа конструируются~{\tt Big\_int}.
+
+%Note that small constants of type {\tt num} must be written as {\tt Int k}
+%rather than simply {\tt k}. In fact {\tt Int} is a type constructor for {\tt
+%num} used in the case when the number is a machine-representable integer.
+%Larger ones use {\tt Big\_int}.
+
+Унарная операция смены знака величины типа~{\tt num} 
+обозначается~{\tt minus\_num}. Ещё одна полезная унарная операция~--- 
+{\tt abs\_num}, которая вычисляет абсолютную величину аргумента, т.~е.\ %
+по заданному~$x$ возвращает~$|x|$.
+
+%The unary negation on type {\tt num} is written {\tt minus\_num}. Another handy
+%unary operator is {\tt abs\_num}, which finds absolute values, i.e. given $x$
+%returns $|x|$.
+
+Помимо унарных, в наше распоряжение предоставлен стандартный набор бинарных
+операций. Операции целочисленного деления и вычисления остатка, 
+обозначенные~{\tt quo\_num} и~{\tt mod\_num}, не являются инфиксными. 
+В то же время, большинство прочих бинарных операций определены как инфиксные 
+с именами, полученными добавлением символа~``{\verb!/!}'' к именам аналогичных 
+операций над типом~{\tt int}. Важно помнить, что в общем случае требуется
+использовать~{\tt =/} для сравнения чисел. Причина этого в том, что 
+конструкторы типа~{\tt num}, как всегда, различны по определению, но могут
+пересекаться по интерпретации представляемых значений. Например, в ходе 
+вычисления частного~$2^{30}$ и~$2$ при помощи двух доступных операций деления
+мы можем получить результаты, численно равные, но различные с точки зрения
+языка, поскольку в одном случае будет использован конструктор~{\tt Int}, а
+в другом~--- {\tt Ratio}.
+
+%The usual binary operations are also available. The (truncating) division and
+%modulus function, called {\tt quo\_num} and {\tt mod\_num}, do not have infix
+%status. However most of the other binary operators are infixes, and the names
+%are derived from the usual ones by adding a slash `{\verb!/!}'. It is important
+%to realize that in general, one must use {\tt =/} to compare numbers for
+%equality. This is because the constructors of the type {\tt num} are, as
+%always, distinct by definition, yet in terms of the underlying meaning they may
+%overlap. For example we get different result from using truncating division and
+%true division on $2^{30}$ and $2$, even though they are numerically the same.
+%One uses type constructor {\tt Int} and the other {\tt Ratio}.
 
 \begin{boxed}\begin{verbatim}
   #(Int 2 **/ Int 30) // Int 2 = quo_num (Int 2 **/ Int 30) (Int 2);;
@@ -1171,29 +1247,42 @@ One uses type constructor {\tt Int} and the other {\tt Ratio}.
   it : bool = true
 \end{verbatim}\end{boxed}
 
-\noindent Here is a full list of the main infix binary operators:
+Полный список инфиксных операций:
+%\noindent Here is a full list of the main infix binary operators:
 
 \bigskip
 \begin{tabular}{|l|l|l|}
 \hline
-Operator   & Type                             & Meaning               \\
+%Operator   & Type                             & Meaning               \\
+Оператор   & Тип                              & Значение            \\
 \hline
-{\tt **/}  & {\tt num -> num -> num}          & Exponentiation        \\
-{\tt */}   & {\tt num -> num -> num}          & Multiplication        \\
-{\tt +/}   & {\tt num -> num -> num}          & Addition              \\
-{\tt -/}   & {\tt num -> num -> num}          & Subtraction           \\
-{\tt =/}   & {\tt num -> num -> bool}         & Equality              \\
-{\tt <>/}  & {\tt num -> num -> bool}         & Inequality            \\
-{\tt </}   & {\tt num -> num -> bool}         & Less than             \\
-{\tt <=/}  & {\tt num -> num -> bool}         & Less than or equal    \\
-{\tt >/}   & {\tt num -> num -> bool}         & Greater than          \\
-{\tt >=/}  & {\tt num -> num -> bool}         & Greater than or equal \\
+{\tt **/}  & {\tt num -> num -> num}          & Вычисление степени  \\
+{\tt */}   & {\tt num -> num -> num}          & Умножение           \\
+{\tt +/}   & {\tt num -> num -> num}          & Сложение            \\
+{\tt -/}   & {\tt num -> num -> num}          & Вычитание           \\
+{\tt =/}   & {\tt num -> num -> bool}         & Равенство           \\
+{\tt <>/}  & {\tt num -> num -> bool}         & Неравенство         \\
+{\tt </}   & {\tt num -> num -> bool}         & Меньше, чем         \\
+{\tt <=/}  & {\tt num -> num -> bool}         & Меньше либо равно   \\
+{\tt >/}   & {\tt num -> num -> bool}         & Больше, чем         \\
+{\tt >=/}  & {\tt num -> num -> bool}         & Больше либо равно   \\
+%{\tt **/}  & {\tt num -> num -> num}          & Exponentiation        \\
+%{\tt */}   & {\tt num -> num -> num}          & Multiplication        \\
+%{\tt +/}   & {\tt num -> num -> num}          & Addition              \\
+%{\tt -/}   & {\tt num -> num -> num}          & Subtraction           \\
+%{\tt =/}   & {\tt num -> num -> bool}         & Equality              \\
+%{\tt <>/}  & {\tt num -> num -> bool}         & Inequality            \\
+%{\tt </}   & {\tt num -> num -> bool}         & Less than             \\
+%{\tt <=/}  & {\tt num -> num -> bool}         & Less than or equal    \\
+%{\tt >/}   & {\tt num -> num -> bool}         & Greater than          \\
+%{\tt >=/}  & {\tt num -> num -> bool}         & Greater than or equal \\
 \hline
 \end{tabular}
 \bigskip
 
-\noindent Let us see some further examples:
-
+Пример использования операций:
+%\noindent Let us see some further examples:
+%
 \begin{boxed}\begin{verbatim}
   #Int 5 */ Int 14;;
   it : num = Int 70
@@ -1205,53 +1294,79 @@ Operator   & Type                             & Meaning               \\
   it : num = Int 536870912
 \end{verbatim}\end{boxed}
 
-Note that large numbers are not printed. However we can always convert one to a
-string using {\tt string\_of\_num}:
-
+Отметим, что числа типа~{\tt num} по умолчанию не выводятся. Однако, мы
+всегда можем преобразовать их в строки при помощи функции~{\tt string\_of\_num}.
+%Note that large numbers are not printed. However we can always convert one to a
+%string using {\tt string\_of\_num}:
+%
 \begin{boxed}\begin{verbatim}
   #string_of_num(Int 2 ** Int 150);;
   - : string = "1427247692705959881058285969449495136382746624"
 \end{verbatim}\end{boxed}
+%
+Аналогично делается и обратное преобразование, реализуемое функцией с вполне
+естественным именем~{\tt num\_of\_string}.
+%\noindent This also has an inverse, called naturally enough {\tt
+%num\_of\_string}.
 
-\noindent This also has an inverse, called naturally enough {\tt
-num\_of\_string}.
+\subsection{Основные операции}
+%\subsection{Basic operations}
 
-\subsection{Basic operations}
-
-Recall that our real numbers are supposed to be (represented by) functions
-$\num \to \num$. In ML we will actually use {\tt int -> num}, since the inbuilt
-type of integers is more than adequate for indexing the level of accuracy. Now
-we can define some operations on reals. The most basic operation, which gets us
-started, is to produce the real number corresponding to an integer. This is
-easy:
-
+Напомним, что для вещественных чисел нами было выбрано представление в виде
+функций~$\num \to \num$. Реализация на языке~ML в действительности будет 
+% ISSUE: Z -> Z should be probably N -> Z ???
+использовать~{\tt int -> num}, поскольку диапазона значений встроенного 
+целочисленного типа вполне достаточно для задания требуемой разрядности.
+Определим некоторые базовые операции над вещественными числами. Наиболее
+фундаментальная операция, с которой мы начнём, ставит в соответствие заданному
+целому вещественное число. Её реализация проста:
+%
+%Recall that our real numbers are supposed to be (represented by) functions
+%$\num \to \num$. In ML we will actually use {\tt int -> num}, since the inbuilt
+%type of integers is more than adequate for indexing the level of accuracy. Now
+%we can define some operations on reals. The most basic operation, which gets us
+%started, is to produce the real number corresponding to an integer. This is
+%easy:
+%
 \begin{boxed}\begin{verbatim}
   #let real_of_int k n = (Int 2 **/ Int n) */ Int k;;
   real_of_int : int -> int -> num = <fun>
   #real_of_int 23;;
   - : int -> num = <fun>
 \end{verbatim}\end{boxed}
-
-\noindent It is obvious that for any $k$ this obeys the desired approximation
-criterion:
-
-$$ |f_k(n) - 2^n k| = |2^n k - 2^n k| = 0 < 1 $$
-
-\noindent Now we can define the first nontrivial operation, that of unary
-negation:
-
+%
+Очевидно, что для произвольного~$k$ справедлив критерий аппроксимации:
+%\noindent It is obvious that for any $k$ this obeys the desired approximation
+%criterion:
+%
+$$ 
+ |f_k(n) - 2^n k| = |2^n k - 2^n k| = 0 < 1 
+$$
+%
+Определим первую нетривиальную операцию~--- смену знака.
+%\noindent Now we can define the first nontrivial operation, that of unary
+%negation:
+%
 \begin{boxed}\begin{lstlisting}
   let real_neg f n = minus_num(f n);;
 \end{lstlisting}\end{boxed}
 
-The compiler generalizes the type more than intended, but this will not trouble
-us. It is almost as easy to see that the approximation criterion is preserved.
-If we know that for each $n$:
-
-$$ |f_x(n) - 2^n x| < 1 $$
-
-\noindent then we have for any $n$:
-
+Компилятор для этой функции выводит более общий тип, чем требуется, но это
+не создаст трудностей. Достаточно легко убедиться, что критерий аппроксимации
+не нарушается. Если нам известно, что для любого~$n$ выполняется
+$$ 
+ |f_x(n) - 2^n x| < 1,
+$$
+то из этого следует
+%
+%The compiler generalizes the type more than intended, but this will not trouble
+%us. It is almost as easy to see that the approximation criterion is preserved.
+%If we know that for each $n$:
+%
+%$$ |f_x(n) - 2^n x| < 1 $$
+%
+%\noindent then we have for any $n$:
+%
 \begin{eqnarray*}
 |f_{-x}(n) - 2^n (-x)| & = & |-f_x(n) - 2^n (-x)|       \\
                        & = & |-(f_x(n) - 2^n x)|        \\
@@ -1259,36 +1374,56 @@ $$ |f_x(n) - 2^n x| < 1 $$
                        & < & 1
 \end{eqnarray*}
 
-Similarly, we can define an `absolute value' function on real numbers, using
-the corresponding function {\tt abs\_num} on numbers:
-
+Аналогично, мы можем определить вычисление абсолютной величины вещественных 
+чисел, используя функцию~{\tt abs\_num}:
+%
+%Similarly, we can define an `absolute value' function on real numbers, using
+%the corresponding function {\tt abs\_num} on numbers:
+%
 \begin{boxed}\begin{lstlisting}
   let real_abs f n = abs_num (f n);;
 \end{lstlisting}\end{boxed}
+%
+Доказательство корректности этого определения также не представляет трудности,
+принимая во внимание, что~$||x| - |y|| \leq |x - y|$. 
 
-The correctness of this is again straightforward, using the fact that $||x| -
-|y|| \leq |x - y|$. Now consider the problem of adding two real numbers.
-Suppose $x$ and $y$ are represented by $f_x$ and $f_y$ respectively. We could
-define:
-
-$$ f_{x + y}(n) = f_x(n) + f_y(n) $$
-
-However this gives no guarantee that the approximation criterion is maintained;
-we would have:
-
+Перейдем к следующей задаче~--- сложению двух вещественных чисел. Предположим,
+что~$x$ и~$y$ представлены как~$f_x$ и~$f_y$ соответственно. Определим сложение
+так:
+%The correctness of this is again straightforward, using the fact that $||x| -
+%|y|| \leq |x - y|$. Now consider the problem of adding two real numbers.
+%Suppose $x$ and $y$ are represented by $f_x$ and $f_y$ respectively. We could
+%define:
+%
+$$ 
+ f_{x + y}(n) = f_x(n) + f_y(n).
+$$
+%
+Однако, такое определение не гарантирует соблюденния критерия аппроксимации:
+%However this gives no guarantee that the approximation criterion is maintained;
+%we would have:
+%
 \begin{eqnarray*}
 |f_{x + y}(n) - 2^n (x + y)| & = & |f_x(n) + f_y(n) - 2^n (x + y)|      \\
                              & \leq & |f_x(n) - 2^n x| + |f_y(n) - 2^n y|
 \end{eqnarray*}
-
-We can guarantee that the sum on the right is less than $2$, but not that it is
-less than $1$ as required. Therefore, we need in this case to evaluate $x$ and
-$y$ to {\em greater} accuracy than required in the answer. Suppose we define:
-
-$$ f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2 $$
-
-\noindent Now we have:
-
+%
+Можно утверждать, что сумма в правой части неравенства не превышает~$2$, 
+в то время, как критерий ограничивает нас~$1$. Следовательно, в данном 
+случае нам требуется вычислить~$x$ и~$y$ с {\em большей} 
+разрядностью, чем требуется от результата операции. Предположим, что
+%
+%We can guarantee that the sum on the right is less than $2$, but not that it is
+%less than $1$ as required. Therefore, we need in this case to evaluate $x$ and
+%$y$ to {\em greater} accuracy than required in the answer. Suppose we define:
+%
+$$ 
+  f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2.
+$$
+%
+Это, в свою очередь, дает
+%\noindent Now we have:
+%
 \begin{eqnarray*}
 |f_{x + y}(n) - 2^n (x + y)|
 & = & |(f_x(n + 1) + f_y(n + 1)) / 2 - 2^n (x + y)|             \\
@@ -1298,18 +1433,32 @@ $$ f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2 $$
 & < & {1 \over 2} 1 + {1 \over 2} 1 = 1
 \end{eqnarray*}
 
-Apparently this just gives the accuracy required. However we have implicitly
-used real mathematical division above. Since the function is supposed to yield
-an integer, we are obliged to round the quotient to an integer. If we just use
-{\tt quo\_num}, the error from rounding this might be almost $1$, after which
-we could never guarantee the bound we want, however accurately we evaluate the
-arguments. However with a bit more care we can define a division function that
-always returns the integer closest to the true result (or one of them in the
-case of two equally close ones), so that the rounding error never exceeds $1
-\over 2$. This could be done directly in integer arithmetic, but the most
-straightforward coding is to use rational division followed by rounding to the
-nearest integer, as there are built-in functions for both these operations:
-
+Очевидно, что такое определение достигает желаемой точности. Однако, в нём
+неявно используется операция деления вещественных чисел. Поскольку функция
+должна возвращать целочисленный результат, частное требуется округлить.
+Если мы вычислим частное при помощи~{\tt quo\_num}, ошибка округления
+составит почти~$1$ и не позволит достичь требуемой точности независимо от 
+точности вычисления аргументов. В то же время, затратив чуть больше усилий,
+мы можем определить функцию деления, которая всегда будет возвращать целое 
+число, ближайшее к~точному результату (или одно из двух ближайших, если 
+расстояние до них оказывается одинаковым), так что ошибка округления никогда 
+не превысит~$1 \over 2$. Такая функция может быть реализована в целочисленной
+арифметике, но будет проще всего воспользоваться операцией деления рациональных
+чисел с последующим округлением частного к ближайшему целому, поскольку для
+этих действий уже определены встроенные функции:
+%
+%Apparently this just gives the accuracy required. However we have implicitly
+%used real mathematical division above. Since the function is supposed to yield
+%an integer, we are obliged to round the quotient to an integer. If we just use
+%{\tt quo\_num}, the error from rounding this might be almost $1$, after which
+%we could never guarantee the bound we want, however accurately we evaluate the
+%arguments. However with a bit more care we can define a division function that
+%always returns the integer closest to the true result (or one of them in the
+%case of two equally close ones), so that the rounding error never exceeds $1
+%\over 2$. This could be done directly in integer arithmetic, but the most
+%straightforward coding is to use rational division followed by rounding to the
+%nearest integer, as there are built-in functions for both these operations:
+%
 \begin{boxed}\begin{verbatim}
   #let ndiv x y = round_num(x // y);;
   ndiv : num -> num -> num = <fun>
@@ -1324,12 +1473,16 @@ nearest integer, as there are built-in functions for both these operations:
   - : num = Int -2
 \end{verbatim}\end{boxed}
 
-\noindent Now if we define:
-
-$$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4 $$
-
-\noindent everything works:
-
+Если мы определим операцию сложения с учётом сказанного выше,
+%\noindent Now if we define:
+%
+$$ 
+ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4, 
+$$
+%
+всё будет работать, как требуется:
+%\noindent everything works:
+%
 \begin{eqnarray*}
 |f_{x + y}(n) - 2^n (x + y)|
 & =    & |((f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4) - 2^n (x + y)|    \\
@@ -1341,43 +1494,57 @@ $$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4 $$
 & <    & {1 \over 2} + {1 \over 4} 1 + {1 \over 4} 1                    \\
 &=     & 1
 \end{eqnarray*}
-
-\noindent Accordingly we make our definition:
-
+%
+Программная реализация выглядит так:
+%\noindent Accordingly we make our definition:
+%
 \begin{boxed}\begin{lstlisting}
   let real_add f g n =
     (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
 \end{lstlisting}\end{boxed}
 
-We can define subtraction similarly, but the simplest approach is to build it
-out of the functions that we already have:
-
+Аналогичные рассуждения могут быть использованы для определения операции
+вычитания, но проще всего построить её на основе уже введенных функций:
+%We can define subtraction similarly, but the simplest approach is to build it
+%out of the functions that we already have:
+%
 \begin{boxed}\begin{verbatim}
   #let real_sub f g = real_add f (real_neg g);;
   real_sub : (num -> num) -> (num -> num) -> num -> num = <fun>
 \end{verbatim}\end{boxed}
 
-It is a bit trickier to define multiplication, inverses and division. However
-the cases where we multiply or divide by an integer are much easier and quite
-common. It is worthwhile implementing these separately as they can be made more
-efficient. We define:
-
-$$ f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1} $$
-
-\noindent where $p$ is chosen so that $2^p \geq |m|$. For correctness, we have:
-
+Реализация умножения, вычисления обратных чисел и деления потребует 
+в общем случае несколько больших усилий. Однако, частные случаи умножения и
+деления на целое число существенно легче и при этом достаточно часты. По 
+соображениям эффективности они заслуживают отдельного рассмотрения. Пусть
+%It is a bit trickier to define multiplication, inverses and division. However
+%the cases where we multiply or divide by an integer are much easier and quite
+%common. It is worthwhile implementing these separately as they can be made more
+%efficient. We define:
+%
+$$ 
+  f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1},
+$$
+%
+где $p$~выбирается так, чтобы~$2^p \geq |m|$. Доказать корректность этого 
+определения легко:
+%\noindent where $p$ is chosen so that $2^p \geq |m|$. For correctness, we have:
+%
 \begin{eqnarray*}
 |f_{m x}(n) - 2^n (m x)|
 & \leq & {1 \over 2} + |{m f_x(n+p+1) \over 2^{p+1}} - 2^n (m x)|       \\
 & =    & {1 \over 2} + {|m| \over 2^{p+1}} |f_x(n+p+1) - 2^{n+p+1} x|   \\
 & <    & {1 \over 2} + {|m| \over 2^{p+1}}                              \\
 & \leq & {1 \over 2} + {1 \over 2} {|m| \over 2^p}                      \\
-& \leq & {1 \over 2} + {1 \over 2} = 1
+& \leq & {1 \over 2} + {1 \over 2} = 1.
 \end{eqnarray*}
 
-In order to implement this, we need a function to find the appropriate $p$. The
-following is crude but adequate:
-
+Для реализации такого подхода нам потребуется функция вычисления 
+соответствующего~$p$. Не слишком изощрённое, но вполне подходящее 
+определение может выглядеть так: 
+%In order to implement this, we need a function to find the appropriate $p$. The
+%following is crude but adequate:
+%
 \begin{boxed}\begin{lstlisting}
   let log2 =
     let rec log2 x y =
@@ -1385,62 +1552,89 @@ following is crude but adequate:
       else log2 (quo_num x (Int 2)) (y + 1) in
     fun x -> log2 (x -/ Int 1) 0;;
 \end{lstlisting}\end{boxed}
-
-\noindent The implementation is simply:
-
+%
+%\noindent The implementation is simply:
+С учётом сказанного выше, операция умножения на целое число принимает вид:
+%
 \begin{boxed}\begin{lstlisting}
   let real_intmul m x n =
      let p = log2 (abs_num m) in
      let p1 = p + 1 in
      (m */ x(n + p1)) ndiv (Int 2 **/ Int p1);;
 \end{lstlisting}\end{boxed}
-
-\noindent For division by an integer, we define:
-
+%
+Деление на целое число вводится следующим образом:
+%\noindent For division by an integer, we define:
+%
 $$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$
 
-For correctness, we can ignore the trivial cases when  $m = 0$, which should
-never be used, and when $m = \pm 1$, since then the result is exact. Otherwise,
-we assume $|f_x(n) - 2^n x| < 1$, so $|f_x(n) / m - 2^n x / m| < {1 \over |m|}
-\leq {1 \over 2}$, which, together with the fact that $|f_x(n) \mbox{ ndiv } m
-- f_x(n) / m| \leq {1 \over 2}$, yields the result. So we have:
-
+Для упрощения доказательства корректности этого определения будем считать,
+что случай~$m = 0$ никогда не может возникнуть, а при $m = \pm 1$ результат
+операции не изменяет погрешности. В остальных случаях из~$|f_x(n) - 2^n x| < 1$ 
+следует, что~$|f_x(n) / m - 2^n x / m| < {1 \over |m|} \leq {1 \over 2}$, откуда,
+в свою очередь, с учётом $|f_x(n) \mbox{ ndiv } m - f_x(n) / m| \leq {1 \over 2}$
+получаем требуемое. В итоге, программная реализация деления такова:
+%For correctness, we can ignore the trivial cases when  $m = 0$, which should
+%never be used, and when $m = \pm 1$, since then the result is exact. Otherwise,
+%we assume $|f_x(n) - 2^n x| < 1$, so $|f_x(n) / m - 2^n x / m| < {1 \over |m|}
+%\leq {1 \over 2}$, which, together with the fact that $|f_x(n) \mbox{ ndiv } m
+%- f_x(n) / m| \leq {1 \over 2}$, yields the result. So we have:
+%
 \begin{boxed}\begin{lstlisting}
   let real_intdiv m x n =
      x(n) ndiv (Int m);;
 \end{lstlisting}\end{boxed}
 
-\subsection{General multiplication}
+\subsection{Умножение: общий случай}
+%\subsection{General multiplication}
 
-General multiplication is harder because the error in approximation for one
-number is multiplied by the magnitude of the second number. Therefore, before
-the final accuracies are calculated, a preliminary evaluation of the arguments
-is required to determine their approximate magnitude. We proceed as follows.
-Suppose that we want to evaluate $x + y$ to precision $n$. First we choose $r$
-and $s$ so that $|r - s| \leq 1$ and $r + s = n + 2$. That is, both $r$ and $s$
-are slightly more than half the required precision. We now evaluate $f_x(r)$
-and $f_y(s)$, and select natural numbers $p$ and $q$ that are the corresponding
-`binary logarithms', i.e. $|f_x(r)| \leq 2^p$ and $|f_y(s)| \leq 2^q$. If both
-$p$ and $q$ are zero, then it is easy to see that we may return just $0$.
-Otherwise, remember that either $p > 0$ or $q > 0$ as we will need this later.
-Now set:
+Определить умножение в общем случае труднее, поскольку погрешность 
+аппроксимации одного из сомножителей умножается на порядок второго. 
+Следовательно, нам потребуется предварительно оценить порядки сомножителей.
+Поступим следующим образом. Предположим, что нам требуется вычислить 
+выражение~$x + y$ до $n\hbox{-го}$~разряда. Для этого выберем~$r$ и~$s$ такие,
+что~$|r - s| \leq 1$ и~$r + s = n + 2$. Таким образом, обе эти величины
+несколько больше, чем половина требуемой разрядности. Далее вычислим~$f_x(r)$
+и~$f_y(s)$, после чего определим~$p$ и~$q$~--- соответствующие 
+<<двоичные логарифмы>>, для которых справедливо~$|f_x(r)| \leq 2^p$ and $|f_y(s)| \leq 2^q$.
+Если как~$p$, так и~$q$ равны нулю, то легко убедиться, что результатом
+вычислений также будет~$0$. В противном случае отметим, что либо~$p > 0$,
+либо~$q > 0$~--- этот факт нам понадобится в дальнейшем.
+%General multiplication is harder because the error in approximation for one
+%number is multiplied by the magnitude of the second number. Therefore, before
+%the final accuracies are calculated, a preliminary evaluation of the arguments
+%is required to determine their approximate magnitude. We proceed as follows.
+%Suppose that we want to evaluate $x + y$ to precision $n$. First we choose $r$
+%and $s$ so that $|r - s| \leq 1$ and $r + s = n + 2$. That is, both $r$ and $s$
+%are slightly more than half the required precision. We now evaluate $f_x(r)$
+%and $f_y(s)$, and select natural numbers $p$ and $q$ that are the corresponding
+%`binary logarithms', i.e. $|f_x(r)| \leq 2^p$ and $|f_y(s)| \leq 2^q$. If both
+%$p$ and $q$ are zero, then it is easy to see that we may return just $0$.
+%Otherwise, remember that either $p > 0$ or $q > 0$ as we will need this later.
+%Now set:
 
+Пусть
+%
 \begin{eqnarray*}
 k &= &n + q - s + 3 =  q + r + 1           \\
 l &= &n + p - r + 3 =  p + s + 1           \\
-m &= &(k + l) - n =  p + q + 4
+m &= &(k + l) - n =  p + q + 4.
 \end{eqnarray*}
-
-We claim that $f_{x y}(n) = (f_x(k) f_y(l)) \mbox{ ndiv } 2^m$ has the right
-error behaviour, i.e. $|f_{x y}(n) - 2^n (x y)| < 1$. If we write:
-
+%
+Покажем, что погрешность выражения~$f_{x y}(n) = (f_x(k) f_y(l)) \mbox{ ndiv } 2^m$
+удовлетворяет критерию аппроксимации, т.~е.\ $|f_{x y}(n) - 2^n (x y)| < 1$.
+Если ввести обозначения
+%We claim that $f_{x y}(n) = (f_x(k) f_y(l)) \mbox{ ndiv } 2^m$ has the right
+%error behaviour, i.e. $|f_{x y}(n) - 2^n (x y)| < 1$. If we write:
+%
 \begin{eqnarray*}
-2^k x &= &f_x(k) + \delta        \\
-2^l y &= &f_y(l) + \epsilon
+2^k x &= &f_x(k) + \delta,        \\
+2^l y &= &f_y(l) + \epsilon,
 \end{eqnarray*}
-
-\noindent with $|\delta| < 1$ and $|\epsilon| < 1$, we have:
-
+%
+где~$|\delta| < 1$ и~$|\epsilon| < 1$, то мы получим:
+%\noindent with $|\delta| < 1$ and $|\epsilon| < 1$, we have:
+%
 \begin{eqnarray*}
 |f_{x y}(n) - 2^n (x y)|
  &\leq &{1 \over 2} + |{f_x(k) f_y(l) \over 2^m} -  2^n (x y)|                \\
@@ -1452,27 +1646,40 @@ error behaviour, i.e. $|f_{x y}(n) - 2^n (x y)| < 1$. If we write:
  &\leq &{1 \over 2} + 2^{-m} (|f_y(l)| + |f_x(k)|  + |\delta \epsilon|)      \\
  &< &{1 \over 2} + 2^{-m} (|f_y(l)| + |f_x(k)| + 1)
 \end{eqnarray*}
-
-Now we have $|f_x(r)| \leq 2^p$, so $|2^r x| < 2^p + 1$. Thus $|2^k x| < 2^{q+1} (
-2^p + 1)$, so $|f_x(k)| < 2^{q+1} (2^p + 1) + 1$, i.e. $|f_x(k)| \leq 2^{q+1} (2^p +
-1)$. Similarly $|f_y(l)| \leq 2^{p+1} (2^q + 1)$. Consequently:
-
+%
+Отсюда имеем~$|f_x(r)| \leq 2^p$, так что~$|2^r x| < 2^p + 1$. Следовательно,
+$|2^k x| < 2^{q+1} (2^p + 1)$, откуда~$|f_x(k)| < 2^{q+1} (2^p + 1) + 1$,
+т.~е.~$|f_x(k)| \leq 2^{q+1} (2^p + 1)$. Аналогично доказывается 
+справедливость~$|f_y(l)| \leq 2^{p+1} (2^q + 1)$. Таким образом,
+%Now we have $|f_x(r)| \leq 2^p$, so $|2^r x| < 2^p + 1$. Thus $|2^k x| < 2^{q+1} (
+%2^p + 1)$, so $|f_x(k)| < 2^{q+1} (2^p + 1) + 1$, i.e. $|f_x(k)| \leq 2^{q+1} (2^p +
+%1)$. Similarly $|f_y(l)| \leq 2^{p+1} (2^q + 1)$. Consequently:
+%
 \begin{eqnarray*}
 |f_y(l)| + |f_x(k)| + 1
 &\leq &2^{p+1} (2^q + 1) + 2^{q+1} (2^p + 1) + 1                      \\
 &= &2^{p+q+1} + 2^{p+1} + 2^{p+q+1} + 2^{q+1} + 1                     \\
-&= &2^{p+q+2} + 2^{p+1} + 2^{q+1} + 1
+&= &2^{p+q+2} + 2^{p+1} + 2^{q+1} + 1.
 \end{eqnarray*}
 
-Now for our error bound we require $|f_y(l)| + |f_x(k)| + 1 \leq 2^{m-1}$, or
-dividing by $2$ and using the discreteness of the integers:
-
-$$ 2^{p+q+1} + 2^{p} + 2^{q} < 2^{p + q + 2} $$
-
-We can write this as $(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} +
-2^{p + q + 1}$, which is true because we have either $p > 0$ or $q > 0$. So at
-last we are justified in defining:
-
+Для получения требуемой максимальной погрешности введём 
+ограничение~$|f_y(l)| + |f_x(k)| + 1 \leq 2^{m-1}$, либо, разделив на~$2$
+и учитывая дискретность множества целых чисел,
+%Now for our error bound we require $|f_y(l)| + |f_x(k)| + 1 \leq 2^{m-1}$, or
+%dividing by $2$ and using the discreteness of the integers:
+%
+$$ 
+  2^{p+q+1} + 2^{p} + 2^{q} < 2^{p + q + 2}. 
+$$
+%
+В свою очередь, данное отношение может быть записано 
+как~$(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} + 2^{p + q + 1}$.
+Его справедливость следует из упомянутого ранее факта, что либо~$p > 0$,
+либо~$q > 0$. Таким образом, мы обосновали следующее определение:
+%We can write this as $(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} +
+%2^{p + q + 1}$, which is true because we have either $p > 0$ or $q > 0$. So at
+%last we are justified in defining:
+%
 \begin{boxed}\begin{lstlisting}
   let real_mul x y n =
     let n2 = n + 2 in
@@ -1489,74 +1696,123 @@ last we are justified in defining:
     (x(k) */ y(l)) ndiv (Int 2 **/ Int m);;
 \end{lstlisting}\end{boxed}
 
-\subsection{Multiplicative inverse}
+\subsection{Обратные числа}
+%\subsection{Multiplicative inverse}
 
-Next we will define the multiplicative inverse function. In order to get any
-sort of upper bound on this, let alone a good approximation, we need to get a
-{\em lower} bound for the argument. In general, there is no better way than to
-keep evaluating the argument with greater and greater accuracy until we can
-bound it away from zero. We will use the following lemma to justify the
-correctness of our procedure:
+Нашим следующим шагом будет реализация вычисления обратных чисел. Чтобы 
+получить любую верхнюю оценку обратного числа, не говоря уж о хорошем его 
+приближении, потребуется оценить аргумент {\em снизу}. В общем случае для 
+этого не существует лучшего способа, чем вычисление аргумента с возрастающей
+точностью, пока we can bound it away from zero. Следующая лемма служит
+обоснованием этой процедуры.
+
+%Next we will define the multiplicative inverse function. In order to get any
+%sort of upper bound on this, let alone a good approximation, we need to get a
+%{\em lower} bound for the argument. In general, there is no better way than to
+%keep evaluating the argument with greater and greater accuracy until we can
+%bound it away from zero. We will use the following lemma to justify the
+%correctness of our procedure:
 
 \begin{lemma}
-If $2 e \geq n + k + 1$, $|f_x(k)| \geq 2^e$ and $|f_x(k) - 2^k x| < 1$, where
-$f_x(k)$ is an integer and $e$, $n$ and $k$ are natural numbers, then if we
-define
+Пусть~$2 e \geq n + k + 1$, $|f_x(k)| \geq 2^e$ и~$|f_x(k) - 2^k x| < 1$, где
+$f_x(k)$~--- целое, а $e$, $n$ и~$k$~--- натуральные числа. Если мы определим
+%
+%If $2 e \geq n + k + 1$, $|f_x(k)| \geq 2^e$ and $|f_x(k) - 2^k x| < 1$, where
+%$f_x(k)$ is an integer and $e$, $n$ and $k$ are natural numbers, then if we
+%define
+%
+$$ 
+  f_y(n) = 2^{n+k} \mbox{ ndiv } f_x(k),
+$$
+%
+то получим~$|f_y(n) - 2^n x^{-1}| < 1$, т.~е.\ требуемую верхнюю оценку
+погрешности.
+%\noindent we have $|f_y(n) - 2^n x^{-1}| < 1$, i.e. the required bound.
 
-$$ f_y(n) = 2^{n+k} \mbox{ ndiv } f_x(k) $$
-
-\noindent we have $|f_y(n) - 2^n x^{-1}| < 1$, i.e. the required bound.
-
-\proof The proof is rather tedious and will not be given in full. We just
-sketch the necessary case splits. If $|f_x(k)| > 2^e$ then a straightforward
-analysis gives the result; the rounding in {\tt ndiv} gives an error of at most
-$1 \over 2$, and the remaining error is $< {1 \over 2}$. If $|f_x(k)| = 2^e$ but
-$n + k \geq e$, then although the second component of the error may now be
-twice as much, i.e. $< 1$, there is no rounding error because $f_x(k) = \pm 2^e$
-divides into $2^{n+k}$ exactly. (We use here the fact that $2^e - 1 \leq
-2^{e-1}$, because since $2 e \geq n + k + 1$, $e$ cannot be zero.) Finally, if
-$|f_x(k)| = 2^e$ and $n + k < e$, we have $|f_y(n) - 2^n {1 \over x}| < 1$ because
-both $|f_y(n)| \leq 1$ and $0 < |2^n {1 \over x}| < 1$, and both these numbers
-have the same sign. \qed
+\proof Доказательство этой леммы достаточно утомительно и будет приведено здесь
+не полностью, а лишь в виде основных соображений. Если~$|f_x(k)| > 2^e$, то 
+результат очевидно следует из простых рассуждений. Округление в результате
+выполнения операции~{\tt ndiv} даёт погрешность, не превышающую~$1 \over 2$,
+итоговая погрешность меньше~$1 \over 2$. Если~$|f_x(k)| = 2^e$, но при 
+этом~$n + k \geq e$, то можно пренебречь тем, что второй компонент погрешности
+может быть вдвое большим, т.~е.\ меньшим~$1$~--- в этом случае ошибка округления
+будет отсутствовать потому, что~$f_x(k) = \pm 2^e$ делится на~$2^{n+k}$ нацело.
+(Воспользуемся фактом, что~$2^e - 1 \leq 2^{e-1}$, поскольку 
+при~$2 e \geq n + k + 1$ значение~$e$ не может равняться нулю.) Наконец,
+при~$|f_x(k)| = 2^e$ и~$n + k < e$, мы имеем~$|f_y(n) - 2^n {1 \over x}| < 1$,
+поскольку~$|f_y(n)| \leq 1$ и~$0 < |2^n {1 \over x}| < 1$, а знаки этих
+величин совпадают. \qed
+%\proof The proof is rather tedious and will not be given in full. We just
+%sketch the necessary case splits. If $|f_x(k)| > 2^e$ then a straightforward
+%analysis gives the result; the rounding in {\tt ndiv} gives an error of at most
+%$1 \over 2$, and the remaining error is $< {1 \over 2}$. If $|f_x(k)| = 2^e$ but
+%$n + k \geq e$, then although the second component of the error may now be
+%twice as much, i.e. $< 1$, there is no rounding error because $f_x(k) = \pm 2^e$
+%divides into $2^{n+k}$ exactly. (We use here the fact that $2^e - 1 \leq
+%2^{e-1}$, because since $2 e \geq n + k + 1$, $e$ cannot be zero.) Finally, if
+%$|f_x(k)| = 2^e$ and $n + k < e$, we have $|f_y(n) - 2^n {1 \over x}| < 1$ because
+%both $|f_y(n)| \leq 1$ and $0 < |2^n {1 \over x}| < 1$, and both these numbers
+%have the same sign. \qed
 
 \end{lemma}
 
-Now suppose we wish to find the inverse of $x$ to accuracy $n$. First we
-evaluate $f_x(0)$. There are two cases to distinguish:
-
+Предположим, что нам требуется найти число, обратное~$x$, с точностью~$n$.
+Прежде всего, вычислим~$f_x(0)$. Нам потребуется рассмотреть два случая:
+%Now suppose we wish to find the inverse of $x$ to accuracy $n$. First we
+%evaluate $f_x(0)$. There are two cases to distinguish:
+%
 \begin{enumerate}
 
-\item If $|f_x(0)| > 2^r$ for some natural number $r$, then choose the least
-natural number $k$ (which may well be zero) such that $2 r + k \geq n + 1$, and
-set $e = r + k$. We now return $2^{n+k} \mbox{ ndiv } f_x(k)$. It is easy to
-see that the conditions of the lemma are satisfied. Since $|f_x(0)| \geq 2^r +
-1$ we have $|x| > 2^r$, and so $|2^k x| > 2^{r + k}$. This means $|f_x(k)| >
-2^{r+k} - 1$, and as $f_x(k)$ is an integer, $|f_x(k)| \geq 2^{r + k} = 2^e$ as
-required. The condition that $2 e \geq n = k + 1$ is easy to check. Note that
-if $r \geq n$ we can immediately deduce that $f_y(n) = 0$ is a valid
-approximation.
+\item Если~$|f_x(0)| > 2^r$ для некоторого натурального числа~$r$, то выберем
+наименьшее натуральное число~$k$ (которое может быть и равным нулю) такое,
+что~$2 r + k \geq n + 1$, и положим~$e = r + k$. Результатом вычислений в этом
+случае будет~$2^{n+k} \mbox{ ndiv } f_x(k)$. Легко убедиться, что условия,
+требуемые леммой, выполняются. Поскольку~$|f_x(0)| \geq 2^r + 1$, мы 
+имеем~$|x| > 2^r$, так что~$|2^k x| > 2^{r + k}$. Это значит, 
+что~$|f_x(k)| > 2^{r+k} - 1$, а отсюда (учитывая целочисленность~$f_x(k)$) 
+получаем требуемое соотношение~$|f_x(k)| \geq 2^{r + k} = 2^e$.
+Условие~$2 e \geq n = k + 1$ легко проверить. Отметим, что из~$r \geq n$ 
+непосредственно следует корректность аппроксимации~$f_y(n) = 0$.
+%\item If $|f_x(0)| > 2^r$ for some natural number $r$, then choose the least
+%natural number $k$ (which may well be zero) such that $2 r + k \geq n + 1$, and
+%set $e = r + k$. We now return $2^{n+k} \mbox{ ndiv } f_x(k)$. It is easy to
+%see that the conditions of the lemma are satisfied. Since $|f_x(0)| \geq 2^r +
+%1$ we have $|x| > 2^r$, and so $|2^k x| > 2^{r + k}$. This means $|f_x(k)| >
+%2^{r+k} - 1$, and as $f_x(k)$ is an integer, $|f_x(k)| \geq 2^{r + k} = 2^e$ as
+%required. The condition that $2 e \geq n = k + 1$ is easy to check. Note that
+%if $r \geq n$ we can immediately deduce that $f_y(n) = 0$ is a valid
+%approximation.
 
-\item If $|f_x(0)| \leq 1$, then we call the function `{\tt msd}' that returns
-the least $p$ such that $|f_x(p)| > 1$. Note that this may in general fail to
-terminate if $x = 0$. Now we set $e = n + p + 1$ and $k = e + p$, and return
-$2^{n+k} \mbox{ ndiv } f_x(k)$. Once again the conditions for the lemma are
-satisfied. Since $|f_x(p)| \geq 2$, we have $|2^p x| > 1$, i.e. $|x| > {1 \over
-{2^p}}$. Hence $|2^k x| > 2^{k-p} = 2^e$, and so $|f_x(k)| > 2^e - 1$, i.e.
-$|f_x(k)| \geq 2^e$.
-
+\item При~$|f_x(0)| \leq 1$ воспользуемся функцией~`{\tt msd}', возвращающей
+наименьшее~$p$  такое, что~$|f_x(p)| > 1$. Отметим, что при~$x = 0$ произойдёт 
+зацикливание. Положив~$e = n + p + 1$ и~$k = e + p$, определим результат 
+операции как~$2^{n+k} \mbox{ ndiv } f_x(k)$. В этом случае также справедливы
+условия, требуемые леммой. Так как~$|f_x(p)| \geq 2$, мы имеем~$|2^p x| > 1$,
+т.~е.~$|x| > {1 \over {2^p}}$. Следовательно~$|2^k x| > 2^{k-p} = 2^e$, 
+откуда~$|f_x(k)| > 2^e - 1$, т.~е.~$|f_x(k)| \geq 2^e$.
+%\item If $|f_x(0)| \leq 1$, then we call the function `{\tt msd}' that returns
+%the least $p$ such that $|f_x(p)| > 1$. Note that this may in general fail to
+%terminate if $x = 0$. Now we set $e = n + p + 1$ and $k = e + p$, and return
+%$2^{n+k} \mbox{ ndiv } f_x(k)$. Once again the conditions for the lemma are
+%satisfied. Since $|f_x(p)| \geq 2$, we have $|2^p x| > 1$, i.e. $|x| > {1 \over
+%{2^p}}$. Hence $|2^k x| > 2^{k-p} = 2^e$, and so $|f_x(k)| > 2^e - 1$, i.e.
+%$|f_x(k)| \geq 2^e$.
 \end{enumerate}
-
-\noindent To implement this, we first define the {\tt msd} function:
-
+%
+Реализацию начнём с функции~{\tt msd}:
+%\noindent To implement this, we first define the {\tt msd} function:
+%
 \begin{boxed}\begin{lstlisting}
   let msd =
     let rec msd n x =
       if abs_num(x(n)) >/ Int 1 then n else msd (n + 1) x in
     msd 0;;
 \end{lstlisting}\end{boxed}
-
-\noindent and then translate the above mathematics into a simple program:
-
+%
+после чего воплотим изложенные выше теоретические рассуждения в виде
+простой программы:
+%\noindent and then translate the above mathematics into a simple program:
+%
 \begin{boxed}\begin{lstlisting}
   let real_inv x n =
     let x0 = x(0) in
@@ -1570,36 +1826,58 @@ $|f_x(k)| \geq 2^e$.
         n + 2 * p + 1 in
     (Int 2 **/ Int (n + k)) ndiv (x(k));;
 \end{lstlisting}\end{boxed}
-
-\noindent Now, of course, it is straightforward to define division:
-
+%
+В итоге определение операции деления становится тривиальным:
+%\noindent Now, of course, it is straightforward to define division:
+%
 \begin{boxed}\begin{lstlisting}
   let real_div x y = real_mul x (real_inv y);;
 \end{lstlisting}\end{boxed}
 
-\subsection{Ordering relations}
+\subsection{Отношения порядка}
+%\subsection{Ordering relations}
+Примечательным свойством отношений порядка является то, что их вычисление 
+в общем случае алгоритмически неразрешимо. В основе такого вывода лежит 
+невозможность установить в общем случае равенство данного числа нулю. Если
+последовательное вычисление с увеличением требуемой точности продолжает 
+выдавать~$0$, это ещё не служит гарантией того, что в дальнейшем мы не получим
+ненулевой результат.%
+\footnote{Доказательство алгоритмической неразрешимости этой задачи сводится
+к проблеме завершимости: пусть~$f(n) = 1$, если некоторая машина Тьюринга
+завершает работу не более чем за $n$~итераций, и $f(n) = 0$ в противном случае.} 
+Если значение~$x$ не равно нулю, поиск первого ненулевого разряда числа 
+когда-либо завершится, но в случае~$x=0$ он будет длиться вечно.
+%The interesting things about all these functions is that they are in fact
+%uncomputable in general. The essential point is that it is impossible to decide
+%whether a given number is zero. We can keep approximating it to greater and
+%greater accuracy, but if the approximations always return $0$, we cannot tell
+%whether it is going to do so indefinitely or whether the next step will give a
+%nonzero answer.\footnote{For a proof that it is uncomputable, simply wrap up
+%the halting problem, by defining $f(n) = 1$ if a certain Turing machine has
+%halted after no more than $n$ iterations, and $f(n) = 0$ otherwise.} If $x$ is
+%not zero, then the search will eventually terminate, but if $x$ is zero, it
+%will run forever.
 
-The interesting things about all these functions is that they are in fact
-uncomputable in general. The essential point is that it is impossible to decide
-whether a given number is zero. We can keep approximating it to greater and
-greater accuracy, but if the approximations always return $0$, we cannot tell
-whether it is going to do so indefinitely or whether the next step will give a
-nonzero answer.\footnote{For a proof that it is uncomputable, simply wrap up
-the halting problem, by defining $f(n) = 1$ if a certain Turing machine has
-halted after no more than $n$ iterations, and $f(n) = 0$ otherwise.} If $x$ is
-not zero, then the search will eventually terminate, but if $x$ is zero, it
-will run forever.
-
-Accepting this, it is not difficult to define the relational operators. To
-decide the ordering relation of $x$ and $y$ it suffices to find an $n$ such
-that $|x_n - y_n| \geq 2$. For example, if $x_n \geq y_n + 2$ we have
-
-$$ 2^n x > x_n - 1 \geq y_n + 1 > 2^n y $$
-
-\noindent and so $x > y$. We first write a general procedure to perform this
-search, and then define all the orderings in terms of it. Note that the only
-way to arrive at the reflexive orderings is to justify the irreflexive version!
-
+Принимая во внимание сказанное выше, несложно реализовать отношения порядка.
+Для определения взаимного порядка чисел~$x$ и~$y$ достаточно найти~$n$ такое,
+что~$|x_n - y_n| \geq 2$. Например, для~$x_n \geq y_n + 2$ мы имеем
+$$ 
+  2^n x > x_n - 1 \geq y_n + 1 > 2^n y.
+$$
+откуда делаем вывод, что~$x > y$. Прежде всего, приведем общую процедуру 
+вычисления~$n$, после чего все отношения порядка могут быть выражены с её
+использованием. Отметим, что единственным способом реализации рефлексивных 
+отношений будет положить их тождественными соответствующим нерефлексивным 
+отношениям!
+%Accepting this, it is not difficult to define the relational operators. To
+%decide the ordering relation of $x$ and $y$ it suffices to find an $n$ such
+%that $|x_n - y_n| \geq 2$. For example, if $x_n \geq y_n + 2$ we have
+%
+%$$ 2^n x > x_n - 1 \geq y_n + 1 > 2^n y $$
+%
+%\noindent and so $x > y$. We first write a general procedure to perform this
+%search, and then define all the orderings in terms of it. Note that the only
+%way to arrive at the reflexive orderings is to justify the irreflexive version!
 \begin{boxed}\begin{lstlisting}
   let separate = 
     let rec separate n x y =
@@ -1614,13 +1892,19 @@ way to arrive at the reflexive orderings is to justify the irreflexive version!
   let real_le x y = real_lt x y;;
 \end{lstlisting}\end{boxed}
 
-\subsection{Caching}
-
-In order to try out all the above functions, we would like to be able to print
-out a decimal representation of some approximation to a real. This is not hard,
-using some more standard facilities in the CAML library. If $d$ decimal places
-are desired, then we make $n$ such that $2^n > 10^d$ and hence the accuracy
-corresponds at least to the number of digits printed.
+\subsection{Кэширование}
+%\subsection{Caching}
+Чтобы протестировать определённые нами функции, потребуется возможность вывода
+некоторого приближённого значения вещественного числа в десятеричной системе
+счисления. Возможности стандартной библиотеки CAML делают эту задачу несложной.
+Если нам требуется вывести $d$~десятичных знаков числа, положим точность 
+вычислений~$n$ такой, чтобы~$2^n > 10^d$, т.~е.\ точность вычислений была бы
+не меньшей, чем количество выводимых цифр.
+%In order to try out all the above functions, we would like to be able to print
+%out a decimal representation of some approximation to a real. This is not hard,
+%using some more standard facilities in the CAML library. If $d$ decimal places
+%are desired, then we make $n$ such that $2^n > 10^d$ and hence the accuracy
+%corresponds at least to the number of digits printed.
 
 \begin{boxed}\begin{lstlisting}
   let view x d =
@@ -1629,8 +1913,9 @@ corresponds at least to the number of digits printed.
     approx_num_fix d out;;
 \end{lstlisting}\end{boxed}
 
-Now we can test out some simple examples, which seem to work:
-
+Начнём с простых примеров, которые работают, как ожидается:
+%Now we can test out some simple examples, which seem to work:
+%
 \begin{boxed}\begin{verbatim}
   #let x = real_of_int 3;;
   x : int -> num = <fun>
@@ -1646,15 +1931,23 @@ Now we can test out some simple examples, which seem to work:
   it : string = "1.00000000000000000000"
 \end{verbatim}\end{boxed}
 
-However there is a subtle and serious bug in our implementation, which shows
-itself if we try larger expressions. The problem is that subexpressions can be
-evaluated many times. Most obviously, this happens if they occur several times
-in the input expression. But even if they don't, the multiplication, and even
-more so, the inverse, require trial evaluations at differing accuracies. As the
-evaluation propagates down to the bottom level, there is often an exponential
-buildup of reevaluations. For example, the following is slow --- it takes
-several seconds.
-
+Однако, дальнейшее тестирование обнаруживает в нашей реализации серьёзную
+трудноуловимую проблему, которая проявляется с ростом сложности задач.
+Эта проблема~--- многократное вычисление одних и тех же значений. Помимо
+очевидного случая~--- явного наличия общих подвыражений, многократное 
+вычисление одних и тех же выражений с различной точностью требуется в 
+алгоритмах умножения и, в особенности, вычисления обратного числа. Количество
+обращений к одному и тому же подвыражению зависит от глубины его вложенности
+в исходное выражение и может расти экспоненциально:
+%However there is a subtle and serious bug in our implementation, which shows
+%itself if we try larger expressions. The problem is that subexpressions can be
+%evaluated many times. Most obviously, this happens if they occur several times
+%in the input expression. But even if they don't, the multiplication, and even
+%more so, the inverse, require trial evaluations at differing accuracies. As the
+%evaluation propagates down to the bottom level, there is often an exponential
+%buildup of reevaluations. For example, the following is slow --- it takes
+%several seconds.
+%
 \begin{boxed}\begin{verbatim}
   #let x1 = real_of_int 1 in
    let x2 = real_mul x1 x1 in
@@ -1666,27 +1959,44 @@ several seconds.
    view x7 10;;
    - : string = "+1.0000000000"
 \end{verbatim}\end{boxed}
+%
+Вычисление этого примера может занять несколько секунд.
 
-We can fix this problem using the idea of {\em caching} or {\em memo
-functions} \cite{michie-memo}. We give each function a reference cell to
-remember the most accurate version already calculated. If there is a second
-request for the same accuracy, it can be returned immediately without further
-evaluation. What's more, we can always construct a lower-level approximation,
-say $n$, from a higher one, say $n + k$ with $k \geq 1$. If we know that
-$|f_x(n + k) - 2^{n + k} x| < 1$ then we have:
-
+Для решения проблемы воспользуемся идеей {\em кэширования} или
+{\em функций с памятью} \cite{michie-memo}. Каждой функции поставим в 
+соответствие ячейку памяти, (???ref. cell) в которой будем хранить её значение, 
+вычисленное с наибольшей на данный момент точностью. При очередном обращении 
+к функции с той же самой требуемой точностью это значение может быть 
+возвращено немедленно, без каких-либо повторных вычислений. Кроме того, менее 
+точная аппроксимация (например, порядка~$n$) всегда может быть получена из 
+более точной ($n + k$, где~$k \geq 1$). Если нам известно, 
+что~$|f_x(n + k) - 2^{n + k} x| < 1$, из этого следует:
+%We can fix this problem using the idea of {\em caching} or {\em memo
+%functions} \cite{michie-memo}. We give each function a reference cell to
+%remember the most accurate version already calculated. If there is a second
+%request for the same accuracy, it can be returned immediately without further
+%evaluation. What's more, we can always construct a lower-level approximation,
+%say $n$, from a higher one, say $n + k$ with $k \geq 1$. If we know that
+%$|f_x(n + k) - 2^{n + k} x| < 1$ then we have:
+%
 \begin{eqnarray*}
 |f_x(n + k) \mbox{ ndiv } 2^ k - 2^n x|
 & \leq & {1 \over 2} + |{f_x(n + k) \over 2^k} - 2^n x|                 \\
 & =    & {1 \over 2} + {1 \over 2^k} |f_x(n + k) - 2^{n + k} x|         \\
 & <    & {1 \over 2} + {1 \over 2^k}                                    \\
-& \leq & 1
+& \leq & 1.
 \end{eqnarray*}
+%
+Таким образом, использование~$f_x(n + k) \mbox{ ndiv } 2^k$ в качестве
+аппроксимации порядка~$n$ обосновано.
 
-Hence we are always safe in returning $f_x(n + k) \mbox{ ndiv } 2^k$. We can
-implement this memo technique via a generic function {\tt memo} to be inserted
-in each of the previous functions:
-
+Для реализации функций с памятью воспользуемся обобщённой функцией~{\tt memo},
+которую требуется добавить во все определённые ранее операции над вещественными 
+числами:
+%Hence we are always safe in returning $f_x(n + k) \mbox{ ndiv } 2^k$. We can
+%implement this memo technique via a generic function {\tt memo} to be inserted
+%in each of the previous functions:
+%
 \begin{boxed}\begin{lstlisting}
   let real_of_int k = memo (fun n -> (Int 2 **/ Int n) */ Int k);;
 
@@ -1735,9 +2045,10 @@ in each of the previous functions:
 
   let real_div x y = real_mul x (real_inv y);;
 \end{lstlisting}\end{boxed}
-
-\noindent where
-
+%
+где
+%\noindent where
+%
 \begin{boxed}\begin{lstlisting}
   let memo f =
     let mem = ref (-1,Int 0) in
@@ -1750,9 +2061,11 @@ in each of the previous functions:
                mem := (n,res); res;;
 \end{lstlisting}\end{boxed}
 
-Now the above sequence of multiplications is instantaneous. Here are a few more
-examples:
-
+Проведенная оптимизация делает вычисление упомянутого выше произведения 
+практически мгновенным. Рассмотрим еще несколько примеров:
+%Now the above sequence of multiplications is instantaneous. Here are a few more
+%examples:
+%
 \begin{boxed}\begin{verbatim}
   #let pi1 = real_div (real_of_int 22) (real_of_int 7);;
   pi1 : int -> num = <fun>
@@ -1772,16 +2085,29 @@ examples:
   it : string = "+791.00000000000000000000"
 \end{verbatim}\end{boxed}
 
-Of course, everything we have done to date could be done with rational
-arithmetic. Actually, it may happen that our approach is more efficient in
-certain situations since we avoid calculating numbers that might have immense
-numerators and denominators when we just need an approximation. Nevertheless,
-the present approach really comes into its own when we want to define
-transcendental functions like $exp$, $sin$ etc. We will not cover this in
-detail for lack of space, but it makes an interesting exercise. One approach is
-to use truncated Taylor series. Note that finite summations can be evaluated
-directly rather than by iterating the addition function; this leads to much
-better error behaviour.
+В заключение отметим, что все расчеты, приведенные в данном разделе, можно,
+безусловно, проделать и в рациональной арифметике. Но на деле может оказаться, 
+что наш подход более эффективен в некоторых ситуациях, так как он  
+избавляет от свойственного вычислениям в рациональных числах лавинообразного 
+роста числителей и знаменателей, который абсолютно избыточен, когда нам
+нужно лишь приближенное значение результата. Однако, предложенный метод 
+раскрывает в полной мере свои достоинства лишь тогда, когда нам потребуется
+ввести трансцендентные функции наподобие~$\exp$, $\sin$ и~т.~д. Этот вопрос
+здесь рассматриваться не будет ввиду ограничений на объем курса, но может
+оказаться интересным в качестве упражнения. Одним из подходов является 
+применение частичных сумм соответствующих рядов Тейлора. Отметим, что конечные
+суммы могут быть вычислены напрямую вместо итеративного применения функции
+сложения~--- это существенно улучшает их точность.
+%Of course, everything we have done to date could be done with rational
+%arithmetic. Actually, it may happen that our approach is more efficient in
+%certain situations since we avoid calculating numbers that might have immense
+%numerators and denominators when we just need an approximation. Nevertheless,
+%the present approach really comes into its own when we want to define
+%transcendental functions like $exp$, $sin$ etc. We will not cover this in
+%detail for lack of space, but it makes an interesting exercise. One approach is
+%to use truncated Taylor series. Note that finite summations can be evaluated
+%directly rather than by iterating the addition function; this leads to much
+%better error behaviour.
 
 \section{Prolog and theorem proving}
 
