@@ -41,12 +41,12 @@
 
   * (t) *plan.tex* - перевод, прочитали
   * (t) *comb.tex* - перевод, прочитали
-  * (t) *examples.tex* - перевод Lambda Henchman ("Вещественная арифметика"), прочитали
+  * (t) *examples.tex* - перевод Lambda Henchman ("Синтаксический анализ"), прочитали
   * (t) *ind-defs.tex* - перевод, прочитали
   * (t) *lamb.tex* - перевод, прочитали
   * (t) *prog.tex* - перевод, прочитали
   * (t) *types.tex* - перевод, прочитали
-  * (t) *l10.tex* - перевод, прочитали
+  * (t) *l10.tex* - перевод Lambda Henchman, прочитали
   * (t) *l12.tex* - перевод, прочитали
 
 = File links =
@@ -64,5 +64,6 @@ fml.tex -- l6.tex -- plan.tex
 proving.tex -- l7.tex -- plan.tex
 effect.tex -- l8.tex -- plan.tex
 examples.tex -- l9.tex -- l10.tex -- l11.tex -- l12.tex -- plan.tex
+
 
 
