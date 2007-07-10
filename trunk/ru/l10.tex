@@ -185,19 +185,24 @@
 
 \vspace*{0.5cm}
 
-Topics covered:
+Темы:
+%Topics covered:
 
 \begin{itemize}
 
-\item The parsing problem
+\item задача синтаксического анализа;
+%\item The parsing problem
 
-\item Recursive descent
+\item метод рекурсивного спуска;
+%\item Recursive descent
 
-\item Parsers in ML
+\item реализация синтаксических анализаторов на языке~ML;
+%\item Parsers in ML
 
 \item Higher order parser combinators
 
-\item Efficiency and limitations.
+\item эффективность и ограничения.
+%\item Efficiency and limitations.
 
 \end{itemize}
 
@@ -208,12 +213,18 @@ Topics covered:
 
 \begin{rslide}
 
-\heading{Grammar for terms}
+\heading{Грамматика языка термов}
+%\heading{Grammar for terms}
 
 \vspace*{0.5cm}
 
-We would like to have a parser for our terms, so that we don't have to write
-them in terms of type constructors.
+Рассмотрим язык термов~--- выражений, в которых участвуют лишь
+две инфиксные операции: {\tt +} и~{\tt *}, а также числовые константы и
+переменные с алфавитно-цифровыми именами. Мы хотим реализовать синтаксический
+анализатор, чтобы не задавать выражения в виде композиции конструкторов типов.
+Грамматика языка термов определяется множеством продукций:
+%We would like to have a parser for our terms, so that we don't have to write
+%them in terms of type constructors.
 {\red
 \begin{eqnarray*}
 term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
@@ -225,50 +236,66 @@ term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
          & |       & term {\verb! * !} term                     \\
 termlist & \goesto & term {\verb!,!} termlist                   \\
          & |       & term
-\end{eqnarray*}}
-
-Here we have a grammar for terms, defined by a set of production rules.
+\end{eqnarray*}}%
+%Таким образом, грамматика языка термов определяется множеством продукций.
+%Here we have a grammar for terms, defined by a set of production rules.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Ambiguity}
+\heading{Неоднозначность}
+%\heading{Ambiguity}
 
 \vspace*{0.5cm}
 
-The task of {\em parsing}, in general, is to reverse this, i.e. find a sequence
-of productions that could generate a given string.
+Задача {\em синтаксического анализа (разбора)}, в целом, является обратной
+рассмотренной ранее задаче составления грамматики. Цель синтаксического 
+анализа~--- найти последовательность применения продукций, порождающую
+данную строку.
 
-Unfortunately the above grammar is {\em ambiguous}, since certain strings can
-be produced in several ways, e.g.
+%The task of {\em parsing}, in general, is to reverse this, i.e. find a sequence
+%of productions that could generate a given string.
+
+К сожалению, наша грамматика является {\em неоднозначной}, поскольку некоторые
+строки могут порождаться различными путями, например
+%Unfortunately the above grammar is {\em ambiguous}, since certain strings can
+%be produced in several ways, e.g.
 {\red
 \begin{eqnarray*}
 term     & \goesto & term {\verb! + !} term                             \\
          & \goesto & term {\verb! + !} term {\verb! * !} term
-\end{eqnarray*}}
-\noindent and
+\end{eqnarray*}}%
+и
 {\red
 \begin{eqnarray*}
 term     & \goesto & term {\verb! * !} term                             \\
          & \goesto & term {\verb! + !} term {\verb! * !} term
-\end{eqnarray*}}
-These correspond to different `parse trees'. Effectively, we are free to
-interpret {\red $x {\verb! + !} y {\verb! * !} z$} either as {\red $x
-{\verb! + !} (y {\verb! * !} z)$} or {\red $(x {\verb! + !} y) {\verb! * !}
-z$}.
+\end{eqnarray*}}%
+Различный порядок применения продукций соответствует различным 
+<<деревьям разбора>>. На самом деле, мы вправе трактовать
+{\red $x {\verb! + !} y {\verb! * !} z$} 
+как~{\red $x {\verb! + !} (y {\verb! * !} z)$} 
+либо как~{\red $(x {\verb! + !} y) {\verb! * !} z$}.
+%These correspond to different `parse trees'. Effectively, we are free to
+%interpret {\red $x {\verb! + !} y {\verb! * !} z$} either as {\red $x
+%{\verb! + !} (y {\verb! * !} z)$} or {\red $(x {\verb! + !} y) {\verb! * !}
+%z$}.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Encoding precedences}
+\heading{Назначение приоритетов}
+%\heading{Encoding precedences}
 
 \vspace*{0.5cm}
 
-We can encode operator precedences by introducing extra categories, e.g.
+Приоритеты операций могут быть выражены путём введения дополнительных
+категорий, например
+%We can encode operator precedences by introducing extra categories, e.g.
 {\red
 \begin{eqnarray*}
 atom     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
@@ -282,9 +309,11 @@ term     & \goesto & mulexp {\verb! + !} term                   \\
          & |       & mulexp                                     \\
 termlist & \goesto & term {\verb!,!} termlist                   \\
          & |       & term
-\end{eqnarray*}}
-Now it's unambiguous. Multiplication has higher precedence and both infixes
-associate to the right.
+\end{eqnarray*}}%
+Такая грамматика однозначна. Операция умножения имеет больший приоритет,
+чем сложение; обе операции правоассоциативны.
+%Now it's unambiguous. Multiplication has higher precedence and both infixes
+%associate to the right.
 
 \end{rslide}
 
@@ -293,24 +322,38 @@ associate to the right.
 
 \begin{rslide}
 
-\heading{Recursive descent}
+\heading{Метод рекурсивного спуска}
+%\heading{Recursive descent}
 
 \vspace*{0.5cm}
 
-A {\em recursive descent} parser is a series of mutually recursive functions,
-one for each syntactic category ($term$, $mulexp$ etc.).
+Синтаксический анализатор, реализующий метод рекурсивного спуска, представляет
+собой множество взаимно рекурсивных функций, прямо сопоставленных каждой
+синтаксической категории ($term$, $mulexp$ etc.).
+%A {\em recursive descent} parser is a series of mutually recursive functions,
+%one for each syntactic category ($term$, $mulexp$ etc.).
 
-The mutually recursive structure mirrors that in the grammar.
+Структура рекурсивных зависимостей при этом соответствует структуре грамматики.
+%The mutually recursive structure mirrors that in the grammar.
 
-This makes them quite easy and natural to write --- especially in ML, where
-recursion is the principal control mechanism.
+Это соответствие обеспечивает достаточно лёгкий и естественный способ реализации
+подобных анализаторов, особенно на языке~ML, для которого рекурсия представляет
+собой основной механизм управления порядком действий.
+%This makes them quite easy and natural to write --- especially in ML, where
+%recursion is the principal control mechanism.
 
-For example, the procedure for parsing terms, say {\black \verb!term!} will, on
-encountering a {\black \verb!-!} symbol, make a recursive call to itself to
-parse the subterm, and on encountering a name followed by an opening
-parenthesis, will make a recursive call to {\black \verb!termlist!}. This in
-itself will make at least one recursive call to {\black \verb!term!}, and so
-on.
+Например, процедура анализа термов {\black \verb!term!} при появлении во 
+входном потоке символа {\black \verb!-!} будет рекурсивно вызывать себя для
+анализа аргумента операции, а обнаружив имя, за которым следует
+открывающая скобка, осуществит вызов~{\black \verb!termlist!}.
+В свою очередь, эта процедура вызовет~{\black \verb!term!} не менее одного раза,
+и так далее.
+%For example, the procedure for parsing terms, say {\black \verb!term!} will, on
+%encountering a {\black \verb!-!} symbol, make a recursive call to itself to
+%parse the subterm, and on encountering a name followed by an opening
+%parenthesis, will make a recursive call to {\black \verb!termlist!}. This in
+%itself will make at least one recursive call to {\black \verb!term!}, and so
+%on.
 
 \end{rslide}
 
@@ -318,24 +361,35 @@ on.
 
 \begin{rslide}
 
-\heading{Parsers in ML}
+\heading{Реализация синтаксического анализа на языке~ML}
+%\heading{Parsers in ML}
 
 \vspace*{0.5cm}
 
-We assume that a parser accepts a list of input characters or tokens of
-arbitrary type.
+Предположим, что синтаксический анализатор принимает список входных
+символов или лексем (токенов) произвольного типа.
+%We assume that a parser accepts a list of input characters or tokens of
+%arbitrary type.
 
-It returns the result of parsing, which has some other arbitrary type, and also
-the list of input objects not yet processed. Therefore the type of a parser is:
-
-{\red $$ (\alpha)list \to \beta \times (\alpha)list $$}
-
-For example, when given the input characters {\black \verb!(x + y) * z!} the
-function {\black \verb!atom!} will process the characters {\black \verb!(x +
-y)!} and leave the remaining characters {\black \verb!* z!}. It might return a
-parse tree for the processed expression using our earlier recursive type, and
-hence we would have:
-
+Результатом его работы является значение некоторого произвольного типа, 
+а также список входных объектов, которые не были ещё обработаны. Следовательно,
+тип анализатора
+%It returns the result of parsing, which has some other arbitrary type, and also
+%the list of input objects not yet processed. Therefore the type of a parser is:
+%
+{\red $$ (\alpha)list \to \beta \times (\alpha)list $$}%
+%
+Например, для заданной входной строки символов {\black \verb!(x + y) * z!}
+функция~{\black \verb!atom!} обработает подстроку~{\black \verb!(x + y)!} 
+и вернёт нераспознанные символы~{\black \verb!* z!}. Также она может вернуть
+дерево разбора обработанной подстроки в виде значения рекурсивного типа,
+определённого ранее. Таким образом, мы в итоге получим 
+%For example, when given the input characters {\black \verb!(x + y) * z!} the
+%function {\black \verb!atom!} will process the characters {\black \verb!(x + y)!} 
+%and leave the remaining characters {\black \verb!* z!}. It might return a
+%parse tree for the processed expression using our earlier recursive type, and
+%hence we would have:
+%
 \begin{black}\begin{verbatim}
   atom "(x + y) * z" =
     Fn("+",[Var "x"; Var "y"]),"* z"
@@ -347,37 +401,55 @@ hence we would have:
 
 \begin{rslide}
 
-\heading{Parser combinators}
+\heading{Комбинаторы синтаксического анализа}
+%\heading{Parser combinators}
 
 \vspace*{0.5cm}
 
-In ML, we can define a series of {\em combinators} for plugging parsers
-together and creating new parsers from existing ones.
+Используя язык~ML, мы можем определить набор {\em комбинаторов}, при помощи
+которых будем совместно использовать различные синтаксические анализаторы 
+и создавать новые на базе уже имеющихся.
+%In ML, we can define a series of {\em combinators} for plugging parsers
+%together and creating new parsers from existing ones.
 
-By giving some of them infix status, we can make the ML parser program look
-quite similar in structure to the original grammar.
+Определив некоторые из них как инфиксные операции, мы в состоянии придать
+программе синтаксического анализа вид, весьма схожий со структурой
+самой грамматики.
+%By giving some of them infix status, we can make the ML parser program look
+%quite similar in structure to the original grammar.
 
-First we declare an exception to be used where parsing fails:
+Для начала введём исключение, сигнализирующее об ошибках анализа:
+%First we declare an exception to be used where parsing fails:
 \begin{black}\begin{verbatim}
   exception Noparse;;
 \end{verbatim}\end{black}
-{\black \verb!p1 ++ p2!} applies {\black \verb!p1!} first and then applies
-{\black \verb!p2!} to the remaining tokens; {\black \verb!many!} keeps applying
-the same parser as long as possible.
+Далее определим операцию {\black \verb!p1 ++ p2!}, которая вначале применяет
+{\black \verb!p1!}, затем~--- {\black \verb!p2!} к оставшимся лексемам;
+а также {\black \verb!many!}, применяющую заданный анализатор максимально 
+возможное количество раз.
+%{\black \verb!p1 ++ p2!} applies {\black \verb!p1!} first and then applies
+%{\black \verb!p2!} to the remaining tokens; {\black \verb!many!} keeps applying
+%the same parser as long as possible.
 
-{\black \verb!p >> f!} works like {\black \verb!p!} but then applies {\black
-\verb!f!} to the result of the parse.
+{\black \verb!p >> f!} работает аналогично {\black \verb!p!}, но затем 
+применяет {\black\verb!f!} к результату анализа.
+%{\black \verb!p >> f!} works like {\black \verb!p!} but then applies {\black
+%\verb!f!} to the result of the parse.
 
-{\black \verb!p1 || p2!} tries {\black \verb!p1!} first, and if that fails,
-tries {\black \verb!p2!}. These are automatically infix, in decreasing order of
-precedence.
+{\black \verb!p1 || p2!} делает попытку применить {\black \verb!p1!}, а затем,
+в случае ошибки~--- {\black \verb!p2!}. Все эти операции автоматически 
+считаются инфиксными с приоритетами по убыванию.
+%{\black \verb!p1 || p2!} tries {\black \verb!p1!} first, and if that fails,
+%tries {\black \verb!p2!}. These are automatically infix, in decreasing order of
+%precedence.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Definitions of the combinators}
+\heading{Определение комбинаторов}
+%\heading{Definitions of the combinators}
 
 \vspace*{0.5cm}
 
@@ -407,11 +479,13 @@ let prefix || parser1 parser2 input =
 
 \begin{rslide}
 
-\heading{Auxiliary functions}
+\heading{Вспомогательные функции}
+%\heading{Auxiliary functions}
 
 \vspace*{0.2cm}
 
-These are the general functions we will use:
+Введём следующие универсальные функции, которыми воспользуемся в дальнейшем:
+%These are the general functions we will use:
 \begin{black}\begin{verbatim}
 let rec itlist f =
      fun [] b -> b
@@ -437,11 +511,13 @@ let explode s =
 
 \begin{rslide}
 
-\heading{Atomic parsers}
+\heading{Элементарные анализаторы}
+%\heading{Atomic parsers}
 
 \vspace*{0.5cm}
 
-We need a few primitive parsers to get us started.
+Для начала, определим несколько примитивных синтаксических анализаторов:
+%We need a few primitive parsers to get us started.
 
 \begin{black}\begin{verbatim}
   let some p =
@@ -457,31 +533,43 @@ We need a few primitive parsers to get us started.
     else raise Noparse;;
 \end{verbatim}\end{black}
 
-The first two accept something satisfying {\black \verb!p!}, and something
-equal to {\black \verb!tok!}, respectively. The last one makes sure there is no
-unprocessed input.
+Первые два принимают очередной символ входной последовательности, если он 
+удовлетворяет условию~{\black \verb!p!} или равен {\black \verb!tok!}
+соответственно. Третий примитив гарантирует, что вся входная последовательность
+была обработана. 
+
+%The first two accept something satisfying {\black \verb!p!}, and something
+%equal to {\black \verb!tok!}, respectively. The last one makes sure there is no
+%unprocessed input.
 
 \end{rslide}
 
 
 \begin{rslide}
 
-\heading{Lexical analysis}
+\heading{Лексический анализ}
+%\heading{Lexical analysis}
 
 \vspace*{0.5cm}
 
-First we want to do lexical analysis, i.e. split the input characters into
-tokens. This can also be done using our combinators, together with a few
-character discrimination functions. First we declare the type of tokens:
-
+Для начала нам потребуется провести лексический анализ, т.~е.\ разбить
+входную последовательность символов на лексемы (токены). Это также возможно
+сделать, используя наши комбинаторы в сочетании с несколькими функциями
+классификации символов. Прежде всего, определим тип, представляющий лексемы:
+%First we want to do lexical analysis, i.e. split the input characters into
+%tokens. This can also be done using our combinators, together with a few
+%character discrimination functions. First we declare the type of tokens:
+%
 \begin{black}\begin{verbatim}
   type token = Name of string
              | Num of string
              | Other of string;;
 \end{verbatim}\end{black}
 
-We want the lexer to accept a string and produce a list of tokens, ignoring
-spaces, e.g.
+Нам требуется, чтобы лексический анализатор принимал строку и возвращал
+соответствующий ей список лексем, игнорируя пробелы, например:
+%We want the lexer to accept a string and produce a list of tokens, ignoring
+%spaces, e.g.
 \begin{black}\begin{footnotesize}\begin{verbatim}
   #lex "sin(x + y) * cos(2 * x + y)";;
    - : token list =
@@ -496,7 +584,8 @@ spaces, e.g.
 
 \begin{rslide}
 
-\heading{Definition of the lexer}
+\heading{Реализация лексического анализатора}
+%\heading{Definition of the lexer}
 
 \vspace*{0.5cm}
 
@@ -532,7 +621,8 @@ let lex =
 
 \begin{rslide}
 
-\heading{Parsing terms}
+\heading{Разбор термов}
+%\heading{Parsing terms}
 
 \vspace*{0.5cm}
 
@@ -599,7 +689,8 @@ and termlist input
 
 \begin{rslide}
 
-\heading{Examples}
+\heading{Примеры}
+%\heading{Examples}
 
 \vspace*{0.5cm}
 
@@ -634,7 +725,8 @@ installed:
 
 \begin{rslide}
 
-\heading{Automating precedence parsing}
+\heading{Автоматический учёт приоритетов}
+%\heading{Automating precedence parsing}
 
 \vspace*{0.2cm}
 
@@ -792,29 +884,44 @@ and termlist input
 
 \begin{rslide}
 
-\heading{General remarks}
+\heading{Общие замечания}
+%\heading{General remarks}
 
 \vspace*{0.3cm}
 
-With care, this parsing method can be used effectively. It is a good
-illustration of the power of higher order functions.
+Рассмотренный метод синтаксического анализа может с разумной осторожностью
+эффективно использоваться в различных приложениях. Он служит хорошей 
+иллюстрацией обширных возможностей функций высших порядков.
+%With care, this parsing method can be used effectively. It is a good
+%illustration of the power of higher order functions.
 
-The code of such a parser is highly structured and similar to the grammar,
-therefore easy to modify.
+Код анализатора тщательно структурирован и соответствует грамматике,
+что обеспечивает лёгкость его модификации.
+%The code of such a parser is highly structured and similar to the grammar,
+%therefore easy to modify.
 
-However it is not as efficient as LR parsers; CAML-Yacc is capable of
-generating good LR parsers automatically.
+Однако, он не так эффективен, как хорошие LR-анализаторы, в частности те,
+которые могут быть автоматически сгенерированы CAML-Yacc.
+%However it is not as efficient as LR parsers; CAML-Yacc is capable of
+%generating good LR parsers automatically.
 
-Recursive descent also has trouble with {\em left recursion}. For example, if
-we had wanted to make the addition operator left-associative in our earlier
-grammar, we could have used:
+Ещё одним ограничением метода рекурсивного спуска являются проблемы с
+обработкой {\em левосторонней рекурсии} в продукциях. Например, если бы
+мы попытались сделать левоассоциативной операцию сложения, определённую в 
+рассмотренных ранее примерах, это можно было бы выразить так:
+%Recursive descent also has trouble with {\em left recursion}. For example, if
+%we had wanted to make the addition operator left-associative in our earlier
+%grammar, we could have used:
 {\red
 \begin{eqnarray*}
 term     & \goesto & term {\verb! + !} mulexp                   \\
          & |       & mulexp
 \end{eqnarray*}}
-The naive transcription into ML would loop indefinitely. However we can often
-replace such constructs with explicit repetitions.
+Прямолинейный перевод этого правила на язык~ML при исполнении зацикливается. 
+Однако, зачастую подобные конструкции легко заменяются соответствующим 
+итерированием.
+%The naive transcription into ML would loop indefinitely. However we can often
+%replace such constructs with explicit repetitions.
 
 
 \end{rslide}
