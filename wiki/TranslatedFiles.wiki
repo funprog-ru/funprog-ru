@@ -18,8 +18,8 @@
   
 = Полностью переведённые =
 
-  * (e) *l1.tex* - перевод lg, прочитали alexott, vshabanoff(не полностью)
-  * (e) *l2.tex* - перевод lg, прочитали alexott
+  * (e) *l1.tex* - перевод lg, прочитали alexott, vshabanoff(не полностью), dimiii
+  * (e) *l2.tex* - перевод lg, прочитали alexott, dimiii
   * (e) *l3.tex* - перевод lg, прочитали alexott
   * (e) *l4.tex* - перевод lg, прочитали alexott
   * (e) *l5.tex* - перевод lg, прочитали alexott
@@ -31,7 +31,7 @@
   * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью),dimiii
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали
-  * (e) *ml.tex* - перевод alexott, прочитали lg
+  * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
 
 = Остальные =
@@ -64,6 +64,5 @@ fml.tex -- l6.tex -- plan.tex
 proving.tex -- l7.tex -- plan.tex
 effect.tex -- l8.tex -- plan.tex
 examples.tex -- l9.tex -- l10.tex -- l11.tex -- l12.tex -- plan.tex
-
 
 
