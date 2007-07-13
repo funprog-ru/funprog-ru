@@ -98,17 +98,16 @@
      fun (Var s) -> s
        | (Const c) -> c
        | (Fn(f,args)) ->
-           if length args = 2 & is_infix f then
-             let prec' = get_precedence f in
-             let s1 = string_of_term prec'
-                        (hd args)
-             and s2 = string_of_term prec'
-                        (hd(tl args)) in
-             let ss = s1^" "^f^" "^s2 in
-             if prec' <= prec then "("^ss^")" else ss
-           else
-             f^"("^(string_of_terms args)^")"
-
+         if length args = 2 & is_infix f then
+           let prec' = get_precedence f in
+           let s1 = string_of_term prec'
+                      (hd args)
+           and s2 = string_of_term prec'
+                      (hd(tl args)) in
+           let ss = s1^" "^f^" "^s2 in
+           if prec' <= prec then "("^ss^")" else ss
+         else
+           f^"("^(string_of_terms args)^")"
    and string_of_terms t =
      match t with
          [] -> ""
@@ -264,7 +263,7 @@
 
 \frame{\titlepage}
 
-\section*{Лекция 9. Примеры на ML I: Символьное Дифференцирование}
+\section*{Лекция 9. Примеры на ML: Символьное Дифференцирование}
 
 \frame{
   \frametitle{Темы}
@@ -298,8 +297,6 @@
 
   Сейчас мы обсудим приложения, в которых проводятся манипуляции над
   математическими {\em выражениями }, в общем случае содержащими переменные.
-  В этих программах упор, в отличие от численных расчётов, делается именно на  
-  символьные преобразования. 
 
   %%This covers applications where manipulation of mathematical 
   %%{\em expressions},in general containing variables, is emphasized at the
@@ -325,7 +322,7 @@
   %%We will show how ML can be used for such applications. Our example will be
   %%symbolic differentiation.
 
-  Это проиллюстрирует все типичные части систем символьных вычислений, как - то: 
+  Это проиллюстрирует все типичные части систем символьных вычислений: 
   представление данных, внутренние алгоритмы, разбор и вывод результатов.
 
   %%This will illustrate all the typical components of symbolic computation
@@ -364,8 +361,7 @@
 \frame{
   \frametitle{ Нам требуется разбор и печать }
 
-
-  Чтение и запись выражений в сыром виде довольно неудобно. Это общая проблема
+  Чтение и запись выражений в сыром виде довольно неудобны. Это общая проблема
   для всех систем символьных вычислений. Обычно требуются:
  
   %%Reading and writing expressions in their raw form is rather unpleasant. 
@@ -386,7 +382,7 @@
   \end{itemize}
 
   Мы будем использовать синтаксический разбор как ещё один важный пример  
-  функционального программирования, поэтому мы отложим обсуждение этого вопроса  
+  функционального программирования, поэтому отложим обсуждение этого вопроса  
   на некоторое время. 
 
   %%We will use parsing as another major example of functional programming, so
@@ -402,7 +398,7 @@
 \frame{
   \frametitle{ Вывод выражений }
 
-  Как мы хотим печатать сообщения? 
+  Как мы хотим печатать выражения? 
    
   %%How do we want to print expressions?
 
@@ -410,7 +406,7 @@
 
   \item Переменные и константы записываются по их именам.
 
-  \item Variables and constants are just written as their names.
+  %%\item Variables and constants are just written as their names.
 
   \item Обычные $n$-арные функции, выводятся в виде 
   \alert{$f(x_1,\ldots,x_n)$}, т.е. записывается имя функции и рядом, в скобках
@@ -452,8 +448,8 @@
 
   \KeepPrecCodeOne
 
-  Списки такого вида, связывающие данные с ключами, называются {\em 
-  ассоциативными списками }. Для того чтобы получить значение по ключу, 
+  Списки такого вида, связывающие значения с ключами, называются {\em 
+  ассоциативными списками}. Для того чтобы получить значение по ключу, 
   используется следующая функция:
 
   %%This sort of list, associating data with keys, is called an {\em association
@@ -468,7 +464,7 @@
   \KeepPrecCodeThree
   
   Этот алгоритм линейного поиска неэффективен, но прост и подходит для простых 
-  примеров. Использование хеширования больше подойдёт для неучебных приложений.
+  примеров. Для неучебных приложений больше подойдёт использование хеширования.
 
   %%This procedure of linear search is inefficient, but it is simple and adequate
   %%for small examples. Techniques like hashing are better for heavyweight
@@ -481,7 +477,7 @@
   \frametitle{ Делаем приоритеты изменяемыми }
 
   Из - за статического связывания, изменение списка инфиксных операторов не 
-  Меняет {\tt get\_precedence}.
+  меняет {\tt get\_precedence}.
 
   %%Because of static binding, changing the list of infixes does not change
   %%{\tt get\_precedence}.
@@ -507,7 +503,7 @@
   \frametitle{ Определение инфиксных операторов }
 
   Мы будем считать оператор инфиксным, только если он встречается в списке 
-  infixes с приоритетом. Мы можем записать:
+  {\tt infixes} с приоритетом. Мы можем записать:
 
   %%We will treat an operator as infix just if it appears in the list of infixes
   %%with a precedence. We can do:
@@ -515,17 +511,17 @@
   \FindInfixCodeOne
 
   
-  \noindent поскольку {\black \verb+get_precedence+} не определена на   
-  неинфиксных операторах, и, поэтому, выбросит исключение. Альтернативный ( и 
-  более  правильный) способ использует вспомогательную функцию {\black \tt can}, 
+  \noindent поскольку {\tt get\_precedence} не определена на   
+  неинфиксных операторах, и, поэтому, выбросит исключение. Альтернативный (~и~более правильный~) 
+  способ использует вспомогательную функцию {\tt can}, 
   которая проверяет успешность применения её первого аргумента ко второму:
   
   %%\noindent because {\verb+get_precedence+} fails on non-infixes. An
   %%alternative coding is to use an auxiliary function {\tt can} which 
   %%finds out whether the application of its first argument to its seconds 
   %%succeeds::
-
-  \FindInfixCodeTwo
+  
+ \FindInfixCodeTwo
 }
 
 
@@ -537,16 +533,16 @@
 
   %%The printer consists of two mutually recursive functions.
 
-  Функция {\black\verb+string_of_term+} принимает два аргумента. Первый ? это
+  Функция {\tt string\_of\_term} принимает два аргумента. Первый - это
   <<приоритетный оператор>>,  а второй - терм.
 
   %%The function {\verb+string_of_term+} takes two arguments. The first 
   %%is a `currently active precedence', and the second is the term.
 
-  Например, при печати правого аргумента из {\black \tt x * (y + z)},
-  приоритетным оператором является {\black \tt *} - произведение. При этом, если
+  Например, при печати правого аргумента из \alert{x * (y + z)},
+  приоритетным оператором является {\alert *} - произведение. При этом, если
   второй аргумент является аппликацией инфиксного оператора (в нашем случае 
-  {\black \tt +}), и меньшего приоритета, то он окружается скобками.
+  {\alert +}), и меньшего приоритета, то он окружается скобками.
 
   %%For example, in printing the right-hand argument of {\tt x * (y + 
   %%z)},  the currently active precedence is the precedence of {\tt *}.   
@@ -554,7 +550,7 @@
   %% +}), it puts brackets round it unless its own precedence is higher.
 
   Вторая функция через запятую печатает список термов. Это нужно для вывода 
-  списка аргументов  функций вида {\red  $f(x_1,\ldots,x_n), n > 2$}.
+  списка аргументов  функций вида \alert{$f(x_1,\ldots,x_n), n > 2$}.
   
   %%We have a second, mutually recursive, function, to print a list of terms
   %%separated by commas. This is for the argument lists of non-unary and 
@@ -628,8 +624,8 @@
   %the rule for sums, returning \alert{$f'(x) + g'(x)$}. Likewise for 
   %subtraction etc.
 
-  \item Если выражение задано в форме \alert{$f(x) * g(x)$}, применяется правило
-  Лейбница, т.е. возвращается \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+  \item Если выражение задано в форме \alert{$f(x) * g(x)$}, применяется {\em правило
+  Лейбница}, т.е. возвращается \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
 
   %\item If the expression is of the form \alert{$f(x) * g(x)$} then apply the
   %product rule, i.e. return \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
@@ -644,7 +640,7 @@
 
   \end{itemize}
 
-  Эти правила очень легко переводятся в рекурсивные алгоритмы.
+  Эти правила легко переводятся в рекурсивные алгоритмы.
 
 }
 
@@ -673,8 +669,9 @@
 
   Кажется, всё хорошо работает, но при этом не делается некоторых очевидных
   упрощений, таких как: \alert{$0 * x = 0$}. Так получается частично от того, 
-  что  мы применяем рекурсивные правила, такие как the chain rule даже в   
-  тривиальных случаях. Запишем функцию, выполняющую упрощение:
+  что  мы применяем рекурсивные правила, такие как правило последовательного 
+  дифференцирования композиции, даже в тривиальных случаях. 
+  Запишем функцию, выполняющую упрощение:
 
   %%It seems to work OK, but it isn't making certain obvious simplifications,
   %%like \alert{$0 * x = 0$}. These arise partly because we apply the recursive
@@ -687,13 +684,13 @@
 \frame{
   \frametitle{ Примеры упрощения }
 
-  Мы должны применить {\\t simp} рекурсивно, по индукции:
+  Мы должны применить {\tt simp} рекурсивно, по индукции:
   
   %We need to apply {\tt simp} recursively, bottom-up:
 
   \SimplSampleOne
   
-  Теперь мы получаем результаты получше:
+  Теперь мы получаем лучшие результаты:
   
   %Now we get better results:
   
