@@ -173,7 +173,7 @@
 {\cyan Университет Кембриджа}\\
 {\green Лекция 10}\\
 {\green Примеры на ML II:}\\
-{\green Рекурсивный Нисходящий Разбор}
+{\green Синтаксический анализ}
 %{\LARGE\red Introduction to}\\
 %{\LARGE\red Functional Programming}\\
 %{\cyan John Harrison}\\
@@ -199,7 +199,8 @@
 \item реализация синтаксических анализаторов на языке~ML;
 %\item Parsers in ML
 
-\item Higher order parser combinators
+\item комбинаторы синтаксического анализа;
+%\item Higher order parser combinators
 
 \item эффективность и ограничения.
 %\item Efficiency and limitations.
@@ -329,7 +330,7 @@ termlist & \goesto & term {\verb!,!} termlist                   \\
 
 Синтаксический анализатор, реализующий метод рекурсивного спуска, представляет
 собой множество взаимно рекурсивных функций, прямо сопоставленных каждой
-синтаксической категории ($term$, $mulexp$ etc.).
+синтаксической категории ($term$, $mulexp$ и~т.~д.).
 %A {\em recursive descent} parser is a series of mutually recursive functions,
 %one for each syntactic category ($term$, $mulexp$ etc.).
 
@@ -621,14 +622,16 @@ let lex =
 
 \begin{rslide}
 
-\heading{Разбор термов}
+\heading{Анализатор термов}
 %\heading{Parsing terms}
 
 \vspace*{0.5cm}
 
-In order to parse terms, we start with some basic parsers for single tokens of
-a particular kind:
-
+Реализацию анализа языка термов начнем с определения базовых анализаторов
+отдельных лексем заданного класса:
+%In order to parse terms, we start with some basic parsers for single tokens of
+%a particular kind:
+%
 \begin{black}\begin{verbatim}
   let name =
     fun (Name s::rest) -> s,rest
@@ -643,9 +646,13 @@ a particular kind:
       | _ -> raise Noparse;;
 \end{verbatim}\end{black}
 
-Now we can define a parser for terms, in a form very similar to the original
-grammar. The main difference is that each production rule has associated with
-it some sort of special action to take as a result of parsing.
+С помощью этих функций мы можем определить анализатор термов в виде, очень
+схожем с исходной грамматикой. Основное различие состоит в том, что каждой
+продукции сопоставлено некоторое действие, результат которого возвращается
+как результат анализа.
+%Now we can define a parser for terms, in a form very similar to the original
+%grammar. The main difference is that each production rule has associated with
+%it some sort of special action to take as a result of parsing.
 
 \end{rslide}
 
@@ -653,7 +660,8 @@ it some sort of special action to take as a result of parsing.
 
 \begin{rslide}
 
-\heading{The term parser (take 1)}
+\heading{Анализатор термов (вариант~1)}
+%\heading{The term parser (take 1)}
 
 \begin{black}\begin{footnotesize}\begin{verbatim}
 let rec atom input
@@ -694,16 +702,19 @@ and termlist input
 
 \vspace*{0.5cm}
 
-Let us package everything up as a single parsing function:
-
+Объединим определённые ранее примитивы в единую функцию: 
+%Let us package everything up as a single parsing function:
+%
 \begin{black}\begin{verbatim}
 let parser =
   fst o (term ++ finished >> fst) o lex;;
 \end{verbatim}\end{black}
-
-\noindent To see it in action, we try with and without the printer (see above)
-installed:
-
+%
+Наглядной иллюстрацией работы этой функции является её вызов до и после
+установки специализированной функции вывода (см.\ выше):
+%\noindent To see it in action, we try with and without the printer (see above)
+%installed:
+%
 \begin{black}\begin{footnotesize}\begin{verbatim}
   #parser "sin(x + y) * cos(2 * x + y)";;
   - : term =
@@ -730,9 +741,11 @@ installed:
 
 \vspace*{0.2cm}
 
-We can easily let ML construct the `fixed-up' grammar from our dynamic list of
-infixes:
-
+Возможности языка~ML позволяют на основе динамического списка инфиксных
+операций легко сконструировать <<исправленную>> с их учётом версию грамматики.
+%We can easily let ML construct the `fixed-up' grammar from our dynamic list of
+%infixes:
+%
 \begin{black}\begin{footnotesize}\begin{verbatim}
 let rec binop op parser input =
   let atom1,rest1 as result = parser input in
@@ -755,7 +768,9 @@ let rec precedence ilist parser input =
   binop (fst opp) (precedence ilist' parser) input;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-By using this function, we can make the main parser simpler and more general.
+Использование этой функции в основном анализаторе делает его более простым
+и более общим.
+%By using this function, we can make the main parser simpler and more general.
 
 \end{rslide}
 
@@ -763,7 +778,8 @@ By using this function, we can make the main parser simpler and more general.
 
 \begin{rslide}
 
-\heading{The term parser (take 2)}
+\heading{Анализатор термов (вариант~2)}
+%\heading{The term parser (take 2)}
 
 \begin{black}\begin{footnotesize}\begin{verbatim}
 let rec atom input
@@ -786,9 +802,12 @@ and termlist input
             >> (fun h -> [h])) input;;
 \end{verbatim}\end{footnotesize}\end{black}
 
-This will dynamically construct the precedence parser using the list
-of infixes active when it is actually used. Now the basic grammar is
-simpler.
+Эти определения дают возможность динамического конструирования анализатора
+с учётом приоритетов на основе списка инфиксных операций в том виде, в котором
+он существует в момент обращения к нему. Базовая грамматика упрощается.
+%This will dynamically construct the precedence parser using the list
+%of infixes active when it is actually used. Now the basic grammar is
+%simpler.
 
 \end{rslide}
 
@@ -796,25 +815,35 @@ simpler.
 
 \begin{rslide}
 
-\heading{Backtracking and reprocessing}
+\heading{Возврат и повторное сканирование}
+%\heading{Backtracking and reprocessing}
 
 \vspace*{0.5cm}
 
-Some productions for the same syntactic category have a common
-prefix. Note that our production rules for $term$ have this property:
+Некоторые продукции в рамках одной и той же синтаксической категории могут
+иметь общий префикс. Например, таким свойством обладают правила вывода~$term$:
+%Some productions for the same syntactic category have a common
+%prefix. Note that our production rules for $term$ have this property:
 {\red
 \begin{eqnarray*}
 term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
          & |       & name                                       \\
          & |       & \cdots
-\end{eqnarray*}}
-We carefully put the longer production first in our actual implementation,
-otherwise success in reading a name would cause the abandonment of attempts to
-read a parenthesized list of arguments.
+\end{eqnarray*}}%
+В нашей реализации более длинная продукция целенаправленно обрабатывается
+первой, так как успешное чтение имени может привести к проблемам с дальнейшим
+разбором списка аргументов.
+%We carefully put the longer production first in our actual implementation,
+%otherwise success in reading a name would cause the abandonment of attempts to
+%read a parenthesized list of arguments.
 
-However, this backtracking can lead to our processing the initial name twice.
+Однако, при необходимости возврата (первая альтернатива оказалась неприменимой),
+разбор имени будет проведен дважды.
+%However, this backtracking can lead to our processing the initial name twice.
 
-This is not very serious here, but it could be in {\black \tt termlist}.
+В данной продукции это не приводит к серьезным потерям эффективности, но 
+может привести при обработке~{\black \tt termlist}.
+%This is not very serious here, but it could be in {\black \tt termlist}.
 
 \end{rslide}
 
@@ -822,12 +851,14 @@ This is not very serious here, but it could be in {\black \tt termlist}.
 
 \begin{rslide}
 
-\heading{An improved treatment}
+\heading{Устранение избыточности}
+%\heading{An improved treatment}
 
 \vspace*{0.5cm}
 
-We can easily replace:
-
+Заменим
+%We can easily replace:
+%
 \begin{black}\begin{verbatim}
 let ...
 and termlist input
@@ -835,18 +866,20 @@ and termlist input
             >> (fun ((h,_),t) -> h::t)
      || term
             >> (fun h -> [h])) input;;
-\end{verbatim}\end{black}
-\noindent with
+\end{verbatim}\end{black}%
+на
+%\noindent with
 \begin{black}\begin{verbatim}
 let ...
 and termlist input
     = term ++
       many (a (Other ",") ++ term >> snd)
             >> (fun (h,t) -> h::t) input;;
-\end{verbatim}\end{black}
-
-\noindent This gives another improvement to the parser, which is now more
-efficient and slightly simpler. The final version is:
+\end{verbatim}\end{black}%
+получив очередную реализацию, которая будет и проще, и эффективнее.
+Окончательный вариант анализатора выглядит так:
+%\noindent This gives another improvement to the parser, which is now more
+%efficient and slightly simpler. The final version is:
 
 \end{rslide}
 
@@ -855,7 +888,8 @@ efficient and slightly simpler. The final version is:
 
 \begin{rslide}
 
-\heading{The term parser (take 3)}
+\heading{Анализатор термов (вариант~3)}
+%\heading{The term parser (take 3)}
 
 \vspace*{0.5cm}
 
