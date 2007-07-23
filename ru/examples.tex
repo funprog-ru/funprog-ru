@@ -485,18 +485,30 @@ that we know the definitions of these fairly obscure trig functions like {\tt
 sec}. Whatever the machine decides to do, it is likely that some user will find
 it upsetting.
 
-\section{Parsing}
+\section{Синтаксический анализ}
+%\section{Parsing}
+Недостатком предыдущего примера является необходимость задавать входные данные
+в виде композиции конструкторов типов. В этом разделе мы рассмотрим задачу
+построения формального языка описания выражений и разработки его синтаксического 
+анализатора. Изложенный подход будет при этом достаточно общим, чтобы 
+впоследствие легко применяться к аналогичным языкам.
 
-A defect of our previous example was that the input had to be written
-explicitly in terms of type constructors. Here we will show how to write a
-parser for this situation, and make our code sufficiently general that it can
-easily be applied to similar formal languages. Generally speaking, the problem
-of parsing is as follows. A formal language is defined by a {\em grammar},
-which is a set of {\em production rules} for each syntactic category. For a
-language of terms with two infix operators {\tt +} and {\tt *} and only
-alphanumeric variables and numeral ($0$, $1$ etc.) constants, it might look
-like this:
-
+Сформулируем задачу синтаксического анализа в общем виде. 
+Формальный язык определяется своей {\em грамматикой}, которая задает множество 
+{\em продукций (правил вывода)} для каждой синтаксической категории. Для языка
+термов, включающих лишь две инфиксные операции, {\tt +} и~{\tt *}, а также
+числовые константы ($0$, $1$, \dots) и переменные с алфавитно-цифровыми именами,
+грамматика может выглядеть так:
+%A defect of our previous example was that the input had to be written
+%explicitly in terms of type constructors. Here we will show how to write a
+%parser for this situation, and make our code sufficiently general that it can
+%easily be applied to similar formal languages. Generally speaking, the problem
+%of parsing is as follows. A formal language is defined by a {\em grammar},
+%which is a set of {\em production rules} for each syntactic category. For a
+%language of terms with two infix operators {\tt +} and {\tt *} and only
+%alphanumeric variables and numeral ($0$, $1$ etc.) constants, it might look
+%like this:
+%
 \begin{eqnarray*}
 term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
          & |       & name                                       \\
@@ -508,15 +520,25 @@ term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
 termlist & \goesto & term {\verb!,!} termlist                   \\
          & |       & term
 \end{eqnarray*}
-
-We will assume for the moment that we know what names and numerals are, but we
-could have similar rules defining them in terms of single characters. Now this
-set of production rules gives us a way of generating the concrete, linear
-representation for all terms. Note that $name$, $numeral$, $term$ and
-$termlist$ are meant to be variables in the above, whereas elements like
-`{\verb!+!}' and `{\verb!(!}' written in bold type are actual characters. For
-example we have:
-
+%
+На данный момент будем предполагать, что нам заранее известны множества 
+допустимых имен и числовых констант, но мы могли бы также определить их
+при помощи аналогичных правил на основе символов входного алфавита. Заданное
+множество продукций предоставляет нам способ порождения конкретного линейного
+представления всевозможных термов. Отметим, что имена вида $name$, $numeral$, 
+$term$ и~$termlist$ обозначают синтаксические {\em метапеременные},
+а набранные полужирным шрифтом символы <<{\verb!+!}>>, <<{\verb!(!}>> и так 
+далее~--- принадлежат входному языку. Рассмотрим пример применения правил 
+вывода:
+%
+%We will assume for the moment that we know what names and numerals are, but we
+%could have similar rules defining them in terms of single characters. Now this
+%set of production rules gives us a way of generating the concrete, linear
+%representation for all terms. Note that $name$, $numeral$, $term$ and
+%$termlist$ are meant to be variables in the above, whereas elements like
+%`{\verb!+!}' and `{\verb!(!}' written in bold type are actual characters. For
+%example we have:
+%
 \begin{eqnarray*}
 term     & \goesto & term {\verb! * !} term                             \\
          & \goesto & term {\verb! * !} {\verb!(!} term {\verb!)!}       \\
@@ -527,23 +549,35 @@ term     & \goesto & term {\verb! * !} term                             \\
          & \goesto & numeral {\verb! * !} {\verb!(!}
                      name {\verb! + !} name {\verb! * !} name {\verb!)!}
 \end{eqnarray*}
+%
+откуда, подставив вместо $name$ и~$numeral$ некоторые значения из 
+соответствующих множеств, мы можем породить такую строку:
+%\noindent so, following similar rules for $name$ and $numeral$, we can
+%generate for example:
+%
+$$ 
+ {\verb!10 * (x + y * z)!} 
+$$
 
+Задача {\em синтаксического анализа (разбора)} преследует прямо противоположную
+цель~--- восстановить последовательность применения правил вывода, то есть по 
+заданной строке определить, каким образом она могла быть порождена. 
+Как правило, результатом анализа является {\em дерево разбора,} наглядно
+демонстрирующее порядок выбора продукций. 
+%The task of {\em parsing} is to reverse this process of applying production
+%rules, i.e. to take a string and discover how it could have been generated by
+%the production rules for a syntactic category. Typically, the output is a {\em
+%parse tree}, i.e. a tree structure that shows clearly the sequence of
+%applications of the rules.
 
-\noindent so, following similar rules for $name$ and $numeral$, we can
-generate for example:
-
-$$ {\verb!10 * (x + y * z)!} $$
-
-The task of {\em parsing} is to reverse this process of applying production
-rules, i.e. to take a string and discover how it could have been generated by
-the production rules for a syntactic category. Typically, the output is a {\em
-parse tree}, i.e. a tree structure that shows clearly the sequence of
-applications of the rules.
-
-One problem with parsing is that the grammar may be {\em ambiguous}, i.e. a
-given string can often be generated in several different ways. This is the case
-in our example above, for the string could also have been generated by:
-
+Одной из проблем, возникающей в ходе синтаксического анализа, является
+{\em неоднозначность} грамматики, т.~е.\ возможность порождения заданной строки
+несколькими различными способами. В рассмотренном выше примере та же самая 
+строка могла быть порождена иным путём:
+%One problem with parsing is that the grammar may be {\em ambiguous}, i.e. a
+%given string can often be generated in several different ways. This is the case
+%in our example above, for the string could also have been generated by:
+%
 \begin{eqnarray*}
 term     & \goesto & term {\verb! * !} term                             \\
          & \goesto & term {\verb! * !} {\verb!(!} term {\verb!)!}       \\
@@ -555,11 +589,15 @@ term     & \goesto & term {\verb! * !} term                             \\
                      name {\verb! + !} name {\verb! * !} name {\verb!)!}
 \end{eqnarray*}
 
-The obvious way to fix this is to specify rules of precedence and associativity
-for infix operators. However, we can make the grammar unambiguous without
-introducing additional mechanisms at the cost of adding new syntactic
-categories:
-
+Очевидная возможность устранения неоднозначности~--- назначение инфиксным
+операторам приоритетов и ассоциативности. Кроме того, мы можем добиться такого
+же эффекта без привлечения дополнительных механизмов за счёт добавления 
+новых синтаксических категорий:
+%The obvious way to fix this is to specify rules of precedence and associativity
+%for infix operators. However, we can make the grammar unambiguous without
+%introducing additional mechanisms at the cost of adding new syntactic
+%categories:
+%
 \begin{eqnarray*}
 atom     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
          & |       & name                                       \\
@@ -570,76 +608,137 @@ mulexp   & \goesto & atom {\verb! * !} mulexp                   \\
          & |       & atom                                       \\
 term     & \goesto & mulexp {\verb! + !} term                   \\
          & |       & mulexp                                     \\
-termlist & \goesto & term {\verb!,!} termlist                   \\
+termlist & \goesto & term {\verb!, !} termlist                   \\
          & |       & term
 \end{eqnarray*}
 
-Note that this makes both infix operators right associative. For a more
-complicated example of this technique in action, look at the formal definition
-of expressions in the ANSI C Standard.
+Отметим, что такая модификация грамматики делает обе инфиксные операции 
+правоассоциативными. Более сложным примером использования этого приёма служит
+формальное определение понятия <<выражение>> в стандарте~ANSI~C.
+%Note that this makes both infix operators right associative. For a more
+%complicated example of this technique in action, look at the formal definition
+%of expressions in the ANSI C Standard.
 
-\subsection{Recursive descent parsing}
+\subsection{Метод рекурсивного спуска}
+%\subsection{Recursive descent parsing}
+Строение правил вывода подсказывает очень простой алгоритм синтаксического
+анализа при помощи множества взаимно рекурсивных функций. Его суть в том, что
+для каждой синтаксической категории вводится своя функция, причем структура 
+рекурсивных вызовов соответствует зависимости одних продукций от других. 
+Например, процедура анализа термов~{\verb!term!} при получении из входного
+потока символа~{\verb!-!} будет рекурсивно вызывать саму себя для анализа
+аргумента операции, а при встрече имени, за которым следует открывающая скобка,
+обратится к процедуре~{\verb!termlist!}. Последняя, в свою очередь, 
+вызовет~{\verb!term!} не менее одного раза, и так далее. Такой подход 
+естественно выражается на языке, подобном~ML, для которого рекурсия служит
+одной из основных управляющих конструкций.
+%The production rules suggest a very simple way of going about parsing using a
+%series of mutually recursive functions. The idea is to have a function for each
+%syntactic category, and a recursive structure that reflects exactly the mutual
+%recursion found in the grammar itself. For example, the procedure for parsing
+%terms, say {\verb!term!} will, on encountering a {\verb!-!} symbol, make a
+%recursive call to itself to parse the subterm, and on encountering a name
+%followed by an opening parenthesis, will make a recursive call to
+%{\verb!termlist!}. This in itself will make at least one recursive call to
+%{\verb!term!}, and so on. Such a style of programming is particularly natural
+%in a language like ML where recursion is the principal control mechanism.
 
-The production rules suggest a very simple way of going about parsing using a
-series of mutually recursive functions. The idea is to have a function for each
-syntactic category, and a recursive structure that reflects exactly the mutual
-recursion found in the grammar itself. For example, the procedure for parsing
-terms, say {\verb!term!} will, on encountering a {\verb!-!} symbol, make a
-recursive call to itself to parse the subterm, and on encountering a name
-followed by an opening parenthesis, will make a recursive call to
-{\verb!termlist!}. This in itself will make at least one recursive call to
-{\verb!term!}, and so on. Such a style of programming is particularly natural
-in a language like ML where recursion is the principal control mechanism.
+Предположим, что наш синтаксический анализатор, реализованный средствами~ML,
+получает в качестве входной последовательности список объектов некоторого
+типа~$\alpha$. Возможно, чтобы входная последовательность состояла из
+простых символов, но на практике обычно вводится дополнительный уровень
+{\em лексического анализа,} в ходе которого символы группируются 
+в~{\em лексемы (токены),} например, <<{\verb!x12!}>>, <<{\verb!:=!}>> 
+и~<<{\verb!96!}>>, так что входной поток состоит уже из лексем, о типе которых
+мы не будем делать предположений. Аналогично, будем считать, что анализатор
+производит результат типа~$\beta$. Этот результат может быть, например, деревом
+разбора, представленным рекурсивным типом данных, либо просто числом, если
+анализатор предназначен для разбора выражения и его вычисления одновременно.
+В общем случае, анализатор может не обработать входной поток полностью, так что
+нам потребуется вернуть в дополнение к результату разбора еще и список 
+необработанных лексем. Таким образом, тип анализатора: 
+%In our ML implementation, we suppose that we have some input list of objects of
+%arbitrary type $\alpha$ for the parser to consume. These might simply be
+%characters, but in fact there is usually a separate level of {\em lexical
+%analysis} which collects characters together into {\em tokens} such as
+%`{\verb!x12!}', `{\verb!:=!}' and `{\verb!96!}', so by the time we reach this
+%level the input is a list of tokens. We avoid committing ourselves to any
+%particular type. Similarly, we will allow the parser to construct objects of
+%arbitrary type $\beta$ from its input. These might for example be parse trees
+%as members of a recursive datatype, or might simply be numbers if the parser is
+%to take an expression and evaluate it. Now in general, a parser might not
+%consume all its input, so we also make it output the remaining tokens.
+%Therefore, a parser will have type
+%
+$$ 
+ (\alpha)list \to \beta \times (\alpha)list 
+$$
 
-In our ML implementation, we suppose that we have some input list of objects of
-arbitrary type $\alpha$ for the parser to consume. These might simply be
-characters, but in fact there is usually a separate level of {\em lexical
-analysis} which collects characters together into {\em tokens} such as
-`{\verb!x12!}', `{\verb!:=!}' and `{\verb!96!}', so by the time we reach this
-level the input is a list of tokens. We avoid committing ourselves to any
-particular type. Similarly, we will allow the parser to construct objects of
-arbitrary type $\beta$ from its input. These might for example be parse trees
-as members of a recursive datatype, or might simply be numbers if the parser is
-to take an expression and evaluate it. Now in general, a parser might not
-consume all its input, so we also make it output the remaining tokens.
-Therefore, a parser will have type
-
-$$ (\alpha)list \to \beta \times (\alpha)list $$
-
-For example, when given the input characters {\verb!(x + y) * z!} the
-function {\verb!atom!} should process the characters {\verb!(x + y)!} and leave
-the remaining characters {\verb!* z!}. It might return a parse tree for the
-processed expression using our earlier recursive type, and hence we would have:
-
+Например, для входной последовательности~{\verb!(x + y) * z!} 
+функция~{\verb!atom!} должна обработать~{\verb!(x + y)!} и вернуть~{\verb!* z!}.
+Результирующее дерево разбора принятой части входа может быть представлено
+значением рекурсивного типа, введенного ранее. Отсюда мы имеем
+%For example, when given the input characters {\verb!(x + y) * z!} the
+%function {\verb!atom!} should process the characters {\verb!(x + y)!} and leave
+%the remaining characters {\verb!* z!}. It might return a parse tree for the
+%processed expression using our earlier recursive type, and hence we would have:
+%
 \begin{boxed}\begin{lstlisting}
   atom "(x + y) * z" = Fn("+",[Var "x"; Var "y"]),"* z"
 \end{lstlisting}\end{boxed}
 
-Since any call of the function {\verb+atom+} must be from within the function
-{\verb!mulexp!}, this second function will use the result of {\verb!atom!} and
-deal with the input that remains, making a second call to {\verb!atom!} to
-process the expression `{\verb!z!}'.
+Поскольку любое обращение к функции~{\verb+atom+} должно происходить из 
+функции~{\verb!mulexp!}, то последняя будет использовать результат, полученный
+вычислением~{\verb!atom!}, а также обрабатывать оставшиеся лексемы, вызывая
+повторно~{\verb!atom!} для анализа подвыражения~{\verb!z!}.
+%Since any call of the function {\verb+atom+} must be from within the function
+%{\verb!mulexp!}, this second function will use the result of {\verb!atom!} and
+%deal with the input that remains, making a second call to {\verb!atom!} to
+%process the expression `{\verb!z!}'.
 
-\subsection{Parser combinators}
+\subsection{Комбинаторы синтаксического анализа}
+%\subsection{Parser combinators}
+Еще одна причина, по которой предложенный метод разбора особенно хорошо 
+подходит для реализации на языке~ML, это возможность определения некоторых
+полезных комбинаторов, при помощи которых новые анализаторы легко
+создаются на базе уже существующих. Определив эти комбинаторы как инфиксные 
+операции, мы в состоянии придать программе синтаксического анализатора вид, 
+очень схожий со структурой исходной грамматики.
+%Another reason why this technique works particularly well in ML is that we can
+%define some useful combinators for plugging parsers together. In fact, by
+%giving them infix status, we can make the ML parser program look quite similar
+%in structure to the original grammar defining the language.
 
-Another reason why this technique works particularly well in ML is that we can
-define some useful combinators for plugging parsers together. In fact, by
-giving them infix status, we can make the ML parser program look quite similar
-in structure to the original grammar defining the language.
+Для начала введём исключение, сигнализирующее об ошибках анализа. Далее
+определим инфиксную операцию~{\verb!++!}, которая применяет два анализатора
+последовательно, объединяя их результаты, а также инфиксную 
+операцию~{\verb!||!}, которая вначале делает попытку применить один из 
+анализаторов, а затем~--- второй. Операция~{\verb!many!} представляет собой
+свертку относительно~{\verb!++!}, т.~е.\ применяет заданный анализатор 
+максимально возможное количество раз, выдавая список результатов. Наконец,
+инфиксная операция~{\verb!>>!} применяется для завершающей обработки 
+результатов анализа заданной функцией.
+%First we declare an exception to be used where parsing fails. Then we define an
+%infix {\verb!++!} that applies two parsers in sequence, pairing up their
+%results, and and infix {\verb!||!} which tries first one parser, then the
+%other. We then define a many-fold version of {\verb!++!} that repeats a parser
+%as far as possible, putting the results into a list. Finally, the infix
+%{\verb!>>!} is used to modify the results of a parser according to a function.
 
-First we declare an exception to be used where parsing fails. Then we define an
-infix {\verb!++!} that applies two parsers in sequence, pairing up their
-results, and and infix {\verb!||!} which tries first one parser, then the
-other. We then define a many-fold version of {\verb!++!} that repeats a parser
-as far as possible, putting the results into a list. Finally, the infix
-{\verb!>>!} is used to modify the results of a parser according to a function.
-
-The CAML rules for symbolic identifiers such as {\verb!++!} make them infix
-automatically, so we suppress this during the definition using the {\tt prefix}
-keyword. Their precedences are also automatic, following from the usual
-precedence of their first characters as arithmetic operations etc. That is,
-{\verb!++!} is the strongest, {\verb!>>!} falls in the middle, and {\verb!||!}
-is the weakest; this is exactly what we want.
+Согласно синтаксису~CAML, идентификаторы наподобие~{\verb!++!} автоматически
+считаются инфиксными операциями, так что во время определения операций мы
+временно блокируем эту возможность при помощи ключевого слова~{\tt prefix}.
+Приоритеты также задаются автоматически по первым символам идентификаторов
+и полагаются равными приоритетам арифметических операций, обозначенных этими 
+символами. Таким образом, приоритет~{\verb!++!} наивысший, 
+{\verb!>>!}~--- средний, {\verb!||!}~--- низший, что нам и требуется.
+%%% ISSUE: уточнить насчет приоритетов, что такое etc. в оригинале 
+%The CAML rules for symbolic identifiers such as {\verb!++!} make them infix
+%automatically, so we suppress this during the definition using the {\tt prefix}
+%keyword. Their precedences are also automatic, following from the usual
+%precedence of their first characters as arithmetic operations etc. That is,
+%{\verb!++!} is the strongest, {\verb!>>!} falls in the middle, and {\verb!||!}
+%is the weakest; this is exactly what we want.
 
 \begin{boxed}\begin{lstlisting}
   exception Noparse;;
@@ -664,12 +763,18 @@ is the weakest; this is exactly what we want.
     treatment(result),rest;;
 \end{lstlisting}\end{boxed}
 
-We will, in what follows, use the following other functions. Most of these
-have been defined above, the main exception being {\tt explode} which converts
-a string into a list of 1-elements strings. It uses the inbuilt functions
-{\verb!sub_string!} and {\verb!string_length!}; we do not describe them in
-detail but their function should be easy to grasp from the example.
-
+Введём следующие универсальные функции, которые нам понадобятся в дальнейшем.
+Большая часть из них уже обсуждалась ранее, за исключением 
+функции~{\tt explode}, преобразующей строку в список односимвольных строк. Её
+реализация использует встроенные функции {\verb!sub_string!} 
+и~{\verb!string_length!}, которые не рассматривались, но их назначение легко
+понять из примера.
+%We will, in what follows, use the following other functions. Most of these
+%have been defined above, the main exception being {\tt explode} which converts
+%a string into a list of 1-elements strings. It uses the inbuilt functions
+%{\verb!sub_string!} and {\verb!string_length!}; we do not describe them in
+%detail but their function should be easy to grasp from the example.
+%
 \begin{boxed}\begin{verbatim}
   let rec itlist f =
        fun [] b -> b
@@ -691,11 +796,17 @@ detail but their function should be easy to grasp from the example.
     exap (string_length s - 1) [];;
 \end{verbatim}\end{boxed}
 
-In order to get started, we define a few `atomic' parsers. The function {\tt
-some} accepts any item satisfying a predicate and returns it. The function {\tt
-a} is similar, but demands a particular item, and finally {\tt finished} just
-makes sure there are no items left to be parsed.
-
+Для начала, определим некоторые <<атомарные>> анализаторы. Функция~{\tt some}
+принимает любой входной символ, удовлетворяющий заданному предикату, и
+возвращает его. Функция~{\tt a} выполняет схожее действие, с той разницей,
+что она проверяет входной символ на равенство заданному. Наконец, 
+{\tt finished} предназначена для проверки того, что весь входной поток был
+обработан.
+%In order to get started, we define a few `atomic' parsers. The function {\tt
+%some} accepts any item satisfying a predicate and returns it. The function {\tt
+%a} is similar, but demands a particular item, and finally {\tt finished} just
+%makes sure there are no items left to be parsed.
+%
 \begin{boxed}\begin{lstlisting}
   let some p =
     fun [] -> raise Noparse
