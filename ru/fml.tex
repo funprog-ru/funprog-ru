@@ -208,7 +208,7 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 
 В ML нет возможностей задавать приоритет для инфиксных операций,
  определённых пользователем, а также определять неинфиксные операции
- как правоассоциативные. Также обратите внимание, что неявная
+ как правоассоциативные. Также запомните, что неявная
  операция <<аппликация функции>> имеет приоритет
  выше, чем у любой бинарной операции, так что {\tt successor 1 * 2}
  разбирается как {\tt (successor 1) * 2}. Если хотите использовать
@@ -318,11 +318,12 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
 
 Выражения в ML строятся из констант и переменных; любой идентификатор, не 
 связанный на текущий момент выполнения программы рассматривается как 
-переменная. Объявления связывают имена со значениями выражений, при этом
+переменная. Объявления связывают значения выражений с именами, при этом
 в состав выражений могут входить другие объявления. Следовательно,
 синтаксические классы выражений и объявлений взаимно рекурсивны. Мы можем 
 выразить это следующей БНФ - грамматикой.\footnote{Мы отбросили многие 
-конструкции, которые нами не будут использоваться. За подробностями обращайтесь к руководству по OCAML.}
+конструкции, которые нами не будут использоваться. За подробностями обращайтесь 
+к руководству по CAML.}
 
 %%Expressions in ML can be built up from constants and variables; any identifier
 %%that is not currently bound is treated as a variable. Declarations bind names
@@ -383,13 +384,18 @@ variables     & ::= & variable                                                  
 \end{verbatim}
 \end{boxed}
 
-Приведённая выше грамматика помогает распутать это объявление. 
+Представляется полезным разбор этого объявления в соответствии с приведённой
+выше грамматикой. 
 
 %%It is instructive to unravel this declaration according to the above grammar. A
 %%toplevel phrase, terminated by two successive semicolons, may be either an
 %%expression or a declaration.
 
 \section{Дальнейшие примеры}
+
+
+Не сложно задать рекурсивную фунцию, принимающую в качестве аргументов целочисленное
+$n$ и функцию  $f$, а возвращающую $f^n$, т.е. $f \circ \cdots \circ f$ ($n$~раз):
 
 %%It is easy to define by recursion a function that takes a positive integer $n$
 %%and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
@@ -404,16 +410,15 @@ variables     & ::= & variable                                                  
 \end{verbatim}
 \end{boxed}
 
-In fact, a little thought will show that the function {\tt funpow} takes a
-machine integer $n$ and returns the Church numeral corresponding to $n$. Since
-functions aren't printed, we can't actually look at the lambda expression
-representing a Church numeral:
+В действительности, небольшое размышление показывает, что функция {\tt funpow} принимает
+машинное целое $n$ и возвращает нумерал (число) Чёрча, соответствующее $n$. Поскольку функции
+не  выводятся на печать, мы не можем в действительности посмотреть на лямбда-выражение,
+представляющее число Чёрча:
 
-
-In fact, a little thought will show that the function {\tt funpow} takes a
-machine integer $n$ and returns the Church numeral corresponding to $n$. Since
-functions aren't printed, we can't actually look at the lambda expression
-representing a Church numeral:
+%%In fact, a little thought will show that the function {\tt funpow} takes a
+%%machine integer $n$ and returns the Church numeral corresponding to $n$. Since
+%%functions aren't printed, we can't actually look at the lambda expression
+%%representing a Church numeral:
 
 \begin{boxed}
 \begin{verbatim}
@@ -422,8 +427,8 @@ representing a Church numeral:
 \end{verbatim}
 \end{boxed}
 
-However it is straightforward to define an inverse function to {\tt funpow}
-that takes a Church numeral back to a machine integer:
+Также просто задаётся функция обратная к {\tt funpow}, которая принимает число
+Чёрча и возвращает машинное целое:
 
 \begin{boxed}
 \begin{verbatim}
@@ -434,7 +439,8 @@ that takes a Church numeral back to a machine integer:
 \end{verbatim}
 \end{boxed}
 
-\noindent We can try out some of the arithmetic operations on Church numerals:
+\noindent Мы можем проверить некоторые из арифметических операций на числах Чёрча:
+%\noindent We can try out some of the arithmetic operations on Church numerals:
 
 \begin{boxed}
 \begin{verbatim}
@@ -458,9 +464,13 @@ that takes a Church numeral back to a machine integer:
 \end{verbatim}
 \end{boxed}
 
-The above is not a very efficient way of performing arithmetic operations. ML
-does not have a function for exponentiation, but it is easy to define one by
-recursion:
+Примеры выше, очевидно, не являются самым эффективным способом выполнения 
+арифметических операций. ML не имеет функции для возведения в степень, но её легко 
+задать по рекурсии:
+
+%%The above is not a very efficient way of performing arithmetic operations. ML
+%%does not have a function for exponentiation, but it is easy to define one by
+%%recursion:
 
 \begin{boxed}
 \begin{verbatim}
@@ -471,9 +481,13 @@ recursion:
 \end{verbatim}
 \end{boxed}
 
-However this performs $n$ multiplications to calculate $x^n$. A more efficient
-way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
-(x^n)^2$ as follows:
+Это решение выполняет $n$ произвелений для вычисления $x^n$. Более эффективный
+способ использует тот факт, что $x^{2 n} = (x^n)^2$ и $x^{2 n + 1} = x
+(x^n)^2$:
+
+%%However this performs $n$ multiplications to calculate $x^n$. A more efficient
+%%way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
+%%(x^n)^2$ as follows:
 
 \begin{boxed}
 \begin{verbatim}
@@ -492,8 +506,11 @@ way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
 \end{verbatim}
 \end{boxed}
 
-Another classic operation on natural numbers is to find their greatest common
-divisor (highest common factor) using Euclid's algorithm:
+Другая классическая операция на натуральных числах - нахождение их
+наибольшего  общего делителя (НОД) при помощи алгоритма Евклида:
+
+%%Another classic operation on natural numbers is to find their greatest common
+%%divisor (highest common factor) using Euclid's algorithm:
 
 \begin{boxed}
 \begin{verbatim}
@@ -509,8 +526,11 @@ divisor (highest common factor) using Euclid's algorithm:
 \end{verbatim}
 \end{boxed}
 
-We have used a notional recursion operator {\tt Rec} to explain recursive
-definitions. We can actually define such a thing, and use it:
+Мы использовали  оператор рекурсии {\tt Rec} при объяснении рекурсивных определений. 
+Действительно, давайте определим его:
+
+%%We have used a notional recursion operator {\tt Rec} to explain recursive
+%%definitions. We can actually define such a thing, and use it:
 
 \begin{boxed}
 \begin{verbatim}
@@ -523,8 +543,12 @@ definitions. We can actually define such a thing, and use it:
 \end{verbatim}
 \end{boxed}
 
-Note, however, that the lambda was essential, otherwise the expression {\tt Rec
-f} goes into an infinite recursion before it is even applied to its argument:
+Обратите внимание на необходимость анонимной функции, в противном случае выражение
+{\tt Rec f} уходит в бесконечную последовательность рекурсивных вызовов, прежде
+чем функция будет применена к своему аргументу:
+
+%%Note, however, that the lambda was essential, otherwise the expression {\tt Rec
+%%f} goes into an infinite recursion before it is even applied to its argument:
 
 \begin{boxed}
 \begin{verbatim}
@@ -544,7 +568,7 @@ f} goes into an infinite recursion before it is even applied to its argument:
 Такие типы называются {\em рекурсивными}.  Они объявляются с помощью
 ключевого слова {\tt type}, за которым выражение, описывающее как тип
 создается из существующих типов и себя.  Мы покажем это на нескольких
-примеров.  Первым примером будет определение типа {\em sum}, которые
+примерах.  Первым примером будет определение типа {\em sum}, которые
 должен соответствовать несвязному объединению ($\sqcup$) двух существующих
 типов.
 
