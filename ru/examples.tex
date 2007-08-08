@@ -1,41 +1,76 @@
-\chapter{Examples}
+\chapter{Примеры}
 
-As we have said, ML was originally designed as a metalanguage for a computer
-theorem prover. However it is suitable for plenty of other applications, mostly
-from the same general field of `symbolic computation'. In this chapter we will
-give some examples of characteristic uses of ML. It is not necessary that the
-reader should understand every detail of the particular examples, e.g. the
-analyses of real number approximations given below. However it is worth trying
-out these programs and similar examples for yourself, and doing some of the
-exercises. There is no better way of getting a feel for how ML is actually
-used.
+Как мы говорили, ML изначально был спроектирован как метаязык для автоматизированного 
+доказательства теорем. Однако он пригоден и для многих других приложений, по большей
+части из области  <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
+примеров использования ML. От читателя не требуется досконального
+знания всех деталей, пример тому, анализ  приближения вещественных
+чисел, приведённый далее. Однако важно испытать эти программы и похожие примеры, упражнения. 
+Поскольку нет лучшего способа, чтобы почувствовать как  ML используется 
+в действительности.
 
-\section{Symbolic differentiation}
+%%As we have said, ML was originally designed as a metalanguage for a computer
+%%theorem prover. However it is suitable for plenty of other applications, mostly
+%%from the same general field of `symbolic computation'. In this chapter we will
+%%give some examples of characteristic uses of ML. It is not necessary that the
+%%reader should understand every detail of the particular examples, e.g. the
+%%analyses of real number approximations given below. However it is worth trying
+%%out these programs and similar examples for yourself, and doing some of the
+%%exercises. There is no better way of getting a feel for how ML is actually
+%%used.
 
-The phrase `symbolic computation' is a bit vague, but roughly speaking it
-covers applications where manipulation of mathematical {\em expressions}, in
-general containing variables, is emphasized at the expense of actual numerical
-calculation. There are several successful `computer algebra systems' such as
-Axiom, Maple and Mathematica, which can do certain symbolic operations that are
-useful in mathematics, e.g. factorizing polynomials and differentiating and
-integrating expressions. (They are also capable of purely numerical work.) We
-will illustrate how this sort of application can be tackled using ML.
+\section{Символьное дифференцирование}
 
-We use symbolic differentiation as our example, because there is an algorithm
-to do it which is fairly simple and well known. The reader is probably familiar
-with certain derivatives of basic operations, e.g ${d \over dx} sin(x) =
-cos(x)$, as well as results such as the Chain Rule and Product Rule for
-calculating the derivatives of composite expressions in terms of the
-derivatives of the components. Just as one can use these systematically in
-order to find derivatives, it is possible to program a fairly straightforward
-algorithm to do it in ML.
+%%\section{Symbolic differentiation}
 
-\subsection{First order terms}
+Фраза <<символьное вычисление>> довольно неопределённа, но грубо говоря, она 
+охватывает приложения занимающиеся, манипуляцими над математическими 
+{\em выражениями}, в общем случае содержащими переменные, а не просто численными
+расчётами. Есть несколько успешных <<систем компьютерной алгебры>> таких как
+Maxima, Maple and Mathematica. Они они могут выполнять полезные
+математические операции, такие как разложение многочленов на множители, 
+дифференцирование и интегрирование выражений. (Они также пригодны и для
+обычных вычислений.) Мы покажем как задачи такого рода могут быть решены с помощью ML.
 
-We will allow mathematical expressions in a fairly general form. They may be
-built up from variables and constants by the application of operators. These
-operators may be unary, binary, ternary, or in general $n$-ary. We represent
-this using the following recursive datatype:
+%%The phrase `symbolic computation' is a bit vague, but roughly speaking it
+%%covers applications where manipulation of mathematical {\em expressions}, in
+%%general containing variables, is emphasized at the expense of actual numerical
+%%calculation. There are several successful `computer algebra systems' such as
+%%Axiom, Maple and Mathematica, which can do certain symbolic operations that are
+%%useful in mathematics, e.g. factorizing polynomials and differentiating and
+%%integrating expressions. (They are also capable of purely numerical work.) We
+%%will illustrate how this sort of application can be tackled using ML.
+
+Мы выбрали символьное дифференцирование для нашего примера, потому что для него
+есть довольно простой и известный алгоритм. Читатель, возможно, знаком
+с определёнными производными основных функций, например ${d \over dx} sin(x) =
+cos(x)$, а также с правилами дифференцирования произведения и композиции 
+функций. Поскольку каждый может систематически использовать  эти правила
+для нахождения производных, то возможно и запрограммировать их на ML. 
+
+%%We use symbolic differentiation as our example, because there is an algorithm
+%%to do it which is fairly simple and well known. The reader is probably familiar
+%%with certain derivatives of basic operations, e.g ${d \over dx} sin(x) =
+%%cos(x)$, as well as results such as the Chain Rule and Product Rule for
+%%calculating the derivatives of composite expressions in terms of the
+%%derivatives of the components. Just as one can use these systematically in
+%%order to find derivatives, it is possible to program a fairly straightforward
+%%algorithm to do it in ML.
+
+
+\subsection{Термы первого порядка???}
+#BUG Ни о каких термах и речи нет. Сложности перевода???
+%%\subsection{First order terms}
+
+Мы будем допускать математические выражения в весьма общей форме. Они могут
+быть построены из переменных и констант, с использованием операторов. Операторы
+могут быть унарными, бинарными, тернарными, или, в общем случае, арности $n$.
+Мы выражаем это с помощью следующего рекурсивного типа данных:
+
+%%We will allow mathematical expressions in a fairly general form. They may be
+%%built up from variables and constants by the application of operators. These
+%%operators may be unary, binary, ternary, or in general $n$-ary. We represent
+%%this using the following recursive datatype:
 
 \begin{boxed}\begin{verbatim}
   #type term = Var of string
@@ -44,11 +79,13 @@ this using the following recursive datatype:
   Type term defined.
 \end{verbatim}\end{boxed}
 
-\noindent For example, the expression:
+\noindent Например, выражение:
+%\noindent For example, the expression:
 
 $$ sin(x + y) / cos(x - exp(y)) - ln(1 + x) $$
 
-\noindent is represented by:
+\noindent представляется:
+%%\noindent is represented by:
 
 \begin{boxed}\begin{verbatim}
   Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
@@ -56,31 +93,53 @@ $$ sin(x + y) / cos(x - exp(y)) - ln(1 + x) $$
           Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
 \end{verbatim}\end{boxed}
 
-\subsection{Printing}
+\subsection{Печать}
 
-Reading and writing expressions in their raw form is rather unpleasant. This is
-a general problem in all symbolic computation systems, and typically the
-system's interface contains a {\em parser} and {\em prettyprinter} to allow
-respectively input and output in a readable form. A detailed discussion of
-parsing is postponed, since it is worth a section of its own, but we will now
-write a very simple printer for expressions, so that at least we can see what's
-going on. We want the printer to support ordinary human conventions, i.e.
+Чтение и запись выражений в сыром виде довольно неудобны. Это общая проблема
+для всех систем символьных вычислений, и обычно интерфейс системы содержит
+{\em синтаксический анализатор (парсер)} и {\em системы вывода}, позволяющие
+вводить и выводить данные в читаемой форме. Подробное обсуждение парсинга мы 
+отложим, поскольку эта, сама по себе важная тема, будет обсуждаться далее, а
+сейчас мы напишем простенькую систему вывода для наших выражений. Такую чтобы, 
+по крайней мере, мы могли видеть что происходит. Мы хотим, чтобы поддерживались
+обычные соглашения, как то:
+
+%%Reading and writing expressions in their raw form is rather unpleasant. This is
+%%a general problem in all symbolic computation systems, and typically the
+%%system's interface contains a {\em parser} and {\em prettyprinter} to allow
+%%respectively input and output in a readable form. A detailed discussion of
+%%parsing is postponed, since it is worth a section of its own, but we will now
+%%write a very simple printer for expressions, so that at least we can see what's
+%%going on. We want the printer to support ordinary human conventions, i.e.
 
 \begin{itemize}
 
-\item Variables and constants are just written as their names.
+\item Переменные и константы записываются по их именам.
+%%\item Variables and constants are just written as their names.
 
-\item Ordinary $n$-ary functions applied to arguments are written by
-juxtaposing the function and a bracketed list of arguments, e.g.
-$f(x_1,\ldots,x_n)$.
+\item Обычные $n$-арные функции, выводятся в виде 
+\alert{$f(x_1,\ldots,x_n)$}, т.е. записывается имя функции и рядом, в скобках
+список аргументов.
 
-\item Infix binary functions like $+$ are written in between their
-arguments.
+%%\item Ordinary $n$-ary functions applied to arguments are written by
+%%juxtaposing the function and a bracketed list of arguments, e.g.
+%%$f(x_1,\ldots,x_n)$.
 
-\item Brackets are used where necessary for disambiguation.
+\item Инфиксные бинарные функции, такие как \alert{$+$} записываются между
+своими аргументами.
 
-\item Infix operators have a notion of precedence to reduce the need for
-brackets.
+%%\item Infix binary functions like $+$ are written in between their
+%%arguments.
+
+\item Скобки используются по необходимости.
+
+%%\item Brackets are used where necessary for disambiguation.
+
+\item В целях сокращения использования скобок, для инфиксных операторов  
+определён приоритет.  
+  
+%%\item Infix operators have a notion of precedence to reduce the need for
+%%brackets.
 
 \end{itemize}
 
