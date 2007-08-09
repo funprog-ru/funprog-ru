@@ -5,8 +5,8 @@
 части из области  <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
 примеров использования ML. От читателя не требуется досконального
 знания всех деталей, пример тому, анализ  приближения вещественных
-чисел, приведённый далее. Однако важно испытать эти программы и похожие примеры, упражнения. 
-Поскольку нет лучшего способа, чтобы почувствовать как  ML используется 
+чисел, приведённый далее. Однако важно испытать эти программы и похожие примеры, а также, 
+упражнения. Поскольку нет лучшего способа, чтобы почувствовать как  ML используется 
 в действительности.
 
 %%As we have said, ML was originally designed as a metalanguage for a computer
@@ -144,20 +144,31 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
 
 \end{itemize}
 
-First we declare a list of infixes, which is a list of pairs: each operator
-name together with its precedence.
+Сначала мы объявим список инфиксных операторов - список пар из имени оператора
+и его приоритета.
+
+%%First we declare a list of infixes, which is a list of pairs: each operator
+%%name together with its precedence.
 
 \begin{boxed}\begin{verbatim}
   #let infixes = ["+",10; "-",10; "*",20; "/",20];;
 \end{verbatim}\end{boxed}
 
-It is common to use lists in this way to represent finite partial functions,
-since it allows more flexibility. They are commonly called {\em association
-lists}, and are very common in functional programming.\footnote{For more
-heavyweight applications, some alternative such as hash tables is much better,
-but for simple applications where the lists don't get too long, this kind of
-linear list is simple and adequate.} In order to convert the list into a
-partial function we use {\tt assoc}:
+Использование списков для представления конечных частичных функций является 
+стандартной практикой. Они обычно называются {\em ассоциативными списками}, 
+и весьма распространены в функциональном программировании.\footnote{Для более
+тяжеловесных приложений, больше подойдут альтернативы, такие как хеш - таблицы,
+но для простых приложений, в котороых списки не слишком длинны, решение в виде линейного 
+списка является простым и адекватным.} Для того чтобы конвертировать список в
+частичную функцию мы используем {\tt assoc}:
+
+%%It is common to use lists in this way to represent finite partial functions,
+%%since it allows more flexibility. They are commonly called {\em association
+%%lists}, and are very common in functional programming.\footnote{For more
+%%heavyweight applications, some alternative such as hash tables is much better,
+%%but for simple applications where the lists don't get too long, this kind of
+%%linear list is simple and adequate.} In order to convert the list into a
+%%partial function we use {\tt assoc}:
 
 \begin{boxed}\begin{verbatim}
   #let rec assoc a ((x,y)::rest) = if a = x then y else assoc a rest;;
@@ -168,9 +179,13 @@ partial function we use {\tt assoc}:
   assoc : 'a -> ('a * 'b) list -> 'b = <fun>
 \end{verbatim}\end{boxed}
 
-The compiler warns us that if the appropriate data is not found in the list,
-the function will fail. Now we can define a function to get the infix
-precedence of a function:
+Компилятор предупреждает нас - вычисление функции может прерваться, если подходящие 
+данные не будут найдены в списке. Теперь мы можем определить функцию, возвращающую 
+приоритет оператора:
+
+%%The compiler warns us that if the appropriate data is not found in the list,
+%%the function will fail. Now we can define a function to get the infix
+%%precedence of a function:
 
 \begin{boxed}\begin{verbatim}
   #let get_precedence s = assoc s infixes;;
@@ -183,11 +198,18 @@ precedence of a function:
   Uncaught exception: Match_failure ("", 6544, 6601)
 \end{verbatim}\end{boxed}
 
-Note that if we ever change this list of infixes, then any functions such as
-{\tt get\_precedence} that use it need to be redeclared. This is the main
-reason why many LISP programmers prefer dynamic binding. However we can make
-the set of infixes arbitrarily extensible by making it into a reference and
-dereferencing it on each application:
+Обратите внимание, если мы когда - либо изменим этот список операторов, 
+то всякую функцию, вроде {\tt get\_precedence}, использующую его, потребуется 
+переопределить. Это является основной причиной, по которой многие  LISP программисты 
+предпочитают динамическое связывание. Мы можем сделать множество инфиксных операторов 
+произвольно расширяемым, используя обращение по ссылке:
+
+%%Note that if we ever change this list of infixes, then any functions such as
+%%{\tt get\_precedence} that use it need to be redeclared. This is the main
+%%reason why many LISP programmers prefer dynamic binding. However we can make
+%%the set of infixes arbitrarily extensible by making it into a reference and
+%%dereferencing it on each application:
+
 
 \begin{boxed}\begin{verbatim}
   #let infixes = ref ["+",10; "-",10; "*",20; "/",20];;
@@ -203,11 +225,17 @@ dereferencing it on each application:
   - : int = 30
 \end{verbatim}\end{boxed}
 
-Note that by the ML evaluation rules, the dereferencing is only applied after
-the function {\tt get\_precedence} receives its argument, and hence results in
-the set of infixes at that time. We can also define a function to decide
-whether a function has any data associated with it. One way is simply to try
-the function {\tt get\_precedence} and see if it works:
+Заметьте, по правилам вычисления в ML, разыменование указателя применяется только
+после того, как {\tt get\_precedence} получает свои аргументы, и, следовательно, 
+результаты в множестве операторов. Мы также можем определить функцию, определяющую,
+является ли некоторая функция инфиксным оператором. Можно просто использовать 
+{\tt get\_precedence} и смотреть сработала ли она:
+
+%%Note that by the ML evaluation rules, the dereferencing is only applied after
+%%the function {\tt get\_precedence} receives its argument, and hence results in
+%%the set of infixes at that time. We can also define a function to decide
+%%whether a function has any data associated with it. One way is simply to try
+%%the function {\tt get\_precedence} and see if it works:
 
 \begin{boxed}\begin{verbatim}
   #let is_infix s =
@@ -215,8 +243,11 @@ the function {\tt get\_precedence} and see if it works:
      with _ -> false;;
 \end{verbatim}\end{boxed}
 
-An alternative is to use a general function {\tt can} that finds out whether
-another function succeeds:
+Альтернатива заключается в использовании общей функции {\tt can}, которая проверяет успешна ли
+другая функция:
+
+%%An alternative is to use a general function {\tt can} that finds out whether
+%%another function succeeds:
 
 \begin{boxed}\begin{verbatim}
   #let can f x = try f x; true with _ -> false;;
@@ -225,7 +256,9 @@ another function succeeds:
   is_infix : string -> bool = <fun>
 \end{verbatim}\end{boxed}
 
-\noindent We will use the following functions that we have already considered:
+\noindent Мы будем использовать следующие функции из уже рассмотренных:
+
+%\noindent We will use the following functions that we have already considered:
 
 \begin{boxed}\begin{verbatim}
   #let hd(h::t) = h;;
@@ -233,8 +266,10 @@ another function succeeds:
   #let rec length l = if l = [] then 0 else 1 + length(tl l);;
 \end{verbatim}\end{boxed}
 
-\noindent Without further ado, here is a function to convert a term into a
-string.
+\noindent Без дальнейших хлопот, вот функция для конвертации терма в строку.
+
+%%\noindent Without further ado, here is a function to convert a term into a
+%%string.
 
 \begin{boxed}\begin{verbatim}
   #let rec string_of_term prec =
@@ -257,18 +292,31 @@ string.
        | (h::t) -> (string_of_term 0 h)^","^(string_of_terms t);;
 \end{verbatim}\end{boxed}
 
-The first argument {\tt prec} indicates the precedence level of the operator of
-which the currently considered expression is an immediate subterm. Now if the
-current expression has an infix binary operator at the top level, parentheses
-are needed if the precedence of this operator is lower, e.g. if we are
-considering the right hand subexpression of $x * (y + z)$. Actually we use
-parentheses even when they are equal, in order to make groupings clear. In the
-case of associative operators like $+$ this doesn't matter, but we must
-distinguish $x - (y - z)$ and $(x - y) - z$. (A more sophisticated scheme would
-give each operator an associativity.) The second, mutually recursive, function
-{\tt string\_of\_terms} is used to print a comma-separated list of terms, as
-they occur for non-infix function applications of the form $f(t_1,\ldots,t_n)$.
-Let us see this in action:
+Первый аргумент {\tt prec} обозначает уровень приоритета оператора, для которого
+текущее рассматриваемое выражение является непосредственным подтермом. 
+Так что если текущее выражение имеет инфиксный оператор с некоторым приоритетом, то 
+скобки необходимы если приоритет этого оператора ниже {\tt prec}, иными словами, если мы
+рассматриваем правую часть  $x * (y + z)$. Действительно, мы используем 
+скобки даже когда они равны, для более наглядной группировки. 
+В случае ассоциативных операторов, вроде $+$ это не важно, но мы должны различать 
+$x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каждым
+оператором ассоциативность.) Вторая, взаимно рекурсивная, функция
+{\tt string\_of\_terms} используется для печати списка термов через запятую, как 
+они идут в неинфексной форме $f(t_1,\ldots,t_n)$.
+Давайте посмотрим это в действии:
+
+%%The first argument {\tt prec} indicates the precedence level of the operator of
+%%which the currently considered expression is an immediate subterm. Now if the
+%%current expression has an infix binary operator at the top level, parentheses
+%%are needed if the precedence of this operator is lower, e.g. if we are
+%%considering the right hand subexpression of $x * (y + z)$. Actually we use
+%%parentheses even when they are equal, in order to make groupings clear. In the
+%%case of associative operators like $+$ this doesn't matter, but we must
+%%distinguish $x - (y - z)$ and $(x - y) - z$. (A more sophisticated scheme would
+%%give each operator an associativity.) The second, mutually recursive, function
+%%{\tt string\_of\_terms} is used to print a comma-separated list of terms, as
+%they occur for non-infix function applications of the form $f(t_1,\ldots,t_n)$.
+%%Let us see this in action:
 
 \begin{boxed}\begin{verbatim}
   #let t =
@@ -348,7 +396,7 @@ function calls that help the printing mechanism to understand where to break
 the lines. Many of the principles used in this and similar `prettyprinting
 engines' are due to \citeN{oppen-pretty}. We will not consider this in detail
 here --- see the CAML manual for details.\footnote{There is also a tutorial,
-written by Pierre Weis, available online as part of the CAML page: `{\tt
+written by Pierre Weis, unavailable online as part of the CAML page: `{\tt
 http://pauillac.inria.fr/caml/FAQ/format-eng.html}'.}
 
 \subsection{Derivatives}
