@@ -132,8 +132,8 @@
 \end{lstlisting}}
 
 
-\defverbatim[colored]\BeforeAfterCode{
-  \begin{lstlisting}[frame=single]
+\defverbatim[colored]\BeforeInstPrint{
+  \begin{lstlisting}[frame=plain]
   #t;;
   t : term =
    Fn
@@ -144,6 +144,10 @@
          Fn ("cos", [Fn ("-", [Var "x"; Fn ("exp",
                                       [Var "y"])])])]);
       Fn ("ln", [Fn ("+", [Const "1"; Var "x"])])])
+  \end{lstlisting}}
+
+\defverbatim[colored]\AfterInstPrint{
+  \begin{lstlisting}[frame=plain]       
   #install_printer "print_term";;
   - : unit = ()
   #t;;
@@ -162,7 +166,7 @@
   \end{lstlisting}}
 
 
-\defverbatim[colored]\DiffCode{
+\defverbatim[colored]\DiffCodeStart{
   \begin{lstlisting}[frame=single]
   let rec differentiate x tm = match tm with
     Var y -> if y = x then Const "1" else Const "0"
@@ -177,8 +181,15 @@
              Fn("*",[t1; differentiate x t2])])
   | Fn("inv",[t]) -> chain x t
      (Fn("-",[Fn("inv",[Fn("^",[t;Const "2"])])]))
+
+  \end{lstlisting}}
+
+\defverbatim[colored]\DiffCodeEnd{
+  \begin{lstlisting}[frame=single]
   | Fn("^",[t;n]) -> chain x t
-    (Fn("*",[n; Fn("^",[t; Fn("-",[n; Const "1"])])]))
+    (Fn("*",[n; 
+    		  Fn("^",[t; 
+    		  			Fn("-",[n; Const "1"])])]))
   | Fn("exp",[t]) -> chain x t tm
   | Fn("ln",[t]) -> chain x t (Fn("inv",[t]))
   | Fn("sin",[t]) -> chain x t (Fn("cos",[t]))
@@ -189,8 +200,7 @@
   | Fn("tan",[t]) -> differentiate x
      (Fn("/",[Fn("sin",[t]); Fn("cos",[t])]))
   and chain x t u =  Fn("*",[differentiate x t; u]);;
-  \end{lstlisting}}
-
+\end{lstlisting}}
 
 \defverbatim[colored]\DiffSample{
  \begin{lstlisting}[frame=single]
@@ -590,12 +600,20 @@
 }
 
 
-\frame[shrink=8]{
-  \frametitle{ До и после }
+\frame{
+  \frametitle{ До установки печати }
 
-  \BeforeAfterCode 
+  \BeforeInstPrint 
 
 }
+
+\frame{
+  \frametitle{ После установки печати }
+
+  \AfterInstPrint 
+
+}
+
 
 
 \frame{
@@ -645,15 +663,21 @@
 }
 
 
-\frame[shrink=6]{
-  \frametitle{ Дифференцирование: код }
+\frame{
+  \frametitle{ Дифференцирование: код (начало)}
 
-  \DiffCode 
+  \DiffCodeStart 
 
+}
+\frame{
+  \frametitle{ Дифференцирование: код (конец) }
+
+  \DiffCodeEnd 
 }
 
 
-\frame[shrink=5]{
+
+\frame{
   \frametitle{ Примеры дифференцирования }
 
   Попробуем несколько примеров:
@@ -664,7 +688,7 @@
 }
 
 
-\frame[shrink=5]{
+\frame{
   \frametitle{ Упрощение выражений }
 
   Кажется, всё хорошо работает, но при этом не делается некоторых очевидных
@@ -677,11 +701,13 @@
   %%like \alert{$0 * x = 0$}. These arise partly because we apply the recursive
   %%rules like the chain rule even in trivial cases. We'll write a simplifier:
 
-  \SimplCodeOne
 }
 
-
-\frame[shrink=5]{
+\frame{
+  \frametitle{ Упрощение выражений: код }
+  \SimplCodeOne
+}
+\frame{
   \frametitle{ Примеры упрощения }
 
   Мы должны применить {\tt simp} рекурсивно, по индукции:
