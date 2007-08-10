@@ -4,8 +4,8 @@
 доказательства теорем. Однако он пригоден и для многих других приложений, по большей
 части из области  <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
 примеров использования ML. От читателя не требуется досконального
-знания всех деталей, пример тому, анализ  приближения вещественных
-чисел, приведённый далее. Однако важно испытать эти программы и похожие примеры, а также, 
+знания всех деталей, как, например, в случае анализа  приближения вещественных
+чисел, приведённом далее. Однако, важно испытать эти программы и похожие примеры, а также, 
 упражнения. Поскольку нет лучшего способа, чтобы почувствовать как  ML используется 
 в действительности.
 
@@ -24,7 +24,7 @@
 %%\section{Symbolic differentiation}
 
 Фраза <<символьное вычисление>> довольно неопределённа, но грубо говоря, она 
-охватывает приложения занимающиеся, манипуляцими над математическими 
+охватывает приложения занимающиеся, манипуляциями над математическими 
 {\em выражениями}, в общем случае содержащими переменные, а не просто численными
 расчётами. Есть несколько успешных <<систем компьютерной алгебры>> таких как
 Maxima, Maple and Mathematica. Они они могут выполнять полезные
@@ -99,11 +99,11 @@ $$ sin(x + y) / cos(x - exp(y)) - ln(1 + x) $$
 Чтение и запись выражений в сыром виде довольно неудобны. Это общая проблема
 для всех систем символьных вычислений, и обычно интерфейс системы содержит
 {\em синтаксический анализатор (парсер)} и {\em системы вывода}, позволяющие
-вводить и выводить данные в читаемой форме. Подробное обсуждение парсинга мы 
-отложим, поскольку эта, сама по себе важная тема, будет обсуждаться далее, а
-сейчас мы напишем простенькую систему вывода для наших выражений. Такую чтобы, 
-по крайней мере, мы могли видеть что происходит. Мы хотим, чтобы поддерживались
-обычные соглашения, как то:
+вводить и выводить данные в читаемой форме. Подробное обсуждение синтаксического 
+разбора мы отложим, поскольку эта, сама по себе важная тема, будет обсуждаться 
+далее, а сейчас мы напишем простенькую систему вывода для наших выражений. Такую 
+чтобы, по крайней мере, мы могли видеть что происходит. Мы хотим, чтобы 
+поддерживались обычные соглашения, как то:
 
 %%Reading and writing expressions in their raw form is rather unpleasant. This is
 %%a general problem in all symbolic computation systems, and typically the
@@ -336,11 +336,14 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
   - : string = "sin(x + y) / cos(x - exp(y)) - ln(1 + x)"
 \end{verbatim}\end{boxed}
 
-In fact, we don't need to convert a term to a string ourselves. CAML Light
-allows us to set up our own printer so that it is used to print anything of
-type {\tt term} in the standard read-eval-print loop. This needs a few special
-commands to ensure that we interact properly with the toplevel
-loop:
+На  самом деле, нам даже не требуется самостоятельно конвертировать терм в строку. CAML Light
+позволяет нам настроить свою систему вывода. Это потребует несколько специальных команд:
+
+%%In fact, we don't need to convert a term to a string ourselves. CAML Light
+%%allows us to set up our own printer so that it is used to print anything of
+%%type {\tt term} in the standard read-eval-print loop. This needs a few special
+%%commands to ensure that we interact properly with the toplevel
+%%loop:
 
 \begin{boxed}\begin{verbatim}
   ##open "format";;
@@ -355,6 +358,8 @@ loop:
 
 \noindent Now compare the effect:
 
+%\noindent Почувствуйте разницу:
+
 \begin{boxed}\begin{verbatim}
   #let t =
       Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
@@ -365,6 +370,10 @@ loop:
   #let x = t
   x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
 \end{verbatim}\end{boxed}
+
+После того как новый принтер установлен, он будет использоваться всякий раз
+при печати типа {\tt term}, даже если он представляет собой составной 
+тип данных, как например кортеж:
 
 Once the new printer is installed, it is used whenever CAML wants to print
 something of type {\tt term}, even if it is a composite datastructure
@@ -377,7 +386,7 @@ such as a pair:
    `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
 \end{verbatim}\end{boxed}
 
-\noindent or a list:
+\noindent или список:
 
 \begin{boxed}\begin{verbatim}
   #[x; t; x];;
@@ -387,43 +396,73 @@ such as a pair:
     `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`]
 \end{verbatim}\end{boxed}
 
-This printer is rather crude in that it will not break up large expressions
-intelligently across lines. The CAML library {\tt format}, from which we used a
-few functions above, provides for a better approach. Instead of converting the
-term into a string then printing it in one piece, we can make separate printing
-calls for different parts of it, and intersperse these with some special
-function calls that help the printing mechanism to understand where to break
-the lines. Many of the principles used in this and similar `prettyprinting
-engines' are due to \citeN{oppen-pretty}. We will not consider this in detail
-here --- see the CAML manual for details.\footnote{There is also a tutorial,
-written by Pierre Weis, unavailable online as part of the CAML page: `{\tt
-http://pauillac.inria.fr/caml/FAQ/format-eng.html}'.}
+Подобная печать всё же довольно груба, поскольку большие выражения не разбиваются аккуратно
+на линии. Библиотека {\tt format}, из которой мы использовали несколько функций выше, 
+предлагает лучшее решение. Вместо конвертации терма в строку и печати, мы можем 
+выполнить отдельные вызовы печати для каждой его части, с помощью
+специальной функции, помогающей системе печати разбивать строки. 
+Многие из принципов, использующиеся в этой и подобных системах форматированного
+вывода рассматриваются в \citeN{oppen-pretty}. Мы не будем рассматривать их в книге,
+за подробностями обращайтесь к руководству по CAML.\footnote{Там также есть учебник на эту тему,
+написанный Pierre Weis. Адрес:~{\tt http://caml.inria.fr/index-eng.html}}
 
-\subsection{Derivatives}
+%%This printer is rather crude in that it will not break up large expressions
+%%intelligently across lines. The CAML library {\tt format}, from which we used a
+%%few functions above, provides for a better approach. Instead of converting the
+%%term into a string then printing it in one piece, we can make separate printing
+%%calls for different parts of it, and intersperse these with some special
+%%function calls that help the printing mechanism to understand where to break
+%%the lines. Many of the principles used in this and similar `prettyprinting
+%%engines' are due to \citeN{oppen-pretty}. We will not consider this in detail
+%%here --- see the CAML manual for details.\footnote{There is also a tutorial,
+%%written by Pierre Weis, unavailable online as part of the CAML page: `{\tt
+%%http://pauillac.inria.fr/caml/FAQ/format-eng.html}'.}
 
-Now it is a fairly simple matter to define the derivative function. First let
-us recall the systematic method we are taught in school:
+\subsection{Дифференцирование}
+
+Перейдём теперь к довольно простой задаче нахождения производной от функции. 
+Сначала давайте вспомним, чему нас обучали в школе:
+
+%%Now it is a fairly simple matter to define the derivative function. First let
+%%us recall the systematic method we are taught in school:
 
 \begin{itemize}
 
-\item If the expression is one of the standard functions applied to an argument
-that is the variable of differentiation, e.g. $sin(x)$, return the known
-derivative.
+  \item Если выражение - одна из элементарных функций дифференцируемого аргумента, 
+  например \alert{$sin(x)$}, то результат дифференцирования - известная производная этой функции.
 
-\item If the expression is of the form $f(x) + g(x)$ then apply the rule
-for sums, returning $f'(x) + g'(x)$. Likewise for subtraction etc.
+  %\item If the expression is one of the standard functions applied to an
+  %argument, e.g. \alert{$sin(x)$}, return the known derivative.
 
-\item If the expression is of the form $f(x) * g(x)$ then apply the
-product rule, i.e. return $f'(x) * g(x) + f(x) * g'(x)$.
+  \item Если выражение представимо в форме \alert{$f(x) + g(x)$}, то по правилу 
+  суммы, результат дифференцирования есть  \alert{$f'(x) + g'(x)$}. 
+  Аналогично для разности.
 
-\item If the expression is one of the standard functions applied to a composite
-argument, say $f(g(x))$ then apply the Chain Rule and so give
-$g'(x) * f'(g(x))$
+  %\item If the expression is of the form \alert{$f(x) + g(x)$} then apply 
+  %the rule for sums, returning \alert{$f'(x) + g'(x)$}. Likewise for 
+  %subtraction etc.
+
+  \item Если выражение задано в форме \alert{$f(x) * g(x)$}, применяется {\em правило
+  Лейбница}, т.е. возвращается \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+
+  %\item If the expression is of the form \alert{$f(x) * g(x)$} then apply the
+  %product rule, i.e. return \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+
+  \item Если выражение является одной из композицией стандартных функций:  
+  \alert{$f(g(x))$}, то применяется правило последовательного 
+  дифференцирования, результат которого: \alert{$g'(x) * f'(g(x))$}.
+
+  %\item If the expression is one of the standard functions applied to a 
+  %composite argument, say \alert{$f(g(x))$} then apply the Chain Rule and so  
+  %give \alert{$g'(x) * f'(g(x))$}.
 
 \end{itemize}
 
-This is nothing but a recursive algorithm, though that terminology is seldom
-used in schools. We can program it in ML very directly:
+Таким образом, эти правила представляют собой рекурсивный алгоритм, хотя такая 
+терминология редко используется в школах. Мы можем дословно запрограммировать его в ML:
+
+%%This is nothing but a recursive algorithm, though that terminology is seldom
+%%used in schools. We can program it in ML very directly:
 
 \begin{boxed}\begin{verbatim}
   #let rec differentiate x tm = match tm with
@@ -461,7 +500,15 @@ trigonometric functions if desired. A couple of cases, namely division and
 $tan$, avoid a complicated definition by applying the differentiator to an
 alternative formulation.
 
-\subsection{Simplification}
+%%The {\tt chain} function just avoids repeating the chain rule construction for
+%%many operations. Apart from that, we just systematically apply rules for sums,
+%%products etc. and the known derivatives of standard functions. Of course, we
+%%could add other functions such as the hyperbolic functions and inverse
+%%trigonometric functions if desired. A couple of cases, namely division and
+%%$tan$, avoid a complicated definition by applying the differentiator to an
+%%alternative formulation.
+
+\subsection{Упрощение}
 
 If we try the differentiator out on our running example, then it works quite
 well:
@@ -3057,3 +3104,4 @@ elementary logic books, e.g. \citeN{enderton-logic}.}
 %%% Local Variables:
 %%% TeX-master: "all"
 %%% End:
+
