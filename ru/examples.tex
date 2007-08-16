@@ -6,7 +6,7 @@
 примеров использования ML. От читателя не требуется досконального
 знания всех деталей, как, например, в случае анализа  приближения вещественных
 чисел, приведённом далее. Однако, важно испытать эти программы и похожие примеры, а также, 
-упражнения. Поскольку нет лучшего способа, чтобы почувствовать как  ML используется 
+упражнения. Поскольку нет лучшего способа,  почувствовать как  ML используется 
 в действительности.
 
 %%As we have said, ML was originally designed as a metalanguage for a computer
@@ -492,13 +492,12 @@ such as a pair:
    and chain x t u =  Fn("*",[differentiate x t; u]);;
 \end{verbatim}\end{boxed}
 
-The {\tt chain} function just avoids repeating the chain rule construction for
-many operations. Apart from that, we just systematically apply rules for sums,
-products etc. and the known derivatives of standard functions. Of course, we
-could add other functions such as the hyperbolic functions and inverse
-trigonometric functions if desired. A couple of cases, namely division and
-$tan$, avoid a complicated definition by applying the differentiator to an
-alternative formulation.
+Функция {\tt chain} предназначена просто для упрощения последовательного 
+дифференцирования. Мы также систематически используем правила для сумм,
+произведений и пр. а также производные стандартных функций. Конечно,  мы
+могли бы, по желанию, добавить и другие функции, например, гиперболические 
+или обратные тригонометрические. В паре случаев, а именно, для деления и 
+функции~$tan$, мы избегаем усложнённого определения за счёт альтернативной формулировки.
 
 %%The {\tt chain} function just avoids repeating the chain rule construction for
 %%many operations. Apart from that, we just systematically apply rules for sums,
@@ -510,8 +509,11 @@ alternative formulation.
 
 \subsection{Упрощение}
 
-If we try the differentiator out on our running example, then it works quite
-well:
+Если мы опробуем {\tt differentiator} на наших рабочем примере,  она будет 
+работать довольно хорошо:
+
+%%If we try the differentiator out on our running example, then it works quite
+%%well:
 
 \begin{boxed}\begin{verbatim}
   #t;;
@@ -533,13 +535,20 @@ well:
     -(inv(cos(x - exp(y)) ^ 2)))) - (0 + 0) * inv(1 + x)`
 \end{verbatim}\end{boxed}
 
-However, it fails to make various obvious simplifications such as $0 * x = 0$
-and $x + 0 = x$. Some of these redundant expressions are created by the rather
-unsubtle differentiation strategy which, for instance, applies the chain rule
-to $f(t)$ even where $t$ is just the variable of differentiation. However, some
-would be hard to avoid without making the differentiator much more complicated.
-Accordingly, let us define a separate simplification function that gets rid of
-some of these unnecessary expressions.
+Однако, она не выполняет различные очевидные упрощения, такие как $0 * x = 0$
+и $x + 0 = x$. Некоторые из этих избыточных выражений создаются скорее 
+неизощрённой стратегией дифференцирования, которая, например, применяет правило
+последовательного дифференцирования~$f(t)$ даже когда $t$~-~всего лишь переменная
+дифференцирования. Вместо избыточного усложнения {\\tt differentiator} 
+давайте зададим отдельную функцию упрощения, которая избавляется от необязательных выражений.
+
+%%However, it fails to make various obvious simplifications such as $0 * x = 0$
+%%and $x + 0 = x$. Some of these redundant expressions are created by the rather
+%%unsubtle differentiation strategy which, for instance, applies the chain rule
+%%to $f(t)$ even where $t$ is just the variable of differentiation. However, some
+%%would be hard to avoid without making the differentiator much more complicated.
+%%Accordingly, let us define a separate simplification function that gets rid of
+%%some of these unnecessary expressions.
 
 \begin{boxed}\begin{verbatim}
   #let simp =
@@ -559,12 +568,20 @@ some of these unnecessary expressions.
        | t -> t;;
 \end{verbatim}\end{boxed}
 
-This just applies the simplification at the top level of the term. We need to
+Мы просто применяем упрощение с самого вехнего уровня. We need to
 execute it in a bottom-up sweep. This will also bring negations upwards through
 products. In some cases it would be more efficient to simplify in a top-down
 sweep, e.g. $0 * t$ for a complicated expression $t$, but this would need
 repeating for terms like $(0 + 0) * 2$. The choice is rather like that between
 normal and applicative order reduction in lambda calculus.
+
+
+%%This just applies the simplification at the top level of the term. We need to
+%%execute it in a bottom-up sweep. This will also bring negations upwards through
+%%products. In some cases it would be more efficient to simplify in a top-down
+%%sweep, e.g. $0 * t$ for a complicated expression $t$, but this would need
+%%repeating for terms like $(0 + 0) * 2$. The choice is rather like that between
+%%normal and applicative order reduction in lambda calculus.
 
 \begin{boxed}\begin{verbatim}
   #let rec dsimp =
@@ -572,7 +589,8 @@ normal and applicative order reduction in lambda calculus.
        | t -> simp t;;
 \end{verbatim}\end{boxed}
 
-\noindent Now we get better results:
+
+\noindent Теперь мы получаем лучшие результаты:
 
 \begin{boxed}\begin{verbatim}
   #dsimp(differentiate "x" t);;
