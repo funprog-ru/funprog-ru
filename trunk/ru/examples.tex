@@ -763,7 +763,7 @@ term     & \goesto & term {\verb! * !} term                             \\
 \end{eqnarray*}
 
 Очевидная возможность устранения неоднозначности~--- назначение инфиксным
-операторам приоритетов и ассоциативности. Кроме того, мы можем добиться такого
+операциям приоритетов и ассоциативности. Кроме того, мы можем добиться такого
 же эффекта без привлечения дополнительных механизмов за счёт добавления 
 новых синтаксических категорий:
 %The obvious way to fix this is to specify rules of precedence and associativity
@@ -798,8 +798,8 @@ termlist & \goesto & term {\verb!, !} termlist                   \\
 анализа при помощи множества взаимно рекурсивных функций. Его суть в том, что
 для каждой синтаксической категории вводится своя функция, причем структура 
 рекурсивных вызовов соответствует зависимости одних продукций от других. 
-Например, процедура анализа термов~{\verb!term!} при получении из входного
-потока символа~{\verb!-!} будет рекурсивно вызывать саму себя для анализа
+Например, процедура анализа термов~{\verb!term!} при получении из входной
+последовательности символа~{\verb!-!} будет рекурсивно вызывать саму себя для анализа 
 аргумента операции, а при встрече имени, за которым следует открывающая скобка,
 обратится к процедуре~{\verb!termlist!}. Последняя, в свою очередь, 
 вызовет~{\verb!term!} не менее одного раза, и так далее. Такой подход 
@@ -822,12 +822,12 @@ termlist & \goesto & term {\verb!, !} termlist                   \\
 простых символов, но на практике обычно вводится дополнительный уровень
 {\em лексического анализа,} в ходе которого символы группируются 
 в~{\em лексемы (токены),} например, <<{\verb!x12!}>>, <<{\verb!:=!}>> 
-и~<<{\verb!96!}>>, так что входной поток состоит уже из лексем, о типе которых
+и~<<{\verb!96!}>>, так что входная последовательность состоит уже из лексем, о типе которых
 мы не будем делать предположений. Аналогично, будем считать, что анализатор
 производит результат типа~$\beta$. Этот результат может быть, например, деревом
 разбора, представленным рекурсивным типом данных, либо просто числом, если
 анализатор предназначен для разбора выражения и его вычисления одновременно.
-В общем случае, анализатор может не обработать входной поток полностью, так что
+В общем случае, анализатор может не обработать входную последовательность полностью, так что
 нам потребуется вернуть в дополнение к результату разбора еще и список 
 необработанных лексем. Таким образом, тип анализатора: 
 %In our ML implementation, we suppose that we have some input list of objects of
@@ -899,8 +899,8 @@ $$
 %{\verb!>>!} is used to modify the results of a parser according to a function.
 
 Согласно синтаксису~CAML, идентификаторы наподобие~{\verb!++!} автоматически
-считаются инфиксными операциями, так что во время определения операций мы
-временно блокируем эту возможность при помощи ключевого слова~{\tt prefix}.
+считаются инфиксными операциями, поэтому определение операций включает
+временную блокировку этой возможности при помощи ключевого слова~{\tt prefix}.
 Приоритеты также задаются автоматически по первым символам идентификаторов
 и полагаются равными приоритетам арифметических операций, обозначенных этими 
 символами. Таким образом, приоритет~{\verb!++!} наивысший, 
@@ -973,8 +973,8 @@ $$
 принимает любой входной символ, удовлетворяющий заданному предикату, и
 возвращает его. Функция~{\tt a} выполняет схожее действие, с той разницей,
 что она проверяет входной символ на равенство заданному. Наконец, 
-{\tt finished} предназначена для проверки того, что весь входной поток был
-обработан.
+{\tt finished} предназначена для проверки того, что вся входная 
+последовательность была обработана.
 %In order to get started, we define a few `atomic' parsers. The function {\tt
 %some} accepts any item satisfying a predicate and returns it. The function {\tt
 %a} is similar, but demands a particular item, and finally {\tt finished} just
@@ -991,15 +991,23 @@ $$
     if input = [] then 0,input else raise Noparse;;
 \end{lstlisting}\end{boxed}
 
-\subsection{Lexical analysis}
-
-Our parsing combinators can easily be used, in conjunction with a few simple
-character discrimination functions, to construct a lexical analyzer for our
-language of terms. We define a type of {\em tokens} (or lexemes), and the lexer
-translates the input string into a list of tokens. The `other' cases cover
-symbolic identifiers; they are all straightforward as they consist of just a
-single character, rather than composite ones like `{\verb!:=!}'.
-
+\subsection{Лексический анализ}
+%\subsection{Lexical analysis}
+Комбинаторы синтаксического анализа в сочетании с несколькими простыми 
+функциями классификации символов хорошо подходят для построения лексического
+анализатора нашего языка термов. Прежде всего, определим тип, представляющий
+{\em лексемы (токены)}, после чего реализуем лексический анализатор, 
+преобразующий входную последовательность в список лексем. Лексической
+категории Other соответствуют обозначения операций и т.~п., причем в нашем
+случае все они весьма просты и состоят лишь из одного символа (в отличие от
+составных обозначений, таких как~{\verb!:=!}).
+%Our parsing combinators can easily be used, in conjunction with a few simple
+%character discrimination functions, to construct a lexical analyzer for our
+%language of terms. We define a type of {\em tokens} (or lexemes), and the lexer
+%translates the input string into a list of tokens. The `other' cases cover
+%symbolic identifiers; they are all straightforward as they consist of just a
+%single character, rather than composite ones like `{\verb!:=!}'.
+%
 \begin{boxed}\begin{lstlisting}
   type token = Name of string | Num of string | Other of string;;
 
@@ -1024,9 +1032,10 @@ single character, rather than composite ones like `{\verb!:=!}'.
     let alltokens = (tokens ++ finished) >> fst in
     fst o alltokens o explode;;
 \end{lstlisting}\end{boxed}
-
-\noindent For example:
-
+%
+Например,
+%\noindent For example:
+%
 \begin{boxed}\begin{verbatim}
   #lex "sin(x + y) * cos(2 * x + y)";;
    - : token list =
@@ -1035,11 +1044,13 @@ single character, rather than composite ones like `{\verb!:=!}'.
     Other "+"; Name "y"; Other ")"]
 \end{verbatim}\end{boxed}
 
-\subsection{Parsing terms}
-
-Since we are now working at the level of tokens, we define trivial parsers to
-accept tokens of (only) a certain kind:
-
+\subsection{Анализатор термов}
+%\subsection{Parsing terms}
+Для завершения перехода от анализа отдельных символов к анализу лексем, 
+введём базовые анализаторы, принимающие лексемы заданной категории:
+%Since we are now working at the level of tokens, we define trivial parsers to
+%accept tokens of (only) a certain kind:
+%
 \begin{boxed}\begin{lstlisting}
   let name =
     fun (Name s::rest) -> s,rest
@@ -1053,10 +1064,14 @@ accept tokens of (only) a certain kind:
     fun (Other s::rest) -> s,rest
       | _ -> raise Noparse;;
 \end{lstlisting}\end{boxed}
-
-\noindent Now we can define a parser for terms, in a form very similar to the
-original grammar. The main difference is that each production rule has
-associated with it some sort of special action to take as a result of parsing.
+%
+С помощью этих функций мы можем определить анализатор термов в виде, очень
+схожем с исходной грамматикой. Основное различие состоит в том, что каждой
+продукции сопоставлено некоторое действие, результат которого возвращается
+как результат анализа.
+%\noindent Now we can define a parser for terms, in a form very similar to the
+%original grammar. The main difference is that each production rule has
+%associated with it some sort of special action to take as a result of parsing.
 
 \begin{boxed}\begin{lstlisting}
   let rec atom input
@@ -1085,15 +1100,18 @@ associated with it some sort of special action to take as a result of parsing.
                 >> (fun h -> [h])) input;;
 \end{lstlisting}\end{boxed}
 
-\noindent Let us package everything up as a single parsing function:
-
+Объединим определённые ранее примитивы в единую функцию: 
+%\noindent Let us package everything up as a single parsing function:
+%
 \begin{boxed}\begin{lstlisting}
   let parser = fst o (term ++ finished >> fst) o lex;;
 \end{lstlisting}\end{boxed}
-
-\noindent To see it in action, we try with and without the printer (see above)
-installed:
-
+%
+Наглядной иллюстрацией работы этой функции является её вызов до и после
+установки специализированной функции вывода (см.\ выше):
+%\noindent To see it in action, we try with and without the printer (see above)
+%installed:
+%
 \begin{boxed}\begin{verbatim}
   #parser "sin(x + y) * cos(2 * x + y)";;
   - : term =
@@ -1108,19 +1126,35 @@ installed:
   - : term = `sin(x + y) * cos(2 * x + y)`
 \end{verbatim}\end{boxed}
 
-\subsection{Automatic precedence parsing}
-
-In the above parser, we `hardwired' a parser for the two infix operators.
-However it would be nicer, and consistent with our approach to printing, if
-changes to the set of infixes could propagate to the parser. Moreover, even
-with just two different binary operators, our production rules and consequent
-parser were already starting to look artificial; imagine if we had a dozen or
-so. What we would like is to automate the production of a layer of parsers, one
-for each operator, in order of precedence. This can easily be done. First, we
-define a general function that takes a parser for what, at this level, are
-regarded as atomic expressions, and produces a new parser for such expressions
-separated by a given operator. Note that this could also be defined using
-parsing combinators, but the function below is simple and more efficient.
+\subsection{Автоматический учёт приоритетов}
+%\subsection{Automatic precedence parsing}
+Синтаксический анализатор, рассмотренный выше, реализует разбор двух инфиксных 
+операций в явном виде. Однако, для большего удобства и согласованности с нашим
+подходом к выводу выражений, следует учесть введенную ранее информацию о 
+множестве доступных инфиксных операций. Более того, наличие даже двух различных
+бинарных операций заставляет прибегать к искусственным приёмам при построении
+грамматики и программы разбора~--- нетрудно представить себе, во что 
+превратится работа, например, с дюжиной таких операций. Таким образом, 
+несомненна полезность автоматического порождения иерархии анализаторов для каждой
+доступной операции, упорядоченных согласно их приоритетам. Решение этой задачи
+достаточно просто. Прежде всего, зададим обобщённую функцию, которая принимает
+в качестве аргумента анализатор синтаксической категории, которая на данном
+уровне приоритета считается атомарным выражением, и возвращает новый 
+анализатор, предназначенный для разбора последовательности таких атомарных
+выражений, объединенных заданной операцией. Заметим, что того же эффекта
+мы можем добиться при помощи нашего набора комбинаторов, но функция, 
+приведенная ниже, проще и эффективнее.
+%In the above parser, we `hardwired' a parser for the two infix operators.
+%However it would be nicer, and consistent with our approach to printing, if
+%changes to the set of infixes could propagate to the parser. Moreover, even
+%with just two different binary operators, our production rules and consequent
+%parser were already starting to look artificial; imagine if we had a dozen or
+%so. What we would like is to automate the production of a layer of parsers, one
+%for each operator, in order of precedence. This can easily be done. First, we
+%define a general function that takes a parser for what, at this level, are
+%regarded as atomic expressions, and produces a new parser for such expressions
+%separated by a given operator. Note that this could also be defined using
+%parsing combinators, but the function below is simple and more efficient.
 
 \begin{boxed}\begin{lstlisting}
   let rec binop op parser input =
@@ -1131,11 +1165,15 @@ parsing combinators, but the function below is simple and more efficient.
     else result;;
 \end{lstlisting}\end{boxed}
 
-Now we define functions that pick out the infix operator in our association
-list with (equal) lowest precedence, and delete it from the list. If we
-maintained the list already sorted in precedence order, we could simply take
-the head and tail of the list.
-
+Далее определим функции, которые извлекают из нашего ассоциативного списка
+очередную операцию с наименьшим (равным предыдущему) приоритетом. Если список
+был заранее сортирован по приоритетам, мы можем просто выбирать очередной 
+элемент по порядку следования.
+%Now we define functions that pick out the infix operator in our association
+%list with (equal) lowest precedence, and delete it from the list. If we
+%maintained the list already sorted in precedence order, we could simply take
+%the head and tail of the list.
+%
 \begin{boxed}\begin{lstlisting}
   let findmin l = itlist
     (fun (_,pr1 as p1) (_,pr2 as p2) -> if pr1 <= pr2 then p1 else p2)
@@ -1143,9 +1181,10 @@ the head and tail of the list.
 
   let rec delete x (h::t) = if h = x then t else h::(delete x t);;
 \end{lstlisting}\end{boxed}
-
-\noindent Now we can define the generic precedence parser:
-
+%
+Обобщенный анализатор множества бинарных операций с приоритетами:
+%\noindent Now we can define the generic precedence parser:
+%
 \begin{boxed}\begin{lstlisting}
   let rec precedence ilist parser input =
     if ilist = [] then parser input else
@@ -1153,10 +1192,12 @@ the head and tail of the list.
     let ilist' = delete opp ilist in
     binop (fst opp) (precedence ilist' parser) input;;
 \end{lstlisting}\end{boxed}
-
-\noindent and hence can modify the main parser to be both simpler and more
-general:
-
+%
+Использование этого вспомогательного анализатора позволяет упростить основной
+и сделать его более общим:
+%\noindent and hence can modify the main parser to be both simpler and more
+%general:
+%
 \begin{boxed}\begin{lstlisting}
   let rec atom input
          = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
@@ -1179,8 +1220,9 @@ general:
   let parser = fst o (term ++ finished >> fst) o lex;;
 \end{lstlisting}\end{boxed}
 
-\noindent for example:
-
+Пример разбора выражения:
+%\noindent for example:
+%
 \begin{boxed}\begin{verbatim}
   #parser "2 * sin(x)^2 + 2 * sin(y)^2 - 2";;
   - : term =
@@ -1199,35 +1241,55 @@ general:
   - : term = `2 * sin(x) ^ 2 + (2 * sin(y) ^ 2 - 2)`
 \end{verbatim}\end{boxed}
 
-\subsection{Defects of our approach}
+\subsection{Недостатки метода}
+%\subsection{Defects of our approach}
+Наш подход к лексическому и синтаксическому анализу не отличается особой
+эффективностью. Действительно, CAML и некоторые другие реализации языка~ML
+включают генератор синтаксических анализаторов для LR-грамматик, аналогичный
+популярной в Unix-среде системе YACC (Yet Another Compiler Compiler) для 
+языка~C. Эти генераторы не только охватывают более широкий класс грамматик,
+но и производят более эффективные анализаторы. Однако, мы считаем, что 
+предложенный метод достаточно прозрачен, приемлем в большинстве случаев
+и является хорошим введением в программирование с использованием функций
+высших порядков.
+%Our approach to lexing and parsing is not particularly efficient. In fact,
+%CAML and some other ML implementations include a generator for LR parsers
+%similar to YACC (Yet Another Compiler Compiler) which is often used to generate
+%parsers in C under Unix. Not only are these more general in the grammars that
+%they can handle, but the resulting parsers are more efficient. However we
+%believe the present approach is rather clear, adequate for most purposes, and a
+%good introduction to programming with higher order functions.
 
-Our approach to lexing and parsing is not particularly efficient. In fact,
-CAML and some other ML implementations include a generator for LR parsers
-similar to YACC (Yet Another Compiler Compiler) which is often used to generate
-parsers in C under Unix. Not only are these more general in the grammars that
-they can handle, but the resulting parsers are more efficient. However we
-believe the present approach is rather clear, adequate for most purposes, and a
-good introduction to programming with higher order functions.
-
-The inefficiency of our approach can be reduced by avoiding a few particularly
-wasteful features. Note that if two different productions for the same
-syntactic category have a common prefix, then we should avoid parsing it more
-than once, unless it is guaranteed to be trivial. Our production rules for
-$term$ have this property:
-
+Небольшая доработка некоторых особенно ресурсоёмких фрагментов анализатора 
+может заметно улучшить его общую эффективность. Так, при наличии в одной
+синтаксической категории нескольких продукций с общим префиксом, следует 
+избегать его многократного анализа, который может оказаться нетривиальным. 
+Примером подобной ситуации служат правила вывода для термов:
+%The inefficiency of our approach can be reduced by avoiding a few particularly
+%wasteful features. Note that if two different productions for the same
+%syntactic category have a common prefix, then we should avoid parsing it more
+%than once, unless it is guaranteed to be trivial. Our production rules for
+%$term$ have this property:
+%
 \begin{eqnarray*}
 term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
          & |       & name                                       \\
          & |       & \cdots
 \end{eqnarray*}
 
-We carefully put the longer production first in our actual implementation,
-otherwise success in reading a name would cause the abandonment of attempts to
-read a parenthesized list of arguments. Nevertheless, because of the
-redundancy we have mentioned, this way of constructing the parser is wasteful.
-In this case it doesn't matter much, because the duplicated call only analyzes
-one token. However the case for $termlist$ is more significant:
-
+Мы намеренно поместили в ходе реализации более длинное правило первым, так как 
+в противном случае успешное чтение имени приведёт в дальнейшем к отказу при 
+попытке разбора списка аргументов. Однако, возникающее при этом повторное
+сканирование избыточно. В данном случае цена избыточности невелика, поскольку
+повторному анализу подвергается лишь одна лексема, но потенциальные накладные 
+расходы при разборе~$termlist$ могут оказаться более существенными:
+%We carefully put the longer production first in our actual implementation,
+%otherwise success in reading a name would cause the abandonment of attempts to
+%read a parenthesized list of arguments. Nevertheless, because of the
+%redundancy we have mentioned, this way of constructing the parser is wasteful.
+%In this case it doesn't matter much, because the duplicated call only analyzes
+%one token. However the case for $termlist$ is more significant:
+%
 \begin{boxed}\begin{lstlisting}
     let ...
     and termlist input
@@ -1237,20 +1299,26 @@ one token. However the case for $termlist$ is more significant:
                 >> (fun h -> [h])) input;;
 \end{lstlisting}\end{boxed}
 
-Here we could reparse a whole term, which might be arbitrarily large. We can
-avoid this in several ways. One is to move the {\verb!||!} alternation to after
-the initial term has been read. A convenient way to code it is to eschew
-explicit recursion in favour of {\tt many}:
-
+В отличие от предыдущего примера, здесь повторному сканированию в случае возврата
+подвергается целый терм, который может быть сколь угодно сложным. Существуют 
+различные способы избежать этого. Например, мы можем преобразовать правила 
+вывода так, чтобы выбор одного из них происходил уже после того, как прочитан 
+начальный терм. Комбинатор~{\tt many} позволяет легко устранить явную рекурсию:
+%Here we could reparse a whole term, which might be arbitrarily large. We can
+%avoid this in several ways. One is to move the {\verb!||!} alternation to after
+%the initial term has been read. A convenient way to code it is to eschew
+%explicit recursion in favour of {\tt many}:
+%
 \begin{boxed}\begin{lstlisting}
     let ...
     and termlist input
         = term ++ many (a (Other ",") ++ term >> snd)
                 >> (fun (h,t) -> h::t) input;;
 \end{lstlisting}\end{boxed}
-
-\noindent Therefore the final version of the parser is:
-
+%
+Таким образом, итоговая реализация анализатора имеет вид:
+%\noindent Therefore the final version of the parser is:
+%
 \begin{boxed}\begin{lstlisting}
   let rec atom input
          = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
@@ -1269,33 +1337,59 @@ explicit recursion in favour of {\tt many}:
                 >> (fun (h,t) -> h::t)) input;;
 \end{lstlisting}\end{boxed}
 
-A general defect of our approach, and recursive descent parsing generally, is
-that so-called {\em left recursion} in productions causes problems. This is
-where a given category expands to a sequence including the category itself as
-the first item. For example, if we had wanted to make the addition operator
-left-associative in our earlier grammar, we could have used:
-
+Общим недостатком нашего подхода и метода рекурсивного спуска в целом являются
+проблемы с разбором {\em леворекурсивных} грамматик. Правило вывода некоторой
+синтаксической категории называется леворекурсивным, если его правая часть 
+начинается с этой же категории. Например, если бы мы попытались определить
+в нашей грамматике левоассоциативную операцию сложения, это можно было бы
+выразить так:
+%A general defect of our approach, and recursive descent parsing generally, is
+%that so-called {\em left recursion} in productions causes problems. This is
+%where a given category expands to a sequence including the category itself as
+%the first item. For example, if we had wanted to make the addition operator
+%left-associative in our earlier grammar, we could have used:
+%
 \begin{eqnarray*}
 term     & \goesto & term {\verb! + !} mulexp                   \\
          & |       & mulexp
 \end{eqnarray*}
 
-The naive transcription into ML would loop indefinitely, calling {\tt term} on
-the same subterm over and over. There are various slightly ad hoc ways of
-dealing with this problem. For example, one can convert this use of recursion,
-which in some ways is rather gratuitous, into the explicit use of repetition.
-We can do this using standard combinators like {\tt many} to return a list of
-`$mulexp$'s and then run over the list building the tree left-associated.
+Прямое отображение этих правил вывода на язык~ML приведет к зацикливанию,
+поскольку функция~{\tt term} будет вызываться для одного и того же подвыражения
+снова и снова. Существуют различные, причём не слишком универсальные, способы 
+решения проблемы. Например, мы можем реализовать в явном виде цикл вместо
+рекурсии, применение которой в данном контексте не имеет под собой особых
+оснований. Для этого воспользуемся стандартными комбинаторами 
+наподобие~{\tt many}, чтобы получить список деревьев разбора подвыражений 
+вида~$mulexp$, после чего построим по этому списку результирующее 
+левоассоциативное дерево.
+%
+%The naive transcription into ML would loop indefinitely, calling {\tt term} on
+%the same subterm over and over. There are various slightly ad hoc ways of
+%dealing with this problem. For example, one can convert this use of recursion,
+%which in some ways is rather gratuitous, into the explicit use of repetition.
+%We can do this using standard combinators like {\tt many} to return a list of
+%`$mulexp$'s and then run over the list building the tree left-associated.
 
-A final problem is that we do not handle errors very gracefully. We always
-raise the exception {\tt Noparse}, and this, when caught, initiates
-backtracking. However this is not always appropriate for typical grammars. At
-best, it can cause expensive reparsing, and can lead to baffling error
-indications at the top level. For example, on encountering {\tt 5 +}, we expect
-a term following the {\tt +}, and if we don't find one, we should generate a
-comprehensible exception for the user, rather than raise {\tt Noparse} and
-perhaps initiate several other pointless attempts to parse the expression in a
-different way.
+В заключение отметим, что наша обработка ошибок разбора не отличается особой
+элегантностью. При возникновении любого затруднения мы порождаем 
+исключение~{\tt Noparse}, обработка которого представляет собой возврат.
+Такое поведение, однако, не всегда подходит для типичных грамматик. В лучшем
+случае, оно приведёт к интенсивному повторному сканированию, но может вызвать
+и последовательность возвратов вплоть до корня дерева разбора. Например, 
+встретив в ходе анализа подвыражение~{\tt 5 +} мы ожидаем, что вслед за 
+символом~{\tt +} следует очередной терм. Если он не был найден, следует выдать
+пользователю внятное сообщение об ошибке вместо простой генерации~{\tt Noparse}
+и, возможно, последующих безуспешных попыток разобрать выражение другим путём.
+%A final problem is that we do not handle errors very gracefully. We always
+%raise the exception {\tt Noparse}, and this, when caught, initiates
+%backtracking. However this is not always appropriate for typical grammars. At
+%best, it can cause expensive reparsing, and can lead to baffling error
+%indications at the top level. For example, on encountering {\tt 5 +}, we expect
+%a term following the {\tt +}, and if we don't find one, we should generate a
+%comprehensible exception for the user, rather than raise {\tt Noparse} and
+%perhaps initiate several other pointless attempts to parse the expression in a
+%different way.
 
 \section{Точная арифметика вещественных чисел}
 %\section{Exact real arithmetic}
