@@ -58,14 +58,13 @@ cos(x)$, а также с правилами дифференцирования произведения и композиции
 %%algorithm to do it in ML.
 
 
-\subsection{Термы первого порядка???}
-
-\#BUG: Ни о каких термах и речи нет. Сложности перевода???
+\subsection{Термы первого порядка}
+% BUG#  First order terms - Термы первого порядка ?
 %%\subsection{First order terms}
 
 Мы будем допускать математические выражения в весьма общей форме. Они могут
 быть построены из переменных и констант, с использованием операторов. Операторы
-могут быть унарными, бинарными, тернарными, или, в общем случае, арности $n$.
+могут быть унарными, бинарными, тернарными, или, в общем случае, арности~$n$.
 Мы выражаем это с помощью следующего рекурсивного типа данных:
 
 %%We will allow mathematical expressions in a fairly general form. They may be
@@ -356,9 +355,9 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
   - : unit = ()
 \end{verbatim}\end{boxed}
 
-\noindent Now compare the effect:
+%\noindent Now compare the effect:
 
-%\noindent Почувствуйте разницу:
+\noindent Почувствуйте разницу:
 
 \begin{boxed}\begin{verbatim}
   #let t =
@@ -375,9 +374,9 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
 при печати типа {\tt term}, даже если он представляет собой составной 
 тип данных, как например кортеж:
 
-Once the new printer is installed, it is used whenever CAML wants to print
-something of type {\tt term}, even if it is a composite datastructure
-such as a pair:
+%%Once the new printer is installed, it is used whenever CAML wants to print
+%%something of type {\tt term}, even if it is a composite datastructure
+%%such as a pair:
 
 \begin{boxed}\begin{verbatim}
   #(x,t);;
@@ -509,7 +508,7 @@ such as a pair:
 
 \subsection{Упрощение}
 
-Если мы опробуем {\tt differentiator} на наших рабочем примере,  она будет 
+Если мы опробуем {\tt differentiate} на нашем рабочем примере,  она будет 
 работать довольно хорошо:
 
 %%If we try the differentiator out on our running example, then it works quite
@@ -536,11 +535,12 @@ such as a pair:
 \end{verbatim}\end{boxed}
 
 Однако, она не выполняет различные очевидные упрощения, такие как $0 * x = 0$
-и $x + 0 = x$. Некоторые из этих избыточных выражений создаются скорее 
-неизощрённой стратегией дифференцирования, которая, например, применяет правило
+и $x + 0 = x$. Некоторые из этих избыточных выражений создаются нашей прямолинейной 
+стратегией дифференцирования, которая, например, применяет правило
 последовательного дифференцирования~$f(t)$ даже когда $t$~-~всего лишь переменная
-дифференцирования. Вместо избыточного усложнения {\\tt differentiator} 
-давайте зададим отдельную функцию упрощения, которая избавляется от необязательных выражений.
+дифференцирования. Вместо избыточного усложнения функции дифференцирования
+давайте зададим отдельную функцию упрощения, которая будет избавляеться 
+от необязательных выражений.
 
 %%However, it fails to make various obvious simplifications such as $0 * x = 0$
 %%and $x + 0 = x$. Some of these redundant expressions are created by the rather
@@ -568,12 +568,14 @@ such as a pair:
        | t -> t;;
 \end{verbatim}\end{boxed}
 
-Мы просто применяем упрощение с самого вехнего уровня. We need to
-execute it in a bottom-up sweep. This will also bring negations upwards through
-products. In some cases it would be more efficient to simplify in a top-down
-sweep, e.g. $0 * t$ for a complicated expression $t$, but this would need
-repeating for terms like $(0 + 0) * 2$. The choice is rather like that between
-normal and applicative order reduction in lambda calculus.
+Мы просто применяем упрощение с самого вехнего уровня. Мы должны выполнять его
+в обходе выражения снизу - вверх. 
+% This will also bring negations upwards through products. 
+% - что - то про знак "-"  
+В некоторых случаях было бы более эффективно упрощение при обходе свеху - вниз, 
+например, $0 * t$ для усложнённого выражения $t$, но это потребует повторения
+для термов вроде $(0 + 0) * 2$. Выбор здесь напоминает выбор между
+нормальным и аппликативным порядком редукции в лямбда исчислении.
 
 
 %%This just applies the simplification at the top level of the term. We need to
@@ -607,8 +609,12 @@ normal and applicative order reduction in lambda calculus.
   - : term = `0`
 \end{verbatim}\end{boxed}
 
-In general, one can always add more and more sophisticated simplification. For
-example, consider:
+В обшем, всегда можно добавить более усложнённые правила упрощения. 
+Например, рассмотрим:
+
+
+%%In general, one can always add more and more sophisticated simplification. For
+%%example, consider:
 
 \begin{boxed}\begin{verbatim}
   #let t2 = Fn("tan",[Var "x"]);;
@@ -622,12 +628,20 @@ example, consider:
               sin(x) * (sin(x) * inv(cos(x) ^ 2))`
 \end{verbatim}\end{boxed}
 
-We would like to simplify {\tt cos(x) * inv(cos(x))} simply to {\tt 1},
-ignoring, as most commercial computer algebra systems do, the possibility that
-{\tt cos(x)} might be zero. We can certainly add new clauses to the simplifier
-for that. Similarly, we might like to collect up terms in the second summand.
-However here we start to see that human psychology plays a role. Which of the
-following is preferable? It is hard for the machine to decide unaided.
+Мы хотим упростить {\tt cos(x) * inv(cos(x))} до {\tt 1},
+пренебрегая, как это делает большинство коммерческих систем компьютерной
+алгебры, возможностью обращения {\tt cos(x)} в нуль. Мы, конечно, можем 
+добавить дополнительные правила упрощения. В то же время, можно было бы  
+сгруппировать множители во втором слагаемом. И здесь, мы начинаем понимать,
+имеет значение человеческая психология. Что предпочтительней?
+Для машины самостоятельное решение будет затруднительно.
+
+%%We would like to simplify {\tt cos(x) * inv(cos(x))} simply to {\tt 1},
+%%ignoring, as most commercial computer algebra systems do, the possibility that
+%%{\tt cos(x)} might be zero. We can certainly add new clauses to the simplifier
+%%for that. Similarly, we might like to collect up terms in the second summand.
+%%However here we start to see that human psychology plays a role. Which of the
+%%following is preferable? It is hard for the machine to decide unaided.
 
 \begin{boxed}\begin{verbatim}
   sin(x) * (sin(x) * inv(cos(x) ^ 2))
@@ -641,22 +655,29 @@ following is preferable? It is hard for the machine to decide unaided.
   tan(x) ^ 2
 \end{verbatim}\end{boxed}
 
-And having chosen the last one, should it then convert
+Выбрав второй вариант, затем следует заменить 
+
+%%And having chosen the last one, should it then convert
 
 \begin{boxed}\begin{verbatim}
   1 + tan(x) ^ 2
 \end{verbatim}\end{boxed}
 
-\noindent into
+\noindent на
 
 \begin{boxed}\begin{verbatim}
   sec(x) ^ 2
 \end{verbatim}\end{boxed}
 
-Certainly, it is shorter and more conventional. However it relies on the fact
-that we know the definitions of these fairly obscure trig functions like {\tt
-sec}. Whatever the machine decides to do, it is likely that some user will find
-it upsetting.
+Такая запись и короче, и более привычна. Тем не менее, такое решение основывается
+на том, что мы знаем определения  довольно неприметных тригонометрических функций,
+вроде {\tt sec}. Чтобы машина не решила делать, вероятно, найдётся пользователь,
+которого это не устроит.
+
+%%Certainly, it is shorter and more conventional. However it relies on the fact
+%%that we know the definitions of these fairly obscure trig functions like {\tt
+%%sec}. Whatever the machine decides to do, it is likely that some user will find
+%%it upsetting.
 
 \section{Синтаксический анализ}
 %\section{Parsing}
