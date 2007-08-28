@@ -1,0 +1,1304 @@
+\chapter{Эффективный ML}
+В этой главе мы обсудим некоторые техники и уловки, используя которые,
+ML программисты делают свои программы более элегантными и
+эффективными. Затем мы рассмотрим дополнительные {\em императивные}
+возможности, которые могут быть задействованы, когда чистый
+функциональный подход представляется неподходящим.
+
+%%In this chapter, we discuss some of the techniques and tricks that ML
+%%programmers can use to make programs more elegant and more efficient. We then
+%%go on to discuss some additional {\em imperative} features that can be used
+%%when the purely functional style seems inappropriate.
+
+\section{Полезные комбинаторы}
+
+Гибкость функций высшего порядка означает, что можно написать
+небольшие, но весьма полезные функции, а затем многократно
+использовать для множества сходных задач. Такие функции часто называют
+{\em комбинаторами}, и не только потому, что они являются
+лямбда-термами без свободных переменных. Эти функции зачастую
+оказываются настолько гибкими, что путём их совместной комбинации
+можно реализовать практически всё что угодно, вместо явного
+рекурсивного определения.
+
+%%The flexibility of higher order functions often means that one can write some
+%%very useful little functions that can be re-used for a variety of related
+%%tasks. These are often called {\em combinators}, and not simply because they
+%%can be regarded as lambda terms with no free variables. It often turns out that
+%%these functions are so flexible that practically anything can be implemented by
+%%plugging them together, rather than, say, explicitly making a recursive
+%%definition. In this way they correspond to the original view of combinators as
+%%ubiquitous building blocks for mathematical expressions.
+
+Например, очень полезный комбинатор для операций над списками, часто
+называемый `{\tt itlist}' или `{\tt fold}', выполняющий следующие
+действия:
+
+%%For example, a very useful combinator for list operations, often called `{\tt
+%%itlist}' or `{\tt fold}', performs the following operation:
+
+$$ \mbox{\tt itlist}\; f\; [x_1;\; x_2;\; \ldots \;; x_n]\; b =
+f\; x_1\; (f\; x_2\; (f\; x_3\; ( \cdots (f\; x_n\; b)))) $$
+
+\noindent Простое определение на ML:
+
+\begin{boxed}\begin{verbatim}
+  #let rec itlist f =
+     fun [] b -> b
+       | (h::t) b -> f h (itlist f t b);;
+  itlist : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b = <fun>
+\end{verbatim}\end{boxed}
+
+Довольно часто рекурсивные функции на списках заключаются просто в
+повторном применении некоторой функции к каждому элементу списка.
+Используя {\tt itlist} с подходящим аргументом, такие функции можно
+очень легко реализовать без явного использования рекурсии. Типичный
+пример~-- нахождение суммы всех чисел в списке.
+
+%%Quite commonly, when defining a recursive function over lists, all one is doing
+%%is repeatedly applying some operator in this manner. By using {\tt itlist} with
+%%the appropriate argument, one can implement such functions very easily without
+%%explicit use of recursion. A typical use is a function to add all the elements
+%%of a list of numbers:
+
+\begin{boxed}\begin{verbatim}
+  #let sum l = itlist (fun x sum -> x + sum) l 0;;
+  sum : int list -> int = <fun>
+  #sum [1;2;3;4;5];;
+  - : int = 15
+  #sum [];;
+  - : int = 0
+  #sum [1;1;1;1];;
+  - : int = 4
+\end{verbatim}\end{boxed}
+
+\noindent Особо заинтересованные в краткости могут предпочесть
+следующий код:
+
+%%\noindent Those especially keen on brevity might prefer to code {\tt sum} as:
+
+\begin{boxed}\begin{verbatim}
+  #let sum l = itlist (prefix +) l 0;;
+\end{verbatim}\end{boxed}
+
+\noindent Легко изменить эту функцию для вычисления произведения,
+вместо суммы.
+
+%%\noindent It is easy to modify this function to form a product rather than a
+%%sum:
+
+\begin{boxed}\begin{verbatim}
+  #let prod l = itlist (prefix *) l 1;;
+\end{verbatim}\end{boxed}
+
+Многие полезные функции над списками могут быть реализованы подобным
+образом.  Например, вот функция, которая отбирает только те элементы
+списка, которые удовлетворяют предикату:
+
+%%Many useful list operations can be implemented in this way. For example here is
+%%a function to filter out only those elements of a list satisfying a predicate:
+
+\begin{boxed}\begin{verbatim}
+  #let forall p l = itlist (fun h a -> p(h) & a) l true;;
+  forall : ('a -> bool) -> 'a list -> bool = <fun>
+  #let exists p l = itlist (fun h a -> p(h) or a) l false;;
+  exists : ('a -> bool) -> 'a list -> bool = <fun>
+  #forall (fun x -> x < 3) [1;2];;
+  - : bool = true
+  #forall (fun x -> x < 3) [1;2;3];;
+  - : bool = false
+\end{verbatim}\end{boxed}
+
+\noindent Вот функция, проверяющая существуют ли в списке элементы,
+удовлетворяющие предикату:
+
+%%\noindent Here are functions to find whether either all or some of the elements
+%%of a list satisfy a predicate:
+
+\begin{boxed}\begin{verbatim}
+  #let forall p l = itlist (fun h a -> p(h) & a) l true;;
+  forall : ('a -> bool) -> 'a list -> bool = <fun>
+  #let exists p l = itlist (fun h a -> p(h) or a) l false;;
+  exists : ('a -> bool) -> 'a list -> bool = <fun>
+  #forall (fun x -> x < 3) [1;2];;
+  - : bool = true
+  #forall (fun x -> x < 3) [1;2;3];;
+  - : bool = false
+\end{verbatim}\end{boxed} 
+
+\noindent А вот альтернативные версии {\tt length}, {\tt append} и {\tt map}:.
+
+%%\noindent and here are alternative versions of old favourites {\tt length},
+%%{\tt append} and {\tt map}:
+
+\begin{boxed}\begin{verbatim}
+  #let length l = itlist (fun x s -> s + 1) l 0;;
+  length : 'a list -> int = <fun>
+  #let append l m = itlist (fun h t -> h::t) l m;;
+  append : 'a list -> 'a list -> 'a list = <fun>
+  #let map f l = itlist (fun x s -> (f x)::s) l [];;
+  map : ('a -> 'b) -> 'a list -> 'b list = <fun>
+\end{verbatim}\end{boxed}
+
+Некоторые из этих функций сами по себе являются полезными
+комбинаторами. Например, если мы хотим рассматривать списки как
+множества, т.е. исключаем кратные элементы, то многие стандартные
+операции на множествах очень просто выражаются в терминах только что
+рассмотренных комбинаторов:
+
+%%Some of these functions can themselves become useful combinators, and so on
+%%upwards. For example, if we are interested in treating lists as sets, i.e.
+%%avoiding duplicate elements, then many of the standard set operations can be
+%%expressed very simply in terms of the combinators above:
+
+\begin{boxed}\begin{verbatim}
+  #let mem x l = exists (fun y -> y = x) l;;
+  mem : 'a -> 'a list -> bool = <fun>
+  #let insert x l =
+    if mem x l then l else x::l;;
+  insert : 'a -> 'a list -> 'a list = <fun>
+  #let union l1 l2 = itlist insert l1 l2;;
+  union : 'a list -> 'a list -> 'a list = <fun>
+  #let setify l = union l [];;
+  setify : 'a list -> 'a list = <fun>
+  #let Union l = itlist union l [];;
+  Union : 'a list list -> 'a list = <fun>
+  #let intersect l1 l2 = filter (fun x -> mem x l2) l1;;
+  intersect : 'a list -> 'a list -> 'a list = <fun>
+  #let subtract l1 l2 = filter (fun x -> not mem x l2) l1;;
+  subtract : 'a list -> 'a list -> 'a list = <fun>
+  #let subset l1 l2 = forall (fun t -> mem t l2) l1;;
+  subset : 'a list -> 'a list -> bool = <fun>
+\end{verbatim}\end{boxed}
+
+\noindent Функция {\tt setify} предназначена для перевода списка в
+множество, посредством исключения кратных элементов.
+
+%%\noindent The {\tt setify} function is supposed to turn a list into a set by
+%%eliminating any duplicate elements.
+
+\section{Создание эффективного кода}
+
+Здесь мы собрали несколько общих приёмов, с помощью которых часто
+можно сделать ML программы существенно более эффективными. Для того,
+чтобы оправдать некоторые из них, необходимо обрисовать в общих
+словах, как определённые конструкции выполняются на <<железе>>.
+
+%%Here we accumulate some common tricks of the trade, which can often make ML
+%%programs substantially more efficient. In order to justify some of them, we
+%%need to sketch in general terms how certain constructs are executed in
+%%hardware.
+
+\subsection{Хвостовая рекурсия и аккумуляторы}
+
+Основной механизм управления в функциональных программах~-- рекурсия.
+Если мы заинтересованы в эффективных программах, нам следует подумать
+немного о том, как рекурсия реализуется на стандартном оборудовании. В
+сущности, нет, или, по крайней мере, мало отличий между реализацией ML
+и многими другими языками с динамическими переменными, таким как С. 
+
+В языках, не допускающих рекурсивных вызовов можно без опаски сохранять
+все локальные переменные (включая и значения аргументов функции) в
+фиксированной области памяти, так, например, сделано в FORTRAN. Тем не
+менее, в общем случае, когда функция может вызываться рекурсивно, это
+не допустимо: вызов функции~{\tt f} с одним набором аргументов
+содержит вызов~{\tt f}, возможно, с другими аргументами. Это означает,
+что старые значения аргументов будут переписаны, даже если они могут
+потребоваться в дальнейшем, после вызова вложенной $f$. Поясним
+сказанное на примере. Рассмотрим ещё раз функцию факториала:
+
+%%The principal control mechanism in functional programs is recursion. If we are
+%%interested in efficient programs, it behoves us to think a little about how
+%%recursion is implemented on conventional hardware. In fact, there is not, in
+%%this respect at least, much difference between the implementation of ML and
+%%many other languages with dynamic variables, such as C.
+
+%%If functions cannot be called recursively, then we are safe in storing their
+%%local variables (which includes the values of arguments) at a fixed place in
+%%memory --- this is what FORTRAN does. However, this is not possible in general
+%%if the function can be called recursively. A call to a function {\tt f} with
+%%one set of arguments may include within it a call to {\tt f} with a different
+%%set of arguments. The old ones would be overwritten, even if the outer version
+%%of $f$ needs to refer to them again after the inner call has finished. For
+%%example, consider the factorial function yet again:
+
+
+\begin{boxed}\begin{verbatim}
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1);;
+\end{verbatim}\end{boxed} 
+
+Вызов {\tt fact 6} приводит к последующему вызову {\tt fact 5} (и
+далее), но когда вызов {\tt fact 5} закончен, и получен результат, нам
+всё ещё требуется исходное значение {\tt n}, а именно~$6$, для
+произведения, дающего окончательный результат. Обычно в реализациях
+поступают следующим образом: для каждого вызова функции выделяется
+новый {\em стековый фрейм}. И каждый новый вызов функции передвигает
+указатель стека далее вниз \footnote{Такая уж сложилась традиция -
+  говорить, что стек "растёт" вниз.} стека, выделяя пространство под
+новые переменные. В стековый фрейм и копируются значения аргументов
+функции, её локальных переменных, иначе~-- {\em состояние выполнения}.
+После того, как вызванная функция завершает выполнение, указатель на
+стек перемещается обратно, таким образом, ненужные внутренние
+переменные автоматически отбрасываются.  Схема может прояснить
+сказанное:
+
+%%A call to {\tt fact 6} causes another call to {\tt fact 5} (and beyond), but
+%%when this call is finished and the value of {\tt fact 5} is obtained, we still
+%%need the original value of {\tt n}, namely $6$, in order to do the
+%%multiplication yielding the final result. What normally happens in
+%%implementations is that each function call is allocated a new frame on a {\em
+%%stack}. Every new function call moves the stack pointer further
+%%down\footnote{Despite the name, stacks conventionally grow downwards.} the
+%%stack, creating space for new variables. When the function call is finished the
+%%stack pointer moves up and so the unwanted inner variables are discarded
+%%automatically. A diagram may make this clearer:
+
+\bigskip
+\bigskip
+
+\begin{picture}(140,140)(0,0)
+
+\put(140,0){\line(0,1){150}}
+\put(220,0){\line(0,1){150}}
+\put(140,0){\line(1,0){80}}
+\put(60,0){\tt SP}
+\put(80,4){\vector(1,0){60}}
+\put(165,6){$n = 0$}
+\put(140,20){\line(1,0){80}}
+\put(165,26){$n = 1$}
+\put(140,40){\line(1,0){80}}
+\put(165,46){$n = 2$}
+\put(140,60){\line(1,0){80}}
+\put(165,66){$n = 3$}
+\put(140,80){\line(1,0){80}}
+\put(165,86){$n = 4$}
+\put(140,100){\line(1,0){80}}
+\put(165,106){$n = 5$}
+\put(140,120){\line(1,0){80}}
+\put(165,126){$n = 6$}
+\put(140,140){\line(1,0){80}}
+\end{picture}
+\bigskip
+
+Здесь изображён воображаемый снимок стека во время последнего
+рекурсивного вызова, т.е. вычисления {\tt fact 0}. Все локальные
+переменные от предыдущих вызовов собраны в стеке, с каждым экземпляром
+функции, имеющим свой фрейм. По завершению вызовов указатель
+стека~{\tt SP} перемещается обратно вверх.
+
+%%This is an imagined snapshot of the stack during execution of the innermost
+%%recursive call, i.e. {\tt fact 0}. All the local variables for the upper stages
+%%are stacked up above, with each instance of the function having its own stack
+%%frame, and when the calls are finished the stack pointer {\tt SP} moves back
+%%up.
+
+Следовательно, наша реализация {\tt fact} требует $n$ фреймов стека
+для вычисления на аргументе $n$. Напротив, рассмотрим следующую
+реализацию функции, вычисляющей факториал:
+
+%%Therefore, our implementation of {\tt fact} requires $n$ stack frames when
+%%applied to argument $n$. By contrast, consider the following implementation of
+%%the factorial function:
+
+
+\begin{boxed}\begin{verbatim}
+  #let rec tfact x n =
+     if n = 0 then x
+     else tfact (x * n) (n - 1);;
+  tfact : int -> int -> int = <fun>
+  #let fact n = tfact 1 n;;
+  fact : int -> int = <fun>
+  #fact 6;;
+  - : int = 720
+\end{verbatim}\end{boxed}
+
+Хотя {\tt tfact} также рекурсивна, здесь рекурсивный вызов~-- итоговое
+выражение, после него никаких вычислений не происходит; оно не
+является подвыражением, частью другого выражения. Подобные вызовы
+называются {\em хвостовыми вызовами} (потому что самые последние в
+теле функции), а функция, в которой все рекурсивные вызовы суть
+хвостовые, называется функцией с {\em хвостовой рекурсией}.
+
+%%Although {\tt tfact} is also recursive, the recursive call is the whole
+%%expression; it does not occur as a proper subexpression of some other
+%%expression involving values of variables. Such a call is said to be a {\em tail
+%%call} (because it is the very last thing the calling function does), and a
+%%function where all recursive calls are tail calls is said to be {\em tail
+%%recursive}.
+
+Что знаменательно в хвостовых вызовах? При рекурсивном вызове {\tt
+  tfact} нет необходимости сохранять предыдущие значения локальных
+переменных. Можно использовать одну и ту же фиксированную область
+памяти для хранения переменных.  Будет ли это происходить на самом
+деле, разумеется, зависит от того, насколько компилятор способен
+обнаружить наличие хвостовой рекурсии в коде. Большинство известных
+компиляторов, включая CAML, хвостовую рекурсию обнаруживают.
+Следовательно, оформление функции таким образом, что рекурсивный вызов
+является хвостовым, может существенно сократить использование памяти.
+Для таких функций как факториал, едва ли возможен вызов на столь
+больших значениях аргументов~$n$, что переполнится стек. Однако,
+наивная реализация многих функций над списками, может привести к
+подобному результату, когда списки длинны.
+
+%%What is significant about tail calls? When making a recursive call to {\tt
+%%tfact}, there is no need to preserve the old values of the local variables.
+%%Exactly the same, fixed, area of storage can be used. This of course depends on
+%%the compiler's being intelligent enough to recognize the fact, but most
+%%compilers, including CAML Light, are. Consequently, re-coding a function so
+%%that the recursive core of it is tail recursive can dramatically cut down the
+%%use of storage. For functions like the factorial, it is hardly likely that they
+%%will be called with large enough values of $n$ to make the stack overflow.
+%%However the naive implementations of many list functions can cause such an
+%%effect when the argument lists are long.
+
+Дополнительный аргумент {\tt x} функции {\tt tfact} называется {\em
+  аккумулятором}, потому что он накапливает промежуточные результаты по
+ходу рекурсивных вызовов и, в конце концов, возвращается как значение
+функции. Оформление кода таким способом~-- самый простой способ
+сделать рекурсивную функцию хвостовой рекурсией.
+
+%%The additional argument {\tt x} of the {\tt tfact} function is called an {\em
+%%accumulator}, because it accumulates the result as the recursive calls rack up,
+%%and is then returned at the end. Working in this way, rather than modifying the
+%%return value on the way back up, is a common way of making functions tail
+%%recursive.
+
+Мы отметили, что в функциях с хвостовой рекурсии для аргументов может
+использоваться фиксированная область памяти. С этой точки зрения можно
+рассматривать такую рекурсию как завуалированную реализацию
+императивного цикла. Вот очевидная параллель с реализацией факториала
+на C:
+
+%%We have remarked that a fixed area of storage can be used for the
+%%arguments to a tail recursive function. On this view, one can look at a tail
+%%recursive function as a thinly-veiled imperative implementation. There is an
+%%obvious parallel with our C implementation of the factorial as an iterative
+%%function:
+
+\begin{verbatim}
+  int fact(int n)
+  { int x = 1;
+    while (n > 0)
+     { x = x * n;
+       n = n - 1;
+     }
+    return x;
+  }
+\end{verbatim}
+
+Инициализация {\tt x = 1} соответствует присваиванию $1$ переменной
+{\tt x}. Основной цикл соответствует рекурсивным вызовам, с тем лишь
+отличием, что для функции с хвостовой рекурсией мы явно передаём
+состояние через аргументы.  Вместо присваивания и введения циклов, мы
+делаем рекурсивный вызов с обновлёнными переменными.  Используя
+похожие приёмы и выражая состояние явно, можно легко писать в сущности
+императивный код в якобы функциональном стиле. Мы ведь знаем, после
+оптимизаций стандартными компиляторами машинный код будет один и тот
+же в обоих случаях.
+% COMMENT# 'состояние' тут это набор переменных, которые меняются по
+% ходу цикла
+
+%%The initialization {\tt x = 1} corresponds to our setting of {\tt x} to $1$ by
+%%an outer wrapper function {\tt fact}. The central while loop corresponds to the
+%%recursive calls, the only difference being that the arguments to the tail
+%%recursive function make explicit that part of the state we are interested in
+%%assigning to. Rather than assigning and looping, we make a recursive call with
+%%the variables updated. Using similar tricks and making the state explicit, one
+%%can easily write essentially imperative code in an ostensibly functional style,
+%%with the knowledge that under standard compiler optimizations, the effect
+%%inside the machine will, in fact, be much the same.
+
+\subsection{Минимизация операций cons}
+
+Мы рассмотрели как используется пространство стековой памяти. Но
+различные конструкции в функциональных программах могут использовать
+память и другого типа, память обычно выделяемую в области, называемой
+{\em кучей}. Тогда как стек последовательным образом растёт и
+сокращается, управляемый последовательностью вызовов функций, эта
+память не может быть освобождена таким же простым способом. Вместо
+этого исполняющей системе время от времени требуется проверять какая
+часть выделенной памяти больше не используется, и освобождать её для
+дальнейших вычислений, этот процесс известен как {\em сборка мусора}.
+Особенно важный пример здесь~-- это память, используемая
+конструкторами рекурсивных типов, например, при вызове {\tt ::}. Так,
+когда следующий фрагмент выполняется:
+
+%%We have already considered the use of stack space. But various constructs in
+%%functional programs use another kind of store, usually allocated from an area
+%%called the {\em heap}. Whereas the stack grows and shrinks in a sequential
+%%manner based on the flow of control between functions, other storage used by
+%%the ML system cannot be reclaimed in such a simple way. Instead, the runtime
+%%system occasionally needs to check which bits of allocated memory aren't being
+%%used any more, and reclaim them for future applications, a process known as
+%%{\em garbage collection}. A particularly important example is the space used by
+%%constructors for recursive types, e.g. {\tt ::}. For example, when the
+%%following fragment is executed:
+
+\begin{boxed}\begin{lstlisting}
+  let l = 1::[] in tl l;;
+\end{lstlisting}\end{boxed}
+
+\noindent новый блок памяти, именуемый <<cons-ячейка>>, выделяется для
+хранения результата работы конструктора {\tt ::} . Обычно это три
+слова памяти, одно является идентификатором конструктора, а два других
+являются указателями на голову и хвост списка. В общем случае, решение
+по поводу того, когда память может быть освобождена, представляет
+собой сложную задачу. Для нашего примера, мы сразу возвращаем хвост
+списка, так что, очевидно, cons-ячейка может быть освобождёна
+немедленно.  Но, в общем случае, из текста программы столь очевидные
+выводы сделать затруднительно, поскольку $l$ может быть, например,
+передан различным функциям, которые, могут просматривать элементы
+списка. Так что необходимо динамически анализировать использование
+памяти и выполнять сборку мусора. В противном случае мы рискуем
+исчерпать память.
+
+%%\noindent a new block of memory, called a `cons cell', is allocated to store
+%%the instance of the {\tt ::} constructor. Typically this might be three words
+%%of storage, one being an identifier for the constructor, and the other two
+%%being pointers to the head and tail of the list. Now in general, it is
+%%difficult to decide when this memory can be reclaimed. In the above example, we
+%%immediately select the tail of the list, so it is clear that the cons cell can
+%%be recycled immediately. But in general this can't be decided by looking at the
+%%program, since $l$ might be passed to various functions that may or may not
+%%just look at the components of the list. Instead, one needs to analyze the
+%%memory usage dynamically and perform garbage collection of what is no longer
+%%needed. Otherwise one would eventually run out of storage even when only a
+%%small amount is ever needed simultaneously.
+
+Разработчики функциональных языков усердно работают над алгоритмами более 
+эффективной сборки мусора. Некоторые заявляют, что автоматическое выделение 
+памяти и сборка мусора работают быстрее, чем в обычном  использовании явного 
+выделения памяти в языках подобных $C$ ({\tt malloc} и пр.) Хотя мы не пойдём 
+так далеко, конечно, хорошо, что память всегда выделяется автоматически. 
+Это позволяет избежать многих тех моментов в  программировании, 
+которые печально известны своей утомительностью и подверженностью к ошибкам.
+
+%%Implementors of functional languages work hard on making garbage collection
+%%efficient. Some claim that automatic memory allocation and garbage collection
+%%often works out faster than typical uses of explicit memory allocation in
+%%languages like $C$ ({\tt malloc} etc.) While we wouldn't go that far, it is
+%%certainly very convenient that memory allocation is always done automatically.
+%%It avoids a lot of tedious and notoriously error-prone parts of programming.
+
+Многие конструкции, излюбленные функциональными программистами, используют
+память, а она управляется сборщиком мусора. Хотя чрезмерное внимание к
+этому может повредить функциональному стилю программ, есть некоторые
+простые соображения, которые стоит учитывать во избежание неуместного
+расходования памяти. Очень простое правило заключается в том, следует
+избегать использования {\tt append} если возможно. Как видим, при
+развёртывании рекурсивных вызовов согласно определению
+
+%%Many constructs beloved of functional programmers use storage that needs to be
+%%reclaimed by garbage collection. While worrying too much about this would
+%%cripple the style of functional programs, there are some simple measures that
+%%can be taken to avoid gratuitous consing (creation of cons cells). One very
+%%simple rule of thumb is to avoid using {\tt append} if possible. As can be seen
+%%by considering the way the recursive calls unroll according to the definition
+
+\begin{boxed}\begin{verbatim}
+  #let rec append l1 l2 =
+     match l1 with
+       [] -> l2
+     | (h::t) -> h::(append t l2);;
+\end{verbatim}\end{boxed}
+
+\noindent порождает $n$ cons-ячеек, где $n$ длина первого списка. Есть
+много способов заменить {\tt append}, например, с помощью добавления к
+функциям дополнительных аргументов~-- аккумуляторов. Замечательный
+пример~-- функция обращения списка, которую мы раньше записывали как:
+
+%%\noindent this typically generates $n$ cons cells where $n$ is the length of
+%%the first argument list. There are often ways of avoiding appending, such as
+%%adding extra accumulator arguments to functions that can be augmented by direct
+%%use of consing. A striking example is the list reversal function, which we
+%%coded earlier as:
+
+\begin{boxed}\begin{verbatim}
+  #let rec rev =
+     fun [] -> []
+       | (h::t) -> append (rev t) [h];;
+\end{verbatim}\end{boxed}
+
+Что порождает порядка $n^2 / 2$ cons-ячеек, где $n$ это длина списка.
+Следующая альтернатива, используя аккумулятор, генерирует только $n$
+из них:
+
+%%This typically generates about $n^2 / 2$ cons cells, where $n$ is the length of
+%%the list. The following alternative, using an accumulator, only generates $n$
+%%of them:
+
+\begin{boxed}\begin{verbatim}
+
+  #let rev =
+     let rec reverse acc =
+       fun [] -> acc
+         | (h::t) -> reverse (h::acc) t in
+     reverse [];;
+\end{verbatim}\end{boxed}
+
+Более того, ядро рекурсии {\tt reverse}~-- хвостовая рекурсия, так что
+мы также сохраняем стековую память и, таким образом, дважды в
+выигрыше.
+
+%%Moreover, the recursive core {\tt reverse} is tail recursive, so we also save
+%%stack space, and win twice over.
+
+Как пример другой типичной ситуации, когда посредством разумного
+использования аккумуляторов мы можем избежать вызовов {\tt append},
+рассмотрим задачу по нахождению списка терминальных элементов
+бинарного дерева. Если мы зададим тип бинарных деревьев следующим
+образом:
+
+%%For another typical situation where we can avoid appending by judicious use of
+%%accumulators, consider the problem of returning the fringe of a binary tree,
+%%i.e. a list of the leaves in left-to-right order. If we define the type of
+%%binary trees as:
+
+\begin{boxed}\begin{verbatim}
+  #type btree = Leaf of string
+              | Branch of btree * btree;;
+\end{verbatim}\end{boxed}
+
+\noindent то решением задачи будет:
+
+\begin{boxed}\begin{verbatim}
+  #let rec fringe =
+     fun (Leaf s) -> [s]
+       | (Branch(l,r)) -> append (fringe l) (fringe r);;
+\end{verbatim}\end{boxed}
+
+\noindent Однако следующая улучшенная версия выполняется с меньшими
+затратами:
+
+\begin{boxed}\begin{verbatim}
+  #let fringe =
+     let rec fr t acc =
+       match t with
+         (Leaf s) -> s::acc
+       | (Branch(l,r)) -> fr l (fr r acc) in
+     fun t -> fr t [];;
+\end{verbatim}\end{boxed}
+
+Заметьте, мы переписали второй аргумент~-- аккумулятор, так что теперь
+рекурсивный вызов более понятен при чтении слева-направо. Вот простой
+пример, как может использоваться каждая из версий {\tt fringe}:
+
+%%Note that we have written the accumulator as the second argument, so that the
+%%recursive call has a more natural left-to-right reading. Here is a simple
+%%example of how either version of {\tt fringe} may be used:
+
+\begin{boxed}\begin{verbatim}
+  #fringe (Branch(Branch(Leaf "a",Leaf "b"),
+                  Branch(Leaf "c",Leaf "d")));;
+  - : string list = ["a"; "b"; "c"; "d"]
+\end{verbatim}\end{boxed}
+
+Первая версия создаёт $6$ cons-ячеек, вторая~-- только $4$. На больших
+деревьях разность будет более впечатляющей. Ещё неуместное использование 
+конструкторов типа происходит при сопоставлении с образцом. Например, 
+рассмотрим фрагмент кода:
+
+%%The first version creates $6$ cons cells, the second only $4$. On larger trees
+%%the effect can be more dramatic. Another situation where gratuitous consing can
+%%crop up is in pattern matching. For example, consider the code fragment:
+
+\begin{boxed}\begin{lstlisting}
+  fun [] -> []
+    | (h::t) -> if h < 0 then t else h::t;;
+\end{lstlisting}\end{boxed}
+
+Ветка, соответствующая `else' создаёт cons-ячейку несмотря на то, что
+эта же конструкция уже передавалась как аргумент функции. То есть,
+аргумент берётся и повторно реконструируется. Чтобы подобных издержек
+не было, следует кодировать функцию следующим образом:
+
+%%The `else' arm creates a cons cell even though what it constructs was in fact
+%%the argument to the function. That is, it is taking the argument apart and then
+%%rebuilding it. One simple way of avoiding this is to recode the function as:
+
+\begin{boxed}\begin{lstlisting}
+  fun l ->
+    match l with
+      [] -> []
+    | (h::t) -> if h < 0 then t else l;;
+\end{lstlisting}\end{boxed}
+
+Тем не менее, ML предлагает более гибкую альтернативу: использование
+ключевого слова {\tt as}. С его помощью мы можем именовать
+определённые части образцов, так что впоследствии возможно их
+использование без реконструкции. Например:
+
+%%However ML offers a more flexible alternative: using the {\tt as} keyword, a
+%%name may be identified with certain components of the pattern, so that it never
+%%needs to be rebuilt. For example:
+
+\begin{boxed}\begin{lstlisting}
+  fun [] -> []
+    | (h::t as l) -> if h < 0 then t else l;;
+\end{lstlisting}\end{boxed}
+
+\subsection{Принудительное вычисление}
+
+Мы отмечали, что можно использовать лямбда-абстракцию для
+приостановки вычислений, так как ML не вычисляет выражения под
+лямбда-абстракциями.  Некоторые интересные примеры мы рассмотрим
+позже.  С другой стороны, может статься кому-то потребуется
+принудительное вычисление выражений под лямбда-абстракциями.
+Например:
+
+%%We have emphasized that, since ML does not evaluate underneath lambdas, one can
+%%use lambdas to delay evaluation. We will see some interesting examples later.
+%%Conversely, however, it can happen that one wants to force evaluation of
+%%expressions that are hidden underneath lambdas. For example, recall the tail
+%%recursive factorial above:
+
+\begin{boxed}\begin{verbatim}
+  #let rec tfact x n =
+     if n = 0 then x
+     else tfact (x * n) (n - 1);;
+  #let fact n = tfact 1 n;;
+\end{verbatim}\end{boxed}
+
+Поскольку мы в действительности никогда непосредственно {\tt tfact} не
+используем, представляется нецелесообразным закреплять имя за этой
+функцией. Взамен, мы можем сделать её локальной:
+
+%%Since we never really want to use {\tt tfact} directly, it seems a pity to bind
+%%it to a name. Instead, we can make it local to the factorial function:
+
+\begin{boxed}\begin{verbatim}
+  #let fact1 n =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1 n;;
+\end{verbatim}\end{boxed}
+
+Здесь, однако, недостаток: локальное рекурсивное определение
+вычисляется только после того, как {\tt fact1} получает свой аргумент,
+поскольку до этого оно находится под лямбда-абстракцией. Более
+того, оно вычисляется каждый раз, при вызове {\tt fact}. Мы можем
+поправить это так:
+
+%%This, however, has the defect that the local recursive definition is only
+%%evaluated after {\tt fact1} receives its argument, since before that it is
+%%hidden under a lambda. Moreover, it is then reevaluated each time {\tt fact} is
+%%called. We can change this as follows
+ 
+\begin{boxed}\begin{verbatim}
+  #let fact2 =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1;;
+\end{verbatim}\end{boxed}
+
+Теперь локальное связывание вычисляется лишь один раз, во время
+объявления {\tt fact2}. В соответствии с нашими испытаниями, вторая
+версия {\tt fact} примерно на $20 \%$ быстрее, при заданном аргументе
+{\tt 6}. В тех случаях, когда при локальном связывании требуется больше 
+вычислений, отличие может быть более впечатляющим. На самом деле, ведутся 
+сложные исследования в области <<частичных вычислений>> посвящённые этим, а
+также более изощрённым оптимизациям. В известном смысле, это обобщение
+стандартных оптимизаций, таких как <<сворачивание констант>> для
+компилятора обычных языков.  Однако, в рабочих системах ML
+ответственность за принудительные вычисления обычно возлагается на
+пользователя, как в примере выше.
+
+%%Now the local binding is only evaluated once, at the point of declaration of
+%%{\tt fact2}. According to our tests, the second version of {\tt fact} is about
+%%$20 \%$ faster when called on the argument {\tt 6}. The additional evaluation
+%%doesn't amount to much in this case, more or less just unravelling a recursive
+%%definition, yet the speedup is significant. In instances where there is a lot
+%%of computation involved in evaluating the local binding, the difference can be
+%%spectacular. In fact, there is a sophisticated research field of `partial
+%%evaluation' devoted to performing optimizations like this, and much more
+%%sophisticated ones besides, automatically. In a sense, it is a generalization
+%%of standard compiler optimizations for ordinary languages such as `constant
+%%folding'. In production ML systems, however, it is normally the responsibility
+%%of the user to force it, as here.
+
+Мимоходом заметим, что для функций собранных из совокупности
+комбинаторов, с не особо явными лямбда-абстракциями, больше
+возможностей, во время декларации вычислить настолько большую часть
+выражения, насколько возможно. То есть, вот простейший пример: $f
+\circ g$ выполнит все вычисления возможные в $f$ и $g$, тогда как
+$\lamb{x} f(g\; x)$ не будет ничего вычислять, до тех пор, пока не
+получит аргумента. С другой стороны, когда мы действительно {\em
+  хотим} отложить вычисление, нам, действительно, нужна
+лямбда-абстракция, так что исключительно комбинаторная версия
+невозможна.
+
+%%We might note, in passing, that if functions are implemented by plugging
+%%together combinators, with fewer explicit lambdas, there is more chance that as
+%%much of the expression as possible will be evaluated at declaration time. To
+%%take a trivial example, $f \circ g$ will perform any evaluation of $f$ and $g$
+%%that may be possible, whereas $\lamb{x} f(g\; x)$ will perform none at all
+%%until it receives its argument. On the other side of the coin, when we actually
+%%{\em want} to delay evaluation, we really need lambdas, so a purely combinatory
+%%version is impossible.
+
+\section{Императивные возможности}
+
+ML обладает довольно широкими возможностями для императивного
+программирования. Мы не будем тратить время на императивный стиль
+программирования, поскольку не это цель нашего курса, и мы
+предполагаем что у читателя уже есть достаточно опыта. Следовательно,
+мы бегло рассмотрим эти вопросы с несколькими иллюстрирующими
+примерами.  Тем не менее, некоторые императивные возможности будут
+использоваться далее в примерах, и некоторое знание того, что можно
+использовать будет хорошим подспорьем при написании настоящего ML
+кода.
+
+%%ML has a fairly full complement of imperative features. We will not spend much
+%%time on the imperative style of programming, since that is not the focus of
+%%this course, and we assume readers already have sufficient experience.
+%%Therefore, we treat these topics fairly quickly with few illustrative examples.
+%%However some imperative features are used in later examples, and some knowledge
+%%of what is available will stand the reader in good stead for writing practical
+%%ML code.
+
+\subsection{Исключения}
+
+Мы знаем, что иногда в вычислениях происходят исключительные ситуации,
+и вычисление не завершается правильным образом. Например, вследствие
+неудачных сопоставлений с образцом. Есть и другие причины для
+критических ошибок, например попытка деления на ноль.
+
+%%We have seen on occasion that certain evaluations fail, e.g. through a failure
+%%in pattern matching. There are other reasons for failure, e.g. attempts to
+%%divide by zero.
+
+\begin{boxed}\begin{verbatim}
+  #1 / 0;;
+  Uncaught exception: Division_by_zero
+\end{verbatim}\end{boxed}
+
+Во всех этих случаях компилятор сообщает о <<необработанном
+исключении>>. Исключение~-- это признак ошибки, индикация того, что
+вычисления пошли неправильным путём, при этом часто бывает ошибки
+можно обработать локально. Также, для {\em исключений} есть тип {\tt
+  exn}, который фактически является рекурсивным типом, хотя обычно он
+рекурсивный только номинально.  В отличии от обычных типов, для типа
+{\tt exn} допустимо вводить конструкторы в любом месте программы,
+используя объявления исключений, например:
+
+%%In all these cases the compiler complains about an `uncaught exception'. An
+%%exception is a kind of error indication, but they need not always be propagated
+%%to the top level. There is a type {\tt exn} of {\em exceptions}, which is
+%%effectively a recursive type, though it is usually recursive only vacuously.
+%%Unlike with ordinary types, one can add new constructors for the type {\tt exn}
+%%at any point in the program via an exception declaration, e.g.
+
+\begin{boxed}\begin{verbatim}
+  #exception Died;;
+  Exception Died defined.
+  #exception Failed of string;;
+  Exception Failed defined.
+\end{verbatim}\end{boxed}
+
+В то время как обычно исключения генерирует определённая совокупность
+операций, этого же можно добиться прямым использованием конструктора
+{\tt raise}, например:
+
+%%While certain built-in operations generate (one usually says {\em raise})
+%%exceptions, this can also be done explicitly using the {\tt raise} construct,
+%%e.g.
+
+\begin{boxed}\begin{verbatim}
+  #raise (Failed "I don't know why");;
+  Uncaught exception: Failed "I don't know why"
+\end{verbatim}\end{boxed}
+
+Мы можем создать своё собственное исключение на случай попытки взять
+первый элемент в пустом списке:
+
+%%For example, we might invent our own exception to cover the case of taking the
+%%head of an empty list:
+
+\begin{boxed}\begin{verbatim}
+  #exception Head_of_empty;;
+  Exception Head_of_empty defined.
+  #let hd = fun [] -> raise Head_of_empty
+              | (h::t) -> h;;
+  hd : 'a list -> 'a = <fun>
+  #hd [];;
+  Uncaught exception: Head_of_empty
+\end{verbatim}\end{boxed}
+
+Обычно исключения последовательно передаются <<наверх>>\footnote{По
+  стеку вызовов функций}, но оно, также, может быть <<перехвачено>> и
+обработано в окружении функции, с помощью конструкции {\tt try \ldots
+  with}, сопровождаемой вариантами исключений:
+
+%%Normally exceptions propagate out to the top, but they can be `caught' inside
+%%an outer expression by using {\tt try \ldots with} followed by a series of
+%%patterns to match exceptions, e.g.
+
+\begin{boxed}\begin{verbatim}
+  #let headstring sl =
+     try hd sl
+     with Head_of_empty -> ""
+        | Failed s -> "Failure because "^s;;
+  headstring : string list -> string = <fun>
+  #headstring ["hi"; "there"];;
+  - : string = "hi"
+  #headstring [];;
+  - : string = ""
+\end{verbatim}\end{boxed}
+
+Являются ли исключения императивной возможностью, в действительности,
+это на самом деле вопрос убеждений. С одной стороны, можно считать,
+что функции возвращают элементы составного типа~-- собственно из
+возвращаемого типа, декларируемого явно, и типа исключений. С другой
+стороны, исключения предлагают извращённое, не локальное управление
+потоком исполнения, наподобие {\tt goto}.\footnote{Возможно, более
+  подходящим примером будут {\tt setjmp} и {\tt longjmp} из C.} Какой
+бы смысл в них не вкладывался, исключения часто могут быть весьма
+полезны.
+
+%%It is a matter of opinion whether exceptions are really an imperative feature.
+%%On one view, functions just return elements of a disjoint sum consisting of
+%%their visible return type and the type of exceptions, and all operations
+%%implicitly pass back exceptions. Another view is that exceptions are a highly
+%%non-local control flow perversion, analogous to {\tt goto}.\footnote{Perhaps
+%%more precisely, to C's {\tt setjmp} and {\tt longjmp}.} Whatever the semantic
+%%view one takes, exceptions can often be quite useful.
+
+\subsection{Ссылки и массивы}
+
+В ML есть настоящие переменные, к которым можно присваивать, и
+выражения могут в качестве побочного эффекта изменять значения этих
+переменных.  Доступ к переменным осуществляется с помощью {\em ссылок}
+(указателей, говоря языком C), и ссылки в свою очередь рассматриваются
+в ML как обычные значения.  Действительно, этот подход довольно похож
+на использование указателей в C. Например, в C, когда требуется
+использовать <<изменяемые параметры>>~-- параметры, для которых
+допустимо изменение значений после вычисления функции, используется
+передача параметров по указателю. Подобная техника часто используется,
+когда функция должна возвращать сложные составные данные.
+
+%%ML does have real assignable variables, and expressions can, as a side-effect,
+%%modify the values of these variables. They are explicitly accessed via {\em
+%%references} (pointers in C parlance) and the references themselves behave more
+%%like ordinary ML values. Actually this approach is quite common in C too. For
+%%example, if one wants so-called `variable parameters' in C, where changes to
+%%the local variables propagate outside, the only way to do it is to pass a
+%%pointer, so that the function can dereference it. Similar techniques are often
+%%used where the function is to pass back composite data.
+
+В ML, запись {\tt ref x} означает объявление и инициализацию ячейки
+памяти значением {\tt x} . Инициализация обязательна. Это выражение
+выдаёт ссылку (указатель) на ячейку в памяти. Последовательный доступ
+к содержимому памяти требует явного разыменования указателя с помощью
+оператора {\tt !}, сходного с унарным {\tt *} в C. Вот как это
+делается:
+
+%%In ML, one sets up a new assignable memory cell with the initial contents {\tt
+%%x} by writing {\tt ref x}. (Initialization is compulsory.) This expression
+%%yields a reference (pointer) to the cell. Subsequent access to the contents of
+%%the cell requires an explicit dereference using the {\tt !} operator, similar
+%%to unary {\tt *} in C. The cell is assigned to using a conventional-looking
+%%assignment statement. For example:
+
+\begin{boxed}\begin{verbatim}
+  #let x = ref 1;;
+  x : int ref = ref 1
+  #!x;;
+  - : int = 1
+  #x := 2;;
+  - : unit = ()
+  #!x;;
+  - : int = 2
+  #x := !x + !x;;
+  - : unit = ()
+  #x;;
+  - : int ref = ref 4
+  #!x;;
+  - : int = 4
+\end{verbatim}\end{boxed}
+
+Заметьте, что во многих отношениях {\tt ref} ведёт себя подобно
+конструктору типа, а значит, может использоваться в сопоставлении с
+образцом.  Следовательно, оператор разыменования {\tt !} можно было бы
+определить как:
+
+%%Note that in most respects {\tt ref} behaves like a type constructor, so one
+%%can pattern-match against it. Thus one could actually define an indirection
+%%operator like {\tt !}:
+
+\begin{boxed}\begin{verbatim}
+  #let contents_of (ref x) = x;;
+  contents_of : 'a ref -> 'a = <fun>
+  #contents_of x;;
+  - : int = 4
+\end{verbatim}\end{boxed}
+
+Будучи изменяемыми, ссылки иногда полезны для создания разделяемых
+структур данных. Можно легко создавать структуры типа граф, с узлами,
+содержащими указатель на подграф.
+
+Кроме отдельных ячеек, также в ML можно использовать массивы. В CAML
+они называются {\tt векторами}. Массив элементов типа $\alpha$ имеет
+тип $\alpha\; vect$. Новый вектор размера {\tt n}, где каждый элемент
+проинициализирован значением {\tt x} (опять же, инициализация
+обязательна) создаётся с помощью следующего вызова:
+
+%%As well as being mutable, references are sometimes useful for creating
+%%explicitly shared data structures. One can easily create graph structures where
+%%numerous nodes contain a pointer to some single subgraph.
+
+%%Apart from single cells, one can also use arrays in ML. In CAML these are
+%%called {\tt vectors}. An array of elements of type $\alpha$ has type
+%%$\alpha\; vect$. A fresh vector of size {\tt n}, with each element initialized
+%%to {\tt x} --- once again the initialization is compulsory --- is created using
+%%the following call:
+
+\begin{boxed}\begin{verbatim}
+  #make_vect n x;;
+\end{verbatim}\end{boxed}
+
+\noindent Можно прочесть элемент {\tt m} вектора {\tt v} с помощью:
+
+%%\noindent One can then read element {\tt m} of a vector {\tt v} using:
+
+\begin{boxed}\begin{verbatim}
+  #vect_item v m;;
+\end{verbatim}\end{boxed}
+
+\noindent а записать значение {\tt y} в {\tt m}-й элемент  {\tt v}:
+
+%%\noindent and write value {\tt y} to element {\tt m} of {\tt v} using:
+
+\begin{boxed}\begin{verbatim}
+  #vect_assign v m y;;
+\end{verbatim}\end{boxed}
+
+Эти операции соответствуют выражениям {\tt v[m]} и {\tt v[m] = y} в
+C. Элементы массива нумеруются с нуля. Например:
+
+%%These operations correspond to the expressions {\tt v[m]} and {\tt v[m] = y} in
+%%C. The elements of an array are numbered from zero. For example:
+
+\begin{boxed}\begin{verbatim}
+  #let v = make_vect 5 0;;
+  v : int vect = [|0; 0; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 0
+  #vect_assign v 1 10;;
+  - : unit = ()
+  #v;;
+  - : int vect = [|0; 10; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 10
+\end{verbatim}\end{boxed}
+
+\noindent Все операции чтения и записи элементов сопровождаются
+контролем границ, например:
+
+%%\noindent All reading and writing is constrained by bounds checking, e.g.
+
+\begin{boxed}\begin{verbatim}
+  #vect_item v 5;;
+  Uncaught exception: Invalid_argument "vect_item"
+\end{verbatim}\end{boxed}
+
+\subsection{Последовательность вычислений}
+
+В ML нет необходимости указывать последовательность вычислений,
+поскольку обычные правила вычисления предполагают порядок. Например:
+
+%%While polymorphism works very well for the pure functional core of ML, it has
+%%unfortunate interactions with some imperative features. For example,
+%%consider the following:
+
+\begin{boxed}\begin{verbatim}
+  #let _ =  x := !x + 1 in
+   let _ =  x := !x + 1 in
+   let _ =  x := !x + 1 in
+   let _ =  x := !x + 1 in
+   ();;
+\end{verbatim}\end{boxed}
+
+\noindent выражения вычисляются в ожидаемом порядке. Здесь мы
+используем специальный образец {\tt \_}, который не привязывает
+значение к конкретному имени. Тем не менее, более заманчиво
+использовать определённые обозначения для установления
+последовательности вычислений.  В ML это возможно с помощью точки с
+запятой:
+
+%%Then {\tt l} would seem to have polymorphic type $\alpha\; list\; ref$. In
+%%accordance with the usual rules of let-polymorphism we should be able to use it
+%%with two different types, e.g. first
+
+
+\begin{boxed}\begin{verbatim}
+  #x := !x + 1;
+   x := !x + 1;
+   x := !x + 1;
+   x := !x + 1;;
+\end{verbatim}\end{boxed}
+
+\subsection{Работа с системой типов}
+
+Хотя полиморфизм очень хорош для чисто функциональной части ML,
+взаимодействие с некоторыми императивными возможностями построено
+неудачно. Например, рассмотрим следующее:
+
+%%While polymorphism works very well for the pure functional core of ML, it has
+%%unfortunate interactions with some imperative features. For example,
+%%consider the following:
+
+\begin{boxed}\begin{verbatim}
+  #let l = ref [];;
+\end{verbatim}\end{boxed}
+
+Может показаться {\tt l} имеет полиморфный тип $\alpha\; list\; ref$.
+В соответствии со стандартными правилами вывода по полиморфизму, мы
+могли бы использовать {\tt l} с двумя различными типами, сначала
+
+%%Then {\tt l} would seem to have polymorphic type $\alpha\; list\; ref$. In
+%%accordance with the usual rules of let-polymorphism we should be able to use it
+%%with two different types, e.g. first
+
+\begin{boxed}\begin{verbatim}
+  #l := [1];;
+\end{verbatim}\end{boxed}
+
+\noindent и затем
+
+\begin{boxed}\begin{verbatim}
+  #hd(!l) = true;;
+\end{verbatim}\end{boxed}
+
+Но это не приемлемо, поскольку фактически мы могли бы записывать нечто
+как объект типа {\tt int}, а затем читать как объект типа {\tt bool}.
+Следовательно, когда используются ссылки, требуются некоторые
+ограничения на привычные правила let-полиморфизма. Было много
+предложений по подходящему ограничению системы типов, некоторые из
+которых весьма запутанные. Недавно различные версии ML похоже
+сошлись к относительно простому методу, называемому {\em ограничением
+  значения}, \citeN{wright-example}, и CAML обеспечивает это
+ограничение. В самом деле, вышеупомянутая последовательность не
+выполняется. Но интересно промежуточное поведение. Если мы посмотрим
+на первую строку, мы увидим:
+% BUG# может всё-таки 'строку', а не линию? --lg
+
+%%But this isn't reasonable, because we would actually be writing something as an
+%%object of type {\tt int} then reading it as an object of type {\tt bool}.
+%%Consequently, some restriction on the usual rule of let polymorphism is called
+%%for where references are concerned. There have been many attempts to arrive at
+%%a sound but convenient restriction of the ML type system, some of them very
+%%complicated. Recently, different versions of ML seem to be converging on a
+%%relatively simple method, called the {\em value restriction}, due to
+%%\citeN{wright-simple}, and CAML implements this restriction, with a twist
+%%regarding toplevel bindings. Indeed, the above sequence fails. But the
+%%intermediate behaviour is interesting. If we look at the first line we see:
+
+\begin{boxed}\begin{verbatim}
+  #let l = ref [];;
+  l : '_a list ref = ref []
+\end{verbatim}\end{boxed}
+
+Подчёркивание перед типом переменной обозначает что {\tt l} не
+полиморфна в привычном смысле; скорее она имеет один фиксированный
+тип, хотя тип этот всё ещё неопределён. Следующая строчка работает
+отлично:
+
+%%The underscore on the type variable indicates that {\tt l} is not polymorphic
+%%in the usual sense; rather, it has a single fixed type, although that type is
+%%as yet undetermined. The second line works fine:
+
+\begin{boxed}\begin{verbatim}
+  #l := [1];;
+  - : unit = ()
+\end{verbatim}\end{boxed}
+
+\noindent но если посмотреть на тип {\tt l}, то мы увидим:
+
+\begin{boxed}\begin{verbatim}
+  #l;;
+  - : int list ref = ref [1]
+\end{verbatim}\end{boxed}
+
+Теперь установлен псевдо-полиморфный тип. Благодаря этому, ясно, что
+следующая строка даст ошибку:
+
+%%The pseudo-polymorphic type has now been fixed. Granted this, it is clear that
+%%the last line must fail:
+
+\begin{boxed}\begin{verbatim}
+  #hd(!l) = true;;
+  Toplevel input:
+  >hd(!l) = true;;
+  >         ^^^^
+  This expression has type bool,
+  but is used with type int.
+\end{verbatim}\end{boxed}
+
+Пока это представляется вполне оправданным, но мы ещё не объяснили
+почему такие типовые переменные с подчёркиванием встречаются и в
+довольно безобидных чисто функциональных выражениях и более того
+почему они часто исчезают при $\eta$-раскрытии, например:
+
+%%So far, this seems quite reasonable, but we haven't yet explained why the same
+%%underscored type variables oocur in apparently quite innocent purely functional
+%%expressions, and why, moreover, they often disappear on eta-expansion, e.g.
+
+
+\begin{boxed}\begin{verbatim}
+  #let I x = x;;
+  I : 'a -> 'a = <fun>
+  #I o I;;
+  it : '_a -> '_a = <fun>
+  #let I2 = I o I in fun x -> I2 x;;
+  - : '_a -> '_a = <fun>
+  #fun x -> (I o I) x;;
+  it : 'a -> 'a = <fun>
+\end{verbatim}\end{boxed}
+
+Другие методы для полиморфных ссылок зачастую зависят от
+закодированной в типах информации о том, что выражение может содержать
+ссылки. Это кажется вполне естественным, но такой подход может
+привести к типам функций захламлённым этой специальной информацией.
+Представляется непривлекательным, что в типе функции должен отражаться
+факт того, как функция реализована~-- императивно ли или чисто
+функционально.
+
+%%Other techniques for polymorphic references often rely on encoding in the types
+%%the fact that an expression may involve references. This seems natural, but it
+%%can lead to the types of functions becoming cluttered with this special
+%%information. It is unattractive that the particular implementation of the
+%%function, e.g. imperative or functional, should be reflected in its type.
+
+Решение Wright'a, с другой стороны, использует только основной синтаксис
+let-связанного выражения и перед обобщением типа утверждает, что оно
+является так называемым {\em значением}. Чего действительно хотелось
+бы, так это знать: может ли вычисление выражения привести к побочным
+эффектам.  Но, поскольку в общем случае это неразрешимо, то чтобы
+выяснить является ли выражение значением или нет, используется простой
+синтаксический критерий.  Грубо говоря, выражение является значением
+если оно не допускает дальнейших вычислений по правилам ML~--- вот
+почему выражение часто может быть обращено в значение, посредством
+обратного $\eta$-преобразования. К сожалению, это работает против
+методов оптимизации при помощи принудительных вычислений.
+
+%%Wright's solution, on the other hand, uses just the basic syntax of the
+%%expression being let-bound, insisting that it is a so-called {\em value} before
+%%generalizing the type. What is really wanted is knowledge of whether the
+%%expression may cause side-effects when evaluated. However since this is
+%%undecidable in general, the simple syntactic criterion of its being or not
+%%being a value is used. Roughly speaking, an expression is a value if it admits
+%%no further evaluation according to the ML rules --- this is why an expression
+%%can often be made into a value by performing a reverse eta conversion.
+%%Unfortunately this works against the techniques for forcing evaluation.
+
+
+\section*{Упражнения}
+
+\begin{enumerate}
+
+\item Определим $C$ комбинатор следующим образом:
+
+\begin{boxed}\begin{verbatim}
+  #let C f x y = f y x;;
+\end{verbatim}\end{boxed}
+
+Что делает эта функция?
+
+\begin{boxed}\begin{verbatim}
+  #fun f l1 l2 -> itlist (union o C map l2 o f) l1 [];;
+\end{verbatim}\end{boxed}
+
+\item Что делает эта функция? Напишите более эффективную версию.
+
+\begin{boxed}\begin{verbatim}
+  #let rec upto n = if n < 1 then [] else append (upto (n-1)) [n];;
+\end{verbatim}\end{boxed}
+
+\item Определим функцию, вычисляющую числа Фибоначчи:
+
+\begin{boxed}\begin{verbatim}
+  #let rec fib =
+     fun 0 -> 0
+       | 1 -> 1
+       | n -> fib(n - 2) + fib(n - 1);;
+\end{verbatim}\end{boxed}
+
+Почему эта функция неэффективна? Предложите лучшую реализацию.
+
+\item Предложите пример использования данного или подобного
+  рекурсивного исключения.
+
+\begin{boxed}\begin{verbatim}
+  #exception Recurse of exn;;
+\end{verbatim}\end{boxed}
+
+\item Напишите простую версию быстрой сортировки на массивах. Сначала
+  массив разделяется на две части по некоторому элементу, затем на
+  левой части и на правой рекурсивно вызывается sort. Какой
+  рекурсивный вызов является хвостовым?  Сколько требуется памяти в
+  худшем случае? Как с помощью небольшого изменения в коде добиться
+  значительной оптимизации?
+
+\item Докажите, что обе версии {\tt rev}, что мы упомянули, всегда
+  дают одинаковый результат.
+
+\end{enumerate}
+
+%%\section*{Exercises}
+%%
+%%\begin{enumerate}
+%%
+%%\item Define the $C$ combinator as:
+%%
+%%\begin{boxed}\begin{verbatim}
+%%  #let C f x y = f y x;;
+%%\end{verbatim}\end{boxed}
+%%
+%%What does the following function do?
+%%
+%%\begin{boxed}\begin{verbatim}
+%%  #fun f l1 l2 -> itlist (union o C map l2 o f) l1 [];;
+%%\end{verbatim}\end{boxed}
+%%
+%%\item What does this function do? Write a more efficient version.
+%%
+%%\begin{boxed}\begin{verbatim}
+%%  #let rec upto n = if n < 1 then [] else append (upto (n-1)) [n];;
+%%\end{verbatim}\end{boxed}
+%%
+%%\item Define a function to calculate Fibonacci numbers as follows:
+%%
+%%\begin{boxed}\begin{verbatim}
+%%  #let rec fib =
+%%     fun 0 -> 0
+%%       | 1 -> 1
+%%       | n -> fib(n - 2) + fib(n - 1);;
+%%\end{verbatim}\end{boxed}
+%%
+%%Why is this very inefficient? Write a similar but better version.
+%%
+%%\item (*) Can you think of any uses for this exception or similar recursive
+%%ones?
+%%
+%%\begin{boxed}\begin{verbatim}
+%%  #exception Recurse of exn;;
+%%\end{verbatim}\end{boxed}
+%%
+%%\item Implement a simple version of quicksort using arrays. The array is first
+%%partitioned about some pivot, then two recursive calls sort the left and right
+%%portions. Which recursive calls are tail calls? What is the worst-case space
+%%usage? How can this be improved dramatically by a simple change?
+%%
+%%\item Prove that the two versions of {\tt rev} that we have quoted, inefficient
+%%and efficient, always give the same answer.
+%%
+%%\end{enumerate}
+
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
+
