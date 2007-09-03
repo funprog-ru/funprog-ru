@@ -160,7 +160,7 @@ ML представляет несколько встроенных примитивных типов. Из них, с
 \end{itemize}
 
 Значения, такие как {\tt ()}, {\tt false}, {\tt 7} и
- \lstinline!"caml"!,  в смысле $\lambda-$исчисления рассматриваются 
+ \lstinline!"caml"!,  в смысле лямбда~-~исчисления рассматриваются 
 как константы. Другие константы соответствуют {\em операциям} на
  основных типах. Некоторые из них, из соображений привычности,
  могут быть записаны как инфиксные. Для операций определено понятие
@@ -315,7 +315,7 @@ p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
 %%\section{Синтаксис ML}
 
 Выражения в ML строятся из констант и переменных; любой идентификатор, не 
-связанный на текущий момент выполнения программы рассматривается как 
+связанный на текущий момент выполнения программы, рассматривается как 
 переменная. Объявления связывают значения выражений с именами, при этом
 в состав выражений могут входить другие объявления. Следовательно,
 синтаксические классы выражений и объявлений взаимно рекурсивны. Мы можем 
@@ -392,7 +392,7 @@ variables     & ::= & variable                                                  
 \section{Дальнейшие примеры}
 
 
-Не сложно задать рекурсивную фунцию, принимающую в качестве аргументов целочисленное~$n$
+Не сложно задать рекурсивную функцию, принимающую в качестве аргументов целочисленное~$n$
 и функцию~$f$, а возвращающую~$f^n$, т.е. $f \circ \cdots \circ f$ ($n$~раз):
 
 %%It is easy to define by recursion a function that takes a positive integer $n$
@@ -589,7 +589,7 @@ variables     & ::= & variable                                                  
 
 Грубо говоря, объект типа {\verb+('a,'b)sum+} является {\em либо}
 чем-то типа {\verb+'a+}, {\em либо} чем-то типа {\verb+'b+}.  Однако,
-говоря более формально, все эти объяекты имеют разные типы.
+говоря более формально, все эти объекты имеют разные типы.
 Объявление типа, также определяет так называемые {\em конструкторы}
 {\verb+inl+} и {\verb+inr+}.  Это функции, которые получают объекты с
 типами компонентов, и встраивают ?????inject их в новый тип.  Мы
@@ -847,10 +847,14 @@ $$ \mbox{let}\; pattern \mbox{ = } expression $$
 
 \subsection{Рекурсивные типы}
 
-The previous examples have all been recursive only vacuously, in that we have
-not defined a type in terms of itself. For a more interesting example, we will
-declare a type of lists (finite ordered sequences) of elements of type {\tt
-'a}.
+Предыдущие примеры были бессодержательны в том смысле, что мы не определяли
+тип через самое себя. В качестве более интересного примера давайте объявим тип
+списков  \footnote{конечных упорядоченных последовательностей} элементов типа {\tt 'a}.
+
+%%The previous examples have all been recursive only vacuously, in that we have
+%%not defined a type in terms of itself. For a more interesting example, we will
+%%declare a type of lists (finite ordered sequences) of elements of type {\tt
+%%'a}.
 
 \begin{boxed}
 \begin{verbatim}
@@ -859,7 +863,8 @@ declare a type of lists (finite ordered sequences) of elements of type {\tt
 \end{verbatim}
 \end{boxed}
 
-\noindent Let us examine the types of the constructors:
+\noindent Проверим типы конструкторов:
+%\noindent Let us examine the types of the constructors:
 
 \begin{boxed}
 \begin{verbatim}
@@ -870,12 +875,19 @@ declare a type of lists (finite ordered sequences) of elements of type {\tt
 \end{verbatim}
 \end{boxed}
 
-The constructor {\tt Nil}, which takes no arguments, simply creates some object
-of type {\verb+('a)list+} which is to be thought of as the empty list. The
-other constructor {\tt Cons} takes an element of type {\tt 'a} and an element
-of the new type {\tt ('a)list} and gives another, which we think of as arising
-from the old list by adding one element to the front of it. For example, we can
-consider the following:
+Конструктор {\tt Nil}, не принимающий никаких аргументов, просто создаёт некоторый
+объект типа {\verb+('a)list+}, который рассматривается как пустой список. Другой
+конструктор {\tt Cons} принимает аргументы типа {\tt 'a} и {\tt ('a)list}, а 
+возвращает новый список, который образован из предыдущего добавлением в начало
+первого элемента. Например:
+
+
+%%The constructor {\tt Nil}, which takes no arguments, simply creates some object
+%%of type {\verb+('a)list+} which is to be thought of as the empty list. The
+%%other constructor {\tt Cons} takes an element of type {\tt 'a} and an element
+%%of the new type {\tt ('a)list} and gives another, which we think of as arising
+%%from the old list by adding one element to the front of it. For example, we can
+%%consider the following:
 
 \begin{boxed}
 \begin{verbatim}
@@ -890,14 +902,22 @@ consider the following:
 \end{verbatim}
 \end{boxed}
 
-Because the constructors are distinct and injective, it is easy to see that all
-these values, which we think of as lists $[]$, $[1]$, $[1;2]$ and $[1;2;3]$,
-are distinct. Indeed, purely from these properties of the constructors, it
-follows that arbitrarily long lists of elements may be encoded in the new type.
-Actually, ML already has a type {\tt list} just like this one defined. The only
-difference is syntactic: the empty list is written {\verb+[]+} and the
-recursive constructor {\verb+::+}, has infix status. Thus, the above lists are
-actually written:
+Поскольку значение конструктора инъективно зависит от аргументов, легко понять, что 
+все значения, которые мы рассматривали как списки $[]$, $[1]$, $[1;2]$ и $[1;2;3]$,
+различны, а списки различной длины будут иметь различный тип. Фактически, ML уже имеет 
+тип {\tt list}, точно такой, как только что был определён. 
+Единственная разница в синтаксисе: пустой список записывается как {\verb+[]+}, 
+а рекурсивный конструктор {\verb+::+}~-- инфиксный.
+Следовательно, все упомянутые списки в действительности записываются:
+
+%%Because the constructors are distinct and injective, it is easy to see that all
+%%these values, which we think of as lists $[]$, $[1]$, $[1;2]$ and $[1;2;3]$,
+%%are distinct. Indeed, purely from these properties of the constructors, it
+%%follows that arbitrarily long lists of elements may be encoded in the new type.
+%%Actually, ML already has a type {\tt list} just like this one defined. The only
+%%difference is syntactic: the empty list is written {\verb+[]+} and the
+%%recursive constructor {\verb+::+}, has infix status. Thus, the above lists are
+%%actually written:
 
 \begin{boxed}
 \begin{verbatim}
@@ -912,11 +932,16 @@ actually written:
 \end{verbatim}
 \end{boxed}
 
-The lists are printed in an even more natural notation, and this is also
-allowed for input. Nevertheless, when the exact expression in terms of
-constructors is needed, it must be remembered that this is only a surface
-syntax. For example, we can define functions to take the head and tail of a
-list, using pattern matching.
+Списки выводятся в удобном виде, это же справедливо и для ввода. Тем не менее,
+следует помнить, что это синтаксический сахар, а списки можно выражать и явно,
+в терминах конструкторов. Например, мы можем, используя сравнение по образцу, 
+определить функции, принимающие начало и хвост списка.
+
+%%The lists are printed in an even more natural notation, and this is also
+%%allowed for input. Nevertheless, when the exact expression in terms of
+%%constructors is needed, it must be remembered that this is only a surface
+%%syntax. For example, we can define functions to take the head and tail of a
+%%list, using pattern matching.
 
 \begin{boxed}
 \begin{verbatim}
@@ -935,9 +960,12 @@ list, using pattern matching.
 \end{verbatim}
 \end{boxed}
 
-The compiler warns us that these both fail when applied to the empty list,
-since there is no pattern to cover it (remember that the constructors are
-distinct). Let us see them in action:
+Компилятор предупреждает нас, что применение этих функций к пустым спискам
+приведёт к ошибкам. Посмотрим на них в действии:
+
+%%The compiler warns us that these both fail when applied to the empty list,
+%%since there is no pattern to cover it (remember that the constructors are
+%%distinct). Let us see them in action:
 
 \begin{boxed}
 \begin{verbatim}
@@ -950,9 +978,13 @@ distinct). Let us see them in action:
 \end{verbatim}
 \end{boxed}
 
-Note that the following is not a correct definition of {\tt hd}. In fact, it
-constrains the input list to have exactly two elements for matching to succeed,
-as can be seen by thinking of the version in terms of the constructors:
+Обратите внимание, следующее определение {\tt hd} не является корректным.
+В действительности, функция принимает в качестве аргумента список ровно из
+двух аргументов, а на списках отличной длины не определена:
+
+%%Note that the following is not a correct definition of {\tt hd}. In fact, it
+%%constrains the input list to have exactly two elements for matching to succeed,
+%%as can be seen by thinking of the version in terms of the constructors:
 
 \begin{boxed}
 \begin{verbatim}
@@ -969,8 +1001,11 @@ as can be seen by thinking of the version in terms of the constructors:
 \end{verbatim}
 \end{boxed}
 
-Pattern matching can be combined with recursion. For example, here is a
-function to return the length of a list:
+Сравнение по образцу может комбинироваться с рекурсией. Например, вот функция,
+возвращающая длину списка:
+
+%%Pattern matching can be combined with recursion. For example, here is a
+%%function to return the length of a list:
 
 \begin{boxed}
 \begin{verbatim}
@@ -985,8 +1020,10 @@ function to return the length of a list:
 \end{verbatim}
 \end{boxed}
 
-Alternatively, this can be written in terms of our earlier `destructor'
-functions {\tt hd} and {\tt tl}:
+В качестве альтернативы можно задать её с помощью функций {\tt hd} и {\tt tl}:
+
+%%Alternatively, this can be written in terms of our earlier `destructor'
+%%functions {\tt hd} and {\tt tl}:
 
 \begin{boxed}
 \begin{verbatim}
@@ -996,16 +1033,25 @@ functions {\tt hd} and {\tt tl}:
 \end{verbatim}
 \end{boxed}
 
-This latter style of function definition is more usual in many languages,
-notably LISP, but the direct use of pattern matching is often more elegant.
+Последний стиль задания функции весьма распространён во многих языках, особенно
+в LISP, но непосредственное сравнение по образцу часто бывает более элегантно.
+
+%%This latter style of function definition is more usual in many languages,
+%%notably LISP, but the direct use of pattern matching is often more elegant.
 
 \subsection{Древовидные структуры}
 
-It is often helpful to visualize the elements of recursive types as tree
-structures, with the recursive constructors at the branch nodes and the other
-datatypes at the leaves. The recursiveness merely says that plugging subtrees
-together gives another tree. In the case of lists the `trees' are all rather
-spindly and one-sided, with the list {\tt [1;2;3;4]} being represented as:
+Часто бывает полезно представлять части рекурсивных типов в виде дерева с
+рекурсивными конструкторами в узлах, и остальными типами данных в качестве
+листьев. Рекурсивность просто говорит о том как дерево образуется из отдельных 
+поддеревьев. В случае списков <<деревья>> более вытянутые и односторонние. 
+Так, список {\tt [1;2;3;4]} представляется в следующем виде:
+
+%%It is often helpful to visualize the elements of recursive types as tree
+%%structures, with the recursive constructors at the branch nodes and the other
+%%datatypes at the leaves. The recursiveness merely says that plugging subtrees
+%%together gives another tree. In the case of lists the `trees' are all rather
+%%spindly and one-sided, with the list {\tt [1;2;3;4]} being represented as:
 
 \bigskip
 \begin{picture}(140,140)(0,0)
@@ -1025,8 +1071,11 @@ spindly and one-sided, with the list {\tt [1;2;3;4]} being represented as:
 \end{picture}
 \bigskip
 
-It is not difficult to define recursive types which allow more balanced trees,
-e.g.
+Рекурсивные типы, допускающие построение более сбалансированных 
+деревьев, задаются также просто, например:
+
+%%It is not difficult to define recursive types which allow more balanced trees,
+%%e.g.
 
 \begin{boxed}
 \begin{verbatim}
@@ -1035,11 +1084,17 @@ e.g.
 \end{verbatim}
 \end{boxed}
 
-In general, there can be several different recursive constructors, each with a
-different number of descendants. This gives a very natural way of representing
-the {\em syntax trees} of programming (and other formal) languages. For
-example, here is a type to represent arithmetical expressions built up from
-integers by addition and multiplication:
+В общем, может быть несколько различных рекурсивных конструкторов, с
+различным числом потомков. Это даёт очень простой способ представления
+{\em синтаксических деревьев} для языков программирования (и других
+формальных языков). Например, вот тип для представления арифметических
+выражений, построенных из целых чисел, операций сложения и умножения.
+
+%%In general, there can be several different recursive constructors, each with a
+%%different number of descendants. This gives a very natural way of representing
+%%the {\em syntax trees} of programming (and other formal) languages. For
+%%example, here is a type to represent arithmetical expressions built up from
+%%integers by addition and multiplication:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1049,7 +1104,8 @@ integers by addition and multiplication:
 \end{verbatim}
 \end{boxed}
 
-\noindent and here is a recursive function to evaluate such expressions:
+\noindent А вот рекурсивная функция для вычисления таких выражений:
+%\noindent and here is a recursive function to evaluate such expressions:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1063,15 +1119,26 @@ integers by addition and multiplication:
 \end{verbatim}
 \end{boxed}
 
-Such abstract syntax trees are a useful representation which allows all sorts
-of manipulations. Often the first step programming language compilers and
-related tools take is to translate the input text into an `abstract syntax
-tree' according to the parsing rules. Note that conventions such as precedences
-and bracketings are not needed once we have reached the level of abstract
-syntax; the tree structure makes these explicit. We will use such techniques to
-write ML versions of the formal rules of lambda calculus that we were
-considering earlier. First, the following type is used to represent lambda
-terms:
+Подобные абстрактные синтаксические деревья могут быть весьма успешным 
+представлением данных, допускающим всевозможные манипуляции над ними. 
+Так, часто первое действие компиляторов заключается в переводе, согласно 
+правилам синтаксического разбора, текста на входе в <<абстрактное 
+синтаксическое дерево>>. Обратите внимание, что при этом условности, вроде 
+приоритета или использования скобок, уже не требуются. Как только мы 
+достигаем уровня абстрактного синтаксиса, всё выражается явно за счёт 
+структуры дерева. Мы будем использовать подобную технику при написании 
+ML версий формальных правил лямбда - исчисления. Начнём с типа, используемого 
+для представления лямбда - термов.
+
+%%Such abstract syntax trees are a useful representation which allows all sorts
+%%of manipulations. Often the first step programming language compilers and
+%%related tools take is to translate the input text into an `abstract syntax
+%%tree' according to the parsing rules. Note that conventions such as precedences
+%%and bracketings are not needed once we have reached the level of abstract
+%%syntax; the tree structure makes these explicit. We will use such techniques to
+%%write ML versions of the formal rules of lambda calculus that we were
+%%considering earlier. First, the following type is used to represent lambda
+%%terms:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1083,9 +1150,13 @@ terms:
 \end{verbatim}
 \end{boxed}
 
-Note that we make {\tt Abs} take a variable name and a term rather than two
-terms in order to prohibit the formation of terms that aren't valid. For
-example, we represent the term $\lamb{x\; y} y\; (x\; x\; y)$ by:
+Обратите внимание, вместо двух термов {\tt Abs} принимает имя переменной и терм.
+Это сделано для запрещения некорректных термов. В качестве примера представим 
+терм $\lamb{x\; y} y\; (x\; x\; y)$ с помощью:
+
+%%Note that we make {\tt Abs} take a variable name and a term rather than two
+%%terms in order to prohibit the formation of terms that aren't valid. For
+%%example, we represent the term $\lamb{x\; y} y\; (x\; x\; y)$ by:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1093,8 +1164,11 @@ example, we represent the term $\lamb{x\; y} y\; (x\; x\; y)$ by:
 \end{verbatim}
 \end{boxed}
 
-Here is the recursive definition of a function {\tt free\_in} to decide whether
-a variable is free in a term:
+Вот определение рекурсивной функции {\tt free\_in}, определяющей является ли
+переменная в терме свободной:
+
+%%Here is the recursive definition of a function {\tt free\_in} to decide whether
+%%a variable is free in a term:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1111,10 +1185,15 @@ a variable is free in a term:
 \end{verbatim}
 \end{boxed}
 
-Similarly, we can define substitution by recursion. First, though, we need a
-function to rename variables to avoid name clashes. We want the ability to
-convert an existing variable name to a new one that is not free in some given
-expression. The renaming is done by adding prime characters.
+Точно так мы можем по рекурсии определить подстановку. Сначала, во избежание 
+конфликта имён, нам потребуется функция для переименования переменных. Мы хотим
+преобразовывать существующие имена переменных в новые, связанные в 
+заданном выражении. Переименование производится путём добавления символа.
+
+%%Similarly, we can define substitution by recursion. First, though, we need a
+%%function to rename variables to avoid name clashes. We want the ability to
+%%convert an existing variable name to a new one that is not free in some given
+%%expression. The renaming is done by adding prime characters.
 
 \begin{boxed}
 \begin{verbatim}
@@ -1131,7 +1210,10 @@ expression. The renaming is done by adding prime characters.
 \end{verbatim}
 \end{boxed}
 
-\noindent Now we can define substitution just as we did in abstract terms:
+\noindent Теперь мы можем определить подстановку так, как мы это сделали
+для абстрактных термов:
+
+%% \noindent Now we can define substitution just as we did in abstract terms:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1149,17 +1231,28 @@ expression. The renaming is done by adding prime characters.
 \end{verbatim}
 \end{boxed}
 
-Note the very close parallels between the standard mathematical presentation of
-lambda calculus, as we presented earlier, and the ML version here. All we
-really need to make the analogy complete is a means of reading and writing the
-terms in some more readable form, rather than by explicitly invoking the
-constructors. We will return to this issue later, and see how to add these
-features.
 
-\subsection{Мощь (хитрости????subtlety) рекурсивных типов}
+Обратите внимание на очень близкие параллели между стандартным 
+математическим представлением лямбда~-~исчисления, что обсуждалось
+ранее, и ML версией. Всё что нам действительно надо для завершения
+аналогии, это  вместо явного вызова конструкторов читать и записывать
+термы в более удобной форме. Мы вернёмся к этой проблеме позже и обсудим 
+как можно добавить такие возможности.
 
-A recursive type may contain nested instances of other type constructors,
-including the function space constructor. For example, consider the following:
+%%Note the very close parallels between the standard mathematical presentation of
+%%lambda calculus, as we presented earlier, and the ML version here. All we
+%%really need to make the analogy complete is a means of reading and writing the
+%%terms in some more readable form, rather than by explicitly invoking the
+%%constructors. We will return to this issue later, and see how to add these
+%%features.
+
+\subsection{Тонкости рекурсивных типов}
+
+Рекурсивный тип может содержать вложенные конструкторы других типов,
+включая конструктор типа функций. Например, рассмотрим следующий код:
+
+%%A recursive type may contain nested instances of other type constructors,
+%%including the function space constructor. For example, consider the following:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1168,31 +1261,57 @@ including the function space constructor. For example, consider the following:
 \end{verbatim}
 \end{boxed}
 
-If we stop to think about the underlying semantics, this looks disquieting.
-Consider for example the special case when {\verb+'a+} is {\verb+bool+}. We
-then have an injective function
-{\verb+K:((bool)embedding->bool)->(bool)embedding+}. This directly contradicts
-Cantor's theorem that the set of all subsets of $X$ cannot be injected into
-$X$.\footnote{Proof: consider $C = \{ i(s) \mid s \in \powerset(X) \mbox{ and }
-i(s) \not\in s \}$. If $i:\powerset(X) \to X$ is injective, we have $i(C) \in C
-\Iff i(C) \not\in C$, a contradiction. This is similar to the Russell paradox,
-and in fact probably inspired it. The analogy is even closer if we consider the
-equivalent form that there is no surjection $j:X \to \powerset(X)$, and prove
-it by considering $\{s \mid s \not\in j(s)\}$.} Hence we need to be more
-careful with the semantics of types. In fact $\alpha \to \beta$ cannot be
-interpreted as the full function space, or recursive type constructions like
-the above are inconsistent. However, since all functions we can actually create
-are computable, it is reasonable to restrict ourselves to computable functions
-only. With that restriction, a consistent semantics is possible, although the
-details are complicated.
+Если мы задумаемся о нижележащей семантике, то увидим, ситуация представляется 
+серьёзной. Рассмотрим, к примеру, специальный случай, когда {\verb+'a+} является 
+{\verb+bool+}. У нас также есть инъективная функция {\verb+K:((bool)embedding->bool)->(bool)embedding+}.
+А это прямо противоречит теореме Кантора о том, что множество всех подмножеств 
+множества~$X$ не может  быть инъективно ему.\footnote{Доказательство: 
+рассмотрим $C = \{ i(s) \mid s \in \powerset(X) \mbox{ и } i(s) \not\in s \}$. 
+Если $i:\powerset(X) \to X$ инъективно, выполняется $i(C) \in C
+\Iff i(C) \not\in C$, получили противоречие. Эта конструкция напоминает парадокс Рассела,
+и, возможно, в действительности вдохновлена им. Аналогия будет ещё более близкой,
+если мы рассмотрим равнозначное утверждение о несюръективности $j:X \to \powerset(X)$, 
+и докажем это, рассматривая $\{s \mid s \not\in j(s)\}$.} Следовательно,  
+рассуждая о типах, нам следует быть более осторожными. В действительности,
+$\alpha \to \beta$  не может рассматриваться как полное функциональное 
+пространство. Иначе конструкции рекурсивных типов будут противоречивы.
+Поскольку все функции, которые мы можем задать, в действительности являются
+вычислимыми, есть смысл ограничиться только ими. С таким ограничением семантика
+будет непротиворечива, хотя детали усложнятся.
 
-The above definition also has interesting consequences for the type system. For
-example, we can now define the $Y$ combinator, by using $K$ as a kind of type
-cast. Note that if the $K$s are deleted, this is essentially the usual
-definition of the $Y$ combinator in untyped lambda calculus. The use of {\tt
-let} is only used for the sake of efficiency, but we {\em do} need the
-$\eta$-redex involving {\tt z} in order to prevent looping under ML's
-evaluation strategy.
+%%If we stop to think about the underlying semantics, this looks disquieting.
+%%Consider for example the special case when {\verb+'a+} is {\verb+bool+}. We
+%%then have an injective function
+%%{\verb+K:((bool)embedding->bool)->(bool)embedding+}. This directly contradicts
+%%Cantor's theorem that the set of all subsets of $X$ cannot be injected into
+%%$X$.\footnote{Proof: consider $C = \{ i(s) \mid s \in \powerset(X) \mbox{ and }
+%%i(s) \not\in s \}$. If $i:\powerset(X) \to X$ is injective, we have $i(C) \in C
+%%\Iff i(C) \not\in C$, a contradiction. This is similar to the Russell paradox,
+%%and in fact probably inspired it. The analogy is even closer if we consider the
+%%equivalent form that there is no surjection $j:X \to \powerset(X)$, and prove
+%%it by considering $\{s \mid s \not\in j(s)\}$.} Hence we need to be more
+%%careful with the semantics of types. In fact $\alpha \to \beta$ cannot be
+%%interpreted as the full function space, or recursive type constructions like
+%%the above are inconsistent. However, since all functions we can actually create
+%%are computable, it is reasonable to restrict ourselves to computable functions
+%%only. With that restriction, a consistent semantics is possible, although the
+%%details are complicated.
+
+Рассмотренное определение также имеет интересные последствия для системы типов.
+Например, мы можем теперь определить $Y$~комбинатор, используя~$K$ для 
+приведения типа. Заметьте, если~$K$ удалёны, мы имеем, в сущности, обычное
+определение $Y$~комбинатора в нетипизированном лямбда~-~исчислении. Конструкция~{\tt let}
+ используется всего лишь для эффективности, но мы  {\em нуждаемся} 
+в $\eta$-редексе включающем {\tt z} для предупреждения зацикливания в стратегии
+вычисления принятой в ML.
+
+%%The above definition also has interesting consequences for the type system. For
+%%example, we can now define the consequences, by using $K$ as a kind of type
+%%cast. Note that if the $K$s are deleted, this is essentially the usual
+%%definition of the $Y$ combinator in untyped lambda calculus. The use of {\tt
+%%let} is only used for the sake of efficiency, but we {\em do} need the
+%%$\eta$-redex involving {\tt z} in order to prevent looping under ML's
+%%evaluation strategy.
 
 \begin{boxed}
 \begin{verbatim}
@@ -1208,42 +1327,62 @@ evaluation strategy.
 
 \end{boxed}
 
-Thus, recursive types are a powerful addition to the language, and allow us to
-back off the change of making the recursion operator a primitive.
+Итак, рекурсивные типы представляют собой значительный вклад в 
+язык и позволяют нам обойтись без задания оператора рекурсии примитивой языка.
+
+%%Thus, recursive types are a powerful addition to the language, and allow us to
+%%back off the change of making the recursion operator a primitive.
 
 \section*{Упражнения}
 
 \begin{enumerate}
 
-\item What goes wrong in our definition of {\tt subst} if we replace
-
+\item Что будет неверно в нашем определении {\tt subst}, если мы заменим
+%\item What goes wrong in our definition of {\tt subst} if we replace
 {\verb+Var y -> if x = y then t else Var y+}
 
-\noindent by these separate patterns?
-
+\noindent следующим фрагментом?
+%\noindent by these separate patterns?
 {\verb+Var x -> t | Var y -> Var y+}
 
-\item It would be possible, though inefficient, to define natural numbers using
-the following recursive type:
-
+\item Можно было бы, определить (хотя это неэффективно)  натуральные
+числа посредством следующего рекурсивного типа:
+%%\item It would be possible, though inefficient, to define natural numbers using
+%%the following recursive type:
 \begin{boxed}
 \begin{verbatim}
   #type num = Zero | Suc of num;;
 \end{verbatim}
 \end{boxed}
 
-Define functions to perform arithmetic on natural numbers in this form.
+Напишите функции, выполняющие арифметические действия над числами в 
+этой форме.
 
-\item Use the type definition for the syntax of lambda terms that we gave
-above. Write a function to convert an arbitrary lambda term into an equivalent
-in terms of the $S$, $K$ and $I$ combinators, based on the technique we gave
-earlier. Represent the combinators by \lstinline!Const "S"! etc.
+\item Используйте определение типа для синтаксиса лямбда~-~термов, что мы
+дали выше. Напишите функцию, конвертирующую произвольный лямбда~-~терм
+в эквивалент, записанный с помощью $S$, $K$ и $I$~комбинаторов.
+Представьте комбинаторы с помощью \lstinline!Const "S"!, используйте 
+технику, рассмотренную нами ранее.
 
-\item Extend the syntax of lambda terms to a incorporate Church-style typing.
+\item Расширьте синтаксис лямбда~-~термов, включив типизацию в стиле Чёрча.
+% ISSUE никакого смысла в фразе не вижу. Перевести не могу.
 Write functions that check the typing conditions before allowing terms to be
 formed, but otherwise map down to the primitive constructors.
 
-\item Consider a type of binary trees with strings at the nodes defined by:
+\item Рассмотрим тип бинарных деревьев со строками в узлах:
+
+%Define functions to perform arithmetic on natural numbers in this form.
+
+%%\item Use the type definition for the syntax of lambda terms that we gave
+%%above. Write a function to convert an arbitrary lambda term into an equivalent
+%%in terms of the $S$, $K$ and $I$ combinators, based on the technique we gave
+%%earlier. Represent the combinators by \lstinline!Const "S"! etc.
+
+%%\item Extend the syntax of lambda terms to a incorporate Church-style typing.
+%%Write functions that check the typing conditions before allowing terms to be
+%%formed, but otherwise map down to the primitive constructors.
+
+%\item Consider a type of binary trees with strings at the nodes defined by:
 
 \begin{boxed}
 \begin{verbatim}
@@ -1251,23 +1390,39 @@ formed, but otherwise map down to the primitive constructors.
 \end{verbatim}
 \end{boxed}
 
-Write a function {\tt strings} to return a list of the strings occurring in the
-tree in left-to-right order, i.e. at each node it appends the list resulting
-from the left branch, the singleton list at the current node, and the list
-occurring at the right branch, in that order. Write a function that takes a
-tree where the corresponding list is alphabetically sorted and a new string,
-and returns a tree with the new string inserted in the appropriate place.
+Напишите функцию {\tt strings}, возвращающую список строк, полученный при обходе дерева 
+в порядке слева на право. Напишите функцию, которая принимает строку и дерево, для 
+которого соответствующий список сортирован в алфавитном порядке, а возвращает
+дерево, со строкой, вставленнной  с сохранением упорядоченности. 
 
-\item (*) Refine the above functions so that the tree remains almost balanced
-at each stage, i.e. the maximum depths occurring at the left and right branches
-differ by at most one.\footnote{See \citeN{avl} and various algorithm books for
-more details of these `AVL trees' and similar methods for balanced trees.}
+\item (*) Улучшите эти функции так, чтобы на каждом шагу дерево оставалось почти 
+балансированным, т.е. для каждого узла максимальная  глубина левого и правого 
+поддерева отличалась не более чем на единицу.\footnote{За подробностями  об 
+этих <<АВЛ деревьях>> и похожих методах для балансированных деревьев обращайтесь 
+к \citeN{avl} и различным книгам по алгоритмам.}
 
-\item (*) Can you characterize the types of expressions that can be written
-down in simply typed lambda calculus, without a recursion
-operator?\footnote{The answer lies in the `Curry-Howard isomorphism' --- see
-\citeN{girard-prat} for example.} What is the type of the following recursive
-function?
+\item (*) Можете ли вы описать типы выражений, которые могут быть записаны
+в типизированном лямбда~-~исчислении, без оператора рекурсии?\footnote{Ответ лежит 
+в  <<гомоморфизме Карри-Говарда>>~-- для подробностей см. 
+\citeN{girard-prat}.} Каков тип следующей рекурсивной функции?
+
+%%Write a function {\tt strings} to return a list of the strings occurring in the
+%%tree in left-to-right order, i.e. at each node it appends the list resulting
+%%from the left branch, the singleton list at the current node, and the list
+%%occurring at the right branch, in that order. Write a function that takes a
+%%tree where the corresponding list is alphabetically sorted and a new string,
+%%and returns a tree with the new string inserted in the appropriate place.
+
+%%\item (*) Refine the above functions so that the tree remains almost balanced
+%%at each stage, i.e. the maximum depths occurring at the left and right branches
+%%differ by at most one.\footnote{See \citeN{avl} and various algorithm books for
+%%more details of these `AVL trees' and similar methods for balanced trees.}
+
+%%\item (*) Can you characterize the types of expressions that can be written
+%%down in simply typed lambda calculus, without a recursion
+%%operator?\footnote{The answer lies in the `Curry-Howard isomorphism' --- see
+%%\citeN{girard-prat} for example.} What is the type of the following recursive
+%function?
 
 \begin{boxed}
 \begin{lstlisting}
@@ -1275,9 +1430,14 @@ function?
 \end{lstlisting}
 \end{boxed}
 
-Show how it can be used to write down ML expressions with completely
-polymorphic type $\alpha$. Can you write a terminating expression with this
-property? What about an arbitrary function type $\alpha \to \beta$?
+% ISSUE Смысл перевода ускользает. Думать.
+Покажите как это может использоваться для записи ML выражений с полностью 
+полиморфным типом $\alpha$. Можете ли вы написать завершённое выражение
+с таким свойством? Как насчёт произвольной функции типа $\alpha \to \beta$?
+
+%%Show how it can be used to write down ML expressions with completely
+%%polymorphic type $\alpha$. Can you write a terminating expression with this
+%%property? What about an arbitrary function type $\alpha \to \beta$?
 
 \end{enumerate}
 
