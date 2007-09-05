@@ -4,10 +4,11 @@
 доказательства теорем. Однако он пригоден и для многих других приложений, по большей
 части из области  <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
 примеров использования ML. От читателя не требуется досконального
-знания всех деталей, как, например, в случае анализа  приближения вещественных
-чисел, приведённом далее. Однако, важно испытать эти программы и похожие примеры, а также, 
-упражнения. Поскольку нет лучшего способа,  почувствовать как  ML используется 
+знания всех деталей, как, например, в случае приближения вещественных
+чисел, приведённом далее. Однако важно позапускать эти программы, примеры и 
+упражнения. Поскольку нет лучшего способа почувствовать, как  ML используется 
 в действительности.
+
 
 %%As we have said, ML was originally designed as a metalanguage for a computer
 %%theorem prover. However it is suitable for plenty of other applications, mostly
@@ -24,13 +25,13 @@
 %%\section{Symbolic differentiation}
 
 Фраза <<символьное вычисление>> довольно неопределённа, но грубо говоря, она 
-охватывает приложения занимающиеся, манипуляциями над математическими 
-{\em выражениями}, в общем случае содержащими переменные, а не просто численными
-расчётами. Есть несколько успешных <<систем компьютерной алгебры>> таких как
-Maxima, Maple and Mathematica. Они они могут выполнять полезные
-математические операции, такие как разложение многочленов на множители, 
-дифференцирование и интегрирование выражений. (Они также пригодны и для
-обычных вычислений.) Мы покажем как задачи такого рода могут быть решены с помощью ML.
+охватывает приложения занимающиеся не просто численными расчётами, а манипуляциями 
+над математическими {\em выражениями}, в общем случае содержащими переменные. Есть 
+несколько успешных <<систем компьютерной алгебры>> таких как 
+Maxima, Maple and Mathematica. Они могут выполнять полезные
+математические операции: разложение многочленов на множители, 
+дифференцирование и интегрирование выражений и т.д. Они также пригодны и для
+обычных вычислений. Мы покажем, как задачи такого рода могут быть решены с помощью ML.
 
 %%The phrase `symbolic computation' is a bit vague, but roughly speaking it
 %%covers applications where manipulation of mathematical {\em expressions}, in
@@ -43,7 +44,7 @@ Maxima, Maple and Mathematica. Они они могут выполнять полезные
 
 Мы выбрали символьное дифференцирование для нашего примера, потому что для него
 есть довольно простой и известный алгоритм. Читатель, возможно, знаком
-с определёнными производными основных функций, например ${d \over dx} sin(x) =
+с  производными основных функций, например ${d \over dx} sin(x) =
 cos(x)$, а также с правилами дифференцирования произведения и композиции 
 функций. Поскольку каждый может систематически использовать  эти правила
 для нахождения производных, то возможно и запрограммировать их на ML. 
@@ -65,7 +66,7 @@ cos(x)$, а также с правилами дифференцирования произведения и композиции
 Мы будем допускать математические выражения в весьма общей форме. Они могут
 быть построены из переменных и констант, с использованием операторов. Операторы
 могут быть унарными, бинарными, тернарными, или, в общем случае, арности~$n$.
-Мы выражаем это с помощью следующего рекурсивного типа данных:
+Это выражается с помощью следующего рекурсивного типа данных:
 
 %%We will allow mathematical expressions in a fairly general form. They may be
 %%built up from variables and constants by the application of operators. These
@@ -97,12 +98,12 @@ $$ sin(x + y) / cos(x - exp(y)) - ln(1 + x) $$
 
 Чтение и запись выражений в сыром виде довольно неудобны. Это общая проблема
 для всех систем символьных вычислений, и обычно интерфейс системы содержит
-{\em синтаксический анализатор (парсер)} и {\em системы вывода}, позволяющие
-вводить и выводить данные в читаемой форме. Подробное обсуждение синтаксического 
-разбора мы отложим, поскольку эта, сама по себе важная тема, будет обсуждаться 
-далее, а сейчас мы напишем простенькую систему вывода для наших выражений. Такую 
-чтобы, по крайней мере, мы могли видеть что происходит. Мы хотим, чтобы 
-поддерживались обычные соглашения, как то:
+{\em синтаксический анализатор (парсер)} и {\em систему ввода-вывода},
+позволяющую вводить и выводить данные в читаемой форме. Отложим пока подробное
+обсуждение синтаксического разбора, поскольку эта, сама по себе важная тема, будет обсуждаться 
+далее, а сейчас мы напишем простенькую систему вывода для наших выражений. 
+Чтобы, по крайней мере, можно было видеть что происходит. Мы хотим, чтобы 
+поддерживались обычные соглашения, как-то:
 
 %%Reading and writing expressions in their raw form is rather unpleasant. This is
 %%a general problem in all symbolic computation systems, and typically the
@@ -143,7 +144,7 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
 
 \end{itemize}
 
-Сначала мы объявим список инфиксных операторов - список пар из имени оператора
+Сначала мы объявим список инфиксных операторов~-- список пар из имени оператора
 и его приоритета.
 
 %%First we declare a list of infixes, which is a list of pairs: each operator
@@ -154,10 +155,10 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
 \end{verbatim}\end{boxed}
 
 Использование списков для представления конечных частичных функций является 
-стандартной практикой. Они обычно называются {\em ассоциативными списками}, 
+стандартной практикой. Они обычно называются {\em ассоциативными списками} 
 и весьма распространены в функциональном программировании.\footnote{Для более
-тяжеловесных приложений, больше подойдут альтернативы, такие как хеш - таблицы,
-но для простых приложений, в котороых списки не слишком длинны, решение в виде линейного 
+тяжеловесных приложений больше подойдут альтернативы, такие как хеш-таблицы,
+но для простых приложений, в которых списки не слишком длинны, решение в виде линейного 
 списка является простым и адекватным.} Для того чтобы конвертировать список в
 частичную функцию мы используем {\tt assoc}:
 
@@ -200,7 +201,7 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
 Обратите внимание, если мы когда - либо изменим этот список операторов, 
 то всякую функцию, вроде {\tt get\_precedence}, использующую его, потребуется 
 переопределить. Это является основной причиной, по которой многие  LISP программисты 
-предпочитают динамическое связывание. Мы можем сделать множество инфиксных операторов 
+предпочитают динамическое связывание. Множество инфиксных операторов можно сделать  
 произвольно расширяемым, используя обращение по ссылке:
 
 %%Note that if we ever change this list of infixes, then any functions such as
@@ -224,9 +225,9 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
   - : int = 30
 \end{verbatim}\end{boxed}
 
-Заметьте, по правилам вычисления в ML, разыменование указателя применяется только
-после того, как {\tt get\_precedence} получает свои аргументы, и, следовательно, 
-результаты в множестве операторов. Мы также можем определить функцию, определяющую,
+Отметим, что по правилам вычисления в ML, разыменование указателя применяется
+только после того, как {\tt get\_precedence} получает свои аргументы, и, следовательно, 
+результаты во множестве операторов. Мы также можем задать функцию, определяющую,
 является ли некоторая функция инфиксным оператором. Можно просто использовать 
 {\tt get\_precedence} и смотреть сработала ли она:
 
@@ -242,8 +243,8 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
      with _ -> false;;
 \end{verbatim}\end{boxed}
 
-Альтернатива заключается в использовании общей функции {\tt can}, которая проверяет успешна ли
-другая функция:
+Альтернатива заключается в использовании общей функции {\tt can}, которая проверяет 
+успешность вычисления другой функции:
 
 %%An alternative is to use a general function {\tt can} that finds out whether
 %%another function succeeds:
@@ -294,14 +295,15 @@ $f(x_1,\ldots,x_n)$, т.е. записывается имя функции и рядом, в скобках
 Первый аргумент {\tt prec} обозначает уровень приоритета оператора, для которого
 текущее рассматриваемое выражение является непосредственным подтермом. 
 Так что если текущее выражение имеет инфиксный оператор с некоторым приоритетом, то 
-скобки необходимы если приоритет этого оператора ниже {\tt prec}, иными словами, если мы
-рассматриваем правую часть  $x * (y + z)$. Действительно, мы используем 
-скобки даже когда они равны, для более наглядной группировки. 
+скобки необходимы, если приоритет этого оператора ниже {\tt prec}. Например,
+если мы рассматриваем правую часть  $x * (y + z)$. На самом деле, для более 
+наглядной группировки  мы используем скобки даже когда {\tt prec} и приоритет 
+текущего оператора равны. 
 В случае ассоциативных операторов, вроде $+$ это не важно, но мы должны различать 
-$x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каждым
-оператором ассоциативность.) Вторая, взаимно рекурсивная, функция
+$x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы учитывать 
+ассоциативность каждого оператора.) Вторая, взаимно рекурсивная, функция
 {\tt string\_of\_terms} используется для печати списка термов через запятую, как 
-они идут в неинфексной форме $f(t_1,\ldots,t_n)$.
+они идут в неинфиксной форме $f(t_1,\ldots,t_n)$.
 Давайте посмотрим это в действии:
 
 %%The first argument {\tt prec} indicates the precedence level of the operator of
@@ -336,7 +338,7 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
 \end{verbatim}\end{boxed}
 
 На  самом деле, нам даже не требуется самостоятельно конвертировать терм в строку. CAML Light
-позволяет нам настроить свою систему вывода. Это потребует несколько специальных команд:
+позволяет нам настроить свою систему вывода. Это требует несколько специальных команд:
 
 %%In fact, we don't need to convert a term to a string ourselves. CAML Light
 %%allows us to set up our own printer so that it is used to print anything of
@@ -372,7 +374,7 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
 
 После того как новый принтер установлен, он будет использоваться всякий раз
 при печати типа {\tt term}, даже если он представляет собой составной 
-тип данных, как например кортеж:
+тип данных, как, например, кортеж:
 
 %%Once the new printer is installed, it is used whenever CAML wants to print
 %%something of type {\tt term}, even if it is a composite datastructure
@@ -428,7 +430,7 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
 \begin{itemize}
 
   \item Если выражение - одна из элементарных функций дифференцируемого аргумента, 
-  например \alert{$sin(x)$}, то результат дифференцирования - известная производная этой функции.
+  например \alert{$sin(x)$}, то результат дифференцирования~-- известная производная этой функции.
 
   %\item If the expression is one of the standard functions applied to an
   %argument, e.g. \alert{$sin(x)$}, return the known derivative.
@@ -534,13 +536,13 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
     -(inv(cos(x - exp(y)) ^ 2)))) - (0 + 0) * inv(1 + x)`
 \end{verbatim}\end{boxed}
 
-Однако, она не выполняет различные очевидные упрощения, такие как $0 * x = 0$
+Однако она не выполняет различные очевидные упрощения, такие как $0 * x = 0$
 и $x + 0 = x$. Некоторые из этих избыточных выражений создаются нашей прямолинейной 
 стратегией дифференцирования, которая, например, применяет правило
-последовательного дифференцирования~$f(t)$ даже когда $t$~-~всего лишь переменная
-дифференцирования. Вместо избыточного усложнения функции дифференцирования
-давайте зададим отдельную функцию упрощения, которая будет избавляеться 
-от необязательных выражений.
+последовательного дифференцирования~$f(t)$ даже когда $t$~-- всего 
+лишь переменная дифференцирования. Вместо избыточного усложнения функции 
+дифференцирования давайте зададим отдельную функцию упрощения, которая будет 
+избавляться от необязательных выражений.
 
 %%However, it fails to make various obvious simplifications such as $0 * x = 0$
 %%and $x + 0 = x$. Some of these redundant expressions are created by the rather
@@ -568,14 +570,14 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
        | t -> t;;
 \end{verbatim}\end{boxed}
 
-Мы просто применяем упрощение с самого вехнего уровня. Мы должны выполнять его
-в обходе выражения снизу - вверх. 
+Мы просто применяем упрощение, начиная с корня дерева выражения. Мы выполняем 
+его в обходе снизу - вверх. 
 % This will also bring negations upwards through products. 
 % - что - то про знак "-"  
-В некоторых случаях было бы более эффективно упрощение при обходе свеху - вниз, 
-например, $0 * t$ для усложнённого выражения $t$, но это потребует повторения
-для термов вроде $(0 + 0) * 2$. Выбор здесь напоминает выбор между
-нормальным и аппликативным порядком редукции в лямбда исчислении.
+В некоторых случаях было бы более эффективно упрощение при обходе сверху - вниз, 
+например, для $0 * t$ и сложного выражения $t$, но это потребует повторения
+в случае термов вроде $(0 + 0) * 2$. Выбор здесь напоминает выбор между
+нормальным и аппликативным порядком редукции в лямбда-исчислении.
 
 
 %%This just applies the simplification at the top level of the term. We need to
@@ -609,7 +611,7 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
   - : term = `0`
 \end{verbatim}\end{boxed}
 
-В обшем, всегда можно добавить более усложнённые правила упрощения. 
+В общем, всегда можно добавить более усложнённые правила упрощения. 
 Например, рассмотрим:
 
 
@@ -671,8 +673,8 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы связывать с каж
 
 Такая запись и короче, и более привычна. Тем не менее, такое решение основывается
 на том, что мы знаем определения  довольно неприметных тригонометрических функций,
-вроде {\tt sec}. Чтобы машина не решила делать, вероятно, найдётся пользователь,
-которого это не устроит.
+вроде {\tt sec}. Что бы машина не решила делать, вероятно, найдётся
+пользователь, которого это не устроит.
 
 %%Certainly, it is shorter and more conventional. However it relies on the fact
 %%that we know the definitions of these fairly obscure trig functions like {\tt
@@ -2508,49 +2510,84 @@ $$
 %directly rather than by iterating the addition function; this leads to much
 %better error behaviour.
 
-\section{Prolog and theorem proving}
+\section{Пролог и доказательство теорем}
 
-The language Prolog is popular in Artificial Intelligence research, and is used
-in various practical applications such as expert systems and intelligent
-databases. Here we will show how the main mechanism of Prolog, namely
-depth-first search through a database of rules using unification and
-backtracking, can be implemented in ML. We do not pretend that this is a
-full-blown implementation of Prolog, but it gives an accurate picture of the
-general flavour of the language, and we will be able to run some simple
-examples in our system.
+Язык Пролог популярен в области исследований по Искусственному Интеллекту,
+и используется в различных практических приложениях, таких как экспертные 
+системы и интеллектуальные базы данных. В этой главе рассматривается как
+различные механизмы Пролога, а именно: поиск вглубь с унификацией и возвратом,
+могут быть реализованы в ML. Мы не претендуем на полную реализацию Пролога,
+но это даст нам  точное представление об основных достоинствах языка и
+мы сможем запустить несколько примеров.
+% The language Prolog is popular in Artificial Intelligence research, and is used
+% in various practical applications such as expert systems and intelligent
+% databases. Here we will show how the main mechanism of Prolog, namely
+% depth-first search through a database of rules using unification and
+% backtracking, can be implemented in ML. We do not pretend that this is a
+% full-blown implementation of Prolog, but it gives an accurate picture of the
+% general flavour of the language, and we will be able to run some simple
+% examples in our system.
 
-\subsection{Prolog terms}
+\subsection{Термы пролога}
 
-Prolog code and data is represented using a uniform system of first order
-terms. We have already defined a type of terms for our mathematical
-expressions, and associated parsers and printers. Here we will use something
-similar, but not quite the same. First of all, it simplifies some of the code
-if we treat constants as nullary functions, i.e. functions that take an empty
-list of arguments. Accordingly we define:
+Данные и код в Прологе представляются с помощью единой системы термов первого
+порядка. Мы уже определяли тип термов для наших математических выражений, их 
+печати, и соответствующих парсеров. Сейчас мы будем использовать нечто
+похожее, но с некоторыми модификациями. Во-первых, немного упростим код, будем 
+рассматривать константы как нуль-арные функции, т.е. как функции, принимающие 
+пустой список аргументов. Соответственно определим:
+%%Prolog code and data is represented using a uniform system of first order
+%%terms. We have already defined a type of terms for our mathematical
+%%expressions, and associated parsers and printers. Here we will use something
+%%similar, but not quite the same. First of all, it simplifies some of the code
+%%if we treat constants as nullary functions, i.e. functions that take an empty
+%%list of arguments. Accordingly we define:
 
 \begin{boxed}\begin{lstlisting}
   type term = Var of string
             | Fn of string * (term list);;
 \end{lstlisting}\end{boxed}
 
-Where we would formerly have used {\verb+Const s+}, we will now use
-{\verb+Fn(s,[])+}. Note that we will treat functions of different arities
-(different numbers of arguments) as distinct, even if they have the same name.
-Thus there is no danger of our confusing constants with true functions.
+Там, где раньше использовался  {\verb+Const s+}, теперь будет
+{\verb+Fn(s,[])+}. Обратите внимание, что мы будем рассматривать функции различной арности
+(разным числом аргументов) как различные, даже если у них одинаковое имя.
+Следовательно нет опасности, что константы будут спутаны с настоящими
+функциями.
+%%Where we would formerly have used {\verb+Const s+}, we will now use
+%%{\verb+Fn(s,[])+}. Note that we will treat functions of different arities
+%%(different numbers of arguments) as distinct, even if they have the same name.
+%%Thus there is no danger of our confusing constants with true functions.
 
-\subsection{Lexical analysis}
+\subsection{Лексический анализ}
 
-In order to follow Prolog conventions, which include case sensitivity, we also
-modify lexical analysis. We will not attempt to conform exactly to the full
-details of Prolog, but one feature is very important: alphanumeric identifiers
-that begin with an {\em upper case} letter or an underscore are treated as
-variables, while other alphanumeric identifiers, along with numerals, are
-treated as constants. For example {\verb+X+} and {\verb+Answer+} are variables
-while {\verb+x+} and {\verb+john+} are constants. We will lump all symbolic
+В целях следования соглашениям пролога, которые включают чувствительность к
+регистру, мы обновим функции лексического анализа. Мы не будем требовать
+точного совпадения во всём, но одна деталь очень важна: 
+символьно-цифровые идентификаторы, начинающиеся с буквы {\em в верхнем регистре},
+рассматриваются как переменные, а другие символьно-цифровые идентификаторы и
+числа~-- как константы. Например, {\verb+X+} и {\verb+Answer+}~-- переменные,
+тогда как {\verb+x+} и {\verb+john+}~-- константы. Мы будем смешивать все 
+символьные идентификаторы вместе с константами, но будем различать
+символы пунктуации: левую и правую скобки, запятую и точку с запятой. 
+Символьные идентификаторы должны состоять более чем из одоног символа
+Непунктуационные символы собираются вместе, так что  
+We
+will lump all symbolic
 identifiers together as constants too, but we will distinguish the punctuation
 symbols: left and right brackets, commas and semicolons. Non-punctuation
 symbols are collected together into the longest strings possible, so symbolic
 identifiers need not consist only of one character.
+% In order to follow Prolog conventions, which include case sensitivity, we also
+% modify lexical analysis. We will not attempt to conform exactly to the full
+% details of Prolog, but one feature is very important: alphanumeric identifiers
+% that begin with an {\em upper case} letter or an underscore are treated as
+% variables, while other alphanumeric identifiers, along with numerals, are
+% treated as constants. For example {\verb+X+} and {\verb+Answer+} are variables
+% while {\verb+x+} and {\verb+john+} are constants. We will lump all symbolic
+% identifiers together as constants too, but we will distinguish the punctuation
+% symbols: left and right brackets, commas and semicolons. Non-punctuation
+% symbols are collected together into the longest strings possible, so symbolic
+% identifiers need not consist only of one character.
 
 \begin{boxed}\begin{lstlisting}
   type token = Variable of string
@@ -2558,7 +2595,8 @@ identifiers need not consist only of one character.
              | Punct of string;;
 \end{lstlisting}\end{boxed}
 
-\noindent The lexer therefore looks like this:
+\noindent Лексический анализатор, следовательно выглядит так:
+% \noindent The lexer therefore looks like this:
 
 \begin{boxed}\begin{lstlisting}
   let lex =
@@ -2585,7 +2623,7 @@ identifiers need not consist only of one character.
     fst o alltokens o explode;;
 \end{lstlisting}\end{boxed}
 
-\noindent For example:
+\noindent Например:
 
 \begin{boxed}\begin{verbatim}
   #lex "add(X,Y,Z) :- X is Y+Z.";;
@@ -2596,15 +2634,21 @@ identifiers need not consist only of one character.
     Constant "+"; Variable "Z"; Punct "."]
 \end{verbatim}\end{boxed}
 
-\subsection{Parsing}
+\subsection{Синтаксический анализ}
 
-The basic parser is pretty much the same as before; the printer is exactly the
-same. The main modification to the printer is that we allow Prolog lists to be
-written in a more convenient notation. Prolog has `.' and `nil' corresponding
-to ML's `{\tt ::}' and `{\tt []}', and we set up the parser so that lists can
-be written much as in ML, e.g. `{\tt [1,2,3]}'. We also allow the Prolog
-notation `{\verb+[H|T]+}' instead of `{\verb+cons(H,T)+}', typically used for
-pattern-matching. After the basic functions:
+Основной синтаксический анализатор остаётся в значительной степени таким же,
+как был ранее, система печати не меняется. Единственная модификация~-- прологовские
+списки записываются в более удобной нотации. В Прологе <<.>> и <<nil>> 
+соответствуют  <<{\tt ::}>> и <<{\tt []}>> в ML. Мы также допускаем 
+прологовскую запись <<{\verb+[H|T]+}>> вместо <<{\verb+cons(H,T)+}>>, обычно
+используемую для сравнения по образцу. После основных функций:
+% The basic parser is pretty much the same as before; the printer is exactly the
+% same. The main modification to the printer is that we allow Prolog lists to be
+% written in a more convenient notation. Prolog has `.' and `nil' corresponding
+% to ML's `{\tt ::}' and `{\tt []}', and we set up the parser so that lists can
+% be written much as in ML, e.g. `{\tt [1,2,3]}'. We also allow the Prolog
+% notation `{\verb+[H|T]+}' instead of `{\verb+cons(H,T)+}', typically used for
+% pattern-matching. After the basic functions:
 
 \begin{boxed}\begin{lstlisting}
   let variable =
@@ -2616,14 +2660,17 @@ pattern-matching. After the basic functions:
       | _ -> raise Noparse;;
 \end{lstlisting}\end{boxed}
 
-\noindent we have a parser for terms and also for Prolog rules, of these forms:
+\noindent у нас есть синтаксический анализатор для термов, а также правил
+Пролога в следующей форме: 
+% \noindent we have a parser for terms and also for Prolog rules, of these forms:
 
 \begin{eqnarray*}
 term\mbox{.}    & &                                             \\
 term            & \mbox{ :- } & term,\ldots,term\mbox{.}
 \end{eqnarray*}
 
-\noindent The parsers are as follows:
+\noindent Собственно парсеры:
+% \noindent The parsers are as follows:
 
 \begin{boxed}\begin{lstlisting}
   let rec atom input
@@ -2666,44 +2713,66 @@ term            & \mbox{ :- } & term,\ldots,term\mbox{.}
   let parse_rules = fst o (many rule ++ finished >> fst) o lex;;
 \end{lstlisting}\end{boxed}
 
-\subsection{Unification}
+\subsection{Унификация}
 
-Prolog uses a set of rules to solve a current {\em goal} by trying to match one
-of the rules against the goal. A rule consisting of a single term can solve a
-goal immediately. In the case of a rule $term \mbox{ :- }
-term_1,\ldots,term_n\mbox{.}$, if the goal matches $term$, then Prolog needs to
-solve each $term_i$ as a subgoal in order to finish the original goal.
+Пролог использует набор правил для разрешения текущей {\em цели}. Для этого он
+подбирает правила для цели. Правило, состоящее из одного терма, разрешает
+цель немедленно, если соответствует цели. В случае правила $term \mbox{ :- } 
+term_1,\ldots,term_n\mbox{.}$, если цель соответствует $term$, то Прологу 
+необходимо разрешить, как подцель, по порядку каждый $term_i$. Если он
+может выполнить это, первоначальная цель считается разрешённой.  
+% Prolog uses a set of rules to solve a current {\em goal} by trying to match one
+% of the rules against the goal. A rule consisting of a single term can solve a
+% goal immediately. In the case of a rule $term \mbox{ :- }
+% term_1,\ldots,term_n\mbox{.}$, if the goal matches $term$, then Prolog needs to
+% solve each $term_i$ as a subgoal in order to finish the original goal.
 
-However, goals and rules do not have to be exactly the same. Instead, Prolog
-assigns variables in both the goal and the rule to make them match up, a
-process known as {\em unification}. This means that we can end up proving a
-special case of the original goal, e.g. $P(f(X))$ instead of
-$P(Y)$. For example:
+Однако, цели и правила не обязаны в точности совпадать. Взамен Пролог назначает
+переменные для цели и сопоставляемого правила, такое действие называется 
+{\em унификацией}. Это означает, что мы можем прервать проверку отдельного
+варианта оригинальной цели, т.е.  $P(f(X))$ вместо $P(Y)$.
+Например:
+% However, goals and rules do not have to be exactly the same. Instead, Prolog
+% assigns variables in both the goal and the rule to make them match up, a
+% process known as {\em unification}. This means that we can end up proving a
+% special case of the original goal, e.g. $P(f(X))$ instead of
+% $P(Y)$. For example:
 
 \begin{itemize}
 
-\item To unify $f(g(X),Y)$ and $f(g(a),X)$ we can set
-$X = a$ and $Y = a$. Then both terms are $f(g(a),a)$.
+\item Для унификации $f(g(X),Y)$ и $f(g(a),X)$ мы можем присвоить
+$X = a$ и $Y = a$. После этого термы будут: $f(g(a),a)$.
 
-\item To unify $f(a,X,Y)$ and $f(X,a,Z)$ we can set $X
-= a$ and $Y = Z$, and then both terms are $f(a,a,Z)$.
+\item Для унификации $f(a,X,Y)$ и $f(X,a,Z)$ мы можем присвоить 
+$X = a$ и $Y = Z$, после чего оба терма примут вид $f(a,a,Z)$.
 
-\item It is impossible to unify $f(X)$ and $X$.
+\item Недопустимо унифицировать $f(X)$ и $X$.
+% \item To unify $f(g(X),Y)$ and $f(g(a),X)$ we can set
+% $X = a$ and $Y = a$. Then both terms are $f(g(a),a)$.
+% 
+% \item To unify $f(a,X,Y)$ and $f(X,a,Z)$ we can set $X
+% = a$ and $Y = Z$, and then both terms are $f(a,a,Z)$.
+% 
+% \item It is impossible to unify $f(X)$ and $X$.
 
 \end{itemize}
 
-In general, unifiers are not unique. For example, in the second example we
-could choose to set $Y = f(b)$ and $Z = f(b)$. However one can always choose
-one that is {\em most general}, i.e. any other unification can be reached from
-it by further instantiation (compare most general types in ML). In order to
-find it, roughly speaking, one need only descend the two terms recursively
-in parallel, and on finding a variable on either side, assigns it to whatever
-the term on the other side is. One also needs to check that the variable hasn't
-already been assigned to something else, and that it doesn't occur in the term
-being assigned to it (as in the last example above). A simple implementation of
-this idea follows. We maintain an association list giving instantiations
-already made, and we look each variable up to see if it is already assigned
-before proceeding. We use the existing instantiations as an accumulator.
+В общем случае, унификаторы не уникальны. Например, во втором примере мы
+могли выбрать присваивание $Y = f(b)$ и $Z = f(b)$. Однако, всегда можно
+выбрать  {\em most general}, i.e. any other unification can be reached from
+% it by further instantiation (compare most general types in ML)
+% In general, unifiers are not unique. For example, in the second example we
+% could choose to set $Y = f(b)$ and $Z = f(b)$. However one can always choose
+% one that is {\em most general}, i.e. any other unification can be reached from
+% it by further instantiation (compare most general types in ML). In order to
+% find it, roughly speaking, one need only descend the two terms recursively
+% in parallel, and on finding a variable on either side, assigns it to whatever
+% the term on the other side is. One also needs to check that the variable hasn't
+% already been assigned to something else, and that it doesn't occur in the term
+% being assigned to it (as in the last example above). A simple implementation of
+% this idea follows. We maintain an association list giving instantiations
+% already made, and we look each variable up to see if it is already assigned
+% before proceeding. We use the existing instantiations as an accumulator.
 
 \begin{boxed}\begin{lstlisting}
   let rec unify tm1 tm2 insts =
@@ -2760,13 +2829,18 @@ to allow weird cyclic datastructures instead of simple first order terms.
            else raw_augment (v,t') insts;;
 \end{lstlisting}\end{boxed}
 
-\subsection{Backtracking}
+\subsection{Перебор с возвратами}
 
-Prolog proceeds by depth-first search, but it may backtrack: even if a rule
-unifies successfully, if all the remaining goals cannot be solved under the
-resulting instantiations, then another initial rule is tried. Thus we consider
-the whole list of goals rather than one at a time, to give the right control
-strategy.
+Пролог выполняет поиск в глубину, но он может использовать возврат: даже если
+правило неуспешно унифицируется, если все последующие цели не могут быть разрешены
+при текущих связываниях переменных, то сверяется другое исходное (первоначальное)
+правило. Следовательно, мы рассматриваем целый список целей, вместо одной за
+раз. 
+% Prolog proceeds by depth-first search, but it may backtrack: even if a rule
+% unifies successfully, if all the remaining goals cannot be solved under the
+% resulting instantiations, then another initial rule is tried. Thus we consider
+% the whole list of goals rather than one at a time, to give the right control
+% strategy.
 
 \begin{boxed}\begin{lstlisting}
   let rec first f =
@@ -2787,8 +2861,9 @@ strategy.
       expand (n + 1) rules global goals') rules;;
 \end{lstlisting}\end{boxed}
 
-Here we use a function `rename' to generate fresh variables for the rules each
-time:
+Мы используем функцию {\tt rename} для генерации новых переменных:
+% Here we use a function `rename' to generate fresh variables for the rules each
+% time:
 
 \begin{boxed}\begin{verbatim}
   let rec rename s =
@@ -2799,8 +2874,10 @@ time:
     (rename s conc,map (rename s) asms);;
 \end{verbatim}\end{boxed}
 
-Finally, we can package everything together in a function {\tt prolog} that
-tries to solve a given goal using the given rules:
+Наконец, мы можем собрать всё вместе, в одну функцию {\tt prolog}, которая
+пытается разрешить заданное правило, используя правила: 
+% Finally, we can package everything together in a function {\tt prolog} that
+% tries to solve a given goal using the given rules:
 
 \begin{boxed}\begin{verbatim}
   type outcome = No | Yes of (string * term) list;;
@@ -2812,14 +2889,16 @@ tries to solve a given goal using the given rules:
     with error _ -> No;;
 \end{verbatim}\end{boxed}
 
-This says either that the goal cannot be solved, or that it can be solved with
-the given instantiations. Note that we only return one answer in this latter
-case, but this is easy to change if desired.
+% This says either that the goal cannot be solved, or that it can be solved with
+% the given instantiations. Note that we only return one answer in this latter
+% case, but this is easy to change if desired.
 
-\subsection{Examples}
+\subsection{Примеры}
 
-We can use the Prolog interpreter just written to try some simple examples from
-Prolog textbooks. For example:
+Мы можем использовать только что написанный интерпретатор для
+запуска примеров из какой-нибудь книги по Прологу. Например:
+% We can use the Prolog interpreter just written to try some simple examples from
+% Prolog textbooks. For example:
 
 \begin{boxed}\begin{verbatim}
   #let rules = parse_rules
@@ -2848,10 +2927,10 @@ Prolog textbooks. For example:
   - : outcome = Yes ["Y", `edward`; "X", `alice`]
 \end{verbatim}\end{boxed}
 
-The following are similar to some elementary ML list operations. Since Prolog
-is relational rather than functional, it is possible to use Prolog queries in a
-more flexible way, e.g. ask what arguments would give a certain result, rather
-than vice versa:
+% The following are similar to some elementary ML list operations. Since Prolog
+% is relational rather than functional, it is possible to use Prolog queries in a
+% more flexible way, e.g. ask what arguments would give a certain result, rather
+% than vice versa:
 
 \begin{boxed}\begin{verbatim}
   #let r = parse_rules
@@ -2870,48 +2949,52 @@ than vice versa:
   - : outcome = Yes ["Y", `1 . (2 . X)`]
 \end{verbatim}\end{boxed}
 
-In such cases, Prolog seems to be showing an impressive degree of intelligence.
-However under the surface it is just using a simple search strategy, and this
-can easily be thwarted. For example, the following loops indefinitely:
+В таких случаях Пролог представляется в значительной степени интеллектуальным.
+Но за этой наружностью стоит простой поиск, а значит <<интеллектуальность>> 
+хрупка. Например, следующие циклы неопределённы:
+
+% In such cases, Prolog seems to be showing an impressive degree of intelligence.
+% However under the surface it is just using a simple search strategy, and this
+% can easily be thwarted. For example, the following loops indefinitely:
 
 \begin{boxed}\begin{verbatim}
   #prolog r (parse_term "append(X,[3,4],X)");;
 \end{verbatim}\end{boxed}
 
-\subsection{Theorem proving}
+\subsection{Доказательство теорем}
 
-Prolog is acting as a simple theorem prover, using a database of logical facts
-(the rules) in order to prove a goal. However it is rather limited in the facts
-it can prove, partly because its depth-first search strategy is incomplete, and
-partly because it can only make logical deductions in certain patterns. It is
-possible to make Prolog-like systems that are more powerful, e.g. see
-\citeN{stickel-pttp}. In what follows, we will just show how to build a more
-capable theorem prover using essentially similar technology, including the
-unification code and an identical backtracking strategy.
+% Prolog is acting as a simple theorem prover, using a database of logical facts
+% (the rules) in order to prove a goal. However it is rather limited in the facts
+% it can prove, partly because its depth-first search strategy is incomplete, and
+% partly because it can only make logical deductions in certain patterns. It is
+% possible to make Prolog-like systems that are more powerful, e.g. see
+% \citeN{stickel-pttp}. In what follows, we will just show how to build a more
+% capable theorem prover using essentially similar technology, including the
+% unification code and an identical backtracking strategy.
 
-In particular, unification is an effective way of deciding how to specialize
-universally quantified variables. For example, given the facts that
-$\all{X} p(X) \Imp q(X)$ and $p(f(a))$, we can unify the two
-expressions involving $p$ and thus discover that we need to set
-$X$ to $f(a)$. By contrast, the very earliest theorem provers tried all
-possible terms built up from the available constants and functions (the
-`Herbrand base').
+% In particular, unification is an effective way of deciding how to specialize
+% universally quantified variables. For example, given the facts that
+% $\all{X} p(X) \Imp q(X)$ and $p(f(a))$, we can unify the two
+% expressions involving $p$ and thus discover that we need to set
+% $X$ to $f(a)$. By contrast, the very earliest theorem provers tried all
+% possible terms built up from the available constants and functions (the
+% `Herbrand base').
 
-Usually, depth-first search would go into an infinite loop, so we need to
-modify the Prolog strategy slightly. We will use {\em depth first iterative
-deepening}. This means that the search depth has a hard limit, and attempts to
-exceed it cause backtracking. However, if no proof is found at a given depth,
-the bound is increased and another attempt is made. Thus, first one searches
-for proofs of depth $1$, and if that fails, searches for one of depth $2$, then
-depth $3$ and so on. For `depth' one can use various parameters, e.g. the
-height or overall size of the search tree; we will use the number of unifiable
-variables introduced.
+% Usually, depth-first search would go into an infinite loop, so we need to
+% modify the Prolog strategy slightly. We will use {\em depth first iterative
+% deepening}. This means that the search depth has a hard limit, and attempts to
+% exceed it cause backtracking. However, if no proof is found at a given depth,
+% the bound is increased and another attempt is made. Thus, first one searches
+% for proofs of depth $1$, and if that fails, searches for one of depth $2$, then
+% depth $3$ and so on. For `depth' one can use various parameters, e.g. the
+% height or overall size of the search tree; we will use the number of unifiable
+% variables introduced.
 
-\subsubsection*{Manipulating formulas}
+\subsubsection*{Манипулирование формулами}
 
-We will simply use our standard first order terms to denote formulas,
-introducing new constants for the logical operators. Many of these are written
-infix.
+% We will simply use our standard first order terms to denote formulas,
+% introducing new constants for the logical operators. Many of these are written
+% infix.
 
 \begin{center}
 \begin{tabular}{|l|l|}
@@ -2929,15 +3012,15 @@ exists(X,p)      & there exists an X such that p \\
 \end{tabular}
 \end{center}
 
-An alternative would be to introduce a separate type of formulas, but this
-would require separate parsing and printing support. We will avoid this, for
-the sake of simplicity.
+% An alternative would be to introduce a separate type of formulas, but this
+% would require separate parsing and printing support. We will avoid this, for
+% the sake of simplicity.
 
-\subsubsection*{Preprocessing formulas}
+\subsubsection*{Предварительная обработка формул}
 
-It's convenient if the main part of the prover need not cope with implications
-and `if and only if's. Therefore we first define a function that eliminates
-these in favour of the other connectives.
+% It's convenient if the main part of the prover need not cope with implications
+% and `if and only if's. Therefore we first define a function that eliminates
+% these in favour of the other connectives.
 
 \begin{boxed}\begin{lstlisting}
   let rec proc tm =
@@ -2955,10 +3038,10 @@ these in favour of the other connectives.
     | t -> t;;
 \end{lstlisting}\end{boxed}
 
-The next step is to push the negations down the formula, putting it into
-so-called `negation normal form' (NNF). We define two mutually recursive
-functions that create NNF for a formula, and
-its negation.
+% The next step is to push the negations down the formula, putting it into
+% so-called `negation normal form' (NNF). We define two mutually recursive
+% functions that create NNF for a formula, and
+% its negation.
 
 \begin{boxed}\begin{lstlisting}
   let rec nnf_p tm =
@@ -2980,15 +3063,15 @@ its negation.
     | t -> Fn("~",[t]);;
 \end{lstlisting}\end{boxed}
 
-We will convert the negation of the input formula into negation normal form,
-and the main prover will then try to derive a contradiction from it. This will
-suffice to prove the original formula.
+% We will convert the negation of the input formula into negation normal form,
+% and the main prover will then try to derive a contradiction from it. This will
+% suffice to prove the original formula.
 
-\subsubsection*{The main prover}
+\subsubsection*{Главный доказыватель}
 
-At each stage, the prover has a current formula, a list of formulas yet to be
-considered, and a list of literals. It is trying to reach a contradiction. The
-following strategy is employed:
+% At each stage, the prover has a current formula, a list of formulas yet to be
+% considered, and a list of literals. It is trying to reach a contradiction. The
+% following strategy is employed:
 
 \begin{itemize}
 
@@ -3067,7 +3150,7 @@ with the fewest universal instantiations; if it succeeds, it returns the number
 required and any toplevel instantiations, throwing away instantiations for
 internally created variables.
 
-\subsubsection*{Examples}
+\subsubsection*{Примеры}
 
 Here are some simple examples from \citeN{pelletier-problems}.
 
@@ -3127,7 +3210,7 @@ Here are some simple examples from \citeN{pelletier-problems}.
   P55' : int * (string * term) list = 6, ["X", `agatha`]
 \end{verbatim}\end{boxed}
 
-\section*{Further reading}
+\section*{Дальнейшее чтение}
 
 Symbolic differentiation is a classic application of functional languages.
 Other symbolic operations are major research issues in their own right ---
@@ -3162,7 +3245,7 @@ algorithms, see \citeN{martelli-montanari}. Our theorem prover is based on
 another important theorem proving method conveniently based on Prolog-style
 search, look at the Prolog Technology Theorem Prover \cite{stickel-pttp}.
 
-\section*{Exercises}
+\section*{Упражнения}
 
 \begin{enumerate}
 
