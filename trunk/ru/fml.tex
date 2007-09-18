@@ -706,14 +706,13 @@ $\beta$, и два конструктора отображаются на соответствующие копии:
 \end{verbatim}
 \end{boxed}
 
-\noindent This function has the property, naturally enough, that when applied
-to {\tt inl n} it returns {\verb+n > 6+} and when applied to {\tt inr b} it
-returns {\tt b}. It is precisely because of the second and third properties of
-the constructors that we know this does give a welldefined function. Because
-the constructors are injective, we can uniquely recover {\tt n} from {\tt inl
-n} and {\tt b} from {\tt inr b}. Because the constructors are distinct, we know
-that the two clauses cannot be mutually inconsistent, since no value can
-correspond to both patterns.
+\noindent Эта функция имеет свойство (достаточно натуральное), что когда она применяется к
+{\tt inl n} она возвращает {\verb+n > 6+}, а когда она применяется к {\tt inr b}, то она
+возвращает {\tt b}.  Это происходит в соответствии со вторым и третьим свойствами
+конструкторов, что дает нам хорошо определенную функцию.  Поскольку конструкторы являются
+инъективными, мы можем точно восстановить {\tt n} из {\tt inl n} и {\tt b} из {\tt inr b}.
+Поскольку конструкторы индивидуальны, мы знаем, что два выражения не могут быть взаимно
+неконсистетны, поскольку никакое значение не соответствует обоим образцам.
 
 % \noindent This function has the property, naturally enough, that when applied
 % to {\tt inl n} it returns {\verb+n > 6+} and when applied to {\tt inr b} it
@@ -724,10 +723,10 @@ correspond to both patterns.
 % that the two clauses cannot be mutually inconsistent, since no value can
 % correspond to both patterns.
 
-In addition, because the constructors are exhaustive, we know that each value
-will fall under one pattern or the other, so the function is defined
-everywhere. Actually, it is permissible to relax this last property by omitting
-certain patterns, though the ML system then issues a warning:
+В добавление к этому, поскольку кострукторы являются полными (??? exhaustive), мы знаем,
+что каждое значение будет подпадать под один из образцов, так что функция определена
+везде.  В действительности, разрешается ослабить это свойство путем неуказания некоторых
+образцов, хотя при этом ML выдаст предупреждение:
 
 % In addition, because the constructors are exhaustive, we know that each value
 % will fall under one pattern or the other, so the function is defined
@@ -745,8 +744,10 @@ certain patterns, though the ML system then issues a warning:
 \end{verbatim}
 \end{boxed}
 
-If this function is applied to something of the form {\tt inl x}, then it will
-not work:
+Если эта функция применяется к чему-то вида {\tt inl x}, то она не будет работать:
+
+% If this function is applied to something of the form {\tt inl x}, then it will
+% not work:
 
 \begin{boxed}
 \begin{verbatim}
@@ -761,9 +762,13 @@ not work:
 \end{verbatim}
 \end{boxed}
 
-Though booleans are built into ML, they are effectively defined by a rather
-trivial instance of a recursive type, often called an {\em enumerated type},
-where the constructors take no arguments:
+Хотя логические значения и встроены в ML, они эффективно определяются тривиальным
+использованием рекурсивного типа, часто называемого {\em (тип-перечисление) enumerated
+  type}, где конструкторы не получают аргументов:
+
+% Though booleans are built into ML, they are effectively defined by a rather
+% trivial instance of a recursive type, often called an {\em enumerated type},
+% where the constructors take no arguments:
 
 \begin{boxed}
 \begin{verbatim}
@@ -771,8 +776,11 @@ where the constructors take no arguments:
 \end{verbatim}
 \end{boxed}
 
-Indeed, it is perfectly permissible to define things by matching over the truth
-values. The following two phrases are completely equivalent:
+В самом деле, разрешается определять выражения путем сопоставления с истинным значением.
+Следующие два выражения полностью эквивалентны:
+
+% Indeed, it is perfectly permissible to define things by matching over the truth
+% values. The following two phrases are completely equivalent:
 
 \begin{boxed}
 \begin{verbatim}
@@ -783,9 +791,13 @@ values. The following two phrases are completely equivalent:
 \end{verbatim}
 \end{boxed}
 
-Pattern matching is, however, not limited to casewise definitions over elements
-of recursive types, though it is particularly convenient there. For example, we
-can define a function that tells us whether an integer is zero as follows:
+Однако, сопоставление с образцом не ограничивается определением элементов рекурсивных
+типов, хотя в частности это очень удобно.  Например, мы можем определить функцию, которая
+сообщает нам является ли число нулем, следующим образом:
+
+% Pattern matching is, however, not limited to casewise definitions over elements
+% of recursive types, though it is particularly convenient there. For example, we
+% can define a function that tells us whether an integer is zero as follows:
 
 \begin{boxed}
 \begin{verbatim}
@@ -798,16 +810,27 @@ can define a function that tells us whether an integer is zero as follows:
 \end{verbatim}
 \end{boxed}
 
-In this case we no longer have mutual exclusivity of patterns, since {\tt 0}
-matches either pattern. The patterns are examined in order, one by one, and the
-first matching one is used. Note carefully that unless the matches are mutually
-exclusive, there is no guarantee that each clause holds as a mathematical
-equation. For example in the above, the function does not return {\tt false}
-for any {\tt n}, so the second clause is not universally valid.
+В этом случае, мы не имеем взаимсной исключительности образцов, поскольку {\tt 0}
+соответствует обоим образцам.  Образцы сопостовляются по порядку, один за другим, и
+используется первый соответствующий.  Заметьте, что пока соответствия не являются взаимно
+исключающими, нет гарантии, что каждое выражение содержит математическое уравнение.
+Например, в предыдущем примере, функция не возвращает {\tt false} для любого {\tt n}, так
+что второе выражение не универсально.
 
-Note that only {\em constructors} may be used in the above special way as
-components of patterns. Ordinary constants will be treated as new variables
-bound inside the pattern. For example, consider the following:
+% In this case we no longer have mutual exclusivity of patterns, since {\tt 0}
+% matches either pattern. The patterns are examined in order, one by one, and the
+% first matching one is used. Note carefully that unless the matches are mutually
+% exclusive, there is no guarantee that each clause holds as a mathematical
+% equation. For example in the above, the function does not return {\tt false}
+% for any {\tt n}, so the second clause is not universally valid.
+
+Заметьте, что только {\em конструкторы} могут использоваться в вышеприведенных выражениях
+как компоненты образцов.  Обычные константы будут рассматриваться как новые переменные,
+связанные внутри образца.  Например, рассмотрим следующий код:
+
+% Note that only {\em constructors} may be used in the above special way as
+% components of patterns. Ordinary constants will be treated as new variables
+% bound inside the pattern. For example, consider the following:
 
 \begin{boxed}
 \begin{verbatim}
@@ -824,26 +847,38 @@ bound inside the pattern. For example, consider the following:
 \end{verbatim}
 \end{boxed}
 
-In general, the unit element {\tt ()}, the truth values, the integer numerals,
-the string constants and the pairing operation (infix comma) have constructor
-status, as well as other constructors from predefined recursive types. When
-they occur in a pattern the target value must correspond. All other identifiers
-match any expression and in the process become bound.
+В общем, элемент-модуль (unit element) {\tt ()}, истинные значения, целые числа, строковые
+константы и операция образования пар (infix comma) имеют статус конструкторов, также как и
+другие конструктора из предопределенных рекурсивных типов.  Когда они встречаются в
+образце, соответствующее значение должно иметь соответствующий тип.  Все другие
+идентификаторы соответствуют любому выражению и становятся связанными в процессе
+обработки.
 
-As well as the varstructs in lambda expressions, there are other ways of
-performing pattern matching. Instead of creating a function via pattern
-matching and applying it to an expression, one can perform pattern-matching
-over the expression directly using the following construction:
+% In general, the unit element {\tt ()}, the truth values, the integer numerals,
+% the string constants and the pairing operation (infix comma) have constructor
+% status, as well as other constructors from predefined recursive types. When
+% they occur in a pattern the target value must correspond. All other identifiers
+% match any expression and in the process become bound.
+
+Также как и ???varstructs в $\lambda$-выражениях, существуют другие способы выполнения
+сопоставления с образцом.  Вместо создания функции с помощью сопоставления с образцом, и
+применения ее к выражению, мы можем выполнять сопоставление с образцом напрямую используя
+следующую конструкцию:
+
+% As well as the varstructs in lambda expressions, there are other ways of
+% performing pattern matching. Instead of creating a function via pattern
+% matching and applying it to an expression, one can perform pattern-matching
+% over the expression directly using the following construction:
 
 $$ \mbox{match}\; expression\; \mbox{with}\;
    pattern_1 \mbox{\lstinline!->!} E_1 \mid \cdots \mid
    pattern_n \mbox{\lstinline!->!} E_n $$
 
-\noindent The simplest alternative of all is to use
+\noindent Простейшей альтернативой этому является использование
 
 $$ \mbox{let}\; pattern \mbox{ = } expression $$
 
-\noindent but in this case only a single pattern is allowed.
+\noindent но в этом случае разрешено использование лишь одного образца.
 
 \subsection{Рекурсивные типы}
 
@@ -880,7 +915,6 @@ $$ \mbox{let}\; pattern \mbox{ = } expression $$
 конструктор {\tt Cons} принимает аргументы типа {\tt 'a} и {\tt ('a)list}, а 
 возвращает новый список, который образован из предыдущего добавлением в начало
 первого элемента. Например:
-
 
 %%The constructor {\tt Nil}, which takes no arguments, simply creates some object
 %%of type {\verb+('a)list+} which is to be thought of as the empty list. The
