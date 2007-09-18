@@ -34,10 +34,10 @@
   * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
   * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
+  * (e) *plan.tex* - перевод alexott, прочитали
 
 = Остальные =
 
-  * (t) *plan.tex* - перевод, прочитали
   * (t) *comb.tex* - перевод, прочитали
   * (t) *examples.tex* - перевод pr.dimiii ("Язык Prolog и доказательство теорем"), прочитали
   * (t) *ind-defs.tex* - перевод, прочитали
@@ -63,4 +63,5 @@ proving.tex -- l7.tex -- plan.tex
 effect.tex -- l8.tex -- plan.tex
 examples.tex -- l9.tex -- l10.tex -- l11.tex -- l12.tex -- plan.tex
 
+ 
  
