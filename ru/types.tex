@@ -206,58 +206,105 @@ FORTRAN, в котором различаются целые числа и числа с плавающей точкой.
 %interpretation.
 
 \subsection{The stock of types}
-
-The first stage in our formalization is to specify exactly what the types are.
-We suppose first of all that we have some set of {\em primitive types}, which
-might, for example, contain {\tt bool} and {\tt int}. We can construct
-composite types from these using the function space {\em type constructor}.
-Formally, we make the following inductive definition of the set $Ty_C$ of types
-based on a set of primitive types $C$:
-
-$$ \frac{\sigma \in C}{\sigma \in Ty_C} $$
-
-$$ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \to \tau \in Ty_C} $$
-
-For example, possible types might be $int$, $bool \to bool$ and $(int \to
-bool) \to int \to bool$. We assume that the function arrow associates to the
-right, i.e. $\sigma \to \tau \to \upsilon$ means $\sigma \to (\tau \to
-\upsilon)$. This fits naturally with the other syntactic conventions connected
-with currying.
-
-Before long, we shall extend the type system in two ways. First, we will allow
-so-called {\em type variables} as well as primitive type constants --- these
-are the vehicle for polymorphism. Secondly, we will allow the introduction of
-other type constructors besides the function arrow. For example, we will later
-introduce a constructor $\times$ for the product type. In that case a new
-clause:
-
-$$ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \times \tau \in Ty_C}
+Начнём формализацию строгим определением понятия типа. Предположим, что 
+у нас имеется некоторое множество {\em примитивных типов,} в которое входят,
+например, типы~{\tt bool} и~{\tt int}. Составные типы могут быть определены
+при помощи {\em конструктора типа функции.} Формально, индуктивное определение 
+множества типов~$Ty_C$, основанного на множестве примитивных типов~$C$, 
+выглядит так:
+%The first stage in our formalization is to specify exactly what the types are.
+%We suppose first of all that we have some set of {\em primitive types}, which
+%might, for example, contain {\tt bool} and {\tt int}. We can construct
+%composite types from these using the function space {\em type constructor}.
+%Formally, we make the following inductive definition of the set $Ty_C$ of types
+%based on a set of primitive types $C$:
+%
+$$ 
+ \frac{\sigma \in C}{\sigma \in Ty_C} 
+$$
+%
+$$ 
+ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \to \tau \in Ty_C}
 $$
 
-\noindent needs to be added to the inductive definition. Once we move to the
-more concrete case of ML, there is the possibility of new, user-defined types
-and type constructors, so we will get used to arbitrary sets of constructors of
-any arity. We will write $(\alpha_1,\ldots,\alpha_n)con$ for the application of
-an $n$-ary type constructor $con$ to the arguments $\alpha_i$. (Only in a few
-special cases like $\to$ and $\times$ do we use infix syntax, for the sake of
-familiarity.) For example $(\sigma)list$ is the type of lists whose elements
-all have type $\sigma$.
+Например, в рамках данного определения допустимы типы $int$, $bool \to bool$ 
+либо~$(int \to bool) \to int \to bool$. Будем считать операцию~<<$\to$>> 
+правоассоциативной, т.~е.\ полагать выражение~$\sigma \to \tau \to \upsilon$
+равным~$\sigma \to (\tau \to \upsilon)$. Такая трактовка естественно
+согласуется с другими синтаксическими правилами, касающимися карринга.
+%
+%For example, possible types might be $int$, $bool \to bool$ and $(int \to
+%bool) \to int \to bool$. We assume that the function arrow associates to the
+%right, i.e. $\sigma \to \tau \to \upsilon$ means $\sigma \to (\tau \to
+%\upsilon)$. This fits naturally with the other syntactic conventions connected
+%with currying.
 
-An important property of the types, provable because of {\em free} inductive
-generation, is that $\sigma \to \tau \not= \sigma$. (In fact, more generally,
-a type cannot be the same as any proper syntactic subexpression of itself.)
-This rules out the possibility of applying a term to itself, unless the two
+Следующим нашим шагом будет расширение системы типов в двух направлениях.
+Во-первых, введём наравне с примитивными типами (которые выполняют роль 
+констант) так называемые {\em переменные типа,} которые впоследствие лягут в
+основу полиморфизма. Во-вторых, разрешим использование множества конструкторов
+других типов, помимо типа функции. Например, в дальнейшем нам понадобится 
+конструктор~$\times$ для типа декартова произведения. Как следствие, наше 
+индуктивное определение должно быть дополнено ещё одним выражением:
+%
+%Before long, we shall extend the type system in two ways. First, we will allow
+%so-called {\em type variables} as well as primitive type constants --- these
+%are the vehicle for polymorphism. Secondly, we will allow the introduction of
+%other type constructors besides the function arrow. For example, we will later
+%introduce a constructor $\times$ for the product type. In that case a new
+%clause:
+%
+$$ 
+ \frac{\sigma \in Ty_C \;\;\; \tau \in Ty_C}{\sigma \times \tau \in Ty_C}
+$$
+Поскольку язык~ML допускает определение пользователем новых типов и их 
+конструкторов, нам потребуется нотация, пригодная для описания произвольного
+множества конструкторов с произвольным количеством аргументов. Обозначим
+через~$(\alpha_1,\ldots,\alpha_n)con$ применение $n\hbox{-арного}$ конструктора
+типа~$con$ к набору аргументов~$\alpha_i$. (Инфиксная форма будет 
+использоваться лишь в некоторых широко известных частных случаях 
+наподобие~$\to$ и~$\times$.) Например, выражение~$(\sigma)list$ трактуется
+как тип-список, все элементы которого имеют тип~$\sigma$.
+%
+%\noindent needs to be added to the inductive definition. Once we move to the
+%more concrete case of ML, there is the possibility of new, user-defined types
+%and type constructors, so we will get used to arbitrary sets of constructors of
+%any arity. We will write $(\alpha_1,\ldots,\alpha_n)con$ for the application of
+%an $n$-ary type constructor $con$ to the arguments $\alpha_i$. (Only in a few
+%special cases like $\to$ and $\times$ do we use infix syntax, for the sake of
+%familiarity.) For example $(\sigma)list$ is the type of lists whose elements
+%all have type $\sigma$.
+
+Принимая во внимание {\em free} inductive generation, можно доказать важное
+свойство типов, а именно, что~$\sigma \to \tau \not= \sigma$. 
+(В действительности справедливо более общее утверждение: тип не может равняться
+произвольному собственному подвыражению.) Это свойство исключает возможность
+применения терма к самому себе, unless the two
 instances in question have distinct types.
+%
+%An important property of the types, provable because of {\em free} inductive
+%generation, is that $\sigma \to \tau \not= \sigma$. (In fact, more generally,
+%a type cannot be the same as any proper syntactic subexpression of itself.)
+%This rules out the possibility of applying a term to itself, unless the two
+%instances in question have distinct types.
 
-\subsection{Church and Curry typing}
-
-There are two major approaches to defining typed lambda calculus. One approach,
-due to Church, is {\em explicit}. A (single) type is attached to each term.
-That is, in the construction of terms, the untyped terms that we have presented
-are modified with an additional field for the type. In the case of constants,
-this type is pre-assigned, but variables may be of any type. The rules for
-valid term formation are then:
-
+\subsection{Типизация по Чёрчу и Карри}
+%\subsection{Church and Curry typing}
+Известны два основных подхода к определению типизированного лямбда-исчисления.
+Один из них, разработанный Чёрчем, подразумевает {\em явное} указание типов.
+Каждому терму при этом назначается единственный тип. Другими словами, в ходе
+построения термов, каждому нетипизированному терму, которые были рассмотрены
+ранее, в дополнение указывается тип. Типы констант являются предопределёнными,
+но типы переменных могут быть произвольными. Точные правила построения 
+типизированных термов приведены ниже:
+%
+%There are two major approaches to defining typed lambda calculus. One approach,
+%due to Church, is {\em explicit}. A (single) type is attached to each term.
+%That is, in the construction of terms, the untyped terms that we have presented
+%are modified with an additional field for the type. In the case of constants,
+%this type is pre-assigned, but variables may be of any type. The rules for
+%valid term formation are then:
+%
 $$ \frac{}{v:\sigma} $$
 
 $$ \frac{\mbox{Constant $c$ has type $\sigma$}}{c:\sigma} $$
@@ -266,34 +313,65 @@ $$ \frac{s:\sigma \to \tau \;\;\; t:\sigma}{s\; t : \tau} $$
 
 $$ \frac{v:\sigma \;\;\; t:\tau}{\lamb{v} t : \sigma \to \tau} $$
 
-For our purposes, however, we prefer Curry's approach to typing, which is
-purely {\em implicit}. The terms are exactly as in the untyped case, and a term
-may or may not have a type, and if it does, may have many different
-types.\footnote{Some purists would argue that this isn't properly speaking
-`typed lambda calculus' but rather `untyped lambda calculus with a separate
-notion of type assignment'.} For example, the identity function $\lamb{x} x$
-may be given any type of the form $\sigma \to \sigma$, reasonably enough. There
-are two related reasons why we prefer this approach. First, it provides a
-smoother treatment of ML's polymorphism, and secondly, it corresponds well to
-the actual use of ML, where it is never necessary to specify types explicitly.
+Однако, для наших целей лучше подходит {\em неявная} типизация, предложенная
+Карри. Структура термов соответствует нетипизированному случаю, при этом терм
+может как иметь тип (причём не один), так и не иметь его.%
+\footnote{Поборники чистоты терминологии могут возразить против использования
+в данном случае термина <<типизированное лямбда-исчисление>>, считая более
+подходящим <<нетипизированное лямбда-исчисление с separate
+notion of type assignment>>}
+Например, тождественной функции~$\lamb{x} x$ может быть вполне обоснованно 
+назначен произвольный тип вида~$\sigma \to \sigma$. Применительно к языку~ML 
+существуют два взаимосвязанных аргумента в пользу данного подхода к типизации. 
+Во-первых, он позволяет удобнее выразить присущий~ML полиморфизм, а во-вторых, 
+хорошо согласуется с практикой программирования на этом языке, в ходе которого 
+не требуется задавать типы явно.
+%
+%For our purposes, however, we prefer Curry's approach to typing, which is
+%purely {\em implicit}. The terms are exactly as in the untyped case, and a term
+%may or may not have a type, and if it does, may have many different
+%types.\footnote{Some purists would argue that this isn't properly speaking
+%`typed lambda calculus' but rather `untyped lambda calculus with a separate
+%notion of type assignment'.} For example, the identity function $\lamb{x} x$
+%may be given any type of the form $\sigma \to \sigma$, reasonably enough. There
+%are two related reasons why we prefer this approach. First, it provides a
+%smoother treatment of ML's polymorphism, and secondly, it corresponds well to
+%the actual use of ML, where it is never necessary to specify types explicitly.
 
-At the same time, some of the formal details of Curry-style type assignment are
-a bit more complex. We do not merely define a relation of typability in
-isolation, but with respect to a {\em context}, i.e. a finite set of typing
-assumptions about variables. We write:
-
-$$ \Gamma \vdash t : \sigma $$
-
-\noindent to mean `in context $\Gamma$, the term $t$ can be given type
-$\sigma$'. (We will, however, write $\vdash t : \sigma$ or just $t : \sigma$
-when the typing judgement holds in the empty context.) The elements of $\Gamma$
-are of the form $v:\sigma$, i.e. they are themselves typing assumptions about
-variables, typically those that are components of the term. We assume that
-$\Gamma$ never gives contradictory assignments to the same variable; if
-preferred we can think of it as a partial function from the indexing set of the
-variables into the set of types. The use of the symbol $\vdash$ corresponds to
-its general use for judgements in logic of the form $\Gamma \vdash \phi$, read
-as `$\phi$ follows from assumptions $\Gamma$'.
+В то же время, некоторые формальные аспекты назначения типов по Карри 
+оказываются достаточно сложными. Отношение typability не может быть задано
+в отрыве от некоторого {\em контекста,} представляющего собой конечное 
+множество утверждений относительно типов переменных. Обозначим через
+%At the same time, some of the formal details of Curry-style type assignment are
+%a bit more complex. We do not merely define a relation of typability in
+%isolation, but with respect to a {\em context}, i.e. a finite set of typing
+%assumptions about variables. We write:
+%
+$$ 
+ \Gamma \vdash t : \sigma 
+$$
+утверждение <<в контексте~$\Gamma$ терму~$t$ может быть назначен тип~$\sigma$>>.
+(Если это утверждение справедливо при пустом контексте, выражение сокращается 
+до~$\vdash t : \sigma$ или даже до~$t : \sigma$.) Элементы множества~$\Gamma$
+имеют вид~$v:\sigma$ т.~е.\ сами по себе являются утверждениями относительно
+типов отдельных переменных, обычно тех, которые входят в терм~$t$. 
+Будем полагать, что контекст~$\Gamma$ не содержит противоречивых утверждений
+о типе некоторой переменной; при желании, мы можем рассуждать о нём как о
+частичной функции, отображающей indexing множество переменных во множество 
+типов. Использование нами символа~$\vdash$ соответствует его роли в 
+традиционной логике, где~$\Gamma \vdash \phi$ принято трактовать как 
+<<утверждение~$\phi$ следует из множества посылок~$\Gamma$>>.
+%
+%\noindent to mean `in context $\Gamma$, the term $t$ can be given type
+%$\sigma$'. (We will, however, write $\vdash t : \sigma$ or just $t : \sigma$
+%when the typing judgement holds in the empty context.) The elements of $\Gamma$
+%are of the form $v:\sigma$, i.e. they are themselves typing assumptions about
+%variables, typically those that are components of the term. We assume that
+%$\Gamma$ never gives contradictory assignments to the same variable; if
+%preferred we can think of it as a partial function from the indexing set of the
+%variables into the set of types. The use of the symbol $\vdash$ corresponds to
+%its general use for judgements in logic of the form $\Gamma \vdash \phi$, read
+%as `$\phi$ follows from assumptions $\Gamma$'.
 
 \subsection{Formal typability rules}
 
