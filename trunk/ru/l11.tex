@@ -1,628 +1,33 @@
-\documentclass[portrait,%
-              fancybox,%
-              notes,%
-              epsfig,%
-              alltt,%
-              semcolor,
-              alltt]{seminar}
+\documentclass{fp-slides}
 
-\usepackage[koi8-r]{inputenc}
-\usepackage[russian]{babel}
+\begin{document}
 
-\input amssym.def
-\input amssym
-
-\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
-\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
-\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
-\newcommand{\real}{\mbox{$\protect\Bbb R$}}
-\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
-\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
-
-\newcommand{\lamb}[1]{\lambda #1.\:}
-\newcommand{\eps}[1]{\varepsilon #1.\:}
-\newcommand{\all}[1]{\forall #1.\:}
-\newcommand{\ex}[1]{\exists #1.\:}
-\newcommand{\exu}[1]{\exists! #1.\:}
-
-\newcommand{\True}{\top}
-\newcommand{\False}{\bot}
-\newcommand{\Not}{\neg}
-\newcommand{\And}{\wedge}
-\newcommand{\Or}{\vee}
-\newcommand{\Imp}{\Rightarrow}
-\newcommand{\Iff}{\Leftrightarrow}
-
-\newcommand{\entails}{\vdash}
-\newcommand{\proves}{\vdash}
-
-\newcommand{\Ands}{\bigwedge}
-\newcommand{\Ors}{\bigvee}
-
-\newcommand{\BQ}{\mbox{$\ulcorner$}}
-\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
-\newcommand{\EQ}{\mbox{$\urcorner$}}
-\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
-
-\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
-\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
-\let\subset=\subseteq
-
-\newcommand{\powerset}{\wp}             % This is pretty dire...  %
-
-\newcommand{\Union}{\cup}
-\newcommand{\Inter}{\cap}
-\newcommand{\Unions}{\bigcup}
-\newcommand{\Inters}{\bigcap}
-
-\newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
-
-\newcommand{\Rule}{\infer}
-
-\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
-
-\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
-
-\newcommand\leb{\lbrack\!\lbrack}
-\newcommand\reb{\rbrack\!\rbrack}
-\newcommand{\sem}[1]{\leb #1 \reb}
-
-\newcommand{\BA}{\begin{array}[t]{l}}
-\newcommand{\EA}{\end{array}}
-\newcommand{\sqle}{\sqsubseteq}
-\newcommand{\sqlt}{\sqsubset}
-
-\newcommand{\too}{\twoheadrightarrow}
-
-\newcommand{\Los}{{\L}o{\'s}}
-
-% These are from Mike's notes
-
-\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
-\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
-\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
-
-\def\goesto{\longrightarrow}
-
-\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
-
-% Sizes
-
-\newenvironment{rslide}
-{\begin{slide*}[240mm,165mm] }
-{\end{slide*}}
-
-\renewcommand{\slidetopmargin}{0.8in}
-\renewcommand{\slidebottommargin}{0.8in}
-
-% Various combinations of one colour on another
-
-\newcommand{\greenonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
-
-\newcommand{\whiteonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\yellowonmagenta}[1]%
-{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
-
-\newcommand{\whiteonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\blackonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
-
-\newcommand{\blueonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\cyanonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
-
-\newcommand{\blueonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\redonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
-
-\newcommand{\heading}[1]%
-{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
-
-\newcommand{\emphatic}[1]{\blueonyellow{#1}}
-
-\newcommand{\veryemphatic}[1]%
-{\begin{center}{\emphatic{#1}}\end{center}}
-
-% Head and foot of slides
-
-\newpagestyle{ColourDemo}%
-  {\cyanonblack{Введение в Функциональное Программирование:
-                Лекция 11}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{Джон Харрисон}\hfil
-   \cyanonblack{Университет Кембриджа, 7 февраля 1997}}
-%\newpagestyle{ColourDemo}%
-%  {\cyanonblack{Introduction to Functional Programming:
-%                Lecture 11}\hfil\cyanonblack{\thepage}}
-%  {\cyanonblack{John Harrison}\hfil
-%   \cyanonblack{University of Cambridge, 7 February 1997}}
-
-\pagestyle{ColourDemo}
-
-\centerslidesfalse
-
-% Colour bullets
-
-\def\labelitemi{{\black$\bullet$}}
-\def\labelitemii{{\black--}}
-\def\labelitemiii{{\black$\ast$}}
-\def\labelitemiv{{\black$\cdot$}}
-
-% Start of document (default text colour is blue)
-
-\begin{document}\blue
-
-
-\begin{rslide}
-
-\heading{%
-\begin{tabular}{c}
-{\Large\red Введение в}\\
-{\Large\red Функциональное}\\
-{\Large\red Программирование}\\
-{\cyan Джон Харрисон}\\
-{\cyan Университет Кембриджа}\\
-{\green Лекция 11}\\
-{\green Примеры на ML III:}\\
-{\green Точная арифметика вещественных чисел}
-%{\LARGE\red Introduction to}\\
-%{\LARGE\red Functional Programming}\\
-%{\cyan John Harrison}\\
-%{\cyan University of Cambridge}\\
-%{\green Lecture 11}\\
-%{\green ML examples III:}\\
-%{\green Exact Real Arithmetic}
-\end{tabular}}
-
-\vspace*{0.5cm}
-
-Темы:
-%Topics covered:
-
-\begin{itemize}
-
-\item Конечные представления.
-%\item Finite representations
-
-\item Представление вещественных чисел аппроксимирующими функциями.
-%\item Real numbers as approximating functions
-
-\item Целые числа произвольной разрядности.
-%\item Arbitrary precision integers
-
-\item Операции над вещественными числами.
-%\item Operations over reals
-
-\item Кэширование.
-%\item Caching
-
-\end{itemize}
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Конечные представления}
-%\heading{Finite representations}
-
-\vspace*{0.5cm}
-
-Машинная реализация вещественной арифметики обычно использует приближённое
-представление чисел в формате с плавающей точкой.
-% BUG# может 'с плавающей запятой' лучше?
-% Real arithmetic on computers is normally done via floating point
-%approximations.
-
-В общем случае, мы можем оперировать вещественными числами (либо вручную, 
-либо при помощи компьютера) лишь в том случае, когда они имеют то или иное
-конечное представление.
-%In general, we can only manipulate a real number, either ourselves or inside a
-%computer, via some sort of finite representation.
-
-Возникает вопрос, уместно ли говорить о `существовании' чисел, которые
-% ISSUE #4 -- quotation marks           ^^^^^^^^^^^^^^^
-не представимы в конечной форме.
-%Some question how numbers can be said to `exist' if they have no finite
-%representation.
-
-Например, Кронекер признавал целые и рациональные числа, поскольку их можно
-задать точно, а также {\em алгебраические} числа, представимые многочленами,
-корнями которых они являются.
-%For example, Kronecker accepted integers and rationals because
-%they can be written down explicitly, and even {\em algebraic}
-%numbers because they can be represented using the polynomials of which they
-%are solutions.
-
-Однако, он отвергал трансцендентные числа, не имеющие конечного представления.
-%However he rejected transcendental numbers because apparently
-%they could not be represented finitely.
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Представление вещественных чисел программами}
-%\heading{Real numbers as programs}
-
-\vspace*{0.5cm}
-
-Учитывая современные достижения, мы можем сказать, что конечное представление
-возможно для гораздо большего количества чисел, чем те, существование которых
-признавалось Кронекером.
-%However, given our modern perspective, we can say that after all many more
-%numbers than Kronecker would have accepted {\em do} have a finite
-%representation.
-
-Этим представлением являются программы вычисления требуемых чисел с
-произвольной заданной разрядностью.
-%This is the program used to calculate them to greater and greater precision.
-
-Например, мы можем написать программу, вычисляющую для заданного {\red $n$} 
-первые {\red $n$}~знаков числа~{\red $\pi$} или же рациональное число~{\red $r$}
-такое, что~{\red $|\pi - r| < 2^{-n}$} .
-%For example, we can write a program that will produce for any argument {\red
-%$n$} the first {\red $n$} digits of {\red $\pi$}.
-
-%Alternatively it can produce a rational number {\red $r$} such that
-%{\red $|\pi - r| < 2^{-n}$}.
-
-Независимо от того, какой из подходов был выбран для последовательного 
-уточнения вещественного числа, важнейшим его свойством является конечность
-программы-представления.
-%Whatever approach is taken to the successive approximation of a real number,
-%the key point is that its representation, the program itself, is finite.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Выбор представления вещественных чисел}
-%\heading{Our representation of reals}
-
-\vspace*{0.5cm}
-
-Каждому вещественному числу~{\red $x$} поставим в соответствие 
-такую функцию~{\red $f_x:\nat \to \num$}, что для 
-произвольного~{\red $n \in \nat$}: {\red $$ |f_x(n) - 2^n x| < 1.$$}%
-В свою очередь, данное выражение эквивалентно
-{\red $$ |{f_x(n) \over 2^n} - x| < {1 \over 2^n}.$$}%
-Арифметические операции над числами в таком представлении могут быть определены
-с использованием функций высшего порядка.
-%We  represent a real {\red $x$} by a function {\red $f_x:\nat \to \num$} that
-%for each {\red $n \in \nat$}:
-%{\red $$ |f_x(n) - 2^n x| < 1 $$}
-%This is of course equivalent to
-%{\red $$ |{f_x(n) \over 2^n} - x| < {1 \over 2^n} $$}
-%We can actually represent the arithmetic operations on numbers as
-%higher order functions.
-
-Определив аппроксимирующие функции для~{\red $x$} и~{\red $y$}, мы можем 
-построить на их основе аппроксимацию для обширного семейства функций, 
-таких как~{\red $x + y$}, {\red $x y$}, {\red $\sin(x)$} и прочих.
-%Given functions for approximating {\red $x$} and {\red $y$}, will produce new ones for
-%approximating {\red $x + y$}, {\red $x y$}, {\red $sin(x)$} and so on, for a wide range of
-%functions.
-
-Полученные выражения являются точными, поскольку обеспечивают автоматическое 
-вычисление требуемых выражений с любой заданной разрядностью.
-%Such a result is exact, in the sense that we can then give it an arbitrary
-%desired precision and it will perform the appropriate calculation
-%automatically.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Целые числа произвольной разрядности}
-%\heading{Arbitrary precision integers}
-
-\vspace*{0.5cm}
-
-Стандартный целочисленный тип ({\black \tt int}) в CAML имет довольно ограниченный
-диапазон представимых значений, поэтому нам прежде всего потребуется 
-возможность оперировать целыми числами неограниченной разрядности.
-%CAML's standard integers (type {\black \tt int}) have a severely limited range, so
-%first of all we need to set up a type of unlimited-precision integers.
-
-Версия CAML Light, установленная на Thor, включает библиотеку быстрых 
-алгоритмов целочисленной (на самом деле, рациональной) арифметики. 
-Запуск программ следует производить так: 
-%The CAML release includes a library that gives a fast implementation of
-%arbitrary precision integer (and in fact rational) arithmetic.
-%
-%A version of CAML Light with this library pre-loaded is installed on Thor. Just
-%run it with:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MyLitCam{
+  \begin{lstlisting}[frame=single]
   $ camllight my_little_caml
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-затем, для получения доступа ко всем функциям:
-%then do the following to get access to all the functions:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MyLitCamNum{
+  \begin{lstlisting}[frame=single]
   #open "num";;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-В библиотеке определяется новый тип данных {\black \tt num}, представляющий
-рациональные числа произвольной разрядности, среди которых нам понадобится 
-лишь подмножество целых чисел.
-%This library sets up a new type {\black \tt num} of arbitrary precision rational
-%numbers; we will just use the integer subset.
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Операции над типом {\black \tt num}}
-%\heading{Operators on {\black \tt num}}
-
-\vspace*{0.5cm}
-
-Язык CAML не предоставляет возможности перегрузки операций, поэтому для
-обозначения арифметических действий над~{\black \tt num} приходится 
-использовать другие символы.
-%CAML does not provide overloading, so it is necessary to use different symbols
-%for the usual arithmetic operations over {\black \tt num}.
-
-Отметим, что числа-константы типа~{\black \tt num} должны задаваться
-как~{\black \tt Int k}, а не просто~{\black \tt k}.
-%Note that small constants of type {\black \tt num} must be written as {\black \tt Int k}
-%rather than simply {\black \tt k}.
-
-Унарная операция смены знака величины типа~{\black \tt num} 
-обозначается~{\black \tt minus\_num}. Ещё одна полезная унарная 
-операция~--- {\black \tt abs\_num}, которая вычисляет абсолютную величину 
-аргумента, т.~е.\ по заданному~{\red $x$} возвращает~{\red $|x|$}.
-%The unary negation on type {\black \tt num} is written {\black \tt minus\_num}. Another handy
-%unary operator is {\black \tt abs\_num}, which finds absolute values, i.e. given {\red $x$}
-%returns {\red $|x|$}.
-
-Помимо унарных, в наше распоряжение предоставлен стандартный набор бинарных
-операций. Операции целочисленного деления и вычисления остатка, 
-обозначенные~{\black \tt quo\_num} и~{\black \tt mod\_num}, не являются
-инфиксными. В то же время, большинство прочих бинарных операций определены
-как инфиксные с именами, полученными добавлением символа~``{\black \verb!/!}''
-к именам аналогичных операций над типом~{\black \tt int}.
-%The usual complement of binary operations are also available. The (truncating)
-%division and modulus function, called {\black \tt quo\_num} and {\black \tt mod\_num}, do not
-%have infix status. However most of the other binary operators are infixes, and
-%the names are derived from the usual ones by adding a slash `{\black \verb!/!}'.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Бинарные операции}
-%\heading{Binary operators}
-
-\vspace*{0.5cm}
-
-\bigskip
-\begin{tabular}{|l|l|l|}
-\hline
-Оп.         & Тип                              & Значение              \\
-%Op         & Type                             & Meaning               \\
-\hline
-{\black \tt **/}  & {\black \tt num -> num -> num}          & Возведение в степень        \\
-{\black \tt */}   & {\black \tt num -> num -> num}          & Умножение             \\
-{\black \tt +/}   & {\black \tt num -> num -> num}          & Сложение              \\
-{\black \tt -/}   & {\black \tt num -> num -> num}          & Вычитание             \\
-{\black \tt =/}   & {\black \tt num -> num -> bool}         & Равенство             \\
-{\black \tt <>/}  & {\black \tt num -> num -> bool}         & Неравенство           \\
-{\black \tt </}   & {\black \tt num -> num -> bool}         & Меньше, чем           \\
-{\black \tt <=/}  & {\black \tt num -> num -> bool}         & Меньше либо равно     \\
-{\black \tt >/}   & {\black \tt num -> num -> bool}         & Больше, чем           \\
-{\black \tt >=/}  & {\black \tt num -> num -> bool}         & Больше либо равно     \\
-%{\black \tt **/}  & {\black \tt num -> num -> num}          & Exponentiation        \\
-%{\black \tt */}   & {\black \tt num -> num -> num}          & Multiplication        \\
-%{\black \tt +/}   & {\black \tt num -> num -> num}          & Addition              \\
-%{\black \tt -/}   & {\black \tt num -> num -> num}          & Subtraction           \\
-%{\black \tt =/}   & {\black \tt num -> num -> bool}         & Equality              \\
-%{\black \tt <>/}  & {\black \tt num -> num -> bool}         & Inequality            \\
-%{\black \tt </}   & {\black \tt num -> num -> bool}         & Less than             \\
-%{\black \tt <=/}  & {\black \tt num -> num -> bool}         & Less or equal         \\
-%{\black \tt >/}   & {\black \tt num -> num -> bool}         & Greater than          \\
-%{\black \tt >=/}  & {\black \tt num -> num -> bool}         & Greater or equal      \\
-\hline
-\end{tabular}
-\bigskip
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Реализация}
-%\heading{Getting started}
-
-\vspace*{0.5cm}
-
-Напомним, что для вещественных чисел нами было выбрано представление в виде
-функций~{\red $\num \to \num$}.
-% ISSUE: Z -> Z should be probably N -> Z ???
-%Recall that our real numbers are supposed to be (represented by) functions
-%{\red $\num \to \num$}.
-
-Реализация на языке~ML в действительности будет 
-использовать~{\black \tt int -> num}, поскольку диапазона значений встроенного 
-целочисленного типа вполне достаточно для задания требуемой разрядности.
-%In ML we will actually use {\black \tt int -> num}, since the inbuilt
-%type of integers is more than adequate for indexing the level of accuracy.
-
-Определим некоторые базовые операции над вещественными числами. Наиболее
-фундаментальная операция, с которой мы начнём, ставит в соответствие заданному
-целому вещественное число. Её реализация проста:
-%Now we can define some basic operations on reals. The most basic operation,
-%which gets us started, is to produce the real number corresponding to an
-%integer. This is easy:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\RealOfInt{
+  \begin{lstlisting}[frame=single]
   #let real_of_int k n =
      (Int 2 **/ Int n) */ Int k;;
   real_of_int : int -> int -> num = <fun>
   #real_of_int 23;;
   - : int -> num = <fun>
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Очевидно, эта операция удовлетворяет критерию аппроксимации~--- её погрешность
-равна нулю.
-%Evidently this satisfies the error criterion: in fact the error is zero.
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Основные операции}
-%\heading{Basic operations}
-
-\vspace*{0.5cm}
-
-Определим первую нетривиальную операцию~--- смену знака.
-%Now we can define the first nontrivial operation, that of unary negation:
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\SignChange{
+  \begin{lstlisting}[frame=single]
   let real_neg f n = minus_num(f n);;
-\end{verbatim}\end{black}
-Компилятор для этой функции выводит более общий тип, чем требуется, но это
-не создаст трудностей. Достаточно легко убедиться, что критерий аппроксимации
-не нарушается. Если нам известно, что для любого~{\red $n$} справедливо
-%% ISSUE: check this
-%The compiler generalizes the type more than intended, but this will not trouble
-%us. It is almost as easy to see that the approximation criterion is preserved.
-%If we know that for each {\red $n$}:
-{\red $$ |f_x(n) - 2^n x| < 1, $$}%
-то из этого следует:
-%\noindent then we have for any {\red $n$}:
-{\red \begin{eqnarray*}
-|f_{-x}(n) - 2^n (-x)| & = & |-f_x(n) - 2^n (-x)|       \\
-                       & = & |-(f_x(n) - 2^n x)|        \\
-                       & = & |f_x(n) - 2^n x|           \\
-                       & < & 1
-\end{eqnarray*}}%
-Аналогично, мы можем определить вычисление абсолютной величины вещественных 
-чисел, используя функцию~{\black \tt abs\_num}.
-%Similarly, we can define an `absolute value' function on real numbers, using
-%the corresponding function {\black \tt abs\_num} on numbers.
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Сложение: первая попытка}
-%\heading{Addition: first attempt}
-\vspace*{0.5cm}
-
-Мы могли бы определить операцию сложения следующим образом:
-%We could define:
-
-{\red $$ f_{x + y}(n) = f_x(n) + f_y(n) $$}
-
-Однако, такое определение не гарантирует соблюдения критерия аппроксимации:
-%However this gives no guarantee that the approximation criterion is maintained;
-%we would have:
-
-{\red \begin{eqnarray*}
-&      & |f_{x + y}(n) - 2^n (x + y)| \\
-& =    & |f_x(n) + f_y(n) - 2^n (x + y)|      \\
-& \leq & |f_x(n) - 2^n x| + |f_y(n) - 2^n y|
-\end{eqnarray*}}
-
-Можно утверждать, что сумма в правой части неравенства не превышает~{\red $2$}, 
-в то время, как критерий ограничивает нас~{\red $1$}. Следовательно, в данном 
-случае нам требуется вычислить~{\red $x$} и~{\red $y$} с {\em большей} 
-разрядностью, чем требуется от результата операции.
-%We can guarantee that the sum on the right is less than {\red $2$}, but not that it is
-%less than {\red $1$} as required. Therefore, we need in this case to evaluate {\red $x$} and
-%{\red $y$} to {\em greater} accuracy than required in the answer.
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Сложение: вторая попытка}
-%\heading{Addition: second attempt}
-
-\vspace*{0.5cm}
-
-Предположим, что сложение определено так:
-%Suppose we define:
-{\red $$ f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2 $$}%
-В этом случае погрешность 
-%\noindent Now we have:
-{\red \begin{eqnarray*}
-&   & |f_{x + y}(n) - 2^n (x + y)|                              \\
-& = & |(f_x(n + 1) + f_y(n + 1)) / 2 - 2^n (x + y)|             \\
-& \leq & |f_x(n + 1) / 2 - 2^n x| + |f_y(n + 1) / 2 - 2^n y|    \\
-& = & {1 \over 2} |f_x(n + 1) - 2^{n + 1} x| +
-      {1 \over 2} |f_y(n + 1) - 2^{n + 1} y|                    \\
-& < & {1 \over 2} 1 + {1 \over 2} 1 = 1.
-\end{eqnarray*}}
-
-Очевидно, что такое определение достигает желаемой точности. Однако, в нём
-неявно используется операция деления вещественных чисел. Поскольку функция
-должна возвращать целочисленный результат, частное требуется округлить.
-%Apparently this just gives the accuracy required. However we have implicitly
-%used real mathematical division above. Since the function is supposed to yield
-%an integer, we are obliged to round the quotient to an integer.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Деление с округлением}
-%\heading{Rounding division}
-
-\vspace*{0.5cm}
-
-Если мы вычислим частное при помощи {\black \tt quo\_num}, ошибка округления
-составит почти~{\red $1$} и не позволит достичь требуемой точности 
-независимо от точности вычисления аргументов. 
-%If we just use {\black \tt quo\_num}, the error from rounding this might be almost
-%{\red $1$}, after which we could never guarantee the bound we want, however accurately
-%we evaluate the arguments.
-
-Нам требуется операция деления с округлением, которая всегда возвращает целое,
-ближайшее к~точному результату (или одно из двух ближайших, если расстояние 
-до них оказывается одинаковым), так что ошибка округления никогда не 
-превысит~{\red $1 \over 2$}.
-%We need a division function that always returns the integer closest to the true
-%result (or one of them in the case of two equally close ones), so that the
-%rounding error never exceeds {\red $1 \over 2$}.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\DivWithDiv{
+  \begin{lstlisting}[frame=single]
   #let ndiv x y = round_num(x // y);;
   ndiv : num -> num -> num = <fun>
   ##infix "ndiv";;
@@ -630,201 +35,57 @@
   - : num = Int 5
   #(Int 22) ndiv (Int 5);;
   - : num = Int 4
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Наше определение корректной операции сложения почти завершено!
-%Now we are ready to define a correct addition function!
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Сложение: третья попытка}
-%\heading{Addition: third attempt}
-
-\vspace*{0.5cm}
-
-Если мы определим операцию сложения как
-%Now if we define:
-{\red $$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4,$$}%
-всё будет работать, как требуется:
-%\noindent everything works:
-{\red \begin{eqnarray*}
-&      & |f_{x + y}(n) - 2^n (x + y)|                                   \\
-& =    & |((f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4) - 2^n (x + y)|    \\
-& \leq & {1 \over 2} + |(f_x(n + 2) + f_y(n + 2)) / 4 - 2^n (x + y)|    \\
-& =    & {1 \over 2} + {1 \over 4} |(f_x(n + 2) + f_y(n + 2)) -
-                                     2^{n + 2}(x + y)|                  \\
-& \leq & {1 \over 2} + {1 \over 4} |f_x(n + 2) - 2^{n + 2} x| +         \\
-&      &               {1 \over 4} |f_y(n + 2) - 2^{n + 2} y|           \\
-& <    & {1 \over 2} + {1 \over 4} 1 + {1 \over 4} 1 = 1
-\end{eqnarray*}}
-Программная реализация:
-%\noindent Accordingly we make our definition:
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\AddProg{
+  \begin{lstlisting}[frame=single]
   let real_add f g n =
     (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Умножение на целое число (1)}
-%\heading{Multiplication by an integer (1)}
-
-\vspace*{0.5cm}
-
-По соображениям эффективности, данный частный случай заслуживает отдельного
-рассмотрения. Определим
-%It's worth treating this special case efficiently.
-%We define:
-{\red $$ f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1}, $$}%
-где {\red $p$}~выбирается так, чтобы~{\red $2^p \geq |m|$}. Корректность такого
-определения легко доказать:
-%\noindent where {\red $p$} is chosen so that {\red $2^p \geq |m|$}. For correctness, we have:
-
-{\red \begin{eqnarray*}
-&      & |f_{m x}(n) - 2^n (m x)|                                       \\
-& \leq & {1 \over 2} + |{m f_x(n+p+1) \over 2^{p+1}} - 2^n (m x)|       \\
-& =    & {1 \over 2} + {|m| \over 2^{p+1}} |f_x(n+p+1) - 2^{n+p+1} x|   \\
-& <    & {1 \over 2} + {|m| \over 2^{p+1}}                              \\
-& \leq & {1 \over 2} + {1 \over 2} {|m| \over 2^p}                      \\
-& \leq & {1 \over 2} + {1 \over 2} = 1
-\end{eqnarray*}}
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Умножение на целое число (2)}
-%\heading{Multiplication by an integer (2)}
-
-\vspace*{0.5cm}
-
-Реализация этой операции требует вычисления подходящего значения~{\red $p$}:
-%In order to implement this, we need a function to find the appropriate {\red $p$}:
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MulProg{
+  \begin{lstlisting}[frame=single]
 let log2 =
   let rec log2 x y =
     if x </ Int 1 then y
     else log2 (quo_num x (Int 2)) (y + 1) in
   fun x -> log2 (x -/ Int 1) 0;;
-\end{verbatim}\end{black}
-Учитывая сказанное выше, операция умножения реализуется так:
-%\noindent The implementation is simply:
-\begin{black}\begin{verbatim}
+\end{lstlisting}}
+
+\defverbatim[colored]\MulSimpleProg{
+  \begin{lstlisting}[frame=single]
 let real_intmul m x n =
   let p = log2 (abs_num m) in
   let p1 = p + 1 in
   (m */ x(n + p1)) ndiv (Int 2 **/ Int p1);;
-\end{verbatim}\end{black}
-Деление на целое число вводится следующим образом:
-%\noindent For division by an integer, we define:
-{\red $$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Умножение: общий случай}
-%\heading{General multiplication}
-
-\vspace*{0.5cm}
-
-Определить умножение в общем случае труднее, поскольку погрешность 
-аппроксимации одного из сомножителей умножается на порядок второго. 
-Следовательно, нам потребуется предварительно оценить порядки сомножителей.
-%This is harder because the error in approximation for one number is multiplied
-%by the magnitude of the second number. We need a first evaluation to determine
-%their approximate magnitude.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MulEx{
+  \begin{lstlisting}[frame=single]
   let real_mul x y n =
     let n2 = n + 2 in
     let r = n2 / 2 in
     let s = n2 - r in
-    let xr = x(r)
-    and ys = y(s) in
-    let p = log2 xr
-    and q = log2 ys in
+    let xr = x(r) and ys = y(s) in
+    let p = log2 xr and q = log2 ys in
     if p = 0 & q = 0 then Int 0 else
     let k = q + r + 1
     and l = p + s + 1
     and m = p + q + 4 in
     (x(k) */ y(l)) ndiv (Int 2 **/ Int m);;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Оценка погрешности такого определения громоздка, но не слишком сложна.
-%The error analysis is long but not really difficult.
-
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Обратные числа (1)}
-%\heading{Multiplicative inverse (1)}
-
-\vspace*{0.5cm}
-
-Чтобы получить любую верхнюю оценку обратного числа, не говоря уж о хорошем
-его приближении, нам потребуется оценить аргумент {\em снизу}.
-%In order to get any sort of upper bound on the inverse, let alone a good
-%approximation, we need to get a {\em lower} bound for the argument.
-
-Прежде всего, зададим функцию~{\black \tt msd}:
-%So first define the {\black \tt msd} function:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MsdProg{
+  \begin{lstlisting}[frame=single]
   let msd =
     let rec msd n x =
       if abs_num(x(n)) >/ Int 1 then n
       else msd (n + 1) x in
     msd 0;;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Эта функция вычисляет наименьшее~{\red $n$}, для которого 
-справедливо~{\red $|f_x(n) | > 1$}.
-%This finds the first {\red $n$} with {\red $|f_x(n) | > 1$}.
-
-Отметим, что при~{\red $x = 0$} произойдёт зацикливание. Эта проблема 
-неизбежна, поскольку равенство вещественных чисел, подобно равенству функций,
-в общем случае алгоритмически неразрешимо.
-%Note that if {\red $x = 0$} then this will loop indefinitely. This problem is
-%inevitable since equality of reals, like equality of functions, is not
-%computable.
-
-При этом для~{\red $x \not= 0$} алгоритм, заданный выше, завершается
-за конечное время.
-%However if {\red $x \not= 0$} the above must terminate eventually.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Обратные числа (2)}
-%\heading{Multiplicative inverse (2)}
-
-\vspace*{0.5cm}
-
-Перейдём к реализации вычисления обратного числа:
-%Now we can code the inverse.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\RealMulInvProg{
+  \begin{lstlisting}[frame=single]
   let real_inv x n =
     let x0 = x(0) in
     let k =
@@ -836,39 +97,16 @@ let real_intmul m x n =
         let p = msd x in
         n + 2 * p + 1 in
     (Int 2 **/ Int (n + k)) ndiv (x(k));;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-С учётом изложенного ранее, определение операции деления становится тривиальным:
-%Now, of course, it is straightforward to define division:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\RealDivInvProg{
+  \begin{lstlisting}[frame=single]
   let real_div x y =
     real_mul x (real_inv y);;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Отношения порядка и равенства}
-%\heading{Ordering and equality}
-
-\vspace*{0.5cm}
-
-Для определения взаимного порядка~{\red $x$} и~{\red $y$} достаточно 
-найти~{\red $n$} такое, что~{\red $|f_x(n) - f_y(n)| \geq 2$}. Например,
-если~{\red $f_x(n) \geq f_y(n) + 2$}, то
-{\red $$ 2^n x > f_x(n) - 1 \geq f_y(n) + 1 > 2^n y,$$}%
-из чего следует~{\red $x > y$}.
-%To decide the ordering relation of {\red $x$} and {\red $y$} it suffices to
-%find an {\red $n$} such that {\red $|f_x(n) - f_y(n)| \geq 2$}. For example, if
-%{\red $f_x(n) \geq f_y(n) + 2$} we have
-%{\red $$ 2^n x > f_x(n) - 1 \geq f_y(n) + 1 > 2^n y $$}
-%\noindent and so {\red $x > y$}.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\OrderProg{
+  \begin{lstlisting}[frame=single]
   let rec separate n x y =
     let d = x(n) -/ y(n) in
     if abs_num(d) >/ Int 1 then d
@@ -877,36 +115,18 @@ let real_intmul m x n =
   let real_ge x y = real_gt x y;;
   let real_lt x y = separate x y </ Int 0;;
   let real_le x y = real_lt x y;;
-\end{verbatim}\end{black}
-Отметим, что единственным способом реализации рефлексивных отношений порядка
-будет положить их тождественными соответствующим нерефлексивным отношениям.
-В целом, для~{\red $x = y$} любые попытки определить их взаимный порядок
-приведут к зацикливанию. 
-%Note that the only way to arrive at the reflexive orderings is to justify the
-%irreflexive version. In general, all these will fail to terminate if {\red $x = y$}.
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Тестирование}
-%\heading{Testing}
-
-\vspace*{0.2cm}
-Прежде всего, определим функцию отображения вещественных чисел:
-%We first define a function to show us a real:
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\View{
+  \begin{lstlisting}[frame=single]
   let view x d =
     let n = 4 * d in
     let out = x(n) // (Int 2 **/ Int n) in
     approx_num_fix d out;;
-\end{verbatim}\end{black}
-После этого мы можем протестировать нашу реализацию вещественной арифметики 
-на простых примерах:
-%Now we can test out some simple examples:
-\begin{black}\begin{verbatim}
+\end{lstlisting}}
+
+\defverbatim[colored]\Testing{
+  \begin{lstlisting}[frame=single]
   #let x = real_of_int 3;;
   x : int -> num = <fun>
   #let xi = real_inv x;;
@@ -919,25 +139,10 @@ let real_intmul m x n =
   it : string = ".33333333333333333333"
   #view wun 20;;
   it : string = "1.00000000000000000000"
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-
-\begin{rslide}
-
-\heading{Избыточные вычисления}
-%\heading{The problem of reevaluation}
-
-\vspace*{0.5cm}
-
-Данный пример выполняется крайне медленно:
-%The following is very slow:
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\Reevaluation{
+  \begin{lstlisting}[frame=single]
   #let x1 = real_of_int 1 in
    let x2 = real_mul x1 x1 in
    let x3 = real_mul x2 x2 in
@@ -947,67 +152,10 @@ let real_intmul m x n =
    let x7 = real_mul x6 x6 in
    view x7 10;;
    - : string = "+1.0000000000"
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Причиной этого служит повторяющееся вычисление одних и тех же выражений.
-Ситуация ухудшается ещё и тем, что умножение и вычисление обратного числа
-обращаются к своим аргументам более одного раза. Это ведёт к экспоненциальному
-росту сложности вычислений.
-%The problem is the repeated evaluation of the same expression. This is worse
-%because multiplication and inversion often evaluate their arguments more than
-%once. This tends to lead to a blowup exponential in the depth of the
-%expression.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Кэширование}
-%\heading{Caching}
-
-\vspace*{0.5cm}
-
-Мы можем решить проблему, наделив наши функции `памятью'.
-% ISSUE #4 -- quotation marks                  ^^^^^^^^^
-%We can solve the problem by giving each function a `memo'.
-
-Если функция будет хранить наиболее точное значение, которое уже было 
-вычислено, то при попытке вычислить его повторно или при вычислении менее
-точного значения, сохранённое может быть просто использовано повторно.
-%It will remember the most accurate result it has already calculated. If asked
-%for the same one, or a less accurate one, it can take it from the store.
-
-Исходя из~{\red $|f_x(n + k) - 2^{n + k} x| < 1$}, мы получаем:
-%If we know that {\red $|f_x(n + k) - 2^{n + k} x| < 1$} then we have:
-{\red \begin{eqnarray*}
-&      & |f_x(n + k) \mbox{ ndiv } 2^ k - 2^n x|                        \\
-& \leq & {1 \over 2} + |{f_x(n + k) \over 2^k} - 2^n x|                 \\
-& =    & {1 \over 2} + {1 \over 2^k} |f_x(n + k) - 2^{n + k} x|         \\
-& <    & {1 \over 2} + {1 \over 2^k}                                    \\
-& \leq & 1
-\end{eqnarray*}}
-
-Отсюда следует, что возвращаемое значение~{\red $f_x(n + k) \mbox{ ndiv } 2^k$}
-не вызовет проблем.
-%Hence we are always safe in returning {\red $f_x(n + k) \mbox{ ndiv } 2^k$}.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Функция {\black \tt memo}}
-%\heading{Memo function}
-
-\vspace*{0.5cm}
-
-Для упрощения реализации вычислений с ``памятью'' введём следующую функцию:
-% ISSUE #4 -- quotation marks         ^^^^^^^^^^^
-%We can use the following generic function to attach a memo to a function:
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\MemoFunc{
+  \begin{lstlisting}[frame=single]
 let memo f =
   let mem = ref (-1,Int 0) in
   fun n ->
@@ -1018,24 +166,666 @@ let memo f =
     else
       let res = f n in
       mem := (n,res); res;;
-\end{verbatim}\end{black}
-Систематическое использование этой функции в определении операций существенно
-повышает их эффективность.
-%Now we systematically insert this in each operator. The resulting system is
-%much more efficient.
-\begin{black}\begin{verbatim}
+\end{lstlisting}}
+
+\defverbatim[colored]\RealAddMemo{
+  \begin{lstlisting}[frame=single]
 let real_add f g = memo (fun n ->
    (f(n + 2) +/ g(n + 2)) ndiv (Int 4));;
 ...
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
+\frame{\titlepage}
+
+\section*{Лекция 11. Примеры на ML III: Точная арифметика вещественных чисел}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+  \item Конечные представления.
+    % \item Finite representations
+    \maybepause
+
+  \item Представление вещественных чисел аппроксимирующими функциями.
+    % \item Real numbers as approximating functions
+    \maybepause
+
+  \item Целые числа произвольной разрядности.
+    % \item Arbitrary precision integers
+    \maybepause
+
+  \item Операции над вещественными числами.
+    % \item Operations over reals
+    \maybepause
+
+  \item Кэширование.
+    % \item Caching
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Конечные представления}
+  % \heading{Finite representations}
+
+  Машинная реализация вещественной арифметики обычно использует приближённое
+  представление чисел в формате с плавающей запятой.
+  % TERM# 'плавающая запятая' согласно голосованию
+  % Real arithmetic on computers is normally done via floating point
+  % approximations.
+
+  В общем случае, мы можем оперировать вещественными числами (либо вручную, 
+  либо при помощи компьютера) лишь в том случае, когда они имеют то или иное
+  конечное представление.
+  % In general, we can only manipulate a real number, either ourselves or inside a
+  % computer, via some sort of finite representation.
+
+  Возникает вопрос, уместно ли говорить о <<существовании>> чисел, которые
+  не представимы в конечной форме.
+  % Some question how numbers can be said to <<exist>> if they have no finite
+  % representation.
+
+  Например, Кронекер признавал целые и рациональные числа, поскольку их можно
+  задать точно, а также {\em алгебраические} числа, представимые многочленами,
+  корнями которых они являются.
+  % For example, Kronecker accepted integers and rationals because
+  % they can be written down explicitly, and even {\em algebraic}
+  % numbers because they can be represented using the polynomials of which they
+  % are solutions.
+
+  Однако, он отвергал трансцендентные числа, не имеющие конечного представления.
+  % However he rejected transcendental numbers because apparently
+  % they could not be represented finitely.
+}
+
+\frame{
+  \frametitle{Представление вещественных чисел программами}
+  % \heading{Real numbers as programs}
+
+  Учитывая современные достижения, мы можем сказать, что конечное представление
+  возможно для гораздо большего количества чисел, чем те, существование которых
+  признавалось Кронекером.
+  % However, given our modern perspective, we can say that after all many more
+  % numbers than Kronecker would have accepted {\em do} have a finite
+  % representation.
+
+  Этим представлением являются программы вычисления требуемых чисел с
+  произвольной заданной разрядностью.
+  % This is the program used to calculate them to greater and greater precision.
+
+  Например, мы можем написать программу, вычисляющую для заданного \alert{$n$} 
+  первые \alert{$n$}~знаков числа~\alert{$\pi$} или же рациональное число~\alert{$r$}
+  такое, что~\alert{$|\pi - r| < 2^{-n}$} .
+  % For example, we can write a program that will produce for any argument \alert{
+  %   $n$} the first \alert{$n$} digits of \alert{$\pi$}.
+
+  % Alternatively it can produce a rational number \alert{$r$} such that
+  % \alert{$|\pi - r| < 2^{-n}$}.
+
+  Независимо от того, какой из подходов был выбран для последовательного 
+  уточнения вещественного числа, важнейшим его свойством является конечность
+  программы-представления.
+  % Whatever approach is taken to the successive approximation of a real number,
+  % the key point is that its representation, the program itself, is finite.
+}
+
+\frame{
+  \frametitle{Выбор представления вещественных чисел}
+  % \heading{Our representation of reals}
+
+  Каждому вещественному числу~\alert{$x$} поставим в соответствие 
+  такую функцию~\alert{$f_x:\nat \to \num$}, что для 
+  произвольного~\alert{$n \in \nat$}: \alert{$$ |f_x(n) - 2^n x| < 1.$$}%
+  В свою очередь, данное выражение эквивалентно
+  \alert{$$ |{f_x(n) \over 2^n} - x| < {1 \over 2^n}.$$}%
+  Арифметические операции над числами в таком представлении могут быть определены
+  с использованием функций высшего порядка.
+  % We  represent a real \alert{$x$} by a function \alert{$f_x:\nat \to \num$} that
+  % for each \alert{$n \in \nat$}:
+  % \alert{$$ |f_x(n) - 2^n x| < 1 $$}
+  % This is of course equivalent to
+  % \alert{$$ |{f_x(n) \over 2^n} - x| < {1 \over 2^n} $$}
+  % We can actually represent the arithmetic operations on numbers as
+  % higher order functions.
+
+  Определив аппроксимирующие функции для~\alert{$x$} и~\alert{$y$}, мы можем 
+  построить на их основе аппроксимацию для обширного семейства функций, 
+  таких как~\alert{$x + y$}, \alert{$x y$}, \alert{$\sin(x)$} и прочих.
+  % Given functions for approximating \alert{$x$} and \alert{$y$},
+  % will produce new ones for approximating \alert{$x + y$}, \alert{$x
+  %   y$}, \alert{$sin(x)$} and so on, for a wide range of functions.
+
+  Полученные выражения являются точными, поскольку обеспечивают автоматическое 
+  вычисление требуемых выражений с любой заданной разрядностью.
+  % Such a result is exact, in the sense that we can then give it an arbitrary
+  % desired precision and it will perform the appropriate calculation
+  % automatically.
+}
 
 
 
+\frame{
+  \frametitle{Целые числа произвольной разрядности}
+  % \heading{Arbitrary precision integers}
+
+  Стандартный целочисленный тип ({\tt int}) в CAML имет довольно
+  ограниченный диапазон представимых значений, поэтому нам прежде
+  всего потребуется возможность оперировать целыми числами
+  неограниченной разрядности.
+  % CAML's standard integers (type {\black \tt int}) have a severely
+  % limited range, so first of all we need to set up a type of
+  % unlimited-precision integers.
+
+  Версия CAML Light, установленная на Thor, включает библиотеку быстрых 
+  алгоритмов целочисленной (на самом деле, рациональной) арифметики. 
+  Запуск программ следует производить так: 
+  % The CAML release includes a library that gives a fast implementation of
+  % arbitrary precision integer (and in fact rational) arithmetic.
+  % 
+  % A version of CAML Light with this library pre-loaded is installed on Thor. Just
+  % run it with:
+
+  \MyLitCam
+
+  затем, для получения доступа ко всем функциям:
+  % then do the following to get access to all the functions:
+
+  \MyLitCamNum
+
+  В библиотеке определяется новый тип данных {\tt num}, представляющий
+  рациональные числа произвольной разрядности, среди которых нам понадобится 
+  лишь подмножество целых чисел.
+  % This library sets up a new type {\black \tt num} of arbitrary precision rational
+  % numbers; we will just use the integer subset.
+}
+
+
+
+\frame{
+  \frametitle{Операции над типом {\tt num}}
+  % \heading{Operators on {\black \tt num}}
+
+  Язык CAML не предоставляет возможности перегрузки операций, поэтому
+  для обозначения арифметических действий над~{\tt num} приходится
+  использовать другие символы.
+  % CAML does not provide overloading, so it is necessary to use different symbols
+  % for the usual arithmetic operations over {\black \tt num}.
+
+  Отметим, что числа-константы типа~{\tt num} должны задаваться
+  как~{\tt Int k}, а не просто~{\tt k}.
+  % Note that small constants of type {\black \tt num} must be written
+  % as {\black \tt Int k} rather than simply {\black \tt k}.
+
+  Унарная операция смены знака величины типа~{\tt num}
+  обозначается~{\tt minus\_num}. Ещё одна полезная унарная
+  операция~--- {\tt abs\_num}, которая вычисляет абсолютную величину
+  аргумента, т.~е.\ по заданному~\alert{$x$} возвращает~\alert{$|x|$}.
+  % The unary negation on type {\black \tt num} is written {\black \tt
+  %   minus\_num}. Another handy unary operator is {\black \tt
+  %   abs\_num}, which finds absolute values, i.e. given \alert{$x$}
+  % returns \alert{$|x|$}.
+
+  Помимо унарных, в наше распоряжение предоставлен стандартный набор
+  бинарных операций. Операции целочисленного деления и вычисления
+  остатка, обозначенные~{\tt quo\_num} и~{ \tt mod\_num}, не являются
+  инфиксными. В то же время, большинство прочих бинарных операций
+  определены как инфиксные с именами, полученными добавлением
+  символа~<<{\tt /}>> к именам аналогичных операций над
+  типом~{\tt int}.
+  % The usual complement of binary operations are also available. The
+  % (truncating) division and modulus function, called {\black \tt
+  %   quo\_num} and {\black \tt mod\_num}, do not have infix status.
+  % However most of the other binary operators are infixes, and the
+  % names are derived from the usual ones by adding a slash <<{black
+  %   verb!/!}>>.
+}
+
+\frame{
+  \frametitle{Бинарные операции}
+  % \heading{Binary operators}
+
+  \bigskip
+  \begin{tabular}{|l|l|l|}
+    \hline
+    Оп.         & Тип                              & Значение              \\
+    % Op         & Type                             & Meaning               \\
+    \hline
+    {\tt **/}  & {\tt num -> num -> num}          & Возведение в степень        \\
+    {\tt */}   & {\tt num -> num -> num}          & Умножение             \\
+    {\tt +/}   & {\tt num -> num -> num}          & Сложение              \\
+    {\tt -/}   & {\tt num -> num -> num}          & Вычитание             \\
+    {\tt =/}   & {\tt num -> num -> bool}         & Равенство             \\
+    {\tt <>/}  & {\tt num -> num -> bool}         & Неравенство           \\
+    {\tt </}   & {\tt num -> num -> bool}         & Меньше, чем           \\
+    {\tt <=/}  & {\tt num -> num -> bool}         & Меньше либо равно     \\
+    {\tt >/}   & {\tt num -> num -> bool}         & Больше, чем           \\
+    {\tt >=/}  & {\tt num -> num -> bool}         & Больше либо равно     \\
+    % {\tt **/}  & {\tt num -> num -> num}          & Exponentiation        \\
+    % {\tt */}   & {\tt num -> num -> num}          & Multiplication        \\
+    % {\tt +/}   & {\tt num -> num -> num}          & Addition              \\
+    % {\tt -/}   & {\tt num -> num -> num}          & Subtraction           \\
+    % {\tt =/}   & {\tt num -> num -> bool}         & Equality              \\
+    % {\tt <>/}  & {\tt num -> num -> bool}         & Inequality            \\
+    % {\tt </}   & {\tt num -> num -> bool}         & Less than             \\
+    % {\tt <=/}  & {\tt num -> num -> bool}         & Less or equal         \\
+    % {\tt >/}   & {\tt num -> num -> bool}         & Greater than          \\
+    % {\tt >=/}  & {\tt num -> num -> bool}         & Greater or equal      \\
+    \hline
+  \end{tabular}
+  \bigskip
+}
+
+
+
+\frame{
+  \frametitle{Реализация}
+
+  % \heading{Getting started}
+
+
+
+  Напомним, что для вещественных чисел нами было выбрано представление
+  в виде функций~\alert{$\num \to \num$}.
+  % ISSUE: Z -> Z should be probably N -> Z ???
+  % Recall that our real numbers are supposed to be (represented by) functions
+  % \alert{$\num \to \num$}.
+
+  Реализация на языке~ML в действительности будет использовать {\tt
+    int~->~num}, поскольку диапазона значений встроенного
+  целочисленного типа вполне достаточно для задания требуемой
+  разрядности.
+  % In ML we will actually use {\black \tt int -> num}, since the inbuilt
+  % type of integers is more than adequate for indexing the level of accuracy.
+
+  Определим некоторые базовые операции над вещественными числами. Наиболее
+  фундаментальная операция, с которой мы начнём, ставит в соответствие заданному
+  целому вещественное число. Её реализация проста:
+  % Now we can define some basic operations on reals. The most basic operation,
+  % which gets us started, is to produce the real number corresponding to an
+  % integer. This is easy:
+
+  \RealOfInt
+
+  Очевидно, эта операция удовлетворяет критерию аппроксимации~--- её погрешность
+  равна нулю.
+  % Evidently this satisfies the error criterion: in fact the error is zero.
+}
+
+
+
+\frame{
+  \frametitle{Основные операции}
+  % \heading{Basic operations}
+
+  Определим первую нетривиальную операцию~--- смену знака.
+  % Now we can define the first nontrivial operation, that of unary
+  % negation:
+
+  \SignChange
+
+  Компилятор для этой функции выводит более общий тип, чем требуется, но это
+  не создаст трудностей. Достаточно легко убедиться, что критерий аппроксимации
+  не нарушается. Если нам известно, что для любого~\alert{$n$} справедливо
+  %% ISSUE: check this
+  % The compiler generalizes the type more than intended, but this will not trouble
+  % us. It is almost as easy to see that the approximation criterion is preserved.
+  % If we know that for each \alert{$n$}:
+  \alert{$$ |f_x(n) - 2^n x| < 1, $$}%
+  то из этого следует:
+  % \noindent then we have for any \alert{$n$}:
+  \alert{\begin{eqnarray*}
+      |f_{-x}(n) - 2^n (-x)| & = & |-f_x(n) - 2^n (-x)|       \\
+      & = & |-(f_x(n) - 2^n x)|        \\
+      & = & |f_x(n) - 2^n x|           \\
+      & < & 1
+    \end{eqnarray*}}%
+  Аналогично, мы можем определить вычисление абсолютной величины вещественных 
+  чисел, используя функцию~{\tt abs\_num}.
+  % Similarly, we can define an <<absolute value>> function on real numbers, using
+  % the corresponding function {\black \tt abs\_num} on numbers.
+}
+
+
+
+\frame{
+  \frametitle{Сложение: первая попытка}
+  % \heading{Addition: first attempt}
+
+  Мы могли бы определить операцию сложения следующим образом:
+  % We could define:
+
+  \alert{$$ f_{x + y}(n) = f_x(n) + f_y(n) $$}
+
+  Однако, такое определение не гарантирует соблюдения критерия аппроксимации:
+  % However this gives no guarantee that the approximation criterion is maintained;
+  % we would have:
+
+  \alert{\begin{eqnarray*}
+      &      & |f_{x + y}(n) - 2^n (x + y)| \\
+      & =    & |f_x(n) + f_y(n) - 2^n (x + y)|      \\
+      & \leq & |f_x(n) - 2^n x| + |f_y(n) - 2^n y|
+    \end{eqnarray*}}
+
+  Можно утверждать, что сумма в правой части неравенства не превышает~\alert{$2$}, 
+  в то время, как критерий ограничивает нас~\alert{$1$}. Следовательно, в данном 
+  случае нам требуется вычислить~\alert{$x$} и~\alert{$y$} с {\em большей} 
+  разрядностью, чем требуется от результата операции.
+  % We can guarantee that the sum on the right is less than
+  % \alert{$2$}, but not that it is less than \alert{$1$} as required.
+  % Therefore, we need in this case to evaluate \alert{$x$} and
+  % \alert{$y$} to {\em greater} accuracy than required in the answer.
+}
+
+
+
+\frame{
+  \frametitle{Сложение: вторая попытка}
+  % \heading{Addition: second attempt}
+
+  Предположим, что сложение определено так:
+  % Suppose we define:
+  \alert{$$ f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2 $$}%
+  В этом случае погрешность 
+  % \noindent Now we have:
+  \alert{\begin{eqnarray*}
+      &   & |f_{x + y}(n) - 2^n (x + y)|                              \\
+      & = & |(f_x(n + 1) + f_y(n + 1)) / 2 - 2^n (x + y)|             \\
+      & \leq & |f_x(n + 1) / 2 - 2^n x| + |f_y(n + 1) / 2 - 2^n y|    \\
+      & = & {1 \over 2} |f_x(n + 1) - 2^{n + 1} x| +
+      {1 \over 2} |f_y(n + 1) - 2^{n + 1} y|                    \\
+      & < & {1 \over 2} 1 + {1 \over 2} 1 = 1.
+    \end{eqnarray*}}
+
+  Очевидно, что такое определение достигает желаемой точности. Однако, в нём
+  неявно используется операция деления вещественных чисел. Поскольку функция
+  должна возвращать целочисленный результат, частное требуется округлить.
+  % Apparently this just gives the accuracy required. However we have implicitly
+  % used real mathematical division above. Since the function is supposed to yield
+  % an integer, we are obliged to round the quotient to an integer.
+}
+
+
+
+\frame{
+  \frametitle{Деление с округлением}
+  % \heading{Rounding division}
+
+  Если мы вычислим частное при помощи {\tt quo\_num}, ошибка
+  округления составит почти~\alert{$1$} и не позволит достичь
+  требуемой точности независимо от точности вычисления аргументов.
+  % If we just use {\black \tt quo\_num}, the error from rounding this
+  % might be almost \alert{$1$}, after which we could never guarantee
+  % the bound we want, however accurately we evaluate the arguments.
+
+  Нам требуется операция деления с округлением, которая всегда возвращает целое,
+  ближайшее к~точному результату (или одно из двух ближайших, если расстояние 
+  до них оказывается одинаковым), так что ошибка округления никогда не 
+  превысит~\alert{$1 \over 2$}.
+  % We need a division function that always returns the integer closest to the true
+  % result (or one of them in the case of two equally close ones), so that the
+  % rounding error never exceeds \alert{$1 \over 2$}.
+
+  \DivWithDiv
+
+  Наше определение корректной операции сложения почти завершено!
+  % Now we are ready to define a correct addition function!
+}
+
+
+
+\frame{
+  \frametitle{Сложение: третья попытка (1)}
+  % \heading{Addition: third attempt}
+
+  Если мы определим операцию сложения как
+  % Now if we define:
+  \alert{$$ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4,$$}%
+  всё будет работать, как требуется:
+  % \noindent everything works:
+  \alert{\begin{eqnarray*}
+      &      & |f_{x + y}(n) - 2^n (x + y)|                                   \\
+      & =    & |((f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4) - 2^n (x + y)|    \\
+      & \leq & {1 \over 2} + |(f_x(n + 2) + f_y(n + 2)) / 4 - 2^n (x + y)|    \\
+      & =    & {1 \over 2} + {1 \over 4} |(f_x(n + 2) + f_y(n + 2)) -
+      2^{n + 2}(x + y)|                  \\
+      & \leq & {1 \over 2} + {1 \over 4} |f_x(n + 2) - 2^{n + 2} x| +         \\
+      &      &               {1 \over 4} |f_y(n + 2) - 2^{n + 2} y|           \\
+      & <    & {1 \over 2} + {1 \over 4} 1 + {1 \over 4} 1 = 1
+    \end{eqnarray*}}
+}
+
+\frame{
+  \frametitle{Сложение: третья попытка (2)}
+  % \heading{Addition: third attempt}
+
+  Программная реализация:
+  % \noindent Accordingly we make our definition:
+  \AddProg
+}
+
+\frame{
+  \frametitle{Умножение на целое число (1)}
+  % \heading{Multiplication by an integer (1)}
+
+  По соображениям эффективности, данный частный случай заслуживает отдельного
+  рассмотрения. Определим
+  % It's worth treating this special case efficiently.
+  % We define:
+  \alert{$$ f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1}, $$}%
+  где \alert{$p$}~выбирается так, чтобы~\alert{$2^p \geq |m|$}. Корректность такого
+  определения легко доказать:
+  % \noindent where \alert{$p$} is chosen so that \alert{$2^p \geq
+  %   |m|$}. For correctness, we have:
+
+  \alert{\begin{eqnarray*}
+      &      & |f_{m x}(n) - 2^n (m x)|                                       \\
+      & \leq & {1 \over 2} + |{m f_x(n+p+1) \over 2^{p+1}} - 2^n (m x)|       \\
+      & =    & {1 \over 2} + {|m| \over 2^{p+1}} |f_x(n+p+1) - 2^{n+p+1} x|   \\
+      & <    & {1 \over 2} + {|m| \over 2^{p+1}}                              \\
+      & \leq & {1 \over 2} + {1 \over 2} {|m| \over 2^p}                      \\
+      & \leq & {1 \over 2} + {1 \over 2} = 1
+    \end{eqnarray*}}
+}
+
+
+
+\frame{
+  \frametitle{Умножение на целое число (2)}
+  % \heading{Multiplication by an integer (2)}
+
+  Реализация этой операции требует вычисления подходящего
+  значения~\alert{$p$}:
+  % In order to implement this, we need a function to find the
+  % appropriate \alert{$p$}:
+
+  \MulProg
+
+  Учитывая сказанное выше, операция умножения реализуется так:
+  % \noindent The implementation is simply:
+
+  \MulSimpleProg
+
+  Деление на целое число вводится следующим образом:
+  % \noindent For division by an integer, we define:
+  \alert{$$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$}
+}
+
+
+
+\frame{
+  \frametitle{Умножение: общий случай}
+  % \heading{General multiplication}
+
+  Определить умножение в общем случае труднее, поскольку погрешность 
+  аппроксимации одного из сомножителей умножается на порядок второго. 
+  Следовательно, нам потребуется предварительно оценить порядки сомножителей.
+  % This is harder because the error in approximation for one number is multiplied
+  % by the magnitude of the second number. We need a first evaluation to determine
+  % their approximate magnitude.
+
+  \MulEx
+
+  Оценка погрешности такого определения громоздка, но не слишком сложна.
+  % The error analysis is long but not really difficult.
+}
+
+
+
+\frame{
+  \frametitle{Обратные числа (1)}
+  % \heading{Multiplicative inverse (1)}
+
+  Чтобы получить любую верхнюю оценку обратного числа, не говоря уж о хорошем
+  его приближении, нам потребуется оценить аргумент {\em снизу}.
+  % In order to get any sort of upper bound on the inverse, let alone a good
+  % approximation, we need to get a {\em lower} bound for the argument.
+
+  Прежде всего, зададим функцию~{\tt msd}:
+  % So first define the {\black \tt msd} function:
+
+  \MsdProg
+
+  Эта функция вычисляет наименьшее~\alert{$n$}, для которого 
+  справедливо~\alert{$|f_x(n) | > 1$}.
+  % This finds the first \alert{$n$} with \alert{$|f_x(n) | > 1$}.
+
+  Отметим, что при~\alert{$x = 0$} произойдёт зацикливание. Эта проблема 
+  неизбежна, поскольку равенство вещественных чисел, подобно равенству функций,
+  в общем случае алгоритмически неразрешимо.
+  % Note that if \alert{$x = 0$} then this will loop indefinitely. This problem is
+  % inevitable since equality of reals, like equality of functions, is not
+  % computable.
+
+  При этом для~\alert{$x \not= 0$} алгоритм, заданный выше, завершается
+  за конечное время.
+  % However if \alert{$x \not= 0$} the above must terminate eventually.
+}
+
+
+
+\frame{
+  \frametitle{Обратные числа (2)}
+  % \heading{Multiplicative inverse (2)}
+
+  Перейдём к реализации вычисления обратного числа:
+  % Now we can code the inverse.
+
+  \RealMulInvProg
+
+  С учётом изложенного ранее, определение операции деления становится тривиальным:
+  % Now, of course, it is straightforward to define division:
+
+  \RealDivInvProg
+}
+
+
+
+\frame{
+  \frametitle{Отношения порядка и равенства}
+  % \heading{Ordering and equality}
+
+  Для определения взаимного порядка~\alert{$x$} и~\alert{$y$}
+  достаточно найти~\alert{$n$} такое, что~\alert{$|f_x(n) - f_y(n)|
+    \geq 2$}. Например, если~\alert{$f_x(n) \geq f_y(n) + 2$}, то
+  \alert{$$ 2^n x > f_x(n) - 1 \geq f_y(n) + 1 > 2^n y,$$}%
+  из чего следует~\alert{$x > y$}.
+  % To decide the ordering relation of \alert{$x$} and \alert{$y$} it suffices to
+  % find an \alert{$n$} such that \alert{$|f_x(n) - f_y(n)| \geq 2$}. For example, if
+  % \alert{$f_x(n) \geq f_y(n) + 2$} we have
+  % \alert{$$ 2^n x > f_x(n) - 1 \geq f_y(n) + 1 > 2^n y $$}
+  % \noindent and so \alert{$x > y$}.
+
+  \OrderProg
+
+  Отметим, что единственным способом реализации рефлексивных отношений
+  порядка будет положить их тождественными соответствующим
+  нерефлексивным отношениям.  В целом, для~\alert{$x = y$} любые
+  попытки определить их взаимный порядок приведут к зацикливанию.
+  % Note that the only way to arrive at the reflexive orderings is to
+  % justify the irreflexive version. In general, all these will fail
+  % to terminate if \alert{$x = y$}.
+}
+
+\frame{
+  \frametitle{Тестирование (1)}
+  % \heading{Testing}
+
+  Прежде всего, определим функцию отображения вещественных чисел:
+  % We first define a function to show us a real:
+  \View
+}
+
+\frame{
+  \frametitle{Тестирование (2)}
+  После этого мы можем протестировать нашу реализацию вещественной арифметики 
+  на простых примерах:
+  % Now we can test out some simple examples:
+  \Testing
+}
+
+\frame{
+  \frametitle{Избыточные вычисления}
+  % \heading{The problem of reevaluation}
+
+  Данный пример выполняется крайне медленно:
+  % The following is very slow:
+
+  \Reevaluation
+
+  Причиной этого служит повторяющееся вычисление одних и тех же выражений.
+  Ситуация ухудшается ещё и тем, что умножение и вычисление обратного числа
+  обращаются к своим аргументам более одного раза. Это ведёт к экспоненциальному
+  росту сложности вычислений.
+  % The problem is the repeated evaluation of the same expression. This is worse
+  % because multiplication and inversion often evaluate their arguments more than
+  % once. This tends to lead to a blowup exponential in the depth of the
+  % expression.
+}
+
+\frame{
+  \frametitle{Кэширование}
+  % \heading{Caching}
+
+  Мы можем решить проблему, наделив наши функции <<памятью>>.
+  % We can solve the problem by giving each function a <<memo>>.
+
+  Если функция будет хранить наиболее точное значение, которое уже
+  было вычислено, то при попытке вычислить его повторно или при
+  вычислении менее точного значения, сохранённое может быть просто
+  использовано повторно.
+  % It will remember the most accurate result it has already calculated. If asked
+  % for the same one, or a less accurate one, it can take it from the store.
+
+  Исходя из~\alert{$|f_x(n + k) - 2^{n + k} x| < 1$}, мы получаем:
+  % If we know that \alert{$|f_x(n + k) - 2^{n + k} x| < 1$} then we have:
+  \alert{\begin{eqnarray*}
+      &      & |f_x(n + k) \mbox{ ndiv } 2^ k - 2^n x|                        \\
+      & \leq & {1 \over 2} + |{f_x(n + k) \over 2^k} - 2^n x|                 \\
+      & =    & {1 \over 2} + {1 \over 2^k} |f_x(n + k) - 2^{n + k} x|         \\
+      & <    & {1 \over 2} + {1 \over 2^k}                                    \\
+      & \leq & 1
+    \end{eqnarray*}}
+
+  Отсюда следует, что возвращаемое значение~\alert{$f_x(n + k) \mbox{ ndiv } 2^k$}
+  не вызовет проблем.
+  % Hence we are always safe in returning \alert{$f_x(n + k) \mbox{ ndiv } 2^k$}.
+}
+
+\frame{
+  \frametitle{Функция {\tt memo}}
+  % \heading{Memo function}
+
+  Для упрощения реализации вычислений с <<памятью>> введём следующую функцию:
+  % We can use the following generic function to attach a memo to a
+  % function:
+  \MemoFunc
+
+  Систематическое использование этой функции в определении операций
+  существенно повышает их эффективность.
+  % Now we systematically insert this in each operator. The resulting system is
+  % much more efficient.
+  \RealAddMemo
+}
 
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
