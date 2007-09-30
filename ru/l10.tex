@@ -2,6 +2,271 @@
 
 \begin{document}
 
+\defverbatim[colored]\Atom{
+  \begin{lstlisting}[frame=single]
+  atom "(x + y) * z" =
+    Fn("+",[Var "x"; Var "y"]),"* z"
+\end{lstlisting}}
+
+\defverbatim[colored]\NoParse{
+  \begin{lstlisting}[frame=single]
+  exception Noparse;;
+\end{lstlisting}}
+
+\defverbatim[colored]\CombinatorsDef{
+  \begin{lstlisting}[frame=single]
+let prefix ++ parser1 parser2 input =
+  let result1,rest1 = parser1 input in
+  let result2,rest2 = parser2 rest1 in
+  (result1,result2),rest2;;
+
+let rec many parser input =
+  try let result,next = parser input in
+      let results,rest = many parser next in
+      (result::results),rest
+  with Noparse -> [],input;;
+
+let prefix >> parser treatment input =
+  let result,rest = parser input in
+  treatment(result),rest;;
+
+let prefix || parser1 parser2 input =
+  try parser1 input
+  with Noparse -> parser2 input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\ItList{
+  \begin{lstlisting}[frame=single]
+let rec itlist f =
+     fun [] b -> b
+       | (h::t) b -> f h (itlist f t b);;
+
+let uncurry f(x,y) = f x y;;
+let K x y = x;;
+let C f x y = f y x;;
+
+let o f g x = f(g x);;
+#infix "o";;
+
+let explode s =
+  let rec exap n l =
+    if n < 0 then l else
+    exap (n - 1) ((sub_string s n 1)::l) in
+  exap (string_length s - 1) [];;
+\end{lstlisting}}
+
+\defverbatim[colored]\AtomicCombinators{
+  \begin{lstlisting}[frame=single]
+  let some p =
+    fun [] -> raise Noparse
+      | (h::t) -> if p h then (h,t)
+                  else raise Noparse;;
+
+  let a tok =
+    some (fun item -> item = tok);;
+
+  let finished input =
+    if input = [] then 0,input
+    else raise Noparse;;
+\end{lstlisting}}
+
+\defverbatim[colored]\Tokens{
+  \begin{lstlisting}[frame=single]
+  type token = Name of string
+             | Num of string
+             | Other of string;;
+\end{lstlisting}}
+
+\defverbatim[colored]\Lexing{
+  \begin{lstlisting}[frame=single]
+  #lex "sin(x + y) * cos(2 * x + y)";;
+   - : token list =
+   [Name "sin"; Other "("; Name "x"; Other "+";
+    Name "y"; Other ")"; Other "*"; Name "cos";
+    Other "("; Num "2"; Other "*"; Name "x";
+    Other "+"; Name "y"; Other ")"]
+\end{lstlisting}}
+
+\defverbatim[colored]\LexImplementation{
+  \begin{lstlisting}[frame=single]
+let lex =
+  let several p = many (some p) in
+  let lowercase_letter s = "a" <= s & s <= "z" in
+  let uppercase_letter s = "A" <= s & s <= "Z" in
+  let letter s =
+    lowercase_letter s or uppercase_letter s in
+  let alpha s = letter s or s = "_" or s = "'" in
+  let digit s = "0" <= s & s <= "9" in
+  let alphanum s = alpha s or digit s in
+  let space s = s = " " or s = "\n" or s = "\t" in
+  let collect(h,t) = h^(itlist (prefix ^) t "") in
+  let rawname =
+     some alpha ++ several alphanum
+     >> (Name o collect) in
+  let rawnumeral =
+     some digit ++ several digit
+     >> (Num o collect) in
+  let rawother = some (K true) >> Other in
+  let token =
+    (rawname || rawnumeral || rawother) ++
+    several space >> fst in
+  let tokens = (several space ++ many token) >> snd in
+  let alltokens = (tokens ++ finished) >> fst in
+  fst o alltokens o explode;;
+\end{lstlisting}}
+
+\defverbatim[colored]\TermsLex{
+  \begin{lstlisting}[frame=single]
+  let name =
+    fun (Name s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let numeral =
+    fun (Num s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let other =
+    fun (Other s::rest) -> s,rest
+      | _ -> raise Noparse;;
+\end{lstlisting}}
+
+\defverbatim[colored]\TermsAn{
+  \begin{lstlisting}[frame=single]
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and mulexp input
+     = (atom ++ a(Other "*") ++ mulexp
+            >> (fun ((a,_),m) -> Fn("*",[a;m]))
+     || atom) input
+and term input
+     = (mulexp ++ a(Other "+") ++ term
+            >> (fun ((a,_),m) -> Fn("+",[a;m]))
+     || mulexp) input
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\ExampleOne{
+  \begin{lstlisting}[frame=single]
+let parser =
+  fst o (term ++ finished >> fst) o lex;;
+\end{lstlisting}}
+
+\defverbatim[colored]\ExampleTwo{
+  \begin{lstlisting}[frame=single]
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term =
+   Fn
+    ("*",
+     [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
+      Fn ("cos", [Fn ("+", [Fn ("*", [Const "2";
+                                      Var "x"]);
+                            Var "y"])])])
+  #install_printer "print_term";;
+  - : unit = ()
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term = `sin(x + y) * cos(2 * x + y)`
+\end{lstlisting}}
+
+\defverbatim[colored]\Apr{
+  \begin{lstlisting}[frame=single]
+let rec binop op parser input =
+  let atom1,rest1 as result = parser input in
+  if not rest1 = [] & hd rest1 = Other op then
+    let atom2,rest2 = binop op parser (tl rest1) in
+    Fn(op,[atom1; atom2]),rest2
+  else result;;
+
+let findmin l = itlist
+  (fun (_,pr1 as p1) (_,pr2 as p2) ->
+     if pr1 <= pr2 then p1 else p2) (tl l) (hd l);;
+
+let rec delete x (h::t) =
+  if h = x then t else h::(delete x t);;
+
+let rec precedence ilist parser input =
+  if ilist = [] then parser input else
+  let opp = findmin ilist in
+  let ilist' = delete opp ilist in
+  binop (fst opp) (precedence ilist' parser) input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\Ttp{
+  \begin{lstlisting}[frame=single]
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and term input = precedence (!infixes) atom input
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\AitO{
+  \begin{lstlisting}[frame=single]
+let ...
+and termlist input
+     = (term ++ a (Other ",") ++ termlist
+            >> (fun ((h,_),t) -> h::t)
+     || term
+            >> (fun h -> [h])) input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\AitOO{
+  \begin{lstlisting}[frame=single]
+let ...
+and termlist input
+    = term ++
+      many (a (Other ",") ++ term >> snd)
+            >> (fun (h,t) -> h::t) input;;
+\end{lstlisting}}
+
+\defverbatim[colored]\AitFinal{
+  \begin{lstlisting}[frame=single]
+let rec atom input
+     = (name ++
+        a (Other "(") ++ termlist ++ a (Other ")")
+            >> (fun (((f,_),a),_) -> Fn(f,a))
+     || name
+            >> (fun s -> Var s)
+     || numeral
+            >> (fun s -> Const s)
+     || a (Other "(") ++ term ++ a (Other ")")
+            >> (snd o fst)
+     || a (Other "-") ++ atom
+            >> snd) input
+and term input = precedence (!infixes) atom input
+and termlist input
+      = (term ++ many (a (Other ",") ++ term >> snd)
+            >> (fun (h,t) -> h::t)) input;;
+\end{lstlisting}}
+
+
+
 \frame{\titlepage}
 \section*{Лекция 10. Примеры на ML II.  Синтаксический анализ}
 
@@ -31,7 +296,7 @@
   \end{itemize}
 }
 
-\frame{
+\frame[shrink=10]{
   \frametitle{Грамматика языка термов}
   % \heading{Grammar for terms}
 
@@ -39,35 +304,33 @@
   инфиксные операции: {\tt +} и~{\tt *}, а также числовые константы и
   переменные с алфавитно-цифровыми именами. Мы хотим реализовать
   синтаксический анализатор, чтобы не задавать выражения в виде
-  композиции конструкторов типов.  Грамматика языка термов
-  определяется множеством продукций:
+  композиции конструкторов типов.
+
   % We would like to have a parser for our terms, so that we don't
   % have to write them in terms of type constructors.
   \alert{
     \begin{eqnarray*}
-      term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
-      & |       & name                                       \\
-      & |       & {\verb!(!} term {\verb!)!}                 \\
-      & |       & numeral                                    \\
-      & |       & {\verb!-!} term                            \\
-      & |       & term {\verb! + !} term                     \\
-      & |       & term {\verb! * !} term                     \\
-      termlist & \goesto & term {\verb!,!} termlist                   \\
+      term     & \goesto & name{\tt (} termlist {\tt )}         \\
+      & |       & name                                          \\
+      & |       & {\tt (} term {\tt )}                          \\
+      & |       & numeral                                       \\
+      & |       & {\tt -} term                                  \\
+      & |       & term {\tt + } term                            \\
+      & |       & term {\tt * } term                            \\
+      termlist & \goesto & term {\tt,} termlist                 \\
       & |       & term
     \end{eqnarray*}}
 
   Таким образом, грамматика языка термов определяется множеством
   продукций.
 
-  % Here we have a grammar for terms, defined by a set of production rules.
+  % Here we have a grammar for terms, defined by a set of production
+  % rules.
 }
 
 \frame{
   \frametitle{Неоднозначность}
-
   % \heading{Ambiguity}
-
-
 
   Задача {\em синтаксического анализа (разбора)}, в целом, является обратной
   рассмотренной ранее задаче составления грамматики. Цель синтаксического 
@@ -83,64 +346,56 @@
   % be produced in several ways, e.g.
   \alert{
     \begin{eqnarray*}
-      term     & \goesto & term {\verb! + !} term                             \\
-      & \goesto & term {\verb! + !} term {\verb! * !} term
+      term     & \goesto & term {\tt + } term                             \\
+      & \goesto & term {\tt + } term {\tt * } term
     \end{eqnarray*}}%
   и
   \alert{
     \begin{eqnarray*}
-      term     & \goesto & term {\verb! * !} term                             \\
-      & \goesto & term {\verb! + !} term {\verb! * !} term
+      term     & \goesto & term {\tt * } term                             \\
+      & \goesto & term {\tt + } term {\tt * } term
     \end{eqnarray*}}%
   Различный порядок применения продукций соответствует различным 
   <<деревьям разбора>>. На самом деле, мы вправе трактовать
-  \alert{$x {\verb! + !} y {\verb! * !} z$} 
-  как~\alert{$x {\verb! + !} (y {\verb! * !} z)$} 
-  либо как~\alert{$(x {\verb! + !} y) {\verb! * !} z$}.
+  \alert{$x {\tt + } y {\tt * } z$} 
+  как~\alert{$x {\tt + } (y {\tt * } z)$} 
+  либо как~\alert{$(x {\tt + } y) {\tt * } z$}.
   % These correspond to different <<parse trees>>. Effectively, we are free to
   % interpret \alert{$x {\verb! + !} y {\verb! * !} z$} either as \alert{$x
   %   {\verb! + !} (y {\verb! * !} z)$} or \alert{$(x {\verb! + !} y) {\verb! * !}
   %   z$}.
-
 }
 
-\frame{
+\frame[shrink=10]{
   \frametitle{Назначение приоритетов}
-
   % \heading{Encoding precedences}
-
-
 
   Приоритеты операций могут быть выражены путём введения дополнительных
   категорий, например
   % We can encode operator precedences by introducing extra categories, e.g.
   \alert{
     \begin{eqnarray*}
-      atom     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
-      & |       & name                                       \\
-      & |       & numeral                                    \\
-      & |       & {\verb!(!} term {\verb!)!}                 \\
-      & |       & {\verb!-!} atom                            \\
-      mulexp   & \goesto & atom {\verb! * !} mulexp                   \\
-      & |       & atom                                       \\
-      term     & \goesto & mulexp {\verb! + !} term                   \\
-      & |       & mulexp                                     \\
-      termlist & \goesto & term {\verb!,!} termlist                   \\
+      atom     & \goesto & name{\tt (} termlist {\tt )}         \\
+      & |       & name                                          \\
+      & |       & numeral                                       \\
+      & |       & {\tt (} term {\tt )}                          \\
+      & |       & {\tt -} atom                                  \\
+      mulexp   & \goesto & atom {\tt * } mulexp                 \\
+      & |       & atom                                          \\
+      term     & \goesto & mulexp {\tt + } term                 \\
+      & |       & mulexp                                        \\
+      termlist & \goesto & term {\tt ,} termlist                \\
       & |       & term
     \end{eqnarray*}}%
   Такая грамматика однозначна. Операция умножения имеет больший приоритет,
   чем сложение; обе операции правоассоциативны.
   % Now it's unambiguous. Multiplication has higher precedence and both infixes
   % associate to the right.
-
 }
 
 \frame{
   \frametitle{Метод рекурсивного спуска}
-
   % \heading{Recursive descent}
-
-
 
   Синтаксический анализатор, реализующий метод рекурсивного спуска, представляет
   собой множество взаимно рекурсивных функций, прямо сопоставленных каждой
@@ -157,27 +412,23 @@
   % This makes them quite easy and natural to write --- especially in ML, where
   % recursion is the principal control mechanism.
 
-  Например, процедура анализа термов {\black \verb!term!} при появлении во 
-  входном потоке символа {\black \verb!-!} будет рекурсивно вызывать себя для
+  Например, процедура анализа термов {\tt term} при появлении во 
+  входном потоке символа {\tt -} будет рекурсивно вызывать себя для
   анализа аргумента операции, а обнаружив имя, за которым следует
-  открывающая скобка, осуществит вызов~{\black \verb!termlist!}.
-  В свою очередь, эта процедура вызовет~{\black \verb!term!} не менее одного раза,
-  и так далее.
+  открывающая скобка, осуществит вызов~{\tt termlist}.
+  В свою очередь, эта процедура по крайней мере один раз вызовет~{\tt
+    term}, и так далее.
   % For example, the procedure for parsing terms, say {\black \verb!term!} will, on
   % encountering a {\black \verb!-!} symbol, make a recursive call to itself to
   % parse the subterm, and on encountering a name followed by an opening
   % parenthesis, will make a recursive call to {\black \verb!termlist!}. This in
   % itself will make at least one recursive call to {\black \verb!term!}, and so
   % on.
-
 }
 
 \frame{
   \frametitle{Реализация синтаксического анализа на языке~ML}
-
   % \heading{Parsers in ML}
-
-
 
   Предположим, что синтаксический анализатор принимает список входных
   символов или лексем (токенов) произвольного типа.
@@ -189,12 +440,12 @@
   тип анализатора
   % It returns the result of parsing, which has some other arbitrary type, and also
   % the list of input objects not yet processed. Therefore the type of a parser is:
-  % 
-  \alert{$$ (\alpha)list \to \beta \times (\alpha)list $$}%
-  % 
-  Например, для заданной входной строки символов {\black \verb!(x + y) * z!}
-  функция~{\black \verb!atom!} обработает подстроку~{\black \verb!(x + y)!} 
-  и вернёт нераспознанные символы~{\black \verb!* z!}. Также она может вернуть
+
+  \alert{$$ (\alpha)list \to \beta \times (\alpha)list $$}
+
+  Например, для заданной входной строки символов {\tt (x + y) * z}
+  функция~{\tt atom} обработает подстроку~{\tt (x + y)} 
+  и вернёт нераспознанные символы~{\tt * z}. Также она может вернуть
   дерево разбора обработанной подстроки в виде значения рекурсивного типа,
   определённого ранее. Таким образом, мы в итоге получим 
   % For example, when given the input characters {\black \verb!(x + y) * z!} the
@@ -202,20 +453,12 @@
   % and leave the remaining characters {\black \verb!* z!}. It might return a
   % parse tree for the processed expression using our earlier recursive type, and
   % hence we would have:
-  % 
-  \begin{black}\begin{verbatim}
-  atom "(x + y) * z" =
-    Fn("+",[Var "x"; Var "y"]),"* z"
-\end{verbatim}\end{black}
-
+  \Atom
 }
 
-\frame{
+\frame[shrink=5]{
   \frametitle{Комбинаторы синтаксического анализа}
-
   % \heading{Parser combinators}
-
-
 
   Используя язык~ML, мы можем определить набор {\em комбинаторов}, при помощи
   которых будем совместно использовать различные синтаксические анализаторы 
@@ -231,25 +474,24 @@
 
   Для начала введём исключение, сигнализирующее об ошибках анализа:
   % First we declare an exception to be used where parsing fails:
-  \begin{black}\begin{verbatim}
-  exception Noparse;;
-\end{verbatim}\end{black}
-  Далее определим операцию {\black \verb!p1 ++ p2!}, которая вначале применяет
-  {\black \verb!p1!}, затем~--- {\black \verb!p2!} к оставшимся лексемам;
-  а также {\black \verb!many!}, применяющую заданный анализатор максимально 
+  \NoParse
+
+  Далее определим операцию {\tt p1 ++ p2}, которая вначале применяет
+  {\tt p1}, затем~--- {\tt p2} к оставшимся лексемам;
+  а также {\tt many}, применяющую заданный анализатор максимально 
   возможное количество раз.
   % {\black \verb!p1 ++ p2!} applies {\black \verb!p1!} first and then applies
   % {\black \verb!p2!} to the remaining tokens; {\black \verb!many!} keeps applying
   % the same parser as long as possible.
 
-  {\black \verb!p >> f!} работает аналогично {\black \verb!p!}, но затем 
-  применяет {\black\verb!f!} к результату анализа.
+  {\tt p >> f} работает аналогично {\tt p}, но затем применяет {\tt f}
+  к результату анализа.
   % {\black \verb!p >> f!} works like {\black \verb!p!} but then applies {\black
   %   \verb!f!} to the result of the parse.
 
-  {\black \verb!p1 || p2!} делает попытку применить {\black \verb!p1!}, а затем,
-  в случае ошибки~--- {\black \verb!p2!}. Все эти операции автоматически 
-  считаются инфиксными с приоритетами по убыванию.
+  {\tt p1 || p2} делает попытку применить {\tt p1}, а затем, в случае
+  ошибки~--- {\tt p2}. Все эти операции автоматически считаются
+  инфиксными с приоритетами по убыванию.
   % {\black \verb!p1 || p2!} tries {\black \verb!p1!} first, and if that fails,
   % tries {\black \verb!p2!}. These are automatically infix, in decreasing order of
   % precedence.
@@ -258,105 +500,43 @@
 
 \frame{
   \frametitle{Определение комбинаторов}
-
   % \heading{Definitions of the combinators}
 
-
-
-  \begin{black}\begin{verbatim}
-let prefix ++ parser1 parser2 input =
-  let result1,rest1 = parser1 input in
-  let result2,rest2 = parser2 rest1 in
-  (result1,result2),rest2;;
-
-let rec many parser input =
-  try let result,next = parser input in
-      let results,rest = many parser next in
-      (result::results),rest
-  with Noparse -> [],input;;
-
-let prefix >> parser treatment input =
-  let result,rest = parser input in
-  treatment(result),rest;;
-
-let prefix || parser1 parser2 input =
-  try parser1 input
-  with Noparse -> parser2 input;;
-\end{verbatim}\end{black}
-
+  \CombinatorsDef
 }
 
 \frame{
   \frametitle{Вспомогательные функции}
-
   % \heading{Auxiliary functions}
-
-
 
   Введём следующие универсальные функции, которыми воспользуемся в дальнейшем:
   % These are the general functions we will use:
-  \begin{black}\begin{verbatim}
-let rec itlist f =
-     fun [] b -> b
-       | (h::t) b -> f h (itlist f t b);;
 
-let uncurry f(x,y) = f x y;;
-let K x y = x;;
-let C f x y = f y x;;
-
-let o f g x = f(g x);;
-#infix "o";;
-
-let explode s =
-  let rec exap n l =
-    if n < 0 then l else
-    exap (n - 1) ((sub_string s n 1)::l) in
-  exap (string_length s - 1) [];;
-\end{verbatim}\end{black}
-
+  \ItList
 }
 
 \frame{
   \frametitle{Элементарные анализаторы}
-
   % \heading{Atomic parsers}
-
-
 
   Для начала, определим несколько примитивных синтаксических анализаторов:
   % We need a few primitive parsers to get us started.
 
-  \begin{black}\begin{verbatim}
-  let some p =
-    fun [] -> raise Noparse
-      | (h::t) -> if p h then (h,t)
-                  else raise Noparse;;
-
-  let a tok =
-    some (fun item -> item = tok);;
-
-  let finished input =
-    if input = [] then 0,input
-    else raise Noparse;;
-\end{verbatim}\end{black}
+  \AtomicCombinators
 
   Первые два принимают очередной символ входной последовательности, если он 
-  удовлетворяет условию~{\black \verb!p!} или равен {\black \verb!tok!}
+  удовлетворяет условию~{\tt p} или равен {\tt tok}
   соответственно. Третий примитив гарантирует, что вся входная последовательность
   была обработана. 
 
   % The first two accept something satisfying {\black \verb!p!}, and something
   % equal to {\black \verb!tok!}, respectively. The last one makes sure there is no
   % unprocessed input.
-
 }
 
 \frame{
   \frametitle{Лексический анализ}
-
   % \heading{Lexical analysis}
-
-
 
   Для начала нам потребуется провести лексический анализ, т.~е.\ разбить
   входную последовательность символов на лексемы (токены). Это также возможно
@@ -365,89 +545,34 @@ let explode s =
   % First we want to do lexical analysis, i.e. split the input characters into
   % tokens. This can also be done using our combinators, together with a few
   % character discrimination functions. First we declare the type of tokens:
-  % 
-  \begin{black}\begin{verbatim}
-  type token = Name of string
-             | Num of string
-             | Other of string;;
-\end{verbatim}\end{black}
+
+  \Tokens
 
   Нам требуется, чтобы лексический анализатор принимал строку и возвращал
   соответствующий ей список лексем, игнорируя пробелы, например:
   % We want the lexer to accept a string and produce a list of tokens, ignoring
   % spaces, e.g.
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-  #lex "sin(x + y) * cos(2 * x + y)";;
-   - : token list =
-   [Name "sin"; Other "("; Name "x"; Other "+";
-    Name "y"; Other ")"; Other "*"; Name "cos";
-    Other "("; Num "2"; Other "*"; Name "x";
-    Other "+"; Name "y"; Other ")"]
-\end{verbatim}\end{footnotesize}\end{black}
 
+  \Lexing
 }
 
-\frame{
+\frame[shrink=5]{
   \frametitle{Реализация лексического анализатора}
-
   % \heading{Definition of the lexer}
 
-
-
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-let lex =
-  let several p = many (some p) in
-  let lowercase_letter s = "a" <= s & s <= "z" in
-  let uppercase_letter s = "A" <= s & s <= "Z" in
-  let letter s =
-    lowercase_letter s or uppercase_letter s in
-  let alpha s = letter s or s = "_" or s = "'" in
-  let digit s = "0" <= s & s <= "9" in
-  let alphanum s = alpha s or digit s in
-  let space s = s = " " or s = "\n" or s = "\t" in
-  let collect(h,t) = h^(itlist (prefix ^) t "") in
-  let rawname =
-     some alpha ++ several alphanum
-     >> (Name o collect) in
-  let rawnumeral =
-     some digit ++ several digit
-     >> (Num o collect) in
-  let rawother = some (K true) >> Other in
-  let token =
-    (rawname || rawnumeral || rawother) ++
-    several space >> fst in
-  let tokens = (several space ++ many token) >> snd in
-  let alltokens = (tokens ++ finished) >> fst in
-  fst o alltokens o explode;;
-\end{verbatim}\end{footnotesize}\end{black}
-
+  \LexImplementation
 }
 
 \frame{
   \frametitle{Анализатор термов}
-
   % \heading{Parsing terms}
-
-
 
   Реализацию анализа языка термов начнем с определения базовых анализаторов
   отдельных лексем заданного класса:
   % In order to parse terms, we start with some basic parsers for single tokens of
   % a particular kind:
-  % 
-  \begin{black}\begin{verbatim}
-  let name =
-    fun (Name s::rest) -> s,rest
-      | _ -> raise Noparse;;
 
-  let numeral =
-    fun (Num s::rest) -> s,rest
-      | _ -> raise Noparse;;
-
-  let other =
-    fun (Other s::rest) -> s,rest
-      | _ -> raise Noparse;;
-\end{verbatim}\end{black}
+  \TermsLex
 
   С помощью этих функций мы можем определить анализатор термов в виде, очень
   схожем с исходной грамматикой. Основное различие состоит в том, что каждой
@@ -456,82 +581,34 @@ let lex =
   % Now we can define a parser for terms, in a form very similar to the original
   % grammar. The main difference is that each production rule has associated with
   % it some sort of special action to take as a result of parsing.
-
 }
 
-\frame{
+\frame[shrink=5]{
   \frametitle{Анализатор термов (вариант~1)}
-
   % \heading{The term parser (take 1)}
 
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-let rec atom input
-     = (name ++
-        a (Other "(") ++ termlist ++ a (Other ")")
-            >> (fun (((f,_),a),_) -> Fn(f,a))
-     || name
-            >> (fun s -> Var s)
-     || numeral
-            >> (fun s -> Const s)
-     || a (Other "(") ++ term ++ a (Other ")")
-            >> (snd o fst)
-     || a (Other "-") ++ atom
-            >> snd) input
-and mulexp input
-     = (atom ++ a(Other "*") ++ mulexp
-            >> (fun ((a,_),m) -> Fn("*",[a;m]))
-     || atom) input
-and term input
-     = (mulexp ++ a(Other "+") ++ term
-            >> (fun ((a,_),m) -> Fn("+",[a;m]))
-     || mulexp) input
-and termlist input
-     = (term ++ a (Other ",") ++ termlist
-            >> (fun ((h,_),t) -> h::t)
-     || term
-            >> (fun h -> [h])) input;;
-\end{verbatim}\end{footnotesize}\end{black}
-
+  \TermsAn
 }
 
 \frame{
   \frametitle{Примеры}
-
   % \heading{Examples}
 
   Объединим определённые ранее примитивы в единую функцию: 
   % Let us package everything up as a single parsing function:
-  % 
-  \begin{black}\begin{verbatim}
-let parser =
-  fst o (term ++ finished >> fst) o lex;;
-\end{verbatim}\end{black}
-  % 
+
+  \ExampleOne
+
   Наглядной иллюстрацией работы этой функции является её вызов до и после
   установки специализированной функции вывода (см.\ выше):
   % \noindent To see it in action, we try with and without the printer
   % (see above) installed:
-  % 
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-  #parser "sin(x + y) * cos(2 * x + y)";;
-  - : term =
-   Fn
-    ("*",
-     [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
-      Fn ("cos", [Fn ("+", [Fn ("*", [Const "2";
-                                      Var "x"]);
-                            Var "y"])])])
-  #install_printer "print_term";;
-  - : unit = ()
-  #parser "sin(x + y) * cos(2 * x + y)";;
-  - : term = <<sin(x + y) * cos(2 * x + y)`
-\end{verbatim}\end{footnotesize}\end{black}
 
+  \ExampleTwo
 }
 
-\frame{
+\frame[shrink=5]{
   \frametitle{Автоматический учёт приоритетов}
-
   % heading{Automating precedence parsing}
 
   Возможности языка~ML позволяют на основе динамического списка
@@ -541,27 +618,7 @@ let parser =
   % We can easily let ML construct the `fixed-up>> grammar from our
   % dynamic list of infixes:
 
-\begin{black}\begin{footnotesize}\begin{verbatim}
-let rec binop op parser input =
-  let atom1,rest1 as result = parser input in
-  if not rest1 = [] & hd rest1 = Other op then
-    let atom2,rest2 = binop op parser (tl rest1) in
-    Fn(op,[atom1; atom2]),rest2
-  else result;;
-
-let findmin l = itlist
-  (fun (_,pr1 as p1) (_,pr2 as p2) ->
-     if pr1 <= pr2 then p1 else p2) (tl l) (hd l);;
-
-let rec delete x (h::t) =
-  if h = x then t else h::(delete x t);;
-
-let rec precedence ilist parser input =
-  if ilist = [] then parser input else
-  let opp = findmin ilist in
-  let ilist' = delete opp ilist in
-  binop (fst opp) (precedence ilist' parser) input;;
-\end{verbatim}\end{footnotesize}\end{black}
+  \Apr
 
   Использование этой функции в основном анализаторе делает его более
   простым и более общим.
@@ -571,29 +628,9 @@ let rec precedence ilist parser input =
 
 \frame{
   \frametitle{Анализатор термов (вариант~2)}
-
   % \heading{The term parser (take 2)}
 
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-let rec atom input
-     = (name ++
-        a (Other "(") ++ termlist ++ a (Other ")")
-            >> (fun (((f,_),a),_) -> Fn(f,a))
-     || name
-            >> (fun s -> Var s)
-     || numeral
-            >> (fun s -> Const s)
-     || a (Other "(") ++ term ++ a (Other ")")
-            >> (snd o fst)
-     || a (Other "-") ++ atom
-            >> snd) input
-and term input = precedence (!infixes) atom input
-and termlist input
-     = (term ++ a (Other ",") ++ termlist
-            >> (fun ((h,_),t) -> h::t)
-     || term
-            >> (fun h -> [h])) input;;
-\end{verbatim}\end{footnotesize}\end{black}
+  \Ttp
 
   Эти определения дают возможность динамического конструирования
   анализатора с учётом приоритетов на основе списка инфиксных операций в
@@ -603,15 +640,11 @@ and termlist input
   % This will dynamically construct the precedence parser using the list
   % of infixes active when it is actually used. Now the basic grammar is
   % simpler.
-
 }
 
 \frame{
   \frametitle{Возврат и повторное сканирование}
-
   % \heading{Backtracking and reprocessing}
-
-
 
   Некоторые продукции в рамках одной и той же синтаксической категории могут
   иметь общий префикс. Например, таким свойством обладают правила вывода~$term$:
@@ -619,8 +652,8 @@ and termlist input
   % prefix. Note that our production rules for $term$ have this property:
   \alert{
     \begin{eqnarray*}
-      term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
-      & |       & name                                       \\
+      term     & \goesto & name{\tt (} termlist {\tt )}         \\
+      & |       & name                                          \\
       & |       & \cdots
     \end{eqnarray*}}%
   В нашей реализации более длинная продукция целенаправленно обрабатывается
@@ -635,79 +668,37 @@ and termlist input
   % However, this backtracking can lead to our processing the initial name twice.
 
   В данной продукции это не приводит к серьезным потерям эффективности, но 
-  может привести при обработке~{\black \tt termlist}.
+  может привести при обработке~{\tt termlist}.
   % This is not very serious here, but it could be in {\black \tt termlist}.
-
 }
 
 \frame{
   \frametitle{Устранение избыточности}
-
   % \heading{An improved treatment}
-
-
 
   Заменим
   % We can easily replace:
-  % 
-  \begin{black}\begin{verbatim}
-let ...
-and termlist input
-     = (term ++ a (Other ",") ++ termlist
-            >> (fun ((h,_),t) -> h::t)
-     || term
-            >> (fun h -> [h])) input;;
-\end{verbatim}\end{black}%
+  \AitO
   на
   % \noindent with
-  \begin{black}\begin{verbatim}
-let ...
-and termlist input
-    = term ++
-      many (a (Other ",") ++ term >> snd)
-            >> (fun (h,t) -> h::t) input;;
-\end{verbatim}\end{black}%
+  \AitOO
+
   получив очередную реализацию, которая будет и проще, и эффективнее.
   Окончательный вариант анализатора выглядит так:
   % \noindent This gives another improvement to the parser, which is now more
   % efficient and slightly simpler. The final version is:
-
 }
 
 \frame{
   \frametitle{Анализатор термов (вариант~3)}
-
   % \heading{The term parser (take 3)}
 
-
-
-  \begin{black}\begin{footnotesize}\begin{verbatim}
-let rec atom input
-     = (name ++
-        a (Other "(") ++ termlist ++ a (Other ")")
-            >> (fun (((f,_),a),_) -> Fn(f,a))
-     || name
-            >> (fun s -> Var s)
-     || numeral
-            >> (fun s -> Const s)
-     || a (Other "(") ++ term ++ a (Other ")")
-            >> (snd o fst)
-     || a (Other "-") ++ atom
-            >> snd) input
-and term input = precedence (!infixes) atom input
-and termlist input
-      = (term ++ many (a (Other ",") ++ term >> snd)
-            >> (fun (h,t) -> h::t)) input;;
-\end{verbatim}\end{footnotesize}\end{black}
-
+  \AitFinal
 }
 
-\frame{
+\frame[shrink=5]{
   \frametitle{Общие замечания}
-
   % \heading{General remarks}
-
-
 
   Рассмотренный метод синтаксического анализа может с разумной осторожностью
   эффективно использоваться в различных приложениях. Он служит хорошей 
@@ -734,7 +725,7 @@ and termlist input
   % grammar, we could have used:
   \alert{
     \begin{eqnarray*}
-      term     & \goesto & term {\verb! + !} mulexp                   \\
+      term     & \goesto & term {\tt + } mulexp                   \\
       & |       & mulexp
     \end{eqnarray*}}
   Прямолинейный перевод этого правила на язык~ML при исполнении зацикливается. 
@@ -742,12 +733,6 @@ and termlist input
   итерированием.
   % The naive transcription into ML would loop indefinitely. However we can often
   % replace such constructs with explicit repetitions.
-
-
 }
 
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
