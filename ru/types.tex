@@ -374,156 +374,295 @@ $$
 %as `$\phi$ follows from assumptions $\Gamma$'.
 
 \subsection{Formal typability rules}
+%
+Формулировка правил назначения типов выражениям достаточно естественна. Прежде,
+чем мы приведём эти правила, напомним ещё раз, что $t : \sigma$ следует 
+интерпретировать как <<$t$ {\em может} быть назначен тип~$\sigma$>>.
+%The rules for typing expressions are fairly natural. Remember the
+%interpretation of $t : \sigma$ as `$t$ {\em could} be given type $\sigma$'.
+%
+$$ 
+ \frac{v:\sigma \in \Gamma}{\Gamma \vdash v : \sigma} 
+$$
 
-The rules for typing expressions are fairly natural. Remember the
-interpretation of $t : \sigma$ as `$t$ {\em could} be given type $\sigma$'.
+$$ 
+ \frac{\mbox{Constant $c$ has type $\sigma$}}{c:\sigma} 
+$$
 
-$$ \frac{v:\sigma \in \Gamma}{\Gamma \vdash v : \sigma} $$
+$$ 
+ \frac{\Gamma \vdash s : \sigma \to \tau \;\;\;\ \Gamma \vdash t : \sigma}
+      {\Gamma \vdash s\; t : \tau} 
+$$
 
-$$ \frac{\mbox{Constant $c$ has type $\sigma$}}{c:\sigma} $$
+$$ 
+ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
+      {\Gamma \vdash \lamb{v} t : \sigma \to \tau} 
+$$
 
-$$ \frac{\Gamma \vdash s : \sigma \to \tau \;\;\;\ \Gamma \vdash t : \sigma}
-        {\Gamma \vdash s\; t : \tau} $$
+Ещё раз повторим, что эти выражения следует понимать как индуктивное 
+определение отношения typability, так что терм может иметь тип лишь тогда,
+когда он выводим при помощи упомянутых выше правил. В качестве примера 
+рассмотрим процедуру вывода типа тождественной функции. Согласно правилу
+типизации переменных, мы имеем:
+%
+%Once again, this is to be regarded as an inductive definition of the
+%typability relation, so a term only has a type if it can be derived by the
+%above rules. For example, let us see how to type the identity function. By the
+%rule for variables we have:
+%
+$$ 
+ \{x:\sigma\} \vdash x:\sigma 
+$$
+откуда, применив последнее правило, получаем:
+%
+%\noindent and therefore by the last rule we get:
+%
+$$ 
+ \emptyset \vdash \lamb{x} x : \sigma \to \sigma 
+$$
 
-$$ \frac{\Gamma \Union \{v:\sigma\} \vdash t:\tau}
-        {\Gamma \vdash \lamb{v} t : \sigma \to \tau} $$
-
-Once again, this is to be regarded as an inductive definition of the
-typability relation, so a term only has a type if it can be derived by the
-above rules. For example, let us see how to type the identity function. By the
-rule for variables we have:
-
-$$ \{x:\sigma\} \vdash x:\sigma $$
-
-\noindent and therefore by the last rule we get:
-
-$$ \emptyset \vdash \lamb{x} x : \sigma \to \sigma $$
-
-By our established convention for empty contexts, we write simply $\lamb{x} x :
-\sigma \to \sigma$. This example also illustrates the need for the context in
-Curry typing, and why it can be avoided in the Church version. Without the
-context we could deduce $x:\tau$ for any $\tau$, and then by the last rule get
-$\lamb{x} x : \sigma \to \tau$, clearly at variance with the intuitive
-interpretation of the identity function. This problem doesn't arise in Church
-typing, since in that case either both variables have type $\sigma$, in which
-case the rules imply that $\lamb{x} x : \sigma \to \sigma$, or else the two
-$x$'s are actually {\em different variables}, since their types differ and the
-types are a component of the term. Now, indeed, $\lamb{x:\sigma} (x:\tau) :
-\sigma \to \tau$, but this is reasonable because the term is alpha-equivalent
-to $\lamb{x:\sigma} (y:\tau): \sigma \to \tau$. In the Curry version of typing,
-the types are not attached to the terms, and so we need some way of connecting
-instances of the same variable.
+Применив установленное ранее соглашение о пустых контекстах, мы можем сократить 
+это выражение до~$\lamb{x} x : \sigma \to \sigma$. На данном примере также 
+хорошо видна как важная роль контекстов в типизации по Карри, так и их 
+необязательность в рамках типизации по Чёрчу. Опуская контекст, мы можем
+вывести~$x:\tau$ для произвольного типа~$\tau$, после чего, согласно последнему
+правилу, получаем~$\lamb{x} x : \sigma \to \tau$~--- налицо различие с
+интуитивной трактовкой тождественной функции! Эта проблема не возникает в ходе
+типизации по Чёрчу, поскольку в её рамках либо обе переменные имеют 
+тип~$\sigma$, откуда получаем~$\lamb{x} x : \sigma \to \sigma$, либо эти 
+переменные на самом деле различны (поскольку различны их типы, которые 
+считаются неотъемлемой частью терма). В последнем случае тип выражения 
+в действительности будет равен~$\lamb{x:\sigma} (x:\tau) : \sigma \to \tau$,
+но это обосновано тем, что данное выражение 
+альфа-эквивалентно~$\lamb{x:\sigma} (y:\tau): \sigma \to \tau$. Поскольку
+в ходе типизации по Карри термы не содержат в себе типов явно, нам требуется
+некоторый механизм связывания между собой одинаковых переменных.
+%
+%By our established convention for empty contexts, we write simply $\lamb{x} x :
+%\sigma \to \sigma$. This example also illustrates the need for the context in
+%Curry typing, and why it can be avoided in the Church version. Without the
+%context we could deduce $x:\tau$ for any $\tau$, and then by the last rule get
+%$\lamb{x} x : \sigma \to \tau$, clearly at variance with the intuitive
+%interpretation of the identity function. This problem doesn't arise in Church
+%typing, since in that case either both variables have type $\sigma$, in which
+%case the rules imply that $\lamb{x} x : \sigma \to \sigma$, or else the two
+%$x$'s are actually {\em different variables}, since their types differ and the
+%types are a component of the term. Now, indeed, $\lamb{x:\sigma} (x:\tau) :
+%\sigma \to \tau$, but this is reasonable because the term is alpha-equivalent
+%to $\lamb{x:\sigma} (y:\tau): \sigma \to \tau$. In the Curry version of typing,
+%the types are not attached to the terms, and so we need some way of connecting
+%instances of the same variable.
 
 \subsection{Type preservation}
-
-Since the underlying terms of our typed lambda calculus are the same as in the
-untyped case, we can take over the calculus of conversions unchanged. However,
-for this to make sense, we need to check that all the conversions preserve
-typability, a property called {\em type preservation}. This is not difficult;
-we will sketch a formal proof for $\eta$-conversion and leave the other,
-similar cases to the reader. First we prove a couple of lemmas that are fairly
-obvious but which need to be established formally. First, adding new entries to
-the context cannot inhibit typability:
-
-\begin{lemma}
-
-If $\Gamma \vdash t : \sigma$ and $\Gamma \subset \Delta$ then $\Delta \vdash t
-: \sigma$.
-
-\proof By induction on the structure of $t$. Formally we are fixing $t$ and
-proving the above for all $\Gamma$ and $\Delta$, since in the inductive step
-for abstractions, the sets concerned change. If $t$ is a variable
-we must have that $t:\sigma \in \Gamma$. Therefore $t:\sigma \in \Delta$ and
-the result follows. If $t$ is a constant the result is immediate since the
-stock of constants and their possible types is independent of the context. If
-$t$ is a combination $s\; u$ then we have, for some type $\tau$, that $\Gamma
-\vdash s : \tau \to \sigma$ and $\Gamma \vdash u : \tau$. By the inductive
-hypothesis, $\Delta \vdash s : \tau \to \sigma$ and $\Delta \vdash u : \tau$
-and the result follows. Finally, if $t$ is an abstraction $\lamb{x} s$ then we
-must have, by the last rule, that $\sigma$ is of the form $\tau \to \tau'$ and
-that $\Gamma \Union \{x:\tau\} \vdash s : \tau'$. Since $\Gamma \subset \Delta$
-we also have $\Gamma \Union \{x:\tau\} \subset \Delta \Union \{x:\tau\}$, and
-so by the inductive hypothesis $\Delta \Union \{x:\tau\} \vdash s : \tau'$. By
-applying the rule for abstractions, the result follows. \qed
-
-\end{lemma}
-
-Secondly, entries in the context for variables not free in the relevant term
-may be discarded.
+Очевидное сходство структуры термов типизированного и нетипизированного 
+лямбда-исчисления порождает естественное желание применить в типизированном
+случае аппарат формальных преобразований, разработанный для нетипизированного.
+Однако, нам потребуется предварительно доказать, что тип выражения в ходе
+преобразований не изменяется (такое свойство называется {\em type preservation}).
+Убедиться в этом не представляет труда; мы рассмотрим краткое изложение
+доказательства для случая $\eta\hbox{-преобразования}$, предоставив остальные
+читателю в качестве упражнения. Прежде всего, докажем две леммы, которые
+весьма очевидны, но тем не менее, требуют формального обоснования. Во-первых,
+покажем, что добавление новых элементов в контекст не влияет на typability:
+%
+%Since the underlying terms of our typed lambda calculus are the same as in the
+%untyped case, we can take over the calculus of conversions unchanged. However,
+%for this to make sense, we need to check that all the conversions preserve
+%typability, a property called {\em type preservation}. This is not difficult;
+%we will sketch a formal proof for $\eta$-conversion and leave the other,
+%similar cases to the reader. First we prove a couple of lemmas that are fairly
+%obvious but which need to be established formally. First, adding new entries to
+%the context cannot inhibit typability:
 
 \begin{lemma}
+Если~$\Gamma \vdash t : \sigma$ и~$\Gamma \subset \Delta$, то 
+справедливо~$\Delta \vdash t : \sigma$.
+%If $\Gamma \vdash t : \sigma$ and $\Gamma \subset \Delta$ then $\Delta \vdash t
+%: \sigma$.
 
-If $\Gamma \vdash t : \sigma$, then $\Gamma_t \vdash t : \sigma$ where
-$\Gamma_t$ contains only entries for variables free in $t$, or more formally
-$\Gamma_t = \{x:\alpha \mid x:\alpha \in \Gamma \mbox{ and } x \in FV(t)\}$.
-
-\proof Again, we prove the above for all $\Gamma$ and the corresponding
-$\Gamma_t$ by structural induction over $t$. If $t$ is a variable, then since
-$\Gamma \vdash t : \sigma$ we must have an entry $x : \sigma$ in the context.
-But by the first rule we know $\{x : \sigma\} \vdash x : \sigma$ as required.
-In the case of a constant, then the typing is independent of the context, so
-the result holds trivial ly. If $t$ is a combination $s\; u$ then we have for
-some $\tau$ that $\Gamma \vdash s : \tau \to \sigma$ and $\Gamma \vdash u :
-\tau$. By the inductive hypothesis, we have $\Gamma_s \vdash s : \tau \to
-\sigma$ and $\Gamma_u \vdash u : \tau$. By the monotonicity lemma, we therefore
-have $\Gamma_{su} \vdash s : \tau \to \sigma$ and $\Gamma_{su} \vdash u :
-\tau$, since $FV(s\; u) = FV(s) \Union FV(u)$. Hence by the rule for
-combinations we get $\Gamma_{su} \vdash  t : \sigma$. Finally, if $t$ has the
-form $\lamb{x} s$, we must have $\Gamma \Union \{x:\tau\} \vdash s:\tau'$ with
-$\sigma$ of the form $\tau \to \tau'$. By the inductive hypothesis we have
-$(\Gamma \Union \{x:\tau\})_s \vdash s:\tau'$, and so $(\Gamma \Union
-\{x:\tau\})_s - \{x:\tau\} \vdash (\lamb{x} s) : \sigma$. Now we need simply
-observe that $(\Gamma \Union \{x:\tau\})_s - \{x:\tau\} \subset \Gamma_t$ and
-appeal once more to monotonicity. \qed
-
+\proof 
+Применим индукцию по структуре~$t$. Зафиксировав~$t$, докажем приведенное выше
+утверждение для всевозможных~$\Gamma$ и~$\Delta$, поскольку в ходе шага 
+индукции для абстракций эти множества изменяются. Если $t$~--- переменная,
+справедливо~$t:\sigma \in \Gamma$, из чего следует и~$t:\sigma \in \Delta$,
+откуда получаем требуемое. Если $t$~--- константа, обоснованность леммы
+очевидна, поскольку множество констант и их типов не зависит от контекста.
+В случае терма~$t$, имеющего вид~$s\; u$, для некоторого типа~$\tau$ 
+выполняется~$\Gamma \vdash s : \tau \to \sigma$ и~$\Gamma \vdash u : \tau$.
+Согласно индуктивному предположению, $\Delta \vdash s : \tau \to \sigma$ 
+и~$\Delta \vdash u : \tau$, откуда также получаем требуемое. Наконец, если
+терм~$t$ представляет собой абстракцию~$\lamb{x} s$, то согласно последнему
+правилу типизации $\sigma$ имеет вид~$\tau \to \tau'$, а также справедливо,
+что~$\Gamma \Union \{x:\tau\} \vdash s : \tau'$. 
+Так как~$\Gamma \subset \Delta$, мы 
+получаем~$\Gamma \Union \{x:\tau\} \subset \Delta \Union \{x:\tau\}$,
+откуда по индуктивному предположению~$\Delta \Union \{x:\tau\} \vdash s : \tau'$.
+Применяя правило типизации абстракций, получаем требуемое. \qed
+%
+%By induction on the structure of $t$. Formally we are fixing $t$ and
+%proving the above for all $\Gamma$ and $\Delta$, since in the inductive step
+%for abstractions, the sets concerned change. If $t$ is a variable
+%we must have that $t:\sigma \in \Gamma$. Therefore $t:\sigma \in \Delta$ and
+%the result follows. If $t$ is a constant the result is immediate since the
+%stock of constants and their possible types is independent of the context. If
+%$t$ is a combination $s\; u$ then we have, for some type $\tau$, that $\Gamma
+%\vdash s : \tau \to \sigma$ and $\Gamma \vdash u : \tau$. By the inductive
+%hypothesis, $\Delta \vdash s : \tau \to \sigma$ and $\Delta \vdash u : \tau$
+%and the result follows. Finally, if $t$ is an abstraction $\lamb{x} s$ then we
+%must have, by the last rule, that $\sigma$ is of the form $\tau \to \tau'$ and
+%that $\Gamma \Union \{x:\tau\} \vdash s : \tau'$. Since $\Gamma \subset \Delta$
+%we also have $\Gamma \Union \{x:\tau\} \subset \Delta \Union \{x:\tau\}$, and
+%so by the inductive hypothesis $\Delta \Union \{x:\tau\} \vdash s : \tau'$. By
+%applying the rule for abstractions, the result follows. \qed
 \end{lemma}
 
-\noindent Now we come to the main result.
+Во-вторых, элементы контекста, представляющие переменные, которые не являются
+свободными в заданном терме, могут игнорироваться.
+%Secondly, entries in the context for variables not free in the relevant term
+%may be discarded.
 
+\begin{lemma}
+Если~$\Gamma \vdash t : \sigma$, то справедливо 
+также~$\Gamma_t \vdash t : \sigma$, где $\Gamma_t$ содержит исключительно
+свободные переменные терма~$t$ 
+($\Gamma_t = \{x:\alpha \mid x:\alpha \in \Gamma \mbox{ и } x \in FV(t)\}$).
+%
+%If $\Gamma \vdash t : \sigma$, then $\Gamma_t \vdash t : \sigma$ where
+%$\Gamma_t$ contains only entries for variables free in $t$, or more formally
+%$\Gamma_t = \{x:\alpha \mid x:\alpha \in \Gamma \mbox{ and } x \in FV(t)\}$.
+
+\proof 
+Аналогично предыдущей лемме, докажем наше утверждение для произвольного
+контекста~$\Gamma$ и соответствующего ему~$\Gamma_t$ путём структурной 
+индукции по~$t$. Если~$t$~--- переменная, то $\Gamma \vdash t : \sigma$~требует
+наличия в контексте элемента~$x : \sigma$. Согласно первому правилу типизации
+$\{x : \sigma\} \vdash x : \sigma$, что и требуется. Тип константы не зависит
+от контекста, так что лемма справедлива и в этом случае. Если терм~$t$ 
+представляет собой комбинацию вида~$s\; u$, то для некоторого~$\tau$ 
+справедливо~$\Gamma \vdash s : \tau \to \sigma$ и~$\Gamma \vdash u : \tau$.
+Согласно индуктивному предположению, $\Gamma_s \vdash s : \tau \to \sigma$ 
+и~$\Gamma_u \vdash u : \tau$. Согласно лемме о монотонности, 
+получаем~$\Gamma_{su} \vdash s : \tau \to \sigma$ и~$\Gamma_{su} \vdash u : \tau$,
+поскольку~$FV(s\; u) = FV(s) \Union FV(u)$. Применив правило вывода типа
+комбинации термов, получаем~$\Gamma_{su} \vdash  t : \sigma$. Наконец, если
+$t$~имеет вид~$\lamb{x} s$, это подразумевает~$\Gamma \Union \{x:\tau\} \vdash s:\tau'$, 
+где $\sigma$~имеет форму~$\tau \to \tau'$. Согласно индуктивному предположению,
+$(\Gamma \Union \{x:\tau\})_s \vdash s:\tau'$, откуда
+$(\Gamma \Union\{x:\tau\})_s - \{x:\tau\} \vdash (\lamb{x} s) : \sigma$.
+Теперь нам требуется лишь отметить, 
+что~$(\Gamma \Union \{x:\tau\})_s - \{x:\tau\} \subset \Gamma_t$ и ещё раз
+применить лемму о монотонности. \qed
+%
+%Again, we prove the above for all $\Gamma$ and the corresponding
+%$\Gamma_t$ by structural induction over $t$. If $t$ is a variable, then since
+%$\Gamma \vdash t : \sigma$ we must have an entry $x : \sigma$ in the context.
+%But by the first rule we know $\{x : \sigma\} \vdash x : \sigma$ as required.
+%In the case of a constant, then the typing is independent of the context, so
+%the result holds trivial ly. If $t$ is a combination $s\; u$ then we have for
+%some $\tau$ that $\Gamma \vdash s : \tau \to \sigma$ and $\Gamma \vdash u :
+%\tau$. By the inductive hypothesis, we have $\Gamma_s \vdash s : \tau \to
+%\sigma$ and $\Gamma_u \vdash u : \tau$. By the monotonicity lemma, we therefore
+%have $\Gamma_{su} \vdash s : \tau \to \sigma$ and $\Gamma_{su} \vdash u :
+%\tau$, since $FV(s\; u) = FV(s) \Union FV(u)$. Hence by the rule for
+%combinations we get $\Gamma_{su} \vdash  t : \sigma$. Finally, if $t$ has the
+%form $\lamb{x} s$, we must have $\Gamma \Union \{x:\tau\} \vdash s:\tau'$ with
+%$\sigma$ of the form $\tau \to \tau'$. By the inductive hypothesis we have
+%$(\Gamma \Union \{x:\tau\})_s \vdash s:\tau'$, and so $(\Gamma \Union
+%\{x:\tau\})_s - \{x:\tau\} \vdash (\lamb{x} s) : \sigma$. Now we need simply
+%observe that $(\Gamma \Union \{x:\tau\})_s - \{x:\tau\} \subset \Gamma_t$ and
+%appeal once more to monotonicity. \qed
+\end{lemma}
+%
+Приступим к доказательству основного результата этого раздела.
+%\noindent Now we come to the main result.
+%
 \begin{theorem}
+Если~$\Gamma \vdash t : \sigma$ и~$t \etas t'$, то из этого следует, 
+что~$\Gamma \vdash t' : \sigma$.
+%If $\Gamma \vdash t : \sigma$ and $t \etas t'$, then also $\Gamma \vdash t' :
+%\sigma$
 
-If $\Gamma \vdash t : \sigma$ and $t \etas t'$, then also $\Gamma \vdash t' :
-\sigma$
-
-\proof Since by hypothesis $t$ is an $\eta$-redex, it must be of the form
-$(\lamb{x} t\; x)$ with $x \not\in FV(t)$. Now, its type can only have arisen
-by the last typing rule, and therefore $\sigma$ must be of the form $\tau \to
-\tau'$, and we must have $\{x:\tau\} \vdash (t\; x) : \tau'$. Now, this typing
-can only have arisen by the rule for combinations. Since the context can only
-give one typing to each variable, we must therefore have $\{x:\tau\} \vdash t :
-\tau \to \tau'$. But since by hypothesis, $x \not\in FV(t)$, the lemma yields
-$\vdash t : \tau \to \tau'$ as required. \qed
-
+\proof
+Поскольку по условию теоремы терм~$t$ является~$\eta\hbox{-редексом}$, он
+должен иметь структуру~$(\lamb{x} t\; x)$, причём~$x \not\in FV(t)$. 
+Следовательно, его тип может быть выведен лишь из последнего правила типизации,
+при этом $\sigma$ имеет вид~$\tau \to \tau'$, 
+и справедливо $\{x:\tau\} \vdash (t\; x) : \tau'$. Дальнейший анализ
+требует применения правила вывода типа комбинаций. Поскольку контекст может
+содержать не более одного утверждения о типе каждой переменной, 
+справедливо~$\{x:\tau\} \vdash t : \tau \to \tau'$. Так как по условию
+$x \not\in FV(t)$, то применив лемму, получаем~$\vdash t : \tau \to \tau'$,
+что и требовалось. \qed
+%
+%Since by hypothesis $t$ is an $\eta$-redex, it must be of the form
+%$(\lamb{x} t\; x)$ with $x \not\in FV(t)$. Now, its type can only have arisen
+%by the last typing rule, and therefore $\sigma$ must be of the form $\tau \to
+%\tau'$, and we must have $\{x:\tau\} \vdash (t\; x) : \tau'$. Now, this typing
+%can only have arisen by the rule for combinations. Since the context can only
+%give one typing to each variable, we must therefore have $\{x:\tau\} \vdash t :
+%\tau \to \tau'$. But since by hypothesis, $x \not\in FV(t)$, the lemma yields
+%$\vdash t : \tau \to \tau'$ as required. \qed
 \end{theorem}
 
-Putting together all these results for other conversions, we see that if
-$\Gamma \vdash t : \sigma$ and $t \goesto t'$, then we have $\Gamma \vdash t' :
-\sigma$. This is reassuring, since if the evaluation rules that are applied
-during execution could change the types of expressions, it would cast doubt on
-the whole enterprise of static typing.
+Собрав воедино результаты аналогичных доказательств для других преобразований,
+получаем, что если~$\Gamma \vdash t : \sigma$ и~$t \goesto t'$, то выполняется
+также~$\Gamma \vdash t' : \sigma$. Важность этого вывода в том, что если бы
+правила вычислений, применяемые в ходе исполнения программы, могли изменять
+типы выражений, это подорвало бы основы статической типизации.
+%Putting together all these results for other conversions, we see that if
+%$\Gamma \vdash t : \sigma$ and $t \goesto t'$, then we have $\Gamma \vdash t' :
+%\sigma$. This is reassuring, since if the evaluation rules that are applied
+%during execution could change the types of expressions, it would cast doubt on
+%the whole enterprise of static typing.
 
-\section{Polymorphism}
-
-The Curry typing system already gives us a form of {\em polymorphism}, in that
-a given term may have different types. Let us start by distinguish between the
-similar concepts of polymorphism and {\em overloading}. Both of them mean that
-an expression may have multiple types. However in the case of polymorphism, all
-the types bear a systematic relationship to each other, and all types following
-the pattern are allowed. For example, the identity function may have type
-$\sigma \to \sigma$, or $\tau \to \tau$, or $(\sigma \to \tau) \to (\sigma \to
-\tau)$, but all the instances have the same structure. By contrast, in
-overloading, a given function may have different types that bear no structural
-relation to each other, or only certain instances may be selected. For example,
-a function $+$ may be allowed to have type $int \to int \to int$ or type $float
-\to float \to float$, but not $bool \to bool \to bool$.\footnote{Strachey, who
+\section{Полиморфизм}
+%\section{Polymorphism}
+Типизация по Карри предоставляет в наше распоряжение разновидность 
+{\em полиморфизма,} позволяя назначить заданному терму различные типы.
+Следует различать схожие понятия полиморфизма и {\em перегрузки.} Оба они
+подразумевают, что выражение может иметь множество типов. Однако, в случае
+полиморфизма все эти типы систематически связаны друг с другом, так что 
+допустимы любые из них, удовлетворяющие заданному образцу. Например,
+тождественной функции можно назначить тип~$\sigma \to \sigma$, 
+или~$\tau \to \tau$, либо даже~$(\sigma \to \tau) \to (\sigma \to \tau)$, 
+но все они имеют одинаковую структуру. С другой стороны, суть перегрузки
+в том, что заданная функция может иметь различные типы, структура которых
+может различаться, либо же допустимо лишь ограниченное множество типов.
+Например функции~$+$ может быть позволено иметь тип~$int \to int \to int$ 
+либо~$float \to float \to float$, но не~$bool \to bool \to bool$.%
+\footnote{Strachey, who
 coined the term `polymorphism', referred to what we call polymorphism and
 overloading as {\em parametric} and {\em ad hoc} polymorphism respectively.}
-Yet a third related notion is subtyping, which is a more principled version of
-overloading, regarding certain types as embedded in others. This, however,
-turns out to be a lot more complex than it seems.\footnote{For example, if
-$\alpha$ is a subtype of $\alpha'$, should $\alpha \to \beta$ be a subtype or a
-supertype of $\alpha' \to \beta$? One can defend either interpretation
-(`covariant' or `contravariant') in certain situations.}
+Ещё одним близким понятием являются подтипы, представляющие собой более
+жёсткую форму перегрузки. Введение подтипов позволяет трактовать некоторый тип
+как подмножество другого. Однако, этот подход на практике оказывается куда
+сложнее, чем кажется на первый взгляд.%
+\footnote{Например, если тип~$\alpha$ является подтипом~$\alpha'$, должен
+ли тип~$\alpha \to \beta$ считаться подтипом~$\alpha' \to \beta$ или наоборот?
+В зависимости от конкретной ситуации, более предпочтительной оказывается либо
+первая, либо вторая интерпретация (<<ковариантность>> либо 
+<<контравариантность>> типов).}
+%
+%The Curry typing system already gives us a form of {\em polymorphism}, in that
+%a given term may have different types. Let us start by distinguish between the
+%similar concepts of polymorphism and {\em overloading}. Both of them mean that
+%an expression may have multiple types. However in the case of polymorphism, all
+%the types bear a systematic relationship to each other, and all types following
+%the pattern are allowed. For example, the identity function may have type
+%$\sigma \to \sigma$, or $\tau \to \tau$, or $(\sigma \to \tau) \to (\sigma \to
+%\tau)$, but all the instances have the same structure. By contrast, in
+%overloading, a given function may have different types that bear no structural
+%relation to each other, or only certain instances may be selected. For example,
+%a function $+$ may be allowed to have type $int \to int \to int$ or type $float
+%\to float \to float$, but not $bool \to bool \to bool$.\footnote{Strachey, who
+%coined the term `polymorphism', referred to what we call polymorphism and
+%overloading as {\em parametric} and {\em ad hoc} polymorphism respectively.}
+%Yet a third related notion is subtyping, which is a more principled version of
+%overloading, regarding certain types as embedded in others. This, however,
+%turns out to be a lot more complex than it seems.\footnote{For example, if
+%$\alpha$ is a subtype of $\alpha'$, should $\alpha \to \beta$ be a subtype or a
+%supertype of $\alpha' \to \beta$? One can defend either interpretation
+%(`covariant' or `contravariant') in certain situations.}
 
 \subsection{Let polymorphism}
 
