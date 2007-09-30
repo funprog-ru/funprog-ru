@@ -26,7 +26,8 @@
   * (e) *l6.tex* - перевод lg, прочитали alexott
   * (e) *l7.tex* - перевод lg, прочитали
   * (e) *l8.tex* - перевод lg, прочитали
-  * (e) *l9.tex* - перевод pr.dimiii, прочитали
+  * (e) *l9.tex* - перевод pr.dimiii, прочитали lg
+  * (e) *l10.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью),dimiii
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
@@ -44,7 +45,6 @@
   * (t) *lamb.tex* - перевод, прочитали
   * (t) *prog.tex* - перевод, прочитали
   * (t) *types.tex* - перевод Lambda Henchman, прочитали
-  * (t) *l10.tex* - перевод Lambda Henchman, прочитали
   * (t) *l12.tex* - перевод, pr.dimiii прочитали
 
 = File links =
