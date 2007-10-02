@@ -30,6 +30,7 @@ Please keep terms in alphabet order.
   * *lambda-calculus* - $\lambda$-исчисление
   * *lambda-notation* - $\lambda$-нотация
   * *lecture notes* - лекционные материалы / коспекты лекций ??
+  * *let bindings* - let-связанные переменные (Х.-Ф., стр. 155)
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
   * *polymorphic function(s)* - полиморфные фукнция(и)
