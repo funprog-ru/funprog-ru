@@ -5,7 +5,7 @@ $\lambda$-исчисление основывается на так называемой `$\lambda$-нотации' для обоз
 
 \begin{quote}
 
-Предплоложим, что $f:\real \to \real$ определена выражением:
+Предположим, что $f:\real \to \real$ определена выражением:
 
 $$ f(x) = \left\{ \begin{array}{ll}
                                    0 & \mbox{if $x = 0$} \\
@@ -16,11 +16,11 @@ $$ f(x) = \left\{ \begin{array}{ll}
 
 \end{quote}
 
-Most programming languages, C for example, are similar in this respect: we can
-define functions only by giving them names. For example, in order to use the
-successor function (which adds $1$ to its argument) in nontrivial ways (e.g.
-consider a pointer to it), then even though it is very simple, we need to name
-it via some function definition such as:
+Большинство языков программирования, например C, в этом отношении похожи: мы можем
+определить функции только давая им имена.  Например, для того, чтобы использовать функцию
+successor (которая добавляет $1$ к своим аргументам) не самым простым способом (например,
+используя указатель на нее), то хотя она и является очень простой, но все равно нам нужно
+назвать ее используя определение функции, такое как:
 
 \begin{lstlisting}[language=C]
   int suc(int n)
@@ -28,50 +28,50 @@ it via some function definition such as:
    }
 \end{lstlisting}
 
-In either mathematics or programming, this seems quite natural, and generally
-works well enough. However it can get clumsy when higher order functions
-(functions that manipulate other functions) are involved. In any case, if we
-want to treat functions on a par with other mathematical objects, the
-insistence on naming is rather inconsistent. When discussing an arithmetical
-expression built up from simpler ones, we just write the subexpressions down,
-without needing to give them names. Imagine if we always had to deal with
-arithmetic expressions in this way:
+В математике или программировании это кажется нормальным, и в общем случае, работает
+достаточно хорошо.  Однако, это может стать неудобным, когда начинают использоваться
+функции высшего порядка (функции, которые манипулируют другими функциями).  В любом
+случае, если мы хотим рассматривать функции наравне с другими математическими объектами,
+то требование именования функций будет нелогичным.  При обсуждении арифметического
+выражения, построенного из более простых выражений, мы просто записываем подвыражения не
+давая им имен.  Представим, что если бы мы всегда работали с арифметическими выражениями
+таким способом:
 
 \begin{quote}
 
-Define $x$ and $y$ by $x = 2$ and $y = 4$ respectively. Then $x x = y$.
+  Определим $x$ и $y$, так что $x = 2$ и $y = 4$. Тогда $x x = y$.
 
 \end{quote}
 
-$\lambda$- notation allows one to denote functions in much the same way as any
-other sort of mathematical object. There is a mainstream notation sometimes
-used in mathematics for this purpose, though it's normally still used as part
-of the definition of a temporary name. We can write
+$\lambda$-нотация позволяет записывать функции практически тем же способом, что и
+остальные виды математических объектов.  Существует общепринятая нотация, которая иногда
+использовалась в математике для этих целей, хотя обычно она используется как часть
+определения временного имени.  Мы можем записать
 
 $$ x \mapsto t[x] $$
 
-\noindent to denote the function mapping any argument $x$ to some arbitrary
-expression $t[x]$, which usually, but not necessarily, contains $x$ (it is
-occasionally useful to ``throw away'' an argument). However, we shall use a
-different notation developed by \citeN{church-book}:
+\noindent для обозначения функции, отображающей любой аргумент $x$ в некоторое
+произвольное выражение $t[x]$, которое обычно, но не обязательно, содержит $x$ (иногда
+полезно ``отбросить'' аргумент).  Однако, мы должны использовать другую нотацию,
+разработанную \citeN{church-book}:
 
 $$ \lamb{x} t[x]$$
 
-\noindent which should be read in the same way. For example, $\lamb{x} x$ is
-the identity function which simply returns its argument, while $\lamb{x} x^2$
-is the squaring function.
+\noindent которое должно читаться точно также, как и предыдущее выражение.  Например,
+$\lamb{x} x$ является функцией отображения (????? identity function), которая просто
+возвращает переданный аргумент, в то время как $\lamb{x} x^2$ является функцией возведения
+в квадрат.
 
-The symbol $\lambda$ is completely arbitrary, and no significance should be
-read into it. (Indeed one often sees, particularly in French texts, the
-alternative notation $[x]\; t[x]$.) Apparently it arose by a complicated
-process of evolution. Originally, the famous {\em Principia Mathematica}
-\cite{whitehead-principia} used the `hat' notation $t[\hat{x}]$ for the
-function of $x$ yielding $t[x]$. Church modified this to $\hat{x}.\;t[x]$, but
-since the typesetter could not place the hat on top of the $x$, this appeared
-as ${\tiny \wedge} x.\;t[x]$, which then mutated into $\lamb{x} t[x]$ in the
+Выбор символа $\lambda$ является произвольным, и не несет никакой смысловой нагрузки.
+(Можно часто видеть, особенно во французских текстах, альтернативную нотацию $[x]\;
+t[x]$.)  Apparently it arose by a complicated process of evolution. Originally, the famous
+{\em Principia Mathematica} \cite{whitehead-principia} used the `hat' notation
+$t[\hat{x}]$ for the function of $x$ yielding $t[x]$. Church modified this to
+$\hat{x}.\;t[x]$, but since the typesetter could not place the hat on top of the $x$, this
+appeared as ${\tiny \wedge} x.\;t[x]$, which then mutated into $\lamb{x} t[x]$ in the
 hands of another typesetter.
 
-\section{The benefits of $\lambda$- notation}
+\section{Преимущества $\lambda$-нотации}
 
 Using $\lambda$- notation we can clear up some of the confusion engendered by
 informal mathematical notation. For example, it's common to talk sloppily about
