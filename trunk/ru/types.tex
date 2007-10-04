@@ -664,21 +664,33 @@ overloading as {\em parametric} and {\em ad hoc} polymorphism respectively.}
 %supertype of $\alpha' \to \beta$? One can defend either interpretation
 %(`covariant' or `contravariant') in certain situations.}
 
-\subsection{Let polymorphism}
+\subsection{Проблемы \texttt{let}-полиморфизма}
+%\subsection{Let polymorphism}
+К сожалению, определённая выше система типов накладывает некоторые 
+нежелательные ограничения на полиморфизм. Например, следующее выражение
+абсолютно корректно:
+%Unfortunately the type system we have so far places some unpleasant
+%restrictions on polymorphism. For example, the following expression is
+%perfectly acceptable:
+%
+$$ 
+\mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
+\mbox{else}\; 0 
+$$
 
-Unfortunately the type system we have so far places some unpleasant
-restrictions on polymorphism. For example, the following expression is
-perfectly acceptable:
-
-$$ \mbox{if}\; (\lamb{x} x)\; \mbox{true then}\; (\lamb{x} x)\; 1\;
-\mbox{else}\; 0 $$
-
-Here is a proof according to the above rules. We assume that the constants can
-be typed in the empty environment, and we fold together two successive
-applications of the rule for combinations as a rule for {\tt if}, remembering
-that `$\mbox{if}\; b\; \mbox{then}\; t_1\; \mbox{else}\; t_2$' is shorthand for
-`$\mbox{COND}\; b\; t_1\; t_2$'.
-
+Докажем, что это выражение может быть типизировано согласно нашим правилам.
+Предположим, что тип констант может быть им назначен в пустом контексте,
+и что мы можем использовать двукратное применение правила типизации комбинации
+для назначения типа~{\tt if} (принимая во внимание, что выражение 
+вида~$\mbox{if}\; b\; \mbox{then}\; t_1\; \mbox{else}\; t_2$ является всего
+лишь сокращенной записью для~$\mbox{COND}\; b\; t_1\; t_2$).
+%
+%Here is a proof according to the above rules. We assume that the constants can
+%be typed in the empty environment, and we fold together two successive
+%applications of the rule for combinations as a rule for {\tt if}, remembering
+%that `$\mbox{if}\; b\; \mbox{then}\; t_1\; \mbox{else}\; t_2$' is shorthand for
+%`$\mbox{COND}\; b\; t_1\; t_2$'.
+%
 $$ \infer{\vdash \mbox{if}\; (\lamb{x} x)\;
                         \mbox{true then}\; (\lamb{x} x)\; 1\;
                         \mbox{else}\; 0 : int}
@@ -693,38 +705,69 @@ $$ \infer{\vdash \mbox{if}\; (\lamb{x} x)\;
           \infer{\vdash 0 : int}{}}
 $$
 
-The two instances of the identity function get types $bool \to bool$ and $int
-\to int$. But consider the following:
+Два экземпляра тождественной функции получают типы~$bool \to bool$ 
+и~$int \to int$ соответственно. Далее рассмотрим другое выражение:
+%
+%The two instances of the identity function get types $bool \to bool$ and $int
+%\to int$. But consider the following:
+%
+$$ 
+ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I \; 1\;
+ \mbox{else}\; 0 
+$$
+Согласно нашим определениям, это всего лишь удобный способ записи для
+%\noindent According to our definitions, this is just syntactic sugar for:
+%
+$$ 
+(\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\; 0)\;
+(\lamb{x} x) 
+$$
 
-$$ \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\; \mbox{true then}\; I \; 1\;
-\mbox{else}\; 0 $$
-
-\noindent According to our definitions, this is just syntactic sugar for:
-
-$$ (\lamb{I} \mbox{if}\; I\; \mbox{true then}\; I \; 1\; \mbox{else}\; 0)\;
-(\lamb{x} x) $$
-
-As the reader may readily confirm, this cannot be typed according to our rules.
-There is just {\em one} instance of the identity function and it must be given
-a single type. This feature is unbearable, since in practical functional
-programming we rely heavily on using {\tt let}. Unless we change the typing
-rules, many of the benefits of polymorphism are lost. Our solution is to make
-{\tt let} primitive, rather than interpret it as syntactic sugar, and add the
-new typing rule:
-
+Нетрудно убедиться, что тип этого выражения не может быть выведен в рамках 
+наших правил. Мы имеем {\em единственный} экземпляр тождественной функции,
+которому должны назначить единственный тип. Подобное ограничение на практике
+неприемлемо, поскольку функциональное программирование предполагает частое
+использование~{\tt let}. Если правила типизации не будут изменены, многие
+выгоды полиморфизма окажутся потерянными. Нашим решением будет отказ от 
+трактовки конструкции~{\tt let} как сокращенной записи в пользу реализации 
+её как примитива языка, после чего ко множеству правил типизации следует
+добавить новое правило:
+%
+%As the reader may readily confirm, this cannot be typed according to our rules.
+%There is just {\em one} instance of the identity function and it must be given
+%a single type. This feature is unbearable, since in practical functional
+%programming we rely heavily on using {\tt let}. Unless we change the typing
+%rules, many of the benefits of polymorphism are lost. Our solution is to make
+%{\tt let} primitive, rather than interpret it as syntactic sugar, and add the
+%new typing rule:
+%
 $$ \frac{\Gamma \vdash s : \sigma \;\;\; \Gamma \vdash t[s/x] : \tau}
         {\Gamma \vdash \mbox{let}\; x = s\; \mbox{in}\; t : \tau} $$
 
-This rule, which sets up {\em let polymorphism}, expresses the fact that, with
-respect to typing at least, we treat {\tt let} bindings just as if separate
-instances of the named expression were written out. The additional hypothesis
-$\Gamma \vdash s : \sigma$ merely ensures that $s$ is typable, the exact type
-being irrelevant. This is to avoid admitting as well-typed terms such as:
-
-$$ \mbox{let}\; x = \lamb{f} f\; f\; \mbox{in}\; 0 $$
-
-\noindent Now, for example, we can type the troublesome example:
-
+Это правило, которым вводится понятие {\em\texttt{let}-полиморфизма,}
+демонстрирует, что по крайней мере с точки зрения типизации, 
+{\tt let}-связанные переменные трактуются как простые подстановки 
+соответствующих выражений вместо их имён. Дополнительная 
+посылка~$\Gamma \vdash s : \sigma$ требуется исключительно для того, чтобы 
+гарантировать существование корректного типа выражения~$s$, причём точное 
+значение этого типа нас не интересует. Цель данного ограничения в том, чтобы 
+избежать ошибочных выводов о существовании корректных типов для таких термов, 
+как
+%
+%This rule, which sets up {\em let polymorphism}, expresses the fact that, with
+%respect to typing at least, we treat {\tt let} bindings just as if separate
+%instances of the named expression were written out. The additional hypothesis
+%$\Gamma \vdash s : \sigma$ merely ensures that $s$ is typable, the exact type
+%being irrelevant. This is to avoid admitting as well-typed terms such as:
+%
+$$ 
+\mbox{let}\; x = \lamb{f} f\; f\; \mbox{in}\; 0 
+$$
+Теперь мы в состоянии вывести тип нашего проблемного выражения, пользуясь 
+приведенными выше правилами:
+%
+%\noindent Now, for example, we can type the troublesome example:
+%
 $$ \infer{\vdash \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\;
                                         \mbox{true then}\; I \; 1\;
                                         \mbox{else}\; 0 : int}
@@ -734,32 +777,56 @@ $$ \infer{\vdash \mbox{let}\; I = \lamb{x} x\; \mbox{in if}\; I\;
           \infer{\vdash \mbox{if}\; (\lamb{x} x)\;
                         \mbox{true then}\; (\lamb{x} x)\; 1\;
                         \mbox{else}\; 0 : int}
-                {\mbox{\bf As given above}}} $$
+                {\mbox{\bf См. выше}}} $$
+%               {\mbox{\bf As given above}}} $$
 
-\subsection{Most general types}
+\subsection{Наиболее общий тип}
+%\subsection{Most general types}
+Как было сказано ранее, тип некоторых выражений, таких как~$\lamb{f} f\; f$
+либо~$\lamb{f} (f\; \mbox{true},f\; \mbox{1})$, вывести невозможно.
+Typable выражения обычно имеют множество типов, хотя некоторые из них,
+например, $true$~--- в точности один. Мы уже упоминали, что разновидность
+полиморфизма, доступная в языке~ML, называется {\em параметрической,} 
+т.~е.\ всевозможные типы выражения должны обладать структурным подобием.
+Более того, для каждого typeable выражения существует так называемый
+{\em наиболее общий (основной) тип,} причём все возможные типы данного
+выражения представляют собой экземпляры наиболее общего типа. Прежде, чем
+изложить этот результат формально, введём некоторые термины.
+%
+%As we have said, some expressions have no type, e.g. $\lamb{f} f\; f$ or
+%$\lamb{f} (f\; \mbox{true},f\; \mbox{1})$. Typable expressions normally have
+%many types, though some, e.g. $true$, have exactly one. We have already
+%commented that the form of polymorphism in ML is {\em parametric}, i.e. all the
+%different types an expression can have bear a structural similarity to each
+%other. In fact more is true: there exists for each typable expression a {\em
+%most general type} or {\em principal type}, and all possible types for the
+%expression are instances of this most general type. Before stating this
+%precisely we need to establish some terminology.
 
-As we have said, some expressions have no type, e.g. $\lamb{f} f\; f$ or
-$\lamb{f} (f\; \mbox{true},f\; \mbox{1})$. Typable expressions normally have
-many types, though some, e.g. $true$, have exactly one. We have already
-commented that the form of polymorphism in ML is {\em parametric}, i.e. all the
-different types an expression can have bear a structural similarity to each
-other. In fact more is true: there exists for each typable expression a {\em
-most general type} or {\em principal type}, and all possible types for the
-expression are instances of this most general type. Before stating this
-precisely we need to establish some terminology.
-
-First, we extend our notion of types with {\em type variables}. That is, types
-can be built up by applying type constructors either to type constants or
-variables. Normally we use the letters $\alpha$ and $\beta$ to represent type
-variables, and $\sigma$ and $\tau$ arbitrary types. Given this extension, we
-can define what it means to substitute one type for a type variable in another
-type. This is precisely analogous to substitution at the term level, and we
-even use the same notation. For example $(\sigma \to bool)[(\sigma \to
-\tau)/\sigma] = (\sigma \to \tau) \to bool$. The formal definition is much
-simpler than at the term level, because we do not have to worry about bindings.
-At the same time, it is convenient to extend it to multiple parallel
-substitutions:
-
+Начнём с расширения определения типа, дополнив его понятием 
+{\em переменной типа.} Это значит, что типы могут быть построены путём 
+применения конструкторов типов как к типам-константам, так и к переменным. 
+Будем использовать греческие буквы $\alpha$ и~$\beta$ для обозначения 
+переменных типа, а $\sigma$ и~$\tau$~--- произвольных типов. При помощи этой 
+расширенной нотации мы в состоянии определить понятие подстановки типа в другой 
+тип вместо переменной типа. Такая подстановка совершенно аналогична подстановке 
+термов, так что мы даже будем использовать те же самые обозначения (например,
+$(\sigma \to bool)[(\sigma \to \tau)/\sigma] = (\sigma \to \tau) \to bool$).
+Однако, формальное определение подстановки типов проще, чем для термов,
+так как не требует учета связывания переменных. Для удобства дальнейшего
+изложения расширим его на случай множественной параллельной подстановки:
+%First, we extend our notion of types with {\em type variables}. That is, types
+%can be built up by applying type constructors either to type constants or
+%variables. Normally we use the letters $\alpha$ and $\beta$ to represent type
+%variables, and $\sigma$ and $\tau$ arbitrary types. Given this extension, we
+%can define what it means to substitute one type for a type variable in another
+%type. This is precisely analogous to substitution at the term level, and we
+%even use the same notation. For example $(\sigma \to bool)[(\sigma \to
+%\tau)/\sigma] = (\sigma \to \tau) \to bool$. The formal definition is much
+%simpler than at the term level, because we do not have to worry about bindings.
+%At the same time, it is convenient to extend it to multiple parallel
+%substitutions:
+%
 \begin{eqnarray*}
 \alpha_i[\tau_1/\alpha_1,\ldots,\tau_n/\alpha_k] & = & \tau_i
         \mbox{ if $\alpha_i \not= \beta$ for $1 \leq i \leq k$}         \\
@@ -769,15 +836,27 @@ substitutions:
         (\sigma_1[\theta],\ldots,\sigma_n[\theta])con
 \end{eqnarray*}
 
-For simplicity we treat type constants as nullary constructors, e.g. consider
-$()int$ rather than $int$, but if preferred it is easy to include them as a
-special case. Given this definition of substitution, we can define the notion
-of a type $\sigma$ being {\em more general} than a type $\sigma'$, written
-$\sigma \preceq \sigma'$.\footnote{This relation is reflexive, so we should
-really say `at least as general as' rather than `more general than'.} This is
-defined to be true precisely if there is a set of substitutions $\theta$ such
-that $\sigma' = \sigma \theta$. For example we have:
-
+Чтобы не загромождать определение, мы трактуем типы-константы как нуль-арные 
+конструкторы типов, т.~е.\ считаем~$()int$ эквивалентным~$int$; 
+при желании можно легко вернуться к прежним обозначениям явным добавлением 
+соответствующих частных случаев. Опираясь на приведенное определение 
+подстановки, введём отношение <<тип~$\sigma$ является {\em более общим,} 
+чем тип~$\sigma'$>>, обозначив его через~$\sigma \preceq \sigma'$.%
+\footnote{Это отношение рефлексивно, так что формулировка <<не менее общий, 
+чем>> была бы точнее.}
+Пара типов входит в данное отношение тогда и только тогда, когда найдётся
+множество подстановок~$\theta$ такое, что~$\sigma' = \sigma \theta$. 
+Например:
+%
+%For simplicity we treat type constants as nullary constructors, e.g. consider
+%$()int$ rather than $int$, but if preferred it is easy to include them as a
+%special case. Given this definition of substitution, we can define the notion
+%of a type $\sigma$ being {\em more general} than a type $\sigma'$, written
+%$\sigma \preceq \sigma'$.\footnote{This relation is reflexive, so we should
+%really say `at least as general as' rather than `more general than'.} This is
+%defined to be true precisely if there is a set of substitutions $\theta$ such
+%that $\sigma' = \sigma \theta$. For example we have:
+%
 \begin{eqnarray*}
 \alpha          & \preceq & \sigma                      \\
 \alpha \to \alpha & \preceq & \beta \to \beta           \\
@@ -785,31 +864,55 @@ that $\sigma' = \sigma \theta$. For example we have:
 \beta \to \alpha   & \preceq & \alpha \to \beta         \\
 \alpha \to \alpha & \not\preceq & (\beta \to \beta) \to \beta
 \end{eqnarray*}
-
-\noindent Now we come to the main theorem:
+%
+С учётом изложенного выше, сформулируем основную теорему данного раздела:
+%\noindent Now we come to the main theorem:
 
 \begin{theorem}
-Every typable term has a principal type, i.e. if $t : \tau$, then there is some
-$\sigma$ such that $t : \sigma$ and for any $\sigma'$, if $t : \sigma'$ then
-$\sigma \preceq \sigma'$.
+Каждый typable терм имеет основной тип, т.~е.\ для произвольного~$t : \tau$
+найдется тип~$\sigma$ такой, что~$t : \sigma$ и для любого типа~$\sigma'$ 
+из~$t : \sigma'$ следует~$\sigma \preceq \sigma'$.
+%Every typable term has a principal type, i.e. if $t : \tau$, then there is some
+%$\sigma$ such that $t : \sigma$ and for any $\sigma'$, if $t : \sigma'$ then
+%$\sigma \preceq \sigma'$.
 \end{theorem}
 
-It is easy to see that the relation $\preceq$ is a preorder relation, i.e. is
-reflexive and transitive. The principal type is not unique, but it is unique up
-to renaming of type variables. More precisely, if $\sigma$ and $\tau$ are both
-principal types for an expression, then $\sigma \sim \tau$, meaning that
-$\sigma \preceq \tau$ and $\tau \preceq \sigma$.
+Легко убедиться, что отношение~$\preceq$ является отношением квазипорядка,
+то есть, рефлексивно и транзитивно. Основной тип не уникален, но при этом все
+его возможные формы равны с точностью до переименования входящих в них 
+переменных типа. В более точной формулировке, если~$\sigma$ и~$\tau$ являются
+одновременно основными типами выражения, то справедливо~$\sigma \sim \tau$,
+то есть~$\sigma \preceq \tau$ и~$\tau \preceq \sigma$ одновременно.
+%
+%It is easy to see that the relation $\preceq$ is a preorder relation, i.e. is
+%reflexive and transitive. The principal type is not unique, but it is unique up
+%to renaming of type variables. More precisely, if $\sigma$ and $\tau$ are both
+%principal types for an expression, then $\sigma \sim \tau$, meaning that
+%$\sigma \preceq \tau$ and $\tau \preceq \sigma$.
 
-We will not even sketch a proof of the principal type theorem; it is not
-particularly difficult, but is rather long. What is important to understand is
-that the proof gives a concrete procedure for finding a principal type. This
-procedure is known as {\em Milner's algorithm}, or often the Hindley-Milner
-algorithm.\footnote{The above principal type theorem in the form we have
-presented it is due to \citeN{milner-poly}, but the theorem and an associated
-algorithm had earlier been discovered by Hindley in a similar system of
-combinatory logic.} All implementations of ML, and several other functional
-languages, incorporate a version of this algorithm, so expressions can
-automatically be allocated a principal type, or rejected as ill-typed.
+Доказательство теоремы об основном типе не требует особых усилий, но ввиду
+большого объема в рамках данного курса не рассматривается. Следует лишь 
+запомнить его основное свойство: процедура доказательства представляет собой
+конкретный алгоритм поиска такого типа. Этот алгоритм известен как 
+{\em алгоритм Милнера,} либо, чаще, как алгоритм Хиндли-Милнера.%
+\footnote{Приведенная нами формулировка теоремы была опубликована в работе
+\citeN{milner-poly}, но как сама теорема, так и алгоритм были ранее открыты
+Хиндли в его исследованиях по комбинаторной логике.} 
+Все реализации ML и некоторых других функциональных языков включают в себя
+некоторую разновидность этого алгоритма, благодаря чему для произвольных
+выражений автоматически выводится их основной тип либо устанавливается 
+невозможность корректной типизации.
+%
+%We will not even sketch a proof of the principal type theorem; it is not
+%particularly difficult, but is rather long. What is important to understand is
+%that the proof gives a concrete procedure for finding a principal type. This
+%procedure is known as {\em Milner's algorithm}, or often the Hindley-Milner
+%algorithm.\footnote{The above principal type theorem in the form we have
+%presented it is due to \citeN{milner-poly}, but the theorem and an associated
+%algorithm had earlier been discovered by Hindley in a similar system of
+%combinatory logic.} All implementations of ML, and several other functional
+%languages, incorporate a version of this algorithm, so expressions can
+%automatically be allocated a principal type, or rejected as ill-typed.
 
 \section{Strong normalization}
 
