@@ -22,6 +22,7 @@ Please keep terms in alphabet order.
   * *extensionality* - экстенсиональность
   * *first class object* - объект высшего порядка / объект первого рода ??
   * *fixpoint | fixed point (of function)* - неподвижная точка (функции)
+  * *fixed point combinator* - комбинатор фиксированной точки (Х.-Ф., стр. 141)??
   * *floating point* - плавающая точка/запятая ??
   * *function definition* - определение функции
   * *higher order function* - функция высшего порядка
@@ -195,3 +196,11 @@ most general (principal) type - "наиболее общий (основной) 
  * http://www.haskell.ru/decls.html
 
  * http://rsdn.ru/article/haskell/haskell_part1.xml 
+
+---
+
+fixed point combinator - комбинатор фиксированной точки (Х.-Ф., стр. 141)
+
+такой перевод противоречит предложенному выше варианту
+
+fixed point (of function) - неподвижная точка (функции)
