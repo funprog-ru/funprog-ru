@@ -914,10 +914,13 @@ $(\sigma \to bool)[(\sigma \to \tau)/\sigma] = (\sigma \to \tau) \to bool$).
 %languages, incorporate a version of this algorithm, so expressions can
 %automatically be allocated a principal type, or rejected as ill-typed.
 
-\section{Strong normalization}
-
-Recall our examples of terms with no normal form, such as:
-
+\section{Строгая нормализация}
+%\section{Strong normalization}
+Обратимся вновь к нашим примерам термов, не имеющих нормальной формы, таким
+как
+%
+%Recall our examples of terms with no normal form, such as:
+%
 \begin{eqnarray*}
 & & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
 & \goesto & ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
@@ -925,101 +928,204 @@ Recall our examples of terms with no normal form, such as:
 & \goesto & (\cdots)
 \end{eqnarray*}
 
-In typed lambda calculus, this cannot happen by virtue of the following
-{\em strong normalization} theorem, whose proof is too long for us to give
-here.
+В рамках типизированного лямбда-исчисления подобная ситуация невозможна
+на основании теоремы о {\em строгой нормализации,} доказательство которой
+слишком длинно, чтобы быть здесь приведенным.
+%In typed lambda calculus, this cannot happen by virtue of the following
+%{\em strong normalization} theorem, whose proof is too long for us to give
+%here.
 
 \begin{theorem}
-Every typable term has a normal form, and every possible reduction sequence
-starting from a typable term terminates.\footnote{Weak normalization means the
-first part only, i.e. every term can be reduced to normal form, but there may
-still be reduction sequences that fail to terminate.} \end{theorem}
+Любой typable терм имеет нормальную форму, а любая возможная последовательность 
+редукций, которая начинается с typable терма, завершается.%
+\footnote{Под <<нестрогой нормализацией>> подразумевается первая часть данного
+утверждения о возможности преобразования произвольного терма в нормальную
+форму; при этом некоторые последовательности редукций могут оказаться 
+бесконечными.} 
+%
+%Every typable term has a normal form, and every possible reduction sequence
+%starting from a typable term terminates.\footnote{Weak normalization means the
+%first part only, i.e. every term can be reduced to normal form, but there may
+%still be reduction sequences that fail to terminate.} 
+\end{theorem}
 
-At first sight this looks good --- a functional program respecting our type
-discipline can be evaluated in any order, and it will always terminate in the
-unique normal form. (The uniqueness comes from the Church-Rosser theorem, which
-is still true in the typed system.) However, the ability to write
-nonterminating functions is essential to Turing completeness,\footnote{Given
-any recursive enumeration of total computable functions, we can always create
-one not in the list by diagonalization. This will be illustrated in the
-Computability Theory course.} so we are no longer able to define all computable
-functions, not even all total ones.
+На первый взгляд преимущества очевидны~--- функциональная программа, 
+удовлетворяющая нашей дисциплине типов, может вычисляться в произвольном
+порядке, при этом процесс редукции всегда конечен и приводит к единственной
+нормальной форме. (Единственность следует из теоремы Чёрча-Россера, которая
+остается справедливой и в случае типизированного лямбда-исчисления.) Однако,
+возможность реализации незавершимых функций необходима для обеспечения 
+Тьюринг-полноты,%
+\footnote{Располагая любым рекурсивным перечислением множества всюду 
+определенных вычислимых функций, мы всегда можем определить еще одну, не
+входящую в это множество, методом диагонализации. (Подробнее об этом будет
+рассказано в курсе теории алгоритмов.)} 
+в противном случае мы более не в состоянии определить произвольные вычислимые
+функции, более того --- даже не все множество всюду определенных функций.
 
-This might not matter if we could define all `practically interesting'
-functions. However this is not so; the class of functions definable as typed
-lambda terms is fairly limited. \citeN{schwichtenberg-definable} has
-proved that if Church numerals are used, then the definable functions are those
-that are polynomials or result from polynomials using definition by cases. Note
-that this is strictly intensional: if another numeral representation is used, a
-different class of functions is obtained. In any case, it is not enough for a
-general programming language.
+%At first sight this looks good --- a functional program respecting our type
+%discipline can be evaluated in any order, and it will always terminate in the
+%unique normal form. (The uniqueness comes from the Church-Rosser theorem, which
+%is still true in the typed system.) However, the ability to write
+%nonterminating functions is essential to Turing completeness,\footnote{Given
+%any recursive enumeration of total computable functions, we can always create
+%one not in the list by diagonalization. This will be illustrated in the
+%Computability Theory course.} so we are no longer able to define all computable
+%functions, not even all total ones.
 
-Since all definable functions are total, we are clearly unable to make
-arbitrary recursive definitions. Indeed, the usual fixpoint combinators must be
-untypable; $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$ clearly isn't
-well-typed because it applies $x$ to itself and $x$ is bound by a lambda. In
-order to regain Turing-completeness we simply add a way of defining arbitrary
-recursive functions that {\em is} well-typed. We introduce a polymorphic
-recursion operator with all types of the form:
+Мы бы могли пренебречь этим ограничением, если бы оно позволяло нам использовать
+все функции, представляющие практический интерес. Однако, это не так~--- класс
+всевозможных функций, представимых в рамках типизированного лямбда-исчисления,
+оказывается весьма узким. В работе~\citeN{schwichtenberg-definable} показано,
+что класс представимых функций на основе нумералов Чёрча ограничен всевозможными
+полиномами либо result from polynomials using definition by cases.
+Отметим, что это strictly intensional: рассмотрев другое представление чисел,
+получим другой класс функций. В любом случае, для универсального языка 
+программирования этого недостаточно.
 
-$$ Rec : ((\sigma \to \tau) \to (\sigma \to \tau)) \to \sigma \to \tau $$
+%This might not matter if we could define all `practically interesting'
+%functions. However this is not so; the class of functions definable as typed
+%lambda terms is fairly limited. \citeN{schwichtenberg-definable} has
+%proved that if Church numerals are used, then the definable functions are those
+%that are polynomials or result from polynomials using definition by cases. Note
+%that this is strictly intensional: if another numeral representation is used, a
+%different class of functions is obtained. In any case, it is not enough for a
+%general programming language.
 
-\noindent and the extra reduction rule that for any $F:(\sigma \to \tau) \to
-(\sigma \to \tau)$ we have:
+Поскольку все определимые функции являются всюду определенными, мы, очевидно,
+не в состоянии давать произвольные рекурсивные определения. (???)
+В самом деле, оказывается, что обыкновенные комбинаторы фиксированной точки
+не поддаются типизации; очевидно, что 
+тип~$Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$ не существует,
+поскольку $x$~применяется к самому себе, будучи связанным лямбда-абстракцией. 
+Для восстановления Тьюринг-полноты введём альтернативный способ задания
+произвольных рекурсивных функций, не принося в жертву типизацию. Определим
+полиморфный оператор рекурсии, всевозможные типы которого имеют вид
+%
+%Since all definable functions are total, we are clearly unable to make
+%arbitrary recursive definitions. Indeed, the usual fixpoint combinators must be
+%untypable; $Y = \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$ clearly isn't
+%well-typed because it applies $x$ to itself and $x$ is bound by a lambda. In
+%order to regain Turing-completeness we simply add a way of defining arbitrary
+%recursive functions that {\em is} well-typed. We introduce a polymorphic
+%recursion operator with all types of the form:
+%
+$$ 
+ Rec : ((\sigma \to \tau) \to (\sigma \to \tau)) \to \sigma \to \tau 
+$$
+и дополнительное правило редукции, согласно которому для произвольной
+функции~$F:(\sigma \to \tau) \to (\sigma \to \tau)$ мы имеем
+%\noindent and the extra reduction rule that for any $F:(\sigma \to \tau) \to
+%(\sigma \to \tau)$ we have:
+%
+$$ 
+ Rec\; F \goesto F\; (Rec\;  F) 
+$$
 
-$$ Rec\; F \goesto F\; (Rec\;  F) $$
+Начиная с этого момента будем полагать, что рекурсивные определения 
+вида \texttt{let rec} отображаются на эти операторы рекурсии.
+%
+%From now on, we will suppose that recursive definitions, signalled by `let
+%rec', map down to the use of these recursion operators.
 
-From now on, we will suppose that recursive definitions, signalled by `let
-rec', map down to the use of these recursion operators.
-
-\section*{Further reading}
-
-\citeN{barendregt} and \citeN{hindley-seldin} also consider typed lambda
-calculus. The original paper by \citeN{milner-poly} is still a good source of
-information about polymorphic typing and the algorithm for finding principal
-types. A nice elementary treatment of typed lambda calculus, which gives a
-proof of Strong Normalization and discusses some interesting connections with
-logic, is \citeN{girard-prat}. This also discusses a more advanced version of
-typed lambda calculus called `System F' where even though strong normalization
-holds, the majority of `interesting' functions are definable.
+\section*{Дополнительная литература}
+%\section*{Further reading}
+Типизированное лямбда-исчисление рассматривается, в числе прочего, в 
+работах~\citeN{barendregt} и~\citeN{hindley-seldin}. Основополагающая
+работа~\citeN{milner-poly} продолжает оставаться хорошим источником
+информации о полиморфной типизации, включая алгоритм поиска основного типа.
+Хорошее элементарное введение в типизированное лямбда-исчисление, включающее
+доказательство теоремы о строгой нормализации, а также обсуждение некоторых
+интересных взаимосвязей с логикой, даётся в~\citeN{girard-prat}. 
+В данной работе также обсуждается более развитая версия типизированного 
+лямбда-исчисления под названием System~F, в рамках которой возможно определение 
+большинства требуемых на практике функций даже при сохранении свойства строгой 
+нормализации.
+%
+%\citeN{barendregt} and \citeN{hindley-seldin} also consider typed lambda
+%calculus. The original paper by \citeN{milner-poly} is still a good source of
+%information about polymorphic typing and the algorithm for finding principal
+%types. A nice elementary treatment of typed lambda calculus, which gives a
+%proof of Strong Normalization and discusses some interesting connections with
+%logic, is \citeN{girard-prat}. This also discusses a more advanced version of
+%typed lambda calculus called `System F' where even though strong normalization
+%holds, the majority of `interesting' functions are definable.
 
 %\section{Connections with logic}
 %
 %Here goes the CH isomorphism, and a discussion of what types can be produced
 % This is interesting in that successive bits of ML modify the answer!
 
-\section*{Exercises}
+\section*{Упражнения}
+%\section*{Exercises}
 
 \begin{enumerate}
 
-\item Is it true that if $\Gamma \vdash t:\sigma$ then for any substitution
-$\theta$ we have $\Gamma \vdash t:(\sigma \theta)$?
+\item 
+Справедливо ли, что из~$\Gamma \vdash t:\sigma$ для произвольной 
+подстановки~$\theta$ следует~$\Gamma \vdash t:(\sigma \theta)$?
+%\item Is it true that if $\Gamma \vdash t:\sigma$ then for any substitution
+%$\theta$ we have $\Gamma \vdash t:(\sigma \theta)$?
 
-\item Prove formally the type preservation theorems for $\alpha$ and $\beta$
-conversion.
+\item 
+Докажите формально теорему о type preservation для $\alpha$ 
+и~$\beta$-преобразования.
+%\item Prove formally the type preservation theorems for $\alpha$ and $\beta$
+%conversion.
 
-\item Show that the converse to type preservation does not hold, i.e. it is
-possible that $t \goesto t'$ and $\Gamma \vdash t':\sigma$ but not $\Gamma
-\vdash t:\sigma$.
+\item 
+Покажите, что свойство type preservation необратимо, т.~е.\ что возможна
+ситуация, когда из справедливости~$t \goesto t'$ и~$\Gamma \vdash t':\sigma$
+не следует, что~$\Gamma \vdash t:\sigma$.
+%\item Show that the converse to type preservation does not hold, i.e. it is
+%possible that $t \goesto t'$ and $\Gamma \vdash t':\sigma$ but not $\Gamma
+%\vdash t:\sigma$.
 
-\item (*) Prove that every term of typed lambda calculus with {\em principal}
-type $(\alpha \to \alpha) \to (\alpha \to \alpha)$ reduces to a Church numeral.
+\item (*) 
+Докажите, что каждый терм типизированного лямбда-исчисления, чей {\em основной} 
+тип равен~$(\alpha \to \alpha) \to (\alpha \to \alpha)$, редуцируется до
+нумерала Чёрча.
+%
+%\item (*) Prove that every term of typed lambda calculus with {\em principal}
+%type $(\alpha \to \alpha) \to (\alpha \to \alpha)$ reduces to a Church numeral.
 
-\item (*) To what extent can the typechecking process be reversed, i.e. the
-term inferred from the type? For instance, is it true that in pure typed lambda
-calculus with type variables but no constants and no recursion operator, that
-any $t:\alpha \to \beta \to \alpha$ is in fact equal to $K = \lamb{x\; y} x$ in
-the usual sense of lambda equality? If so, how far can this be
-generalized?\footnote{See \citeN{mairson-param} for more on this question.}
+\item (*)
+В какой мере процесс проверки типов является обратимым, т.~е.\ допускает вывод
+терма по его типу? Например, справедливо ли, что в чистом типизированном
+лямбда-исчислении с переменными типа, но без констант и оператора рекурсии,
+любое~$t:\alpha \to \beta \to \alpha$ на самом деле 
+эквивалентно~$K = \lamb{x\; y} x$ в традиционной трактовке 
+лямбда-эквивалентности. Если это так, то каковы дальнейшие возможности 
+обобщения результата?%
+\footnote{Подробнее по данному вопросу см.~\citeN{mairson-param}.}
+% 
+%\item (*) To what extent can the typechecking process be reversed, i.e. the
+%term inferred from the type? For instance, is it true that in pure typed lambda
+%calculus with type variables but no constants and no recursion operator, that
+%any $t:\alpha \to \beta \to \alpha$ is in fact equal to $K = \lamb{x\; y} x$ in
+%the usual sense of lambda equality? If so, how far can this be
+%generalized?\footnote{See \citeN{mairson-param} for more on this question.}
 
-\item (*) We will say that an arbitrary reduction relation $\goesto$ is {\em
-weakly Church-Rosser} if whenever $t \goesto t_1$ and $t \goesto t_2$, then
-there is a $u$ with $t_1 \goesto^* u$ and $t_2 \goesto^* u$, where $\goesto^*$
-is the reflexive transitive closure of $\goesto$. Prove {\em Newman's Lemma},
-which states that if a relation is weakly Church-Rosser and obeys strong
-normalization, then $\goesto^*$ is Church-Rosser. (Hint: use a form of
-wellfounded induction.)\footnote{If you get stuck, there is a nice proof in
-\citeN{huet-reduct}.}
+\item (*) 
+Будем говорить, что некоторое reduction relation $\goesto$  
+{\em weakly Church-Rosser}, если всякий раз, когда~$t \goesto t_1$ 
+и~$t \goesto t_2$, найдется~$u$ такое, что~$t_1 \goesto^* u$ 
+и~$t_2 \goesto^* u$, где~$\goesto^*$ представляет собой рефлексивное 
+транзитивное замыкание~$\goesto$. Докажите {\em лемму Ньюмена}, в которой 
+утверждается, что если отношение is weakly Church-Rosser и удовлетворяет 
+принципам строгой нормализации, то~$\goesto^*$ is Church-Rosser. 
+(Указание: воспользуйтесь трансфинитной индукцией.)%
+\footnote{Если в ходе доказательства возникнут затруднения, 
+см. работу~\citeN{huet-reduct}.}
+%
+%\item (*) We will say that an arbitrary reduction relation $\goesto$ is {\em
+%weakly Church-Rosser} if whenever $t \goesto t_1$ and $t \goesto t_2$, then
+%there is a $u$ with $t_1 \goesto^* u$ and $t_2 \goesto^* u$, where $\goesto^*$
+%is the reflexive transitive closure of $\goesto$. Prove {\em Newman's Lemma},
+%which states that if a relation is weakly Church-Rosser and obeys strong
+%normalization, then $\goesto^*$ is Church-Rosser. (Hint: use a form of
+%wellfounded induction.)\footnote{If you get stuck, there is a nice proof in
+%\citeN{huet-reduct}.}
 
 \end{enumerate}
 
