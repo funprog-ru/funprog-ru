@@ -1,302 +1,22 @@
-\documentclass[portrait,%
-              fancybox,%
-              notes,%
-              epsfig,%
-              alltt,%
-              semcolor,
-              alltt]{seminar}
+\documentclass{fp-slides}
 
-\usepackage[koi8-r]{inputenc}
-\usepackage[russian]{babel}
+\begin{document}
 
-\input amssym.def
-\input amssym
-
-\newcommand{\nat}{\mbox{$\protect\Bbb N$}}
-\newcommand{\num}{\mbox{$\protect\Bbb Z$}}
-\newcommand{\rat}{\mbox{$\protect\Bbb Q$}}
-\newcommand{\real}{\mbox{$\protect\Bbb R$}}
-\newcommand{\complex}{\mbox{$\protect\Bbb C$}}
-\newcommand{\xxx}{\mbox{$\protect\Bbb X$}}
-
-\newcommand{\lamb}[1]{\lambda #1.\:}
-\newcommand{\eps}[1]{\varepsilon #1.\:}
-\newcommand{\all}[1]{\forall #1.\:}
-\newcommand{\ex}[1]{\exists #1.\:}
-\newcommand{\exu}[1]{\exists! #1.\:}
-
-\newcommand{\True}{\top}
-\newcommand{\False}{\bot}
-\newcommand{\Not}{\neg}
-\newcommand{\And}{\wedge}
-\newcommand{\Or}{\vee}
-\newcommand{\Imp}{\Rightarrow}
-\newcommand{\Iff}{\Leftrightarrow}
-
-\newcommand{\entails}{\vdash}
-\newcommand{\proves}{\vdash}
-
-\newcommand{\Ands}{\bigwedge}
-\newcommand{\Ors}{\bigvee}
-
-\newcommand{\BQ}{\mbox{$\ulcorner$}}
-\newcommand{\BEQ}{\mbox{\raise4pt\hbox{$\ulcorner$}}}
-\newcommand{\EQ}{\mbox{$\urcorner$}}
-\newcommand{\EEQ}{\mbox{\raise4pt\hbox{$\urcorner$}}}
-
-\newcommand{\QUOTE}[1]{\mbox{$\BQ #1 \EQ$}}
-\let\psubset=\subset                    % Pure TeX: thanks to MAJ %
-\let\subset=\subseteq
-
-\newcommand{\powerset}{\wp}             % This is pretty dire...  %
-
-\newcommand{\Union}{\cup}
-\newcommand{\Inter}{\cap}
-\newcommand{\Unions}{\bigcup}
-\newcommand{\Inters}{\bigcap}
-
-\newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
-
-\newcommand{\Rule}{\infer}
-
-\newcommand{\restrict}{\upharpoonright} % This is lousy and must be fixed! %
-
-\newcommand{\bigsqcap}{\mbox{\Large{$\sqcap$}}}
-
-\newcommand\leb{\lbrack\!\lbrack}
-\newcommand\reb{\rbrack\!\rbrack}
-\newcommand{\sem}[1]{\leb #1 \reb}
-
-\newcommand{\BA}{\begin{array}[t]{l}}
-\newcommand{\EA}{\end{array}}
-\newcommand{\sqle}{\sqsubseteq}
-\newcommand{\sqlt}{\sqsubset}
-
-\newcommand{\too}{\twoheadrightarrow}
-
-\newcommand{\Los}{{\L}o{\'s}}
-
-% These are from Mike's notes
-
-\def\alphas{\mathrel{\mathop{\longrightarrow}\limits_{\alpha}}}
-\def\betas{\mathrel{\mathop{\longrightarrow}\limits_{\beta}}}
-\def\etas{\mathrel{\mathop{\longrightarrow}\limits_{\eta}}}
-
-\def\goesto{\longrightarrow}
-
-\newcommand{\defeq}{\stackrel{\bigtriangleup}{=}}
-
-% Sizes
-
-\newenvironment{rslide}
-{\begin{slide*}[240mm,165mm] }
-{\end{slide*}}
-
-\renewcommand{\slidetopmargin}{0.8in}
-\renewcommand{\slidebottommargin}{0.8in}
-
-% Various combinations of one colour on another
-
-\newcommand{\greenonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\green #1}}
-
-\newcommand{\whiteonred}[1]%
-{\psset{fillcolor=red}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\yellowonmagenta}[1]%
-{\psset{fillcolor=magenta}\psframebox*[framearc=.3]{\yellow #1}}
-
-\newcommand{\whiteonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\white #1}}
-
-\newcommand{\blackonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\black #1}}
-
-\newcommand{\blueonlightgray}[1]%
-{\psset{fillcolor=lightgray}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\cyanonblack}[1]%
-{\psset{fillcolor=black}\psframebox*[framearc=.3]{\cyan #1}}
-
-\newcommand{\blueonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\blue #1}}
-
-\newcommand{\redonyellow}[1]%
-{\psset{fillcolor=yellow}\psframebox*[framearc=.3]{\red #1}}
-
-\newcommand{\heading}[1]%
-{\begin{center}\whiteonblack{\large\bf\blueonlightgray{#1}}\end{center}}
-
-\newcommand{\emphatic}[1]{\blueonyellow{#1}}
-
-\newcommand{\veryemphatic}[1]%
-{\begin{center}{\emphatic{#1}}\end{center}}
-
-% Head and foot of slides
-
-\newpagestyle{ColourDemo}%
-  {\cyanonblack{Введение в Функциональное Программирование:
-                Лекция 12}\hfil\cyanonblack{\thepage}}
-  {\cyanonblack{Джон Харрисон}\hfil
-   \cyanonblack{Университет Кембриджа, 11 февраля 1997}}
-%\newpagestyle{ColourDemo}%
-%  {\cyanonblack{Introduction to Functional Programming:
-%                Lecture 12}\hfil\cyanonblack{\thepage}}
-%  {\cyanonblack{John Harrison}\hfil
-%   \cyanonblack{University of Cambridge, 11 February 1997}}
-
-\pagestyle{ColourDemo}
-
-\centerslidesfalse
-
-% Colour bullets
-
-\def\labelitemi{{\black$\bullet$}}
-\def\labelitemii{{\black--}}
-\def\labelitemiii{{\black$\ast$}}
-\def\labelitemiv{{\black$\cdot$}}
-
-% Start of document (default text colour is blue)
-
-\begin{document}\blue
-
-
-\begin{rslide}
-
-\heading{%
-\begin{tabular}{c}
-{\Large\red Введение в}\\
-{\Large\red Функциональное}\\
-{\Large\red Программирование}\\
-{\cyan Джон Харрисон}\\
-{\cyan Университет Кембриджа}\\
-{\green Лекция 12}\\
-{\green Примеры на ML IV:}\\
-{\green Prolog и Доказательство Теорем}
-%{\LARGE\red Introduction to}\\
-%{\LARGE\red Functional Programming}\\
-%{\cyan John Harrison}\\
-%{\cyan University of Cambridge}\\
-%{\green Lecture 12}\\
-%{\green ML examples IV:}\\
-%{\green Prolog and Theorem Proving}
-\end{tabular}}
-
-\vspace*{0.5cm}
-
-Topics covered:
-
-\begin{itemize}
-
-\item Prolog terms: parsing and printing
-
-\item Unification and Prolog backtracking
-
-\item Prolog examples
-
-\item A simple theorem prover
-
-\item Theorem proving examples
-
-\end{itemize}
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Overview}
-
-\vspace*{0.5cm}
-
-Prolog is another `declarative' language, popular in Artificial Intelligence
-research.
-
-You will learn more about it in the lecture course `Prolog for Artificial
-Intelligence'.
-
-It is a logic programming language, and is said to be `relational' rather than
-functional.
-
-Its standard search strategy, backward chaining with unification and
-backtracking, is useful for a wide range of applications including databases,
-expert systems and theorem provers.
-
-We will show how to implement a cut-down Prolog interpreter in ML.
-
-We will then use the same tools and techniques to build a simple theorem
-prover.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Prolog terms}
-
-\vspace*{0.5cm}
-
-Prolog code and data is represented using a uniform system of first order
-terms.
-
-We will represent this using a recursive type similar to the one used for
-mathematical expressions.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\PrologTerm{
+  \begin{lstlisting}[frame=single]
   type term = Var of string
             | Fn of string * (term list);;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-Note that we treat constants as nullary functions, i.e. functions that take an
-empty list of arguments.
-
-Where we would formerly have used {\black \verb+Const s+}, we will now use
-{\black \verb+Fn(s,[])+}.
-
-Note that we will treat functions of different arities (different numbers of
-arguments) as distinct, even if they have the same name.
-
-\end{rslide}
-
-
-\begin{rslide}
-
-\heading{Lexical analysis (1)}
-
-\vspace*{0.5cm}
-
-In Prolog, identifiers that begin with an {\em upper case} letter or an
-underscore are treated as variables, while other alphanumeric identifiers,
-along with numerals, are treated as constants.
-
-For example {\black \verb+X+} and {\black \verb+Answer+} are variables while
-{\black \verb+x+} and {\black \verb+john+} are constants.
-
-We will lump all symbolic identifiers together as constants too, but we will
-distinguish the punctuation symbols: left and right brackets, commas and
-semicolons.
-
-Non-punctuation symbols are collected together into the longest strings
-possible, so symbolic identifiers need not consist only of one character.
-
-\begin{black}\begin{verbatim}
+\defverbatim[colored]\Token{
+  \begin{lstlisting}[frame=single]
   type token = Variable of string
              | Constant of string
              | Punctuation of string;;
-\end{verbatim}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Lexical analysis (2)}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\Lex{
+  \begin{lstlisting}[frame=single]
 let lex =
   let several p = many (some p) in
   let collect(h,t) = h^(itlist (prefix ^) t "") in
@@ -320,107 +40,10 @@ let lex =
   let tokens = (several space ++ many token) >> snd in
   let alltokens = (tokens ++ finished) >> fst in
   fst o alltokens o explode;;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Parsing and printing}
-
-\vspace*{0.5cm}
-
-The printer is exactly the same as before.
-
-The parser is almost the same as before; again we allow some operators like
-addition to be written infix. We also allow a special syntax for lists.
-
-We regard {\black\tt [x1,x2,\ldots,xn]} as shorthand for
-
-{\black\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
-
-where {\black \tt cons} is the function corresponding to a list constructor,
-just like {\black \tt ::} in ML. The printer writes it as an infix dot.
-Also, {\black\verb+[H|T]+} is allowed instead of {\black\verb+cons(H,T)+}.
-
-A Prolog {\em rule} is of one of these forms:
-\begin{black}
-\begin{eqnarray*}
-term\mbox{.}    & &                                             \\
-term            & \mbox{ :- } & term,\ldots,term\mbox{.}
-\end{eqnarray*}
-\end{black}
-\noindent We have a parser for these, returning a {\black \verb+term * term
-list+}.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Unification}
-
-\vspace*{0.5cm}
-
-Prolog uses a set of rules to solve a current {\em goal} by trying to match one
-of the rules against the goal.
-
-A rule consisting of a single term can solve a goal immediately.
-
-In the case of a rule {\red $term \mbox{ :- } term_1,\ldots,term_n\mbox{.}$},
-if the goal matches {\red $term$}, then Prolog needs to solve each {\red
-$term_i$} as a subgoal in order to finish the original goal.
-
-However, goals and rules do not have to be exactly the same. Instead, Prolog
-assigns variables in both to make them match up. This process is called {\em
-unification}.
-
-This means that we can end up proving a special case of the original goal, e.g.
-{\red $P(f(X))$} instead of {\red $P(Y)$}.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Unification: examples and algorithm}
-
-\vspace*{0.5cm}
-
-To unify {\red $f(g(X),Y)$} and {\red $f(g(a),X)$} we need to set {\red $X =
-a$} and {\red $Y = a$}. Then both terms are {\red $f(g(a),a)$}.
-
-To unify {\red $f(a,X,Y)$} and {\red $f(X,a,Z)$} we need to set {\red $X = a$}
-and {\red $Y = Z$}, and then both terms are {\red $f(a,a,Z)$}.
-
-It is impossible to unify {\red $f(X)$} and {\red $X$}.
-
-There is a systematic procedure for finding a {\em most general} unifier.
-
-Roughly, one descends the two terms recursively in parallel, and on finding a
-variable on either side, assigns it to whatever the term on the other side is.
-
-One needs to check that the variable hasn't already been assigned to something
-else, and that it doesn't occur in the term being assigned to it (as in the
-last example above).
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Unification: code}
-
-We have a set of existing instantiations, and we look each variable up
-to see if it is already assigned before proceeding.
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\Unify{
+  \begin{lstlisting}[frame=single]
 let rec unify tm1 tm2 insts =
   match tm1 with
     Var(x) ->
@@ -439,19 +62,10 @@ let rec unify tm1 tm2 insts =
           if f1 = f2
           then itlist2 unify args1 args2 insts
           else raise (error "functions do not match");;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-We use the existing instantiations as an accumulator.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Augmenting instantiations}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\OccursIn{
+  \begin{lstlisting}[frame=single]
 let rec occurs_in x =
   fun (Var y) -> x = y
     | (Fn(_,args)) -> exists (occurs_in x) args;;
@@ -477,22 +91,10 @@ let augment (v,t) insts =
   | _ -> if occurs_in v t'
          then raise (error "Occurs check")
          else raw_augment (v,t') insts;;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Backtracking}
-
-Prolog proceeds by depth-first search, but it may backtrack: even if a rule
-unifies successfully, if all the remaining goals cannot be solved under the
-resulting instantiations, then another initial rule is tried. Thus we consider
-the whole list of goals rather than one at a time:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\BackTracking{
+  \begin{lstlisting}[frame=single]
 let rec first f =
   fun [] -> raise (error "No rules applicable")
     | (h::t) -> try f h with error _ -> first f t;;
@@ -509,31 +111,19 @@ let rec expand n rules insts goals =
     let goals' = (map (subst local) asms) @
                  (tl goals) in
     expand (n + 1) rules global goals') rules;;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Other details}
-
-\vspace*{0.5cm}
-
-Note that we produce fresh variables for the rules each time:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\OdO{
+  \begin{lstlisting}[frame=single]
 let rec rename s =
   fun (Var v) -> Var("~"^v^s)
     | (Fn(f,args)) -> Fn(f,map (rename s) args);;
 let rename_rule s (conc,asms) =
   (rename s conc,map (rename s) asms);;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-Finally, we package everything up:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\OdOO{
+  \begin{lstlisting}[frame=single]
 type outcome = No | Yes of (string * term) list;;
 
 let prolog rules goal =
@@ -541,23 +131,10 @@ let prolog rules goal =
       Yes(filter (fun (v,_) -> occurs_in v goal)
                  insts)
   with error _ -> No;;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-This says either that the goal cannot be solved, or that it can be solved with
-the given instantiations. Note that we only return one answer in this case, but
-this is easy to fix.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Prolog examples (1)}
-
-\vspace*{0.1cm}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\PrologExamplesO{
+  \begin{lstlisting}[frame=single]
 #let rules = parse_rules
   "male(albert).
    male(edward).
@@ -582,19 +159,10 @@ rules : (term * term list) list =
 - : outcome = Yes ["X", `edward`]
 #prolog rules (parse_term "sister_of(X,Y)");;
 - : outcome = Yes ["Y", `edward`; "X", `alice`]
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Prolog examples (2)}
-
-\vspace*{0.5cm}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\PrologExamplesOO{
+  \begin{lstlisting}[frame=single]
 #let r = parse_rules
   "append([],L,L).
    append([H|T],L,[H|A]) :- append(T,L,A).";;
@@ -609,89 +177,15 @@ r : (term * term list) list =
 - : outcome = No
 #prolog r (parse_term "append([1,2],X,Y)");;
 - : outcome = Yes ["Y", `1 . (2 . X)`]
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-Prolog is less `directional' than ML. However it has its limitations, e.g.
-the following will loop indefinitely:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\PrologExamplesOOO{
+  \begin{lstlisting}[frame=single]
 #prolog r (parse_term "append(X,[3,4],X)");;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Prolog-style theorem proving}
-
-\vspace*{0.5cm}
-
-With a few minor changes, Prolog-style search can be used for general theorem
-proving. Examples of such provers include PTTP (Stickel, 1988) and \mbox{{\sf
-lean}$T^{\!\!\textstyle A}\!\!P$} (Beckert and Possega 1994).
-
-Unification is an efficient method for deciding how to specialize universally
-quantified variables (Prawitz, Robinson 1960).
-
-For example, given the facts that {\red $\all{X} p(X) \Imp q(X)$} and {\red
-$p(f(a))$}, we can unify the two expressions involving {\red $p$} and thus
-discover that we need to set {\red $X$} to {\red $f(a)$}. By contrast, the very
-earliest theorem provers tried all possible terms!
-
-Usually, depth-first search would go into an infinite loop, so we need to
-modify the Prolog strategy slightly. We will use {\em depth first iterative
-deepening}.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Manipulating formulas}
-
-\vspace*{0.5cm}
-
-We will simply use our terms to denote formulas, introducing new constants for
-the logical operators. Many of these are written infix.
-
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-Operator   & Meaning               \\
-\hline
-{\black {\verb+~+}(p)}  & not {\black p} \\
-{\black p {\verb+&+} q}  & {\black p} and {\black q} \\
-{\black p {\verb+|+} q}  & {\black p} or {\black q} \\
-{\black p {\verb+-->+} q}  & {\black p} implies {\black q} \\
-{\black p {\verb+<->+} q}  & {\black p} if and only if {\black q} \\
-{\black forall(X,p)}        & for all {\black X}, {\black p}             \\
-{\black exists(X,p)}        & there exists an {\black X} such that {\black p}\\
-\hline
-\end{tabular}
-\end{center}
-
-An alternative would be to introduce a separate type of formulas, but this
-would require separate parsing and printing support. We will avoid this, for
-the sake of simplicity.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Preprocessing formulas}
-
-\vspace*{0.5cm}
-
-It's convenient if the main part of the prover need not cope with implications
-and `if and only if's. Therefore we first define a function that eliminates
-these in favour of the other connectives.
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\ProcForm{
+  \begin{lstlisting}[frame=single]
 let rec proc tm =
   match tm with
     Fn("~",[t]) -> Fn("~",[proc t])
@@ -705,25 +199,10 @@ let rec proc tm =
   | Fn("forall",[x; t]) -> Fn("forall",[x; proc t])
   | Fn("exists",[x; t]) -> Fn("exists",[x; proc t])
   | t -> t;;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-The next step is to push the negations down the formula, putting it into
-so-called `negation normal form' (NNF).
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{NNF code}
-
-\vspace*{0.5cm}
-
-We define two mutually recursive functions that create NNF for a formula, and
-its negation.
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\NnfCode{
+  \begin{lstlisting}[frame=single]
 let rec nnf_p tm =
   match tm with
     Fn("~",[t]) -> nnf_n t
@@ -741,77 +220,10 @@ and nnf_n tm =
   | Fn("forall",[x; t]) -> Fn("exists",[x; nnf_n t])
   | Fn("exists",[x; t]) -> Fn("forall",[x; nnf_n t])
   | t -> Fn("~",[t]);;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-We will convert the negation of the input formula into negation normal form,
-and the main prover will then try to derive a contradiction from it.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{The main prover}
-
-\vspace*{0.5cm}
-
-At each stage, the prover has a current formula, a list of formulas yet to be
-considered, and a list of literals. It is trying to reach a contradiction.
-
-If the current formula is {\black p {\verb+&+} q}, then consider {\black p} and
-{\black q} separately, i.e. make {\black p} the current formula and add {\black
-q} to the formulas to be considered.
-
-If the current formula is {\black p {\verb+|+} q}, then try to get a
-contradiction from {\black p} and then from {\black q}.
-
-If the current formula is {\black forall(X,p)}, invent a new variable to
-replace {\black X}: the right value can be discovered later by unification.
-
-If the current formula is {\black exists(X,p)}, invent a new constant to
-replace {\black X}.
-
-Otherwise, the formula must be a literal, so try to unify it with a
-contradictory literal.
-
-If this fails, add it to the list of literals, and proceed with the next
-formula.
-
-\end{rslide}
-
-
-
-\begin{rslide}
-
-\heading{Continuations}
-
-\vspace*{0.5cm}
-
-We desire a similar backtracking strategy to Prolog: only if the current
-instantiations allow all remaining goals to be solved do we accept it.
-
-We could use lists again, but instead we use {\em continuations}. A
-continuation is a function that is passed to another function and can be called
-from within it to `perform the rest of the computation'.
-
-In our case, it takes a list of instantiations and tries to solve the remaining
-goals under these instantiations.
-
-Thus, rather than explicitly trying to solve all remaining goals, we simply try
-calling the continuation.
-
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Prover code}
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\Prover{
+  \begin{lstlisting}[frame=single]
 let rec prove fm unexp pl nl n cont i =
   if n < 0 then raise (error "No proof") else
   match fm with
@@ -837,20 +249,10 @@ let rec prove fm unexp pl nl n cont i =
                               cont i') nl
          with error _ -> prove (hd unexp) (tl unexp)
                                (t::pl) nl n cont i);;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Prover examples (1)}
-
-We set up the final prover as follows:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\ProverExampleO{
+  \begin{lstlisting}[frame=single]
 let prover =
   let rec prove_iter n t =
     try let insts = prove t [] [] [] n I [] in
@@ -859,12 +261,10 @@ let prover =
         n,globinsts
     with error _ -> prove_iter (n + 1) t in
   fun t -> prove_iter 0 (nnf_n(proc(parse_term t)));;
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-It tries to find the proof with the fewest universal instantiations.
-It returns the number required and any toplevel instantiations.
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\ProverExampleOO{
+  \begin{lstlisting}[frame=single]
 #let P1 = prover "p --> q <-> ~(q) --> ~(p)";;
 P1 : int * (string * term) list = 0, []
 #let P13 = prover "p | q & r <-> (p | q) & (p | r)";;
@@ -876,20 +276,10 @@ P18 : int * (string * term) list = 2, []
 #let P19 = prover "exists(X,forall(Y,forall(Z,
                 (p(Y)-->q(Z))-->p(X)-->q(X))))";;
 P19 : int * (string * term) list = 6, []
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-\end{rslide}
-
-
-
-
-\begin{rslide}
-
-\heading{Prover examples (2)}
-
-A bigger example is the following:
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\ProverExampleOOO{
+  \begin{lstlisting}[frame=single]
 #let P55 = prover
   "lives(agatha) & lives(butler) & lives(charles) &
    (killed(agatha,agatha) | killed(butler,agatha) |
@@ -906,25 +296,453 @@ A bigger example is the following:
              | ~(hates(X,charles))))
    --> killed(agatha,agatha)";;
 P55 : int * (string * term) list = 6, []
-\end{verbatim}\end{footnotesize}\end{black}
+\end{lstlisting}}
 
-In fact, the prover can work out `whodunit':
-
-\begin{black}\begin{footnotesize}\begin{verbatim}
+\defverbatim[colored]\ProverExampleOOOO{
+  \begin{lstlisting}[frame=single]
 #let P55' = prover
   "......
    --> killed(X,agatha)";;
 P55' : int * (string * term) list = 6, ["X", `agatha`]
-\end{verbatim}\end{footnotesize}\end{black}
-
-\end{rslide}
+\end{lstlisting}}
 
 
+\section*{Лекция 12. Примеры на ML IV: Prolog и Доказательство Теорем}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+   \item Выражения Prolog: разбор и печать
+%  \item Prolog terms: parsing and printing
+    \maybepause
+
+  \item Унификация и поиск с возвратом в Prolog
+%  \item Unification and Prolog backtracking
+    \maybepause
+
+  \item Примеры на Prolog
+%  \item Prolog examples
+    \maybepause
+
+   \item Простое средство доказательства теорем
+%  \item A simple theorem prover
+    \maybepause
+
+  \item Примеры доказательства теорем
+%  \item Theorem proving examples
+
+  \end{itemize}
+}
 
 
+
+\frame{
+  \frametitle{Обзор}
+%  \frametitle{Overview}
+
+  Prolog это <<декларативный>> язык программирования хорошо известный
+  в исследованиях Искусственного Интеллекта.
+%  Prolog is another <<declarative>> language, popular in Artificial Intelligence
+%  research.
+
+%  You will learn more about it in the lecture course <<Prolog for Artificial
+%  Intelligence>>.
+
+  │Э│т│о логический │я│з│ы│к программирования, │и говорится, что он
+  <<реляционный>>, а не функциональный.
+%  It is a logic programming language, and is said to be <<relational>> rather than
+%  functional.
+
+  │Е│г│о │с│т│р│а│т│е│г│и│я │п│о│и│с│к│а, обратный (логический) вывод │с унификацией │и
+  поиском с возвратом, являются полезными │д│л│я │ш│и│р│о│к│о│г│о круга
+  │п│р│и│л│о│ж│е│н│и│й, таких как: │б│а│з│ы │д│а│н│н│ы│х, экспертные системы │и средства
+  доказательства │т│е│о│р│е│м.
+%  Its standard search strategy, backward chaining with unification and
+%  backtracking, is useful for a wide range of applications including databases,
+%  expert systems and theorem provers.
+
+  │М│ы │п│о│к│а│ж│е│м, │к│а│к на ML сделать урезанный вариант интерпретатора
+  Prolog.
+%  We will show how to implement a cut-down Prolog interpreter in ML.
+
+  │П│о│с│л│е │э│т│о│г│о, используя │те │ж│е средства и методы мы создадим простое
+  средство доказательства │т│е│о│р│е│м.
+%  We will then use the same tools and techniques to build a simple theorem
+%  prover.
+}
+
+
+\frame{
+  \frametitle{Выражения Prolog}
+%  \frametitle{Prolog terms}
+
+  Данные и код на Prolog представлены с использованием единой системы
+  выражений первого порядка.
+%  Prolog code and data is represented using a uniform system of first order
+%  terms.
+
+  Мы будем представлять их в виде рекурсивного типа схожего с тем,
+  который мы использовали для математических выражений.
+%  We will represent this using a recursive type similar to the one used for
+%  mathematical expressions.
+
+  \PrologTerm
+
+  Заметьте, что мы рассматриваем константы как функции без аргументов.
+%  Note that we treat constants as nullary functions, i.e. functions that take an
+%  empty list of arguments.
+
+  Где мы раньше использовали {\tt Const s}, теперь мы будем
+  использовать {\tt Fn(s,[])}.
+%  Where we would formerly have used {\tt Const s}, we will now use
+%  {\tt Fn(s,[])}.
+
+  Заметим также, что мы будем рассматривать функции разной арности
+  (разного количества принимаемых аргументов) как различные, даже если
+  у них одинаковые имена.
+%  Note that we will treat functions of different arities (different numbers of
+%  arguments) as distinct, even if they have the same name.
+}
+
+
+
+\frame{
+   \frametitle{Лексический анализ (1)}
+%  \frametitle{Lexical analysis (1)}
+
+   В Prolog │и│д│е│н│т│и│ф│и│к│а│т│о│р│ы, │к│о│т│о│р│ы│е │н│а│ч│и│н│а│ю│т│с│я │с заглавной буквы │и│л│и
+   подчёркивания, рассматриваются │к│а│к │п│е│р│е│м│е│н│н│ы│е, │а │д│р│у│г│и│е
+   буквенно-цифровые │и│д│е│н│т│и│ф│и│к│а│т│о│р│ы наряду │с числами, рассматриваются
+   │к│а│к │к│о│н│с│т│а│н│т│ы.
+%  In Prolog, identifiers that begin with an {\em upper case} letter or an
+%  underscore are treated as variables, while other alphanumeric identifiers,
+%  along with numerals, are treated as constants.
+
+   Например {\tt X} и {\tt Answer}~-- это переменные, тогда как {\tt
+     x} и {\tt john}~-- константы.
+%  For example {\tt X} and {\tt Answer} are variables while {\tt x} and
+%  {\tt john} are constants.
+
+  Мы примем все символьные идентификаторы как константы, но будем
+  различать знаки пунктуации: левые и правые скобки, запятые и точки с
+  запятыми.
+%  We will lump all symbolic identifiers together as constants too, but we will
+%  distinguish the punctuation symbols: left and right brackets, commas and
+%  semicolons.
+
+  Не пунктуационные символы можно объединять в строки любой длины,
+  таким образом не требуется, чтобы символьный идентификатор состоял
+  только из одного символа.
+%  Non-punctuation symbols are collected together into the longest strings
+%  possible, so symbolic identifiers need not consist only of one character.
+
+  \Token
+}
+
+
+
+\frame{
+   \frametitle{Лексический анализ (2)}
+%  \frametitle{Lexical analysis (2)}
+
+  \Lex
+}
+
+
+
+\frame{
+  \frametitle{Parsing and printing}
+
+  The printer is exactly the same as before.
+
+  The parser is almost the same as before; again we allow some operators like
+  addition to be written infix. We also allow a special syntax for lists.
+
+  We regard {\tt [x1,x2,\ldots,xn]} as shorthand for
+
+  {\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
+
+  where {\tt cons} is the function corresponding to a list constructor,
+  just like {\tt ::} in ML. The printer writes it as an infix dot.
+  Also, {\tt [H|T]} is allowed instead of {\tt cons(H,T)}.
+
+  A Prolog {\em rule} is of one of these forms:
+  \begin{eqnarray*}
+    term\mbox{.}    & &                                             \\
+    term            & \mbox{ :- } & term,\ldots,term\mbox{.}
+  \end{eqnarray*}
+  \noindent We have a parser for these, returning a {\tt term * term list}.
+}
+
+
+
+\frame{
+  \frametitle{Unification}
+
+  Prolog uses a set of rules to solve a current {\em goal} by trying to match one
+  of the rules against the goal.
+
+  A rule consisting of a single term can solve a goal immediately.
+
+  In the case of a rule \alert{$term \mbox{ :- } term_1,\ldots,term_n\mbox{.}$},
+  if the goal matches \alert{$term$}, then Prolog needs to solve each \alert{
+    $term_i$} as a subgoal in order to finish the original goal.
+
+  However, goals and rules do not have to be exactly the same. Instead, Prolog
+  assigns variables in both to make them match up. This process is called {\em
+    unification}.
+
+  This means that we can end up proving a special case of the original goal, e.g.
+  \alert{$P(f(X))$} instead of \alert{$P(Y)$}.
+}
+
+
+
+\frame{
+  \frametitle{Unification: examples and algorithm}
+
+  To unify \alert{$f(g(X),Y)$} and \alert{$f(g(a),X)$} we need to set \alert{$X =
+    a$} and \alert{$Y = a$}. Then both terms are \alert{$f(g(a),a)$}.
+
+  To unify \alert{$f(a,X,Y)$} and \alert{$f(X,a,Z)$} we need to set \alert{$X = a$}
+  and \alert{$Y = Z$}, and then both terms are \alert{$f(a,a,Z)$}.
+
+  It is impossible to unify \alert{$f(X)$} and \alert{$X$}.
+
+  There is a systematic procedure for finding a {\em most general} unifier.
+
+  Roughly, one descends the two terms recursively in parallel, and on finding a
+  variable on either side, assigns it to whatever the term on the other side is.
+
+  One needs to check that the variable hasn't already been assigned to something
+  else, and that it doesn't occur in the term being assigned to it (as in the
+  last example above).
+}
+
+
+
+\frame{
+  \frametitle{Unification: code}
+
+  We have a set of existing instantiations, and we look each variable up
+  to see if it is already assigned before proceeding.
+
+  \Unify
+
+  We use the existing instantiations as an accumulator.
+}
+
+
+
+\frame{
+  \frametitle{Augmenting instantiations}
+
+  \OccursIn
+}
+
+
+
+\frame{
+  \frametitle{Backtracking}
+
+  Prolog proceeds by depth-first search, but it may backtrack: even if a rule
+  unifies successfully, if all the remaining goals cannot be solved under the
+  resulting instantiations, then another initial rule is tried. Thus we consider
+  the whole list of goals rather than one at a time:
+
+  \BackTracking
+}
+
+
+
+\frame{
+  \frametitle{Other details}
+
+  Note that we produce fresh variables for the rules each time:
+
+  \OdO
+
+  Finally, we package everything up:
+
+  \OdOO
+
+  This says either that the goal cannot be solved, or that it can be solved with
+  the given instantiations. Note that we only return one answer in this case, but
+  this is easy to fix.
+}
+
+\frame{
+  \frametitle{Prolog examples (1)}
+
+  \PrologExamplesO
+}
+
+\frame{
+  \frametitle{Prolog examples (2)}
+
+  \PrologExamplesOO
+
+  Prolog is less `directional' than ML. However it has its
+  limitations, e.g.  the following will loop indefinitely:
+
+  \PrologExamplesOOO
+}
+
+
+
+
+\frame{
+  \frametitle{Prolog-style theorem proving}
+
+  With a few minor changes, Prolog-style search can be used for general theorem
+  proving. Examples of such provers include PTTP (Stickel, 1988) and \mbox{{\sf
+      lean}$T^{\!\!\textstyle A}\!\!P$} (Beckert and Possega 1994).
+
+  Unification is an efficient method for deciding how to specialize universally
+  quantified variables (Prawitz, Robinson 1960).
+
+  For example, given the facts that \alert{$\all{X} p(X) \Imp q(X)$} and \alert{
+    $p(f(a))$}, we can unify the two expressions involving \alert{$p$} and thus
+  discover that we need to set \alert{$X$} to \alert{$f(a)$}. By contrast, the very
+  earliest theorem provers tried all possible terms!
+
+  Usually, depth-first search would go into an infinite loop, so we need to
+  modify the Prolog strategy slightly. We will use {\em depth first iterative
+    deepening}.
+}
+
+
+
+\frame{
+  \frametitle{Manipulating formulas}
+
+  We will simply use our terms to denote formulas, introducing new constants for
+  the logical operators. Many of these are written infix.
+
+  \begin{center}
+    \begin{tabular}{|l|l|}
+      \hline
+      Operator   & Meaning               \\
+      \hline
+      {\tt ~}(p)  & not p \\
+      p {\tt \&} q  & p and q \\
+      p {\tt |} q  & p or q \\
+      p {\tt -->} q  & p implies q \\
+      p {\tt <->} q  & p if and only if q \\
+      forall(X,p)        & for all X, p             \\
+      exists(X,p)        & there exists an X such that p\\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  An alternative would be to introduce a separate type of formulas, but this
+  would require separate parsing and printing support. We will avoid this, for
+  the sake of simplicity.
+}
+
+\frame{
+  \frametitle{Preprocessing formulas}
+
+  It's convenient if the main part of the prover need not cope with
+  implications and `if and only if's. Therefore we first define a
+  function that eliminates these in favour of the other connectives.
+
+  \ProcForm
+
+  The next step is to push the negations down the formula, putting it
+  into so-called `negation normal form' (NNF).
+}
+
+\frame{
+  \frametitle{NNF code}
+
+  We define two mutually recursive functions that create NNF for a
+  formula, and its negation.
+
+  \NnfCode
+
+  We will convert the negation of the input formula into negation
+  normal form, and the main prover will then try to derive a
+  contradiction from it.
+}
+
+
+\frame{
+  \frametitle{The main prover}
+
+  At each stage, the prover has a current formula, a list of formulas yet to be
+  considered, and a list of literals. It is trying to reach a contradiction.
+
+  If the current formula is {\tt p \& q}, then consider {\tt p} and
+  {\tt q} separately, i.e. make {\tt p} the current formula and add
+  {\tt q} to the formulas to be considered.
+
+  If the current formula is {\tt p | q}, then try to get a
+  contradiction from {\tt p} and then from {\tt q}.
+
+  If the current formula is {\tt forall(X,p)}, invent a new variable to
+  replace {\tt X}: the right value can be discovered later by unification.
+
+  If the current formula is {\tt exists(X,p)}, invent a new constant to
+  replace {\tt X}.
+
+  Otherwise, the formula must be a literal, so try to unify it with a
+  contradictory literal.
+
+  If this fails, add it to the list of literals, and proceed with the next
+  formula.
+}
+
+
+
+\frame{
+  \frametitle{Continuations}
+
+  We desire a similar backtracking strategy to Prolog: only if the current
+  instantiations allow all remaining goals to be solved do we accept it.
+
+  We could use lists again, but instead we use {\em continuations}. A
+  continuation is a function that is passed to another function and can be called
+  from within it to <<perform the rest of the computation>>.
+
+  In our case, it takes a list of instantiations and tries to solve the remaining
+  goals under these instantiations.
+
+  Thus, rather than explicitly trying to solve all remaining goals, we simply try
+  calling the continuation.
+}
+
+
+\frame{
+  \frametitle{Prover code}
+
+  \Prover
+}
+
+\frame{
+  \frametitle{Prover examples (1)}
+
+  We set up the final prover as follows:
+
+  \ProverExampleO
+
+  It tries to find the proof with the fewest universal instantiations.
+  It returns the number required and any toplevel instantiations.
+
+  \ProverExampleOO
+}
+
+
+\frame{
+  \frametitle{Prover examples (2)}
+
+  A bigger example is the following:
+
+  \ProverExampleOOO
+
+  In fact, the prover can work out `whodunit':
+
+  \ProverExampleOOOO
+}
 
 \end{document}
-
-%%% Local Variables:
-%%% TeX-master: "all"
-%%% End:
