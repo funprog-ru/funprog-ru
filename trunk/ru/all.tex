@@ -89,8 +89,8 @@
 \newcommand{\Unions}{\bigcup}
 \newcommand{\Inters}{\bigcap}
 
-\newcommand{\proof}{{\bf \noindent Proof:\ }}
-\newcommand{\qed}{Q.E.D.}
+\newcommand{\proof}{{\bf \noindent Доказательство:\ }}
+\newcommand{\qed}{$\square$}
 
 \newcommand{\Rule}{\infer}
 
@@ -122,6 +122,8 @@
 
 \begin{document}
 
+\pagestyle{fancy}
+
 \frenchspacing
 \righthyphenmin=2
 \sloppy
@@ -130,9 +132,9 @@
 \lstset{tabsize=2,language=ML}
 
 
-\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{theorem}{Теорема}[chapter]
 \newtheorem{definition}[theorem]{Definition}
-\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemma}[theorem]{Лемма}
 \newtheorem{corollary}[theorem]{Corollary}
 
 % This is stuff for boxes, stolen from HOL documentation
