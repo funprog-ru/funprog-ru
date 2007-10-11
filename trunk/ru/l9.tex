@@ -305,35 +305,36 @@
 \frame{
   \frametitle{ Символьные вычисления }
 
-  Сейчас мы обсудим приложения, в которых проводятся манипуляции над
-  математическими {\em выражениями }, в общем случае содержащими переменные.
+  Сейчас мы обсудим прикладные задачи, в которых проводятся манипуляции над
+  математическими {\em выражениями}, в общем случае содержащими переменные.
 
   %%This covers applications where manipulation of mathematical 
   %%{\em expressions},in general containing variables, is emphasized at the
   %%expense of actual numerical calculation.
 
-  Есть несколько удачных <<систем компьютерной алгебры>>, таких как 
-  Axiom, Maple и Mathematica, все они могут выполнять определённые символьные 
-  операции, полезные в математической работе.
+  Есть несколько удачных <<систем компьютерной алгебры>>, таких как
+  Axiom, Maple и Mathematica, все они могут выполнять определённые
+  символьные операции, полезные в математической работе.
 
-  %%There are several successful `computer algebra systems' such as
-  %%Axiom, Maple and Mathematica, which can do certain symbolic operations that 
-  %%are useful in mathematics.
+  %% There are several successful `computer algebra systems' such as
+  %% Axiom, Maple and Mathematica, which can do certain symbolic
+  %% operations that are useful in mathematics.
 
   Примеры таких операций: разложение полиномов, дифференцирование и 
   интегрирование  выражений.
 
-  %%Examples include factorizing polynomials and differentiating and integrating
-  %%expressions.
+  %% Examples include factorizing polynomials and differentiating and
+  %% integrating expressions.
 
-  Мы покажем, как ML может использоваться для подобных задач. Давайте рассмотрим 
-  задачу символьного дифференцирования.
+  Мы покажем как для подобных задач можно использовать ML. Давайте
+  рассмотрим задачу символьного дифференцирования.
 
-  %%We will show how ML can be used for such applications. Our example will be
-  %%symbolic differentiation.
+  %% We will show how ML can be used for such applications. Our
+  %% example will be symbolic differentiation.
 
-  Это проиллюстрирует все типичные части систем символьных вычислений: 
-  представление данных, внутренние алгоритмы, разбор и вывод результатов.
+  Это позволит проиллюстрировать все типичные части систем символьных
+  вычислений: представление данных, внутренние алгоритмы, разбор и
+  вывод результатов.
 
   %%This will illustrate all the typical components of symbolic computation
   %%systems: data representation, internal algorithms, parsing and  
@@ -345,8 +346,8 @@
 \frame{
   \frametitle{ Представление данных }
 
-  Мы  будем рассматривать выражения, которые строятся из переменных, констант  
-  и $n$-арных операторов.
+  Мы будем рассматривать выражения, которые строятся из переменных,
+  констант и $n$-арных операторов.
 
   %%We will allow mathematical expressions to be built up from variables and
   %%constants by the application of $n$-ary operators.
@@ -360,8 +361,8 @@
   Например, выражение \alert{$sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} 
   представляется:
 
-  %%For example the expression \alert{$sin(x + y) / cos(x - exp(y)) - ln(1 + x)$} 
-  %%is represented by:
+  %% For example the expression \alert{$sin(x + y) / cos(x - exp(y)) -
+  %%   ln(1 + x)$} is represented by:
  
   \UsingExpr 
 
@@ -371,32 +372,35 @@
 \frame{
   \frametitle{ Нам требуется разбор и печать }
 
-  Чтение и запись выражений в сыром виде довольно неудобны. Это общая проблема
-  для всех систем символьных вычислений. Обычно требуются:
+  Чтение и запись выражений в сыром виде довольно неудобны.  Это общая
+  проблема для всех систем символьных вычислений. Обычно требуются:
  
-  %%Reading and writing expressions in their raw form is rather unpleasant. 
-  %%This is a general problem in all symbolic computation systems. Typically one 
-  %%wants:
+  %% Reading and writing expressions in their raw form is rather
+  %% unpleasant.  This is a general problem in all symbolic
+  %% computation systems. Typically one wants:
 
   \begin{itemize}
 
-  \item {\em Синтаксический разборщик},  принимающий ввод в человеко - читаемой форме,
-  и транслирующий его во внутренние структуры.
+  \item {\em Синтаксический разборщик}, принимающий ввод в
+    удобочитаемой форме, и транслирующий его во внутренние структуры.
 
-  %%\item A {\em parser} to accept input in human-readable form and translate it
-  %%into the internal representation 
+    %% \item A {\em parser} to accept input in human-readable form and
+    %%   translate it into the internal representation
   
-  \item {\em Система вывода}, переводящая вывод из внутреннего представления
-  в форму, удобную для пользователя.
+  \item {\em Система вывода}, переводящая вывод из внутреннего
+    представления в форму, удобную для пользователя.
+
+  %\item A {\em prettyprinter} to translate output from the internal
+  %representation back to a human-readable form.
 
   \end{itemize}
 
-  Мы будем использовать синтаксический разбор как ещё один важный пример применения  
-  функционального программирования, поэтому отложим обсуждение этого вопроса  
-  на некоторое время. 
+  Мы будем использовать синтаксический разбор как ещё один важный
+  пример применения функционального программирования, поэтому отложим
+  обсуждение этого вопроса на некоторое время.
 
-  %%We will use parsing as another major example of functional programming, so
-  %%we will defer that for now.
+  %% We will use parsing as another major example of functional
+  %% programming, so we will defer that for now.
 
   Сейчас же мы напишем простенькую систему вывода для наших выражений.
 
@@ -418,26 +422,26 @@
 
   %%\item Variables and constants are just written as their names.
 
-  \item Обычные $n$-арные функции, выводятся в виде 
-  \alert{$f(x_1,\ldots,x_n)$}, т.е. записывается имя функции и рядом, в скобках
-  список аргументов.
+  \item Обычные $n$-арные функции, выводятся в виде
+    \alert{$f(x_1,\ldots,x_n)$}, т.е. записывается имя функции и
+    рядом, в скобках, список аргументов.
 
   %%\item Ordinary $n$-ary functions applied to arguments are written by
   %%juxtaposing the function and a bracketed list of arguments, e.g. {\red
   %%$f(x_1,\ldots,x_n)$}.
 
-  \item Инфиксные бинарные функции, такие как \alert{$+$} записываются между
-  своими аргументами.
+  \item Инфиксные бинарные операции, такие как \alert{$+$}
+    записываются между своими аргументами.
 
-  %%\item Infix binary functions like \alert{$+$} are written in between their
-  %%arguments.
+    %% \item Infix binary functions like \alert{$+$} are written in
+    %%   between their arguments.
 
   \item Скобки используются по необходимости.
   
-  %%\item Brackets are used where necessary for disambiguation.
+    %% \item Brackets are used where necessary for disambiguation.
 
-  \item В целях сокращения использования скобок, для инфиксных операторов  
-  вводится понятие приоритета.  
+  \item В целях сокращения использования скобок, для инфиксных
+    операторов вводится понятие приоритета.
 
   %%\item Infix operators have a notion of precedence to reduce the need for
   %%brackets.
@@ -450,20 +454,21 @@
 \frame{
   \frametitle{ Сохранение приоритета }
 
-  Мы можем завести список бинарных операторов с их приоритетами, вроде 
+  Мы можем завести список бинарных операторов с их приоритетами, вроде
   следующего:
   
-  %%We can have a list of binary operators together with their precedences,
-  %%e.g.
+  %% We can have a list of binary operators together with their
+  %% precedences, e.g.
 
   \KeepPrecCodeOne
 
-  Списки такого вида, связывающие значения с ключами, называются {\em 
-  ассоциативными списками}. Для того чтобы получить значение по ключу, 
-  используется следующая функция:
+  Списки такого вида, связывающие значения с ключами, называются {\em
+    ассоциативными списками}. Для того чтобы получить значение по
+  ключу, используется следующая функция:
 
-  %%This sort of list, associating data with keys, is called an {\em association
-  %%list}. To get the data associated with a key we use the following:
+  %% This sort of list, associating data with keys, is called an {\em
+  %%   association list}. To get the data associated with a key we use
+  %% the following:
 
   \KeepPrecCodeTwo
   
@@ -473,12 +478,13 @@
 
   \KeepPrecCodeThree
   
-  Этот алгоритм линейного поиска неэффективен, но прост и подходит для простых 
-  примеров. Для неучебных приложений больше подойдёт использование хеширования.
+  Этот алгоритм линейного поиска неэффективен, но прост и подходит для
+  простых примеров. Для неучебных приложений больше подойдёт
+  использование хеширования.
 
-  %%This procedure of linear search is inefficient, but it is simple and adequate
-  %%for small examples. Techniques like hashing are better for heavyweight
-  %%applications.
+  %% This procedure of linear search is inefficient, but it is simple
+  %% and adequate for small examples. Techniques like hashing are
+  %% better for heavyweight applications.
 
 }
 
@@ -486,8 +492,8 @@
 \frame{
   \frametitle{ Делаем приоритеты изменяемыми }
 
-  Из - за статического связывания, изменение списка инфиксных операторов не 
-  меняет {\tt get\_precedence}.
+  Из-за статического связывания, изменение списка инфиксных
+  операторов не меняет {\tt get\_precedence}.
 
   %%Because of static binding, changing the list of infixes does not change
   %%{\tt get\_precedence}.
@@ -499,10 +505,10 @@
 
   \PrecModifCode 
 
-  Такое решение не является чисто функциональным, но, возможно, более 
+  Такое решение не является чисто функциональным, но, возможно, более
   естественно.
-  %% BUG# Может всё же стоит заменить код на pure functional way, во избежание
-  %% использования ссылок до их определения??? -- dimiii
+  %% BUG# Может всё же стоит заменить код на pure functional way, во
+  %% избежание использования ссылок до их определения??? -- dimiii
 
   %%This setup is not purely functional, but is perhaps more natural.
 
@@ -515,16 +521,16 @@
   Мы будем считать оператор инфиксным, только если он встречается в списке 
   {\tt infixes} с приоритетом. Мы можем записать:
 
-  %%We will treat an operator as infix just if it appears in the list of infixes
-  %%with a precedence. We can do:
+  %% We will treat an operator as infix just if it appears in the list
+  %% of infixes with a precedence. We can do:
 
   \FindInfixCodeOne
 
-  
-  \noindent поскольку {\tt get\_precedence} не определена на   
-  неинфиксных операторах, и, поэтому, выбросит исключение. Альтернативный (и~более правильный) 
-  способ использует вспомогательную функцию {\tt can}, 
-  которая проверяет успешность применения её первого аргумента ко второму:
+  \noindent поскольку {\tt get\_precedence} не определена на
+  неинфиксных операторах, и, поэтому, выбросит исключение.
+  Альтернативный (и~более правильный) способ использует
+  вспомогательную функцию {\tt can}, которая проверяет успешность
+  применения её первого аргумента ко второму:
   
   %%\noindent because {\verb+get_precedence+} fails on non-infixes. An
   %%alternative coding is to use an auxiliary function {\tt can} which 
@@ -543,25 +549,26 @@
 
   %%The printer consists of two mutually recursive functions.
 
-  Функция {\tt string\_of\_term} принимает два аргумента.  Первый~-- это
+  Функция {\tt string\_of\_term} принимает два аргумента. Первый~-- это
   <<приоритетный оператор>>,  а второй~-- терм.
-
 
   %%The function {\verb+string_of_term+} takes two arguments. The first 
   %%is a `currently active precedence', and the second is the term.
 
   Например, при печати правого аргумента из \alert{x * (y + z)},
-  приоритетным оператором является {\alert *}~-- произведение. При этом, если
-  второй аргумент является аппликацией инфиксного оператора (в нашем случае 
-  {\alert +}), и меньшего приоритета, то он окружается скобками.
+  приоритетным оператором является {\alert *}~-- произведение. При
+  этом, если второй аргумент является аппликацией инфиксного оператора
+  (в нашем случае {\alert +}), и меньшего приоритета, то он окружается
+  скобками.
 
   %%For example, in printing the right-hand argument of {\tt x * (y + 
   %%z)},  the currently active precedence is the precedence of {\tt *}.   
   %%If the function prints an application of an infix operator (here {\tt
   %% +}), it puts brackets round it unless its own precedence is higher.
 
-  Вторая функция через запятую печатает список термов. Это нужно для вывода 
-  списка аргументов  функций вида \alert{$f(x_1,\ldots,x_n), n > 2$}.
+  Вторая функция через запятую печатает список термов. Это нужно для
+  вывода списка аргументов функций вида \alert{$f(x_1,\ldots,x_n), n >
+    2$}.
   
   %%We have a second, mutually recursive, function, to print a list of terms
   %%separated by commas. This is for the argument lists of non-unary and 
@@ -578,23 +585,24 @@
 \frame{
   \frametitle{ Печать: установка }
 
-  CAML Light поддерживает установку системы печати, задаваемой пользователем.
+  CAML Light поддерживает установку системы печати, задаваемой
+  пользователем.
 
-  %%CAML Light has special facilities for installing user-defined printers in 
-  %%the toplevel read-eval-print loop.
+  %% CAML Light has special facilities for installing user-defined
+  %% printers in the toplevel read-eval-print loop.
 
-  После того, как система печати установлена пользователем, работа в 
-  интерпретаторе будет проходить через неё и каждый терм, введённый 
-  пользователем, будет печататься ею.
+  После того, как система печати установлена пользователем, выражения
+  типа {\tt term} будут печататься ею.
 
   %%Once our printer is installed, anything of type {\tt term} will 
   %%be printed using it.
 
-  Для взаимодействия с интерпетатором мы используем некоторые специальные  
-  функции из библиотеки {\t format}  CAML  Light.
+  Для взаимодействия с интерпетатором мы используем некоторые
+  специальные функции из библиотеки {\tt format} CAML Light.
 
-  %%We use some special functions from the CAML Light {\tt format} library to 
-  %%make sure that our printer interacts with the toplevel loop.
+  %% We use some special functions from the CAML Light {\tt format}
+  %% library to make sure that our printer interacts with the toplevel
+  %% loop.
 
   \PrintInstCode 
 
@@ -602,60 +610,59 @@
 
 
 \frame{
-  \frametitle{ До установки печати }
+  \frametitle{ Печать (до установки) }
 
-  \BeforeInstPrint 
-
+  \BeforeInstPrint
 }
 
 \frame{
-  \frametitle{ После установки печати }
+  \frametitle{ Печать (после установки) }
 
-  \AfterInstPrint 
-
+  \AfterInstPrint
 }
-
-
 
 \frame{
   \frametitle{ Дифференцирование: алгоритм }
 
-  Есть хорошо известные (изучаемые в школе) правила дифференцирования сложных  
-  выражений.
+  Есть хорошо известные (изучаемые в школе) правила дифференцирования
+  сложных выражений.
 
   %%There is a well-known method (taught in schools) to differentiate 
   %%complicated expressions.
 
   \begin{itemize}
 
-  \item Если выражение~-- одна из элементарных функций одного аргумента, например 
-  \alert{$sin(x)$}, 
-  то результат дифференцирования~-- известная производная этой функции.
+  \item Если выражение~-- одна из элементарных функций одного
+    аргумента, например \alert{$sin(x)$}, то результат
+    дифференцирования~-- известная производная этой функции.
 
   %\item If the expression is one of the standard functions applied to an
   %argument, e.g. \alert{$sin(x)$}, return the known derivative.
 
-  \item Если выражение представимо в форме \alert{$f(x) + g(x)$}, то по правилу 
-  суммы, результат дифференцирования есть  \alert{$f'(x) + g'(x)$}. 
-  Аналогично для разности.
+  \item Если выражение представимо в форме \alert{$f(x) + g(x)$}, то
+    по правилу суммы, результат дифференцирования есть \alert{$f'(x) +
+      g'(x)$}.  Аналогично для разности.
 
   %\item If the expression is of the form \alert{$f(x) + g(x)$} then apply 
   %the rule for sums, returning \alert{$f'(x) + g'(x)$}. Likewise for 
   %subtraction etc.
 
-  \item Если выражение задано в форме \alert{$f(x) * g(x)$}, применяется {\em правило
-  Лейбница}, т.е. возвращается \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+  \item Если выражение задано в форме \alert{$f(x) * g(x)$},
+    применяется {\em правило Лейбница}, т.е. возвращается
+    \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
 
-  %\item If the expression is of the form \alert{$f(x) * g(x)$} then apply the
-  %product rule, i.e. return \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+    % \item If the expression is of the form \alert{$f(x) * g(x)$}
+    %   then apply the product rule, i.e. return \alert{$f'(x) * g(x)
+    %     + f(x) * g'(x)$}.
 
-  \item Если выражение является одной из композицией стандартных функций:  
-  \alert{$f(g(x))$}, то применяется правило последовательного 
-  дифференцирования, результат которого: \alert{$g'(x) * f'(g(x))$}.
+  \item Если выражение является одной из композицией стандартных
+    функций: \alert{$f(g(x))$}, то применяется правило
+    последовательного дифференцирования, результат которого:
+    \alert{$g'(x) * f'(g(x))$}.
 
-  %\item If the expression is one of the standard functions applied to a 
-  %composite argument, say \alert{$f(g(x))$} then apply the Chain Rule and so  
-  %give \alert{$g'(x) * f'(g(x))$}.
+    % \item If the expression is one of the standard functions applied
+    %   to a composite argument, say \alert{$f(g(x))$} then apply the
+    %   Chain Rule and so give \alert{$g'(x) * f'(g(x))$}.
 
   \end{itemize}
 
@@ -665,20 +672,19 @@
 
 
 \frame{
-  \frametitle{ Дифференцирование: код (начало)}
+  \frametitle{ Дифференцирование: код (начало) }
 
-  \DiffCodeStart 
-
+  \DiffCodeStart
 }
+
 \frame{
   \frametitle{ Дифференцирование: код (конец) }
 
-  \DiffCodeEnd 
+  \DiffCodeEnd
 }
 
 
-
-\frame{
+\frame[shrink=5]{
   \frametitle{ Примеры дифференцирования }
 
   Попробуем несколько примеров:
@@ -692,23 +698,27 @@
 \frame{
   \frametitle{ Упрощение выражений }
 
-  Кажется, всё хорошо работает, но при этом не делается некоторых очевидных
-  упрощений, таких как: \alert{$0 * x = 0$}. Так получается частично от того, 
-  что  мы применяем рекурсивные правила, такие как правило последовательного 
-  дифференцирования композиции, даже в тривиальных случаях. 
-  Запишем функцию, выполняющую упрощение:
+  Кажется, всё хорошо работает, но при этом не делается некоторых
+  очевидных упрощений, таких как: \alert{$0 * x = 0$}. Так получается
+  частично от того, что мы применяем рекурсивные правила, такие как
+  правило последовательного дифференцирования композиции, даже в
+  тривиальных случаях.  Запишем функцию, выполняющую упрощение:
 
-  %%It seems to work OK, but it isn't making certain obvious simplifications,
-  %%like \alert{$0 * x = 0$}. These arise partly because we apply the recursive
-  %%rules like the chain rule even in trivial cases. We'll write a simplifier:
+  %% It seems to work OK, but it isn't making certain obvious
+  %% simplifications, like \alert{$0 * x = 0$}. These arise partly
+  %% because we apply the recursive rules like the chain rule even in
+  %% trivial cases. We'll write a simplifier:
 
 }
 
 \frame{
   \frametitle{ Упрощение выражений: код }
+
   \SimplCodeOne
 }
-\frame{
+
+
+\frame[shrink=5]{
   \frametitle{ Примеры упрощения }
 
   Мы должны применить {\tt simp} рекурсивно, по индукции:
@@ -729,7 +739,9 @@
   
   %%There are still other simplifications to be made, e.g. \alert{$cos(x) *
   %%inv(cos(x)) = 1$}. Good algebraic simplification is a difficult problem!
-}  
-\end{document}
 
+}
+
+
+\end{document}
 
