@@ -43,6 +43,7 @@ Please keep terms in alphabet order.
   * *tail recursion* - хвостовая (концевая) рекурсия
   * *tail recursive function* - функция с хвостовой рекурсией
   * *tuple* - кортеж
+  * *type assignment* - назначение типа (НЕ "присваивание")
   * *type variables* - типовые переменные
   * *variable capture* - захват переменной
   * *verification* - проверка / верификация ??
