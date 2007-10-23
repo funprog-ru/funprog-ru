@@ -29,9 +29,9 @@
   * (e) *l9.tex* - перевод pr.dimiii, прочитали lg
   * (e) *l10.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
-  * (e) *intro.tex* - перевод alexott, прочитали lg(не полностью),dimiii
+  * (e) *intro.tex* - перевод alexott, прочитали lg, dimiii
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
-  * (e) *preface.tex* - перевод pr.dimiii, прочитали
+  * (e) *preface.tex* - перевод pr.dimiii, прочитали lg
   * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
   * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
