@@ -45,6 +45,8 @@ Please keep terms in alphabet order.
   * *tuple* - кортеж
   * *type assignment* - назначение типа (НЕ "присваивание")
   * *type variables* - типовые переменные
+  * *typing* - типизация
+  * *typability* - типизируемость
   * *variable capture* - захват переменной
   * *verification* - проверка / верификация ??
 
