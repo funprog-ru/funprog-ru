@@ -153,7 +153,7 @@
   \frametitle{Булевы значения (2)}
   % \heading{Booleans (2)}
 
-  и:
+  и
   % and
 
   \alert{
@@ -186,7 +186,7 @@
   % We can represent ordered pairs as follows:
 
   \alert{$$ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 $$}
-  Для такого представления, соответствующие деструкторы пар будут
+  Для такого представления соответствующие деструкторы пар будут
   выглядеть как:
   % Given this definition, the corresponding destructors for pairs can be
   % defined as:
@@ -320,7 +320,7 @@
   \frametitle{Сложение}
   % \heading{Addition}
 
-  А вот сложение нумералов Чёрча:
+  Сложение нумералов Чёрча определяется как
   % Here's addition of Church numerals:
 
   \alert{$$m + n \defeq \lamb{f\; x} m\; f\; (n\; f\; x) $$}
@@ -346,7 +346,7 @@
   \frametitle{Умножение}
   % \heading{Multiplication}
 
-  а вот и умножение:
+  Умножение определяется как
   % and here's multiplication:
 
   \alert{$$ m * n \defeq \lamb{f\; x} m\; (n\; f)\; x $$}
@@ -392,7 +392,7 @@
   }
   Мы можем использовать эту функцию для того, чтобы <<отбросить>> одно из
   применений \alert{$f$} в \alert{$f^n\; x$}.  Эта выдумка принадлежит
-  Клину.  Теперь определим: \alert{$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+  Клини.  Теперь определим: \alert{$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
     \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
   % We can use this to <<throw away>> one of the applications of \alert{$f$} in
   % \alert{$f^n\; x$}. This trick is due to Kleene. Now define:
@@ -414,7 +414,7 @@
   его к функции \alert{$f$}, мы получим неподвижную точку \alert{$x$} для
   \alert{$f$}, то есть такое \alert{$x$}, что \alert{$f(x) = x$}.  Для всех
   \alert{$f$} имеем: \alert{$$ f(Y\; f) = Y\; f $$} Мы сможем понять как
-  составить такой комбинатор вспомнив, парадокс Рассела.  Мы определяли
+  составить такой комбинатор, вспомнив парадокс Рассела.  Мы определяли
   \alert{$R = \lamb{x} \Not (x\; x)$} и приходили к тому, что \alert{$R\; R
     = \Not (R\; R)$}.  Всё, что нам потребуется, это заменить \alert{
     $\Not$} на функцию \alert{$f$}.  Таким образом: \alert{$$Y \defeq
@@ -452,7 +452,7 @@
   \alert{$$ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\;
     y)) $$}
 
-  Оно имеет более сильное свойство \alert{$T\; f \goesto f(T\; f)$}.
+  Оно имеет более сильное свойство: \alert{$T\; f \goesto f(T\; f)$}.
 
   % This has the even better property that \alert{$T\; f \goesto f(T\; f)$}.
 }
@@ -498,7 +498,7 @@
   множества повторов одного и того же выражения.  Введём следующий
   вариант синтаксического сахара XXX:
   \alert{$$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$}
-  Введём так же запись для множества {\em совместных} привязок:
+  Введём также запись для множества {\em совместных} привязок:
   \alert{$$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
     \mbox{ in } t $$}
   которая является синтаксическим сахаром для:
@@ -587,7 +587,7 @@
   % instance of the relevant names. Then we repeatedly perform $\beta$-conversions.
 
   Основной вопрос состоит в том, как выполнить серию $\beta$-конверсий.
-  Мы знаем, что от этого зависит завершится ли вычисление или нет.
+  Мы знаем, что от этого зависит завершится вычисление или нет.
   % The main question is how to perform the series of $\beta$-conversions. We know
   % that this can make a difference with respect to termination.
 
