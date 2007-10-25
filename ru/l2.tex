@@ -50,15 +50,17 @@
   % because they respect the intuitive meanings. Now we specify some {\em
   %   formal} rules for calculating with lambda expressions.
 
-  Эти правила могут быть применены машинально, без раздумий, как можно
-  было бы преобразовать выражение:
+  Эти правила могут применяться чисто механически, без всяких раздумий.
+  Например, можно было бы преобразовать выражение:
   % BUG# как-то коряво звучит по моему --lg
+  % так лучше? --karma
   \alert{$$ x - 3 = 5 - x$$}
   в
   \alert{$$ 2 x = 5 + 3 $$}
+  не раздумывая о том, какой за этим скрывается смысл.
 
-  без учёта основных значений.
   % BUG# чтобы это значило? --lg
+  % так лучше? --karma
 
   % These can then be applied mechanically, without thinking about them,
   % just as one might take:
@@ -71,7 +73,7 @@
 \frame{
   \frametitle{Цитата Уайтхеда}
 
-  К вопросу обозначений и формальных правил вывода.
+  К вопросу об обозначениях и формальных правилах вывода.
   % On the subject of symbolisms and formal rules of manipulation:
 
   \begin{quote}
@@ -167,7 +169,7 @@
     \end{eqnarray*}
   }
 
-  В общем, мы всегда можем определить значение функции для данного терма
+  В общем случае, мы всегда можем определить значение функции для данного терма
   относительно значений для подтермов, как это показано тут. Интуитивно
   ясно, что мы всегда можем вычислить значение функции для какого-либо
   конкретного терма.
@@ -192,29 +194,29 @@
   % $\lambda$-term \alert{$t$}, the set \alert{$FV(t)$} is always finite.
 
   \begin{itemize}
-  \item Если \alert{$t$} переменная \alert{$v$}, то \alert{$FV(t) = \{v\}$}
+  \item Если \alert{$t$} является переменной \alert{$v$}, то \alert{$FV(t) = \{v\}$}
     по определению, и это множество определённо конечно.
     % \item If \alert{$t$} is a variable \alert{$v$}, then \alert{$FV(t) = \{v\}$} by
     %   definition, and this is certainly finite.
     \maybepause
 
-  \item Если \alert{$t$} константа \alert{$c$}, то \alert{$FV(t) =
+  \item Если \alert{$t$} является константой \alert{$c$}, то \alert{$FV(t) =
       \emptyset$}, которое заведомо конечно.
     % \item If \alert{$t$} is a constant \alert{$c$}, then \alert{$FV(t) = \emptyset$},
     %   which is trivially finite.
     \maybepause
 
-  \item Если \alert{$t$} применение \alert{$s_1\; s_2$}, то по
-    предположению индукции \alert{$FV(s_1)$} и \alert{$FV(s_2)$} оба
+  \item Если \alert{$t$} является применением \alert{$s_1\; s_2$}, то по
+    предположению индукции \alert{$FV(s_1)$} и \alert{$FV(s_2)$}
     конечны.  Но \alert{$FV(t) = FV(s_1) \Union FV(s_2)$}, а объединение
-    двух конечных множеств~-- конечно.
+    двух конечных множеств ~--- конечно.
     % \item If \alert{$t$} is an application \alert{$s_1\; s_2$}, then by the inductive
     %   hypothesis \alert{$FV(s_1)$} and \alert{$FV(s_2)$} are both finite. But \alert{
     %     $FV(t) = FV(s_1) \Union FV(s_2)$} and the union of two finite sets is finite.
     \maybepause
 
-  \item Если \alert{$t$}~-- это абстракция \alert{$\lamb{x} s$}, то по
-    предположению индукции \alert{$FV(s)$}~-- конечно.  Но \alert{$FV(t) =
+  \item Если \alert{$t$} ~--- это абстракция \alert{$\lamb{x} s$}, то по
+    предположению индукции \alert{$FV(s)$} ~--- конечно.  Но \alert{$FV(t) =
       FV(s) - \{x\}$}, которое должно быть конечным, ибо его мощность
     меньше.
     % \item If \alert{$t$} is an abstraction \alert{$\lamb{x} s$}, then by the
@@ -231,18 +233,18 @@
   \frametitle{Подстановка}
 
   Для того, чтобы выразить определённые правила, нам надо формализовать
-  понятие подстановки терма вместо переменной в другом терме.
+  понятие подстановки терма вместо переменной в другой терм.
   % In order to express certain rules, we need to formalize the notion of
   % substituting a term for a variable in another term.
 
   Мы записываем \alert{$t[s/x]$} как результат подстановки терма \alert{
-    $s$} вместо переменной \alert{$x$} в другом терме \alert{$t$}. Иногда
+    $s$} вместо переменной \alert{$x$} в другой терм \alert{$t$}. Иногда
   записывают \alert{$t[x := s]$} и даже \alert{$t[x/s]$}.
   % We write \alert{$t[s/x]$} for the result of substituting a term \alert{$s$} for a
   % variable \alert{$x$} in another term \alert{$t$}. One also sees \alert{$t[x :=
   %   s]$} and even \alert{$t[x/s]$}.
 
-  Нашу запись можно запомнить, думая об умножении дробей:
+  Нашу запись можно запомнить, проведя аналогию с умножении дробей:
   % Ours can be remembered by thinking of multiplication of fractions:
 
   \alert{$$ x[t/x] = t $$}
@@ -251,7 +253,7 @@
   % For example:
 
   \alert{$$ (\lamb{z} x + z + x)[y/x] = \lamb{z} y + z + y $$}
-  Конечно мы делаем подстановку только для {\em свободных} переменных,
+  Конечно, мы делаем подстановку только для {\em свободных} переменных,
   поэтому \alert{$(\lamb{x} x)[y/x] = \lamb{x} x$}.
   % {\red $$ (\lamb{z} x + z + x)[y/x] = \lamb{z} y + z + y $$}
   % Of course we only substitute for {\em free} variables, so {\red $(\lamb{x}
@@ -274,7 +276,7 @@
       (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
       (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]) \mbox{ if $x \not= y$}
     \end{eqnarray*}}
-  Однако это не так.  Мы получим \alert{$(\lamb{y} x + y)[y/x] = \lamb{y} y
+  Однако, это не так.  Имеем \alert{$(\lamb{y} x + y)[y/x] = \lamb{y} y
     + y$}~--- {\em захват переменной}.  Нам следует сначала
   переименовать переменную, чтобы получить \alert{$\lamb{w} x + w$}, и
   только потом совершить простую подстановку.
@@ -329,7 +331,7 @@
 
   \end{itemize}
 
-  Для определённости мы можем определить \alert{$z$} как самую первую
+  Для определённости мы можем взять \alert{$z$} как самую первую
   лексикографическую переменную, которая не является свободной ни в
   \alert{$s$}, ни в \alert{$t$}.
   % For definiteness, we can define \alert{$z$} to be the lexicographically earliest
@@ -337,7 +339,7 @@
 
   Указанное выше определение гарантирует, что подстановка не нарушает
   интуитивного представления.  Теперь мы можем свободно пользоваться
-  подстановкой.
+  этой операцией.
   % The above definition ensures that substitution always respects the intuitive
   % interpretation. Now we can use this operation freely.
 }
@@ -394,7 +396,7 @@
 
   Говорят, что два терма \alert{$s$} и \alert{$t$} равны, если существует
   конечная последовательность $\alpha$, $\beta$ или $\eta$ конверсий,
-  которая переводит один терм в другой.  А записывают это как \alert{$s =
+  которая переводит один терм в другой. Это записывается как \alert{$s =
     t$}.
   % We say that two terms \alert{$s$} and \alert{$t$} are equal, and
   % write \alert{$s = t$}, if there is a finite sequence of $\alpha$,
@@ -404,7 +406,7 @@
   Формально это отношение определяется по индукции (см. следующий слайд).
   % Formally we define the relation inductively (see next slide).
 
-  Заметим, что понятие <<равенство>> {\em определено}, поэтому это не тоже
+  Заметим, что понятие <<равенство>> {\em определено}, поэтому это не то же
   самое, что и синтаксическое равенство.  Синтаксическим равенством мы
   называем <<тождество>> и используем знак \alert{$\equiv$}.  Например,
   \alert{$\lamb{x} x = \lamb{y} y$}, но \alert{$\lamb{x} x \not\equiv
@@ -421,7 +423,7 @@
   обладают таким свойством, то взяв переменную \alert{$y$}, которая не
   является свободной ни в \alert{$f$}, ни в \alert{$g$}, получим \alert{
     $f\; y = g\; y$}.  Поэтому \alert{$\lamb{y} f\; y = \lamb{y} g\; y$}.
-  Применив $\eta$-конверсию пару раз, и получим \alert{$f = g$}.
+  Применив $\eta$-конверсию пару раз, получим \alert{$f = g$}.
   % The equality relation is {\em extensional}, i.e. if two functions
   % \alert{$f$} and \alert{$g$} give equal results for all arguments,
   % then they are themselves equal. Indeed, if \alert{$f$} and
@@ -528,8 +530,8 @@
   %   u$} and \alert{$t_2 \goesto u$}.
 
   Применяя это действие неоднократно, мы получим более сильное
-  утверждение, чем то, что если \alert{$t_1 = t_2$}, то существует терм
-  \alert{$u$}, такой, что \alert{$t_1 \goesto u$} и \alert{$t_2 \goesto
+  утверждение о том, что если \alert{$t_1 = t_2$}, то существует терм
+  \alert{$u$} такой, что \alert{$t_1 \goesto u$} и \alert{$t_2 \goesto
     u$}.
   % By applying this repeatedly, we get the stronger form that if
   % \alert{$t_1 = t_2$} then there is a term \alert{$u$} with
@@ -589,7 +591,7 @@
   % with the same free variables, written using combinators and with
   % no lambda abstractions.
 
-  Это достаточно привлекательно, потому что позволяет избежать таких
+  Это достаточно интересный факт, так как с его помощью можно избежать таких
   трудностей, как захват переменной.
   % This is quite attractive, because it avoids all the complications
   % like variable capture.
@@ -600,7 +602,7 @@
   % \heading{Combinatory completeness}
 
   Достаточно найти комбинаторный эквивалент для любого \alert{$\lamb{x}
-    t$}, где \alert{$t$} терм \alert{$\lambda$}-свободный.  Тогда мы
+    t$}, где \alert{$t$} ~--- \alert{$\lambda$}-свободен.  Тогда мы
   сможем применить такую процедуру повторно восходящим способом к самым
   внутренним абстракциям.
   % It's enough to be able to find a combinatory equivalent for any
@@ -625,7 +627,7 @@
 
   \item Если \alert{$t$}~-- абстракция, скажем \alert{$s\; u$} тогда по
     предположению индукции существуют $\lambda$-свободные термы
-    \alert{ $s'$} и \alert{$u'$}, такие что \alert{$s' = \lamb{x} s$}
+    \alert{ $s'$} и \alert{$u'$} такие, что \alert{$s' = \lamb{x} s$}
     и \alert{ $u' = \lamb{x} u$}.  Простое вычисление показывает, что
     \alert{ $\lamb{x} s\; u = S\;s'\;u'$}.
     % \item If \alert{$t$} is an abstraction, say \alert{$s\; u$},
@@ -637,7 +639,7 @@
 
   \end{itemize}
 
-  По сути, достаточно \alert{$S$} и \alert{$K$}, ибо \alert{$I = S\;
+  На самом деле достаточно использования \alert{$S$} и \alert{$K$}, ибо \alert{$I = S\;
     K\; K$}.
   % In fact, \alert{$S$} and \alert{$K$} alone suffice, since
   % \alert{$I = S\; K\; K$}.
