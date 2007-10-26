@@ -32,7 +32,7 @@ Please keep terms in alphabet order.
   * *lambda-notation* - $\lambda$-нотация
   * *lecture notes* - лекционные материалы / коспекты лекций ??
   * *let bindings* - let-связанные переменные (Х.-Ф., стр. 155)
-  * *most general (principal) type* - наиболее общий (основной) тип
+  * *most general (principal) type* - наиболее общий (главный) тип
   * *partial function* - частичная функция
   * *pattern matching* - сопоставление с образцом
   * *polymorphic function(s)* - полиморфные фукнция(и)
@@ -199,6 +199,8 @@ most general (principal) type - "наиболее общий (основной) 
  * http://www.haskell.ru/decls.html
 
  * http://rsdn.ru/article/haskell/haskell_part1.xml 
+
+добавление от 26.10.07: термин "основной тип" в "Ламбда-исчислении" Барендрегта используется с другим значением ("примитивный тип"), поэтому предлагается другой вариант: "главный тип". -- lambda.henchman
 
 ---
 
