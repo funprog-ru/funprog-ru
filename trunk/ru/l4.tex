@@ -30,7 +30,7 @@
     % \item Most general types and Milner's algorithm
     \maybepause
 
-  \item Жёсткая нормализация; рекурсия.
+  \item Сильная нормализация; рекурсия.
     % \item Strong normalization; recursion.
     \maybepause
 
@@ -117,7 +117,7 @@
 
 
 \frame{
-  \frametitle{Различные способы типизирования}
+  \frametitle{Различные способы типизации}
   % \heading{Different typing methods}
 
   Мы можем различать:
@@ -202,7 +202,7 @@
 
 
   Тут мы просто каждому $\lambda$-терму задаём {\em тип} и осуществляем
-  сильное типизирование.
+  сильную типизацию.
   % Here we simply give every $\lambda$-term a {\em type}, and enforce
   % strong typing.
 
@@ -237,7 +237,7 @@
 }
 
 \frame{
-  \frametitle{Типизирование по Чёрчу}
+  \frametitle{Типизация по Чёрчу}
   % Church typing
 
   Это способ создания типов как структурной части термов.  Это система
@@ -270,19 +270,19 @@
 
   \end{itemize}
 
-  Однако мы предпочитаем использовать {\em неявное} типизирование.  По
+  Однако мы предпочитаем использовать {\em неявная} типизация.  По
   сути, в ML никогда не надо указывать тип!
   % However we prefer to use {\em implicit} typing. In fact, in ML, the user never
   % has to write a type!
 }
 
 \frame{
-  \frametitle{Типизирование по Карри}
+  \frametitle{Типизация по Карри}
   % Curry typing
 
-  Здесь термы такие же, как и были раньше; кроме того, есть отдельное понятие
-  типизирования.  Всё типизирование является {\em неявным}, и у терма
-  может быть много типов.  Мы используем {\em контекст} \alert{$\Gamma$},
+  Здесь термы такие же, как и были раньше; кроме того, есть отдельное
+  понятие типизации.  Всё типизируется {\em неявно}, и у терма может
+  быть много типов.  Мы используем {\em контекст} \alert{$\Gamma$},
   который задаёт назначение типов для переменных и констант:
 
   \alert{$$ \Gamma \vdash t : \sigma $$}
@@ -308,7 +308,7 @@
 }
 
 \frame{
-  \frametitle{Формальные правила типизирования}
+  \frametitle{Формальные правила типизации}
   % Formal typing rules
 
   Отношение к типам задаётся следующим образом:
@@ -346,8 +346,8 @@
   По соглашению, мы пишем просто \alert{$\lamb{x} x : \sigma \to \sigma$}.
   % By convention, we just write \alert{$\lamb{x} x : \sigma \to \sigma$}.
 
-  Заметим, что контекст сыграл ключевую роль для <<связи>> разных вхождений
-  одной и той же переменной.  В типизировании по Чёрчу это бы не
+  Заметим, что контекст сыграл ключевую роль для <<связи>> разных
+  вхождений одной и той же переменной.  В типизации по Чёрчу это бы не
   понадобилось, ибо каждая переменная несёт в себе тип.
   % Note that the context was crucial to <<link>> different occurrences of the same
   % variable. In Church typing this would not have been needed as each variable
@@ -382,8 +382,8 @@
   %   \sigma$} and \alert{$t \goesto t'$}, then also \alert{$\Gamma
   %   \vdash t' : \sigma$}.
 
-  Это означает, что статическое типизирование и динамическое исполнение
-  не мешают друг другу.
+  Это означает, что статическая типизация и динамическое исполнение не
+  мешают друг другу.
   % This shows that static typing and dynamic execution don't
   % interfere with each other.
 }
@@ -429,7 +429,7 @@
   \frametitle{Полиморфизм}
   % Polymorphism
 
-  Типизирование по Карри уже даёт нам форму {\em полиморфизма}.  В том
+  Типизация по Карри уже даёт нам форму {\em полиморфизма}.  В том
   смысле, что данный терм может иметь разные типы.  Мы различаем:
   % The Curry typing system already gives us a form of {\em
   %   polymorphism}, in that a given term may have different types. We
@@ -510,7 +510,7 @@
   % First, we make the {\tt let} construct {\em primitive}, instead of
   % regarding it as syntactic sugar, as before.
 
-  Во-вторых, мы добавим новое правило типизирования:
+  Во-вторых, мы добавим новое правило типизации:
   % Secondly, we add a new typing rule:
 
   \alert{$$ \frac{\Gamma \vdash s : \sigma \;\;\; \Gamma \vdash t[s/x] : \tau}
@@ -573,7 +573,7 @@
   % expression, even if it contains no type information at all.
 
   В ML используется этот алгоритм.  Поэтому в ML никогда не надо
-  прописывать типы.  Всё типизировано неявно.
+  прописывать типы.  Назначение типов происходит неяно.
   % ML implementations use this algorithm. Therefore it is never necessary in ML to
   % write down a type. All typing is implicit.
 
@@ -588,7 +588,7 @@
 }
 
 \frame{
-  \frametitle{Жёсткая нормализация}
+  \frametitle{Сильная нормализация}
   % Strong normalization
 
   Вспомним наш пример терма, у которого нет нормальной формы.  Например,
@@ -606,7 +606,7 @@
   В типизированном $\lambda$-исчислении такого не может произойти~--- у
   любого типизируемого терма есть нормальная форма, и все
   последовательности редукций завершаются на нормальной форме.  Это
-  свойство называется {\em жёсткой нормализацией}.
+  свойство называется {\em сильной нормализацией}.
   % In typed lambda calculus, this cannot happen --- every typable term has a
   % normal form and all reduction sequences terminate in that normal form. This
   % property is known as {\em strong normalization}.
