@@ -1,29 +1,56 @@
-\chapter{Lambda calculus as a programming language}
+\chapter{Лямбда-исчисление как язык программирования}
+%\chapter{Lambda calculus as a programming language}
 
-One of the central questions studied by logicians in the 1930s was the {\em
-Entscheidungsproblem} or `decision problem'. This asked whether there was some
-systematic, mechanical procedure for deciding validity in first order logic. If
-it turned out that there was, it would have fundamental philosophical, and
-perhaps practical, significance. It would mean that a huge variety of
-complicated mathematical problems could in principle be solved purely by
-following some single fixed method --- we would now say {\em algorithm} --- no
-additional creativity would be required.
+<<Проблема разрешимости>> (также известная как {\em Entscheidungsproblem})
+была одним из основных предметов изучения логиков 1930-х. Формулировка задачи
+такова: существует ли некоторая систематическая (механическая) процедура 
+определения истинности утверждения в логике первого порядка? 
+Положительный ответ на этот вопрос имел бы фундаментальное философское и, 
+возможно, практическое значение: принципиальную возможность решить большое 
+количество разнообразных сложных математических задач исключительно при помощи
+некоторого фиксированного метода (в настоящий момент используется термин
+{\em алгоритм}) без привлечения дополнительных творческих усилий.
+%One of the central questions studied by logicians in the 1930s was the {\em
+%Entscheidungsproblem} or `decision problem'. This asked whether there was some
+%systematic, mechanical procedure for deciding validity in first order logic. If
+%it turned out that there was, it would have fundamental philosophical, and
+%perhaps practical, significance. It would mean that a huge variety of
+%complicated mathematical problems could in principle be solved purely by
+%following some single fixed method --- we would now say {\em algorithm} --- no
+%additional creativity would be required.
 
-As it stands the question is hard to answer, because we need to define in
-mathematical terms what it means for there to be a `systematic, mechanical'
-procedure for something. Perhaps \citeN{turing} gave the best analysis, by
-arguing that the mechanical procedures are those that could in principle be
-performed by a reasonably intelligent clerk with no knowledge of the underlying
-subject matter. He abstracted from the behaviour of such a clerk and arrived at
-the famous notion of a `Turing machine'. Despite the fact that it arose by
-considering a {\em human} `computer', and was purely a mathematical
-abstraction, we now see a Turing machine as a very simple computer. Despite
-being simple, a Turing machine is capable of performing any calculation that
-can be done by a physical computer.\footnote{Actually more, since it neglects
-the necessary finite limit to the computer's store. Arguably any existing
-computer is actually a finite state machine, but the assumption of unbounded
-memory seems a more fruitful abstraction.} A model of computation of equal
-power to a Turing machine is said to be {\em Turing complete}.
+Очевидно, что проблема разрешимости непроста, поскольку требует точного 
+определения понятия <<систематической>> либо <<механической>> процедуры 
+на языке математики. В работе~\citeN{turing} даётся, вероятно, лучший
+анализ этой задачи. В ней также утверждается, что механическими можно считать 
+действия, которые могут быть в принципе выполнены достаточно умным клерком, 
+не обладающим знаниями об объекте этих действий. Абстрагирование поведения 
+такого клерка привело в дальнейшем к известному понятию <<машины Тьюринга>>.
+Вопреки тому, что эта концепция была чисто математической, а роль исполнителя 
+действий первоначально предназначалась человеку, мы можем также рассматривать 
+машину Тьюринга как очень простой компьютер. Несмотря на простоту, эта машина
+способна проделать любые вычисления, доступные реальным машинным исполнителям.%
+\footnote{В действительности, машина Тьюринга обладает большей вычислительной
+полнотой за счет отсутствия ограничений на объем доступной памяти. Строго 
+говоря, любой существующий компьютер алгоритмически эквивалентен конечному
+автомату, но для удобства принято также полагать объем его памяти бесконечным.}
+Вычислительную модель, эквивалентную по своей полноте машине Тьюринга, 
+принято называть {\em полной по Тьюрингу} либо {\em Тьюринг-полной}.
+%As it stands the question is hard to answer, because we need to define in
+%mathematical terms what it means for there to be a `systematic, mechanical'
+%procedure for something. Perhaps \citeN{turing} gave the best analysis, by
+%arguing that the mechanical procedures are those that could in principle be
+%performed by a reasonably intelligent clerk with no knowledge of the underlying
+%subject matter. He abstracted from the behaviour of such a clerk and arrived at
+%the famous notion of a `Turing machine'. Despite the fact that it arose by
+%considering a {\em human} `computer', and was purely a mathematical
+%abstraction, we now see a Turing machine as a very simple computer. Despite
+%being simple, a Turing machine is capable of performing any calculation that
+%can be done by a physical computer.\footnote{Actually more, since it neglects
+%the necessary finite limit to the computer's store. Arguably any existing
+%computer is actually a finite state machine, but the assumption of unbounded
+%memory seems a more fruitful abstraction.} A model of computation of equal
+%power to a Turing machine is said to be {\em Turing complete}.
 
 At about the same time, there were several other proposed definitions of
 `mechanical procedure'. Most of these turned out to be equivalent in power to
