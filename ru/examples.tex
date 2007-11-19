@@ -2566,14 +2566,13 @@ $$
 точного совпадения во всём, но учтём самое главное: 
 символьно-цифровые идентификаторы, начинающиеся с буквы {\em в верхнем регистре}
 или знака подчёркивания, рассматриваются как переменные, а другие 
-символьно-цифровые идентификаторы и числа~-- как константы. Например, {\verb+X+} 
-и {\verb+Answer+}~-- переменные,
+символьно-цифровые идентификаторы и числа~-- как константы. Например, 
+{\verb+X+} и {\verb+Answer+}~-- переменные,
 тогда как {\verb+x+} и {\verb+john+}~-- константы. Символьные идентификаторы,
 также как константы не различаются, в отличии от символов пунктуации: левой
 и правой скобок, запятой и точки с запятой - их различать будем. 
 Непунктуационные символы собираются вместе до строки наибольшей возможной 
-длины, так что не рекомендуется использовать идентификаторы лишь из одного 
-символа.  
+длины.  
 % In order to follow Prolog conventions, which include case sensitivity, we also
 % modify lexical analysis. We will not attempt to conform exactly to the full
 % details of Prolog, but one feature is very important: alphanumeric identifiers
@@ -2665,8 +2664,6 @@ $$
 \begin{eqnarray*}
 term\mbox{.}    & &                                             \\
 term            & \mbox{ :- } & term_1,\ldots,term_n\mbox{.}
-\footnote{ правило $term \mbox{:- } term_1,\ldots,term_n\mbox{.}$ дословно означает:  
-$term$ если $term_1$ и $term_2$, и \ldots  $term_n$  }
 \end{eqnarray*}
 
 \noindent Собственно анализаторы:
@@ -2727,12 +2724,12 @@ $term$ если $term_1$ и $term_2$, и \ldots  $term_n$  }
 % term_1,\ldots,term_n\mbox{.}$, if the goal matches $term$, then Prolog needs to
 % solve each $term_i$ as a subgoal in order to finish the original goal.
 
-Однако, цели и правила не обязаны совпадать в точности до терма. В состав цели и 
-сопоставляемого правила могут входить переменные, и при сравнении цели с правилом
-переменные могут присваивать (правильно было бы говорить связывать) соответствующие
-значения. Такое сравнение со связыванием называется {\em унификацией}. 
-Оно означает, что мы можем пренебречь проверкой отдельных вариантов исходной 
-цели, т.е. ограничиться $P(Y)$ вместо $P(f(X))$. Например:
+Однако, цели и правила не обязаны совпадать в точности до терма. В состав цели
+и сопоставляемого правила могут входить переменные, и при сравнении цели с
+правилом переменные могут присваивать (правильно было бы говорить связывать) 
+соответствующие значения. Такое сравнение со связыванием называется 
+{\em унификацией}. Оно означает, что мы можем пренебречь проверкой отдельных 
+вариантов исходной цели, т.е. ограничиться $P(Y)$ вместо $P(f(X))$. Например:
 % However, goals and rules do not have to be exactly the same. Instead, Prolog
 % assigns variables in both the goal and the rule to make them match up, a
 % process known as {\em unification}. This means that we can end up proving a
@@ -2741,13 +2738,13 @@ $term$ если $term_1$ и $term_2$, и \ldots  $term_n$  }
 
 \begin{itemize}
 
-\item Для унификации $f(g(X),Y)$ и $f(g(a),X)$ мы можем связать
+\item Для унификации $f(g(X),Y)$ и $f(g(a),X)$ связываются
 $X = a$ и $Y = a$. После этого термы будут: $f(g(a),a)$.
 
-\item Для унификации $f(a,X,Y)$ и $f(X,a,Z)$ мы связываем 
+\item Для унификации $f(a,X,Y)$ и $f(X,a,Z)$ связываются 
 $X = a$ и $Y = Z$, после чего оба терма примут вид $f(a,a,Z)$.
 
-\item Недопустимо унифицировать $f(X)$ и $X$.
+\item Недопустимо унифицировать $f(X)$ и $X$ ().
 % \item To unify $f(g(X),Y)$ and $f(g(a),X)$ we can set
 % $X = a$ and $Y = a$. Then both terms are $f(g(a),a)$.
 % 
@@ -2758,8 +2755,8 @@ $X = a$ и $Y = Z$, после чего оба терма примут вид $f(a,a,Z)$.
 
 \end{itemize}
 
-В общем случае, унификация неоднозначна. Например, во втором примере мы
-могли выбрать связывание $Y = f(b)$ и $Z = f(b)$. Однако, всегда 
+В общем случае, унификация неоднозначна. Например, во втором примере
+можно выбрать связывание $Y = f(b)$ и $Z = f(b)$. Однако, всегда 
 предпочтительнее {\em наиболее общая} унификация, из которой остальные 
 выводятся дальнейшей конкретизацией (сравните с наиболее общими типами в ML). 
 Для того чтобы найти её, требуется рекурсивно (и синхронно) обходить 
@@ -2803,13 +2800,13 @@ $X = a$ и $Y = Z$, после чего оба терма примут вид $f(a,a,Z)$.
             else raise (error "functions do not match");;
 \end{lstlisting}\end{boxed}
 
-\noindent Здесь аккумулятор переменных {\tt insts} позволяет избежать так 
-называемой проблемы <<проверки наличия>>. 
-http://en.wikipedia.org/wiki/Occurs_check 
-Также мы должны запретить связывания переменной $X$ с нетривиальным термом, 
+\noindent Аккумулятор переменных {\tt insts} должен пополнятся с некоторой 
+<<проверкой наличия>>. {\tt http://en.wikipedia.org/wiki/Occurs\_check }
+А именно, мы должны запретить связывания переменной $X$ с нетривиальным термом, 
 включающем $X$, как в третьем примере выше. Большинство реализаций Пролога 
-игнорируют это или по (заявленным) причинам эффективности, или для поддержки
-причудливых циклических структур данных, кроме простых термов первого порядка.  
+игнорируют подобную проверку или по (заявленным) причинам эффективности, 
+или для поддержки циклических структур данных, более сложных чем простые 
+термы первого порядка.  
 % \noindent where the instantiation lists need to be augmented with some care to
 % avoid the so-called `occurs check' problem. We must disallow instantiation of
 % $X$ to a nontrivial term involving $X$, as in the third example above. Most
@@ -2848,8 +2845,8 @@ http://en.wikipedia.org/wiki/Occurs_check
 
 Пролог выполняет поиск в глубину, но он может использовать возврат: допустим
 правило успешно унифицирует цель, но последующие цели не могут быть
-разрешены при текущих связываниях. Тогда выполняется возврат и с текущей целью
-сверяется другое правило.
+разрешены при текущих связываниях. Тогда выполняется возврат, связывание 
+переменных освобождается, и с текущей целью сверяется другое правило.
 % Prolog proceeds by depth-first search, but it may backtrack: even if a rule
 % unifies successfully, if all the remaining goals cannot be solved under the
 % resulting instantiations, then another initial rule is tried. Thus we consider
@@ -2987,10 +2984,11 @@ http://en.wikipedia.org/wiki/Occurs_check
 
 Пролог действует как простой доказыватель теорем, используя базу логических 
 фактов (правил) для доказательства цели. Однако он весьма ограничен в 
-доказательных возможностях, частично из - за неполноты стратегии поиска в 
+доказательных возможностях, частично из-за неполноты стратегии поиска в 
 глубину, частично потому что он может выполнять логические выводы только 
 определённого вида. Вообще, можно реализовать более мощную пролого-подобную 
-систему: \citeN{stickel-pttp}.
+систему: \citeN{stickel-pttp}. Далее мы покажем, как в сущности на тех же 
+идеях (унификация и возврат) строится более функциональный доказыватель теорем.
 % Prolog is acting as a simple theorem prover, using a database of logical facts
 % (the rules) in order to prove a goal. However it is rather limited in the facts
 % it can prove, partly because its depth-first search strategy is incomplete, and
@@ -3000,6 +2998,12 @@ http://en.wikipedia.org/wiki/Occurs_check
 % capable theorem prover using essentially similar technology, including the
 % unification code and an identical backtracking strategy.
 
+Унификация является эффективным способом ограничения переменных с навешенным 
+квантором общности. Например, имея правила $\all{X} p(X) \Imp q(X)$ и 
+$p(f(a))$, можно унифицировать оба выражения, включающие $p$ и тем самым 
+связать $X$ с $f(a)$. Напротив, самые ранние системы доказательства теорем 
+пытались строить всевозможные термы из доступных констант и функций 
+(<<Эрбрановского базиса>>). 
 % In particular, unification is an effective way of deciding how to specialize
 % universally quantified variables. For example, given the facts that
 % $\all{X} p(X) \Imp q(X)$ and $p(f(a))$, we can unify the two
@@ -3008,6 +3012,16 @@ http://en.wikipedia.org/wiki/Occurs_check
 % possible terms built up from the available constants and functions (the
 % `Herbrand base').
 
+Обычно поиск вглубь может привести к бесконечному зацикливанию, так что
+мы должны незначительно изменить стратегию поиска. Будем использовать
+{\em поиск вглубь с итеративным погружением}. Это значит, что поиск вглубь 
+имеет фиксировнную глубину~~- предел, по достижению которого выполняется 
+возврат. Если доказательство не найдено при заданной глубине, её значение
+увеличивается и делается ещё один поиск. Таким образом, сначала ищутся
+доказательства глубины $1$, в случае провала~~- глубины $2$, $3$  и так далее.
+В качестве <<глубины>> могут использоваться различные параметры, например,
+высота или размер дерева поиска; мы будем использовать число унифицируемых
+переменных.
 % Usually, depth-first search would go into an infinite loop, so we need to
 % modify the Prolog strategy slightly. We will use {\em depth first iterative
 % deepening}. This means that the search depth has a hard limit, and attempts to
@@ -3020,6 +3034,8 @@ http://en.wikipedia.org/wiki/Occurs_check
 
 \subsubsection*{Манипулирование формулами}
 
+Для обозначения формул будем использовать термы первого порядка. Добавим также
+новые константы для логических операторов, некоторые из которых - инфиксные.
 % We will simply use our standard first order terms to denote formulas,
 % introducing new constants for the logical operators. Many of these are written
 % infix.
@@ -3027,25 +3043,31 @@ http://en.wikipedia.org/wiki/Occurs_check
 \begin{center}
 \begin{tabular}{|l|l|}
 \hline
-Operator   & Meaning                             \\
+Оператор   & Значение                            \\
 \hline
-{\verb+~+}(p)    & not p                         \\
-p {\verb+&+} q   & p and q                       \\
-p {\verb+|+} q   & p or q                        \\
-p {\verb+-->+} q & p implies q                   \\
-p {\verb+<->+} q & p if and only if q            \\
-forall(X,p)      & for all X, p                  \\
-exists(X,p)      & there exists an X such that p \\
+{\verb+~+}(p)    & не p                         \\
+p {\verb+&+} q   & p и q                       \\
+p {\verb+|+} q   & p или q                        \\
+p {\verb+-->+} q & p влечёт q (импликация)                  \\
+p {\verb+<->+} q & p только и если только q (эквивалентность)            \\
+forall(X,p)      & для всех X, p  (квантор общности)                \\
+exists(X,p)      & существует X такой что p (квантор существования)\\
 \hline
 \end{tabular}
 \end{center}
 
+Альтернативный подход заключается в добавлении отдельного типа для формул,
+но тогда потребуется добавить код и для синтаксического разбора, и печати.
+Из соображений простоты ограничимся первым решением.
 % An alternative would be to introduce a separate type of formulas, but this
 % would require separate parsing and printing support. We will avoid this, for
 % the sake of simplicity.
 
 \subsubsection*{Предварительная обработка формул}
 
+Очевидно, программа упростится, если  основная часть доказывателя не будет 
+работать с импликациями и эквивалентностями. Следовательно, сначала определим 
+функцию, заменяющую их комбинацией других операторов.
 % It's convenient if the main part of the prover need not cope with implications
 % and `if and only if's. Therefore we first define a function that eliminates
 % these in favour of the other connectives.
@@ -3066,6 +3088,10 @@ exists(X,p)      & there exists an X such that p \\
     | t -> t;;
 \end{lstlisting}\end{boxed}
 
+Определим две взаимно рекурсивные функции, которые по формуле и её 
+отрицанию строят <<негативно нормальную форму>>~~- формулу из 
+элементарных термов и их отрицаний, связанных с помощью операторов 
+<<И>>, <<ИЛИ>> и кванторов. 
 % The next step is to push the negations down the formula, putting it into
 % so-called `negation normal form' (NNF). We define two mutually recursive
 % functions that create NNF for a formula, and
@@ -3091,18 +3117,25 @@ exists(X,p)      & there exists an X such that p \\
     | t -> Fn("~",[t]);;
 \end{lstlisting}\end{boxed}
 
+Идея такова: отрицание доказываемой формулы будет конвертироваться в негативно
+нормальную формулу, с которой главный доказыватель будет пытаться получить
+противоречие. Этого будет достаточно для доказательства исходной формулы.
 % We will convert the negation of the input formula into negation normal form,
 % and the main prover will then try to derive a contradiction from it. This will
 % suffice to prove the original formula.
 
 \subsubsection*{Главный доказыватель}
 
+На каждом этапе доказыватель имеет текущую формулу, список формул, которые ещё 
+предстоит рассмотреть и список литералов. Он пытается получить противоречие. 
+Следующая стратегия используются:
+
 % At each stage, the prover has a current formula, a list of formulas yet to be
 % considered, and a list of literals. It is trying to reach a contradiction. The
 % following strategy is employed:
 
 \begin{itemize}
-\item e
+\item Если текущая формула~-- {\em p {\verb+&+} q} то 
 % \item If the current formula is `p {\verb+&+} q', then consider
 % `p' and `q' separately, i.e. make `p' the current formula and add
 % `q' to the formulas to be considered.
