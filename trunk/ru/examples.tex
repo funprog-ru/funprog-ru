@@ -5,7 +5,7 @@
 части из области  <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
 примеров использования ML. От читателя не требуется досконального
 знания всех деталей, как, например, в случае приближения вещественных
-чисел, приведённом далее. Однако важно позапускать эти программы, примеры и 
+чисел, приведённом далее. Однако важно позапускать эти программы, выполнить 
 упражнения. Поскольку нет лучшего способа почувствовать, как  ML используется 
 в действительности.
 
@@ -3015,13 +3015,13 @@ $p(f(a))$, можно унифицировать оба выражения, включающие $p$ и тем самым
 Обычно поиск вглубь может привести к бесконечному зацикливанию, так что
 мы должны незначительно изменить стратегию поиска. Будем использовать
 {\em поиск вглубь с итеративным погружением}. Это значит, что поиск вглубь 
-имеет фиксировнную глубину~~- предел, по достижению которого выполняется 
+имеет фиксировнный предел, по достижению которого выполняется 
 возврат. Если доказательство не найдено при заданной глубине, её значение
 увеличивается и делается ещё один поиск. Таким образом, сначала ищутся
 доказательства глубины $1$, в случае провала~~- глубины $2$, $3$  и так далее.
-В качестве <<глубины>> могут использоваться различные параметры, например,
-высота или размер дерева поиска; мы будем использовать число унифицируемых
-переменных.
+В качестве предельной глубины могут использоваться различные параметры, 
+например, высота или размер дерева поиска; мы будем использовать число 
+унифицируемых переменных.
 % Usually, depth-first search would go into an infinite loop, so we need to
 % modify the Prolog strategy slightly. We will use {\em depth first iterative
 % deepening}. This means that the search depth has a hard limit, and attempts to
@@ -3117,9 +3117,10 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
     | t -> Fn("~",[t]);;
 \end{lstlisting}\end{boxed}
 
-Идея такова: отрицание доказываемой формулы будет конвертироваться в негативно
-нормальную формулу, с которой главный доказыватель будет пытаться получить
-противоречие. Этого будет достаточно для доказательства исходной формулы.
+Идея такова: отрицание доказываемой формулы конвертируется в негативно
+нормальную формулу, с которой главный доказыватель попытается получить
+противоречие. Этого противоречия будет достаточно для доказательства 
+исходной формулы.
 % We will convert the negation of the input formula into negation normal form,
 % and the main prover will then try to derive a contradiction from it. This will
 % suffice to prove the original formula.
@@ -3128,14 +3129,33 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 
 На каждом этапе доказыватель имеет текущую формулу, список формул, которые ещё 
 предстоит рассмотреть и список литералов. Он пытается получить противоречие. 
-Следующая стратегия используются:
+Используется следующая стратегия:
 
 % At each stage, the prover has a current formula, a list of formulas yet to be
 % considered, and a list of literals. It is trying to reach a contradiction. The
 % following strategy is employed:
 
 \begin{itemize}
-\item Если текущая формула~-- {\em p {\verb+&+} q} то 
+\item Если текущая формула~-- {\em p {\verb+&+} q}, то {\em} p и {\em q} 
+рассматриваются по отдельности, т.е {\em p} делается текущей формулой,
+а {\em q} добавляется к формулам <<на рассмотрение>>.
+
+\item Если текущая формула имеет вид {\em p {\verb+|+} q},
+то делается попытка получить противоречие сначала {с \em p}, а затем с {\em q}.
+
+\item Если текущая формула~~- {\em forall(X, p)}, для замещения  {\em X}
+вводится новая переменная, правильное значение может быть
+получено позже, при унификации.
+
+\item Если текущая формула~~- {\em exists(X,p)}, для замещения  {\em X}
+вводится новая константа.
+
+\item В противном случае, формула должна быть литералом, так что
+делается попытка унифицировать его противоречивым литералом.
+
+\item Если унификация не удалась, литерал добавляется в список литералов, 
+а доказыватель переходит к обработке следующей формулы.
+
 % \item If the current formula is `p {\verb+&+} q', then consider
 % `p' and `q' separately, i.e. make `p' the current formula and add
 % `q' to the formulas to be considered.
@@ -3157,6 +3177,16 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 
 \end{itemize}
 
+Нам необходима стратегия возврата, похожая на прологовскую: только
+если текущие связывания позволяют разрешить все оставшиеся цели,
+мы допускаем их. Можно было бы снова использовать списки, но давайте 
+попробуем {\em продолжения}({\em continuations}).
+Продолжение~~- это функция, передающаяся другой функции, которая
+может вызываться из последней <<для выполнения остаточных вычислений>>.
+В нашем случае она принимает список с переменными и пытается разрешить
+оставшиеся цели при заданных связываниях. Следовательно вместо
+попыток явно разрешить оставшиеся цели, мы просто вызываем 
+функцию-продолжение.  
 % We desire a similar backtracking strategy to Prolog: only if the current
 % instantiation allow all remaining goals to be solved do we accept it. We could
 % use lists again, but instead we use {\em continuations}. A continuation is a
@@ -3193,6 +3223,7 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
               prove (hd unexp) (tl unexp) (t::pl) nl n cont i);;
 \end{lstlisting}\end{boxed}
 
+\noindent И, наконец, доказыватель:
 % \noindent We set up the final prover as follows:
 
 \begin{boxed}\begin{lstlisting}
@@ -3206,6 +3237,10 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
     fun t -> prove_iter 0 (nnf_n(proc(parse_term t)));;
 \end{lstlisting}\end{boxed}
 
+Так реализуется стратегия итеративного погружения. Доказыватель пытается
+найти доказательство с наименее общими связываниями переменных; если это 
+удаётся, он возвращает  их число и сами значения переменных.
+
 % This implements the iterative deepening strategy. It tries to find the proof
 % with the fewest universal instantiations; if it succeeds, it returns the number
 % required and any toplevel instantiations, throwing away instantiations for
@@ -3213,6 +3248,7 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 
 \subsubsection*{Примеры}
 
+Вот несколько простых примеров, взятых из \citeN{pelletier-problems}.
 % Here are some simple examples from \citeN{pelletier-problems}.
 
 \begin{boxed}\begin{verbatim}
@@ -3229,6 +3265,7 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
   P19 : int * (string * term) list = 6, []
 \end{verbatim}\end{boxed}
 
+\noindent Пример побольше:
 % \noindent A bigger example is the following:
 
 \begin{boxed}\begin{verbatim}
@@ -3250,6 +3287,7 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
   P55 : int * (string * term) list = 6, []
 \end{verbatim}\end{boxed}
 
+\noindent Фактически, доказыватель может работать <<детективом>>:
 % \noindent In fact, the prover can work out `whodunit':
 
 \begin{boxed}\begin{verbatim}
@@ -3273,12 +3311,16 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 
 \section*{Дальнейшее чтение}
 
+Символьное дифференцирование~~- классическое приложение для функциональных
+языков. Другие символьные операции
 % Symbolic differentiation is a classic application of functional languages.
 % Other symbolic operations are major research issues in their own right ---
 % \citeN{davenport-ca} give a readable overview of what computer algebra systems
 % can do and how they work. \citeN{paulson-rewriting} discusses the kind of
 % simplification strategy we use here in a much more general setting.
 
+Синтаксический анализ с помощью функций высшего порядка~~- другой популярный
+пример.
 % Parsing with higher order functions is another popular example. It seems to
 % have existed in the functional programming folklore for a long time; an early
 % treatment is given by \citeN{burge-recursive}. Our presentation has been
