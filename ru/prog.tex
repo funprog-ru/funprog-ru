@@ -52,65 +52,137 @@
 %memory seems a more fruitful abstraction.} A model of computation of equal
 %power to a Turing machine is said to be {\em Turing complete}.
 
-At about the same time, there were several other proposed definitions of
-`mechanical procedure'. Most of these turned out to be equivalent in power to
-Turing machines. In particular, although it originally arose as a foundation
-for mathematics, lambda calculus can also be seen as a programming language, to
-be executed by performing $\beta$-conversions. In fact, Church proposed before
-Turing that the set of operations that can be expressed in lambda calculus
-formalizes the intuitive idea of a mechanical procedure, a postulate known as
-{\em Church's thesis}. \citeN{church-number} showed that if this was accepted,
-the {\em Entscheidungsproblem} is unsolvable. Turing later showed that the
-functions definable in lambda calculus are precisely those computable by a
-Turing machine, which lent more credibility to Church's claims.
+Почти одновременно с Тьюрингом, другими авторами были предложены независимые 
+определения понятия <<механической процедуры>>, большая часть которых оказалась
+эквивалентной машине Тьюринга по своей вычислительной полноте. В частности,
+лямбда-исчисление, первоначально предназначеннное на роль формальной основы 
+математики, также возможно трактовать и как язык программирования, в котором 
+исполнение программ сводится к последовательности бета-преобразований.
+В самом деле, Чёрч ещё до публикации работ Тьюринга сделал предположение,
+что множество операций, представимых в рамках лямбда-исчисления, является
+формальным эквивалентом интуитивного понятия <<механической процедуры>>. Этот
+постулат был в дальнейшем назван {\em тезисом Чёрча}. 
+В работе~\citeN{church-number} показано, что из этого тезиса следует 
+неразрешимость {\em Entscheidungsproblem}. Тьюринг впоследствие доказал, что
+множество функций, представимых в рамках лямбда-исчисления, в точности 
+совпадает со множеством функций, вычислимых машиной Тьюринга. Этот результат
+послужил ещё одним доводом в пользу справедливости тезиса Чёрча. 
+%At about the same time, there were several other proposed definitions of
+%`mechanical procedure'. Most of these turned out to be equivalent in power to
+%Turing machines. In particular, although it originally arose as a foundation
+%for mathematics, lambda calculus can also be seen as a programming language, to
+%be executed by performing $\beta$-conversions. In fact, Church proposed before
+%Turing that the set of operations that can be expressed in lambda calculus
+%formalizes the intuitive idea of a mechanical procedure, a postulate known as
+%{\em Church's thesis}. \citeN{church-number} showed that if this was accepted,
+%the {\em Entscheidungsproblem} is unsolvable. Turing later showed that the
+%functions definable in lambda calculus are precisely those computable by a
+%Turing machine, which lent more credibility to Church's claims.
 
-To a modern programmer, Turing machine programs are just about recognizable as
-a very primitive kind of machine code. Indeed, it seems that Turing machines,
-and in particular Turing's construction of a `universal machine',\footnote{A
-single Turing machine program capable of simulating any other --- we would now
-regard it as an {\em interpreter}. You will learn about this in the course on
-Computation Theory.} were a key influence in the development of modern stored
-program computers, though the extent and nature of this influence is still a
-matter for controversy \cite{robinson-turing}. It is remarkable that several of
-the other proposals for a definition of `mechanical procedure', often made
-before the advent of electronic computers, correspond closely to real
-programming methods. For example, Markov algorithms, the standard approach to
-computability in the (former) Soviet Union, can be seen as underlying the
-programming language SNOBOL. In what follows, we are concerned with the
-influence of lambda calculus on functional programming languages.
+С точки зрения современных программистов, программы для машины Тьюринга могут
+считаться достаточно примитивной разновидностью машинных кодов. В самом деле,
+очень вероятно, что именно машины Тьюринга, в особенности так называемая
+<<универсальная машина>>,%
+\footnote{Универсальной называется машина Тьюринга, способная воспроизводить
+работу любой другой, т.~е.\ выполнять роль {\em интерпретатора}. Подробнее
+это будет рассмотрено в курсе Computation Theory.} 
+оказали решающее влияние на разработку современных компьютерных архитектур
+с хранимой программой; впрочем, степень этого влияния и его природа продолжают
+служить объектом дискуссий~\cite{robinson-turing}. Примечательно то, что 
+некоторые другие альтернативные определения <<механической процедуры>>, часто
+сформулированные задолго до появления электронных компьютеров, достаточно
+точно соответствуют реальным методам программирования. Например, алгоритмы
+Маркова (формальная вычислительная модель, популярная в Советском Союзе)
+могут считаться основой языка программирования SNOBOL. В дальнейшем нас будет
+интересовать аналогичное влияние лямбда-исчисления на эволюцию функциональных
+языков.
+%
+%To a modern programmer, Turing machine programs are just about recognizable as
+%a very primitive kind of machine code. Indeed, it seems that Turing machines,
+%and in particular Turing's construction of a `universal machine',\footnote{A
+%single Turing machine program capable of simulating any other --- we would now
+%regard it as an {\em interpreter}. You will learn about this in the course on
+%Computation Theory.} were a key influence in the development of modern stored
+%program computers, though the extent and nature of this influence is still a
+%matter for controversy \cite{robinson-turing}. It is remarkable that several of
+%the other proposals for a definition of `mechanical procedure', often made
+%before the advent of electronic computers, correspond closely to real
+%programming methods. For example, Markov algorithms, the standard approach to
+%computability in the (former) Soviet Union, can be seen as underlying the
+%programming language SNOBOL. In what follows, we are concerned with the
+%influence of lambda calculus on functional programming languages.
 
-LISP, the second oldest high level language (FORTRAN being the oldest) took a
-few ideas from lambda calculus, in particular the notation `$(\mbox{LAMBDA}
-\cdots)$' for anonymous functions. However it was not really based on lambda
-calculus at all. In fact the early versions, and some current dialects, use a
-system of {\em dynamic binding} that does not correspond to lambda calculus.
-(We will discuss this later.) Moreover there was no real support for higher
-order functions, while there was considerable use of imperative features.
-Nevertheless LISP deserves to be considered as the first functional programming
-language, and pioneered many of the associated techniques such as automatic
-storage allocation and garbage collection.
+Язык LISP, второй (после FORTRAN) старейший язык высокого уровня, использует
+некоторые понятия лямбда-исчисления, в частности, обозначение 
+$(\mbox{LAMBDA}\cdots)$ для безымянных функций, но в целом ему не соответствует.
+В самом деле, как ранние версии языка, так и некоторые его современные диалекты
+используют принцип {\em динамического связывания} имён переменных, 
+несовместимый с лямбда-исчислением (подробное обсуждение см.\ ниже).
+Более того, в ранних версиях отсутствовала приемлемая поддержка понятия
+функций высших порядков, зато имелся существенный объем императивных 
+конструкций. Но несмотря на это, LISP заслуживает внимания как первый
+функциональный язык программирования, в котором также впервые были реализованы
+многие сопутствующие возможности, такие как автоматическое распределение памяти
+и <<сборка мусора>>.
+%
+%LISP, the second oldest high level language (FORTRAN being the oldest) took a
+%few ideas from lambda calculus, in particular the notation `$(\mbox{LAMBDA}
+%\cdots)$' for anonymous functions. However it was not really based on lambda
+%calculus at all. In fact the early versions, and some current dialects, use a
+%system of {\em dynamic binding} that does not correspond to lambda calculus.
+%(We will discuss this later.) Moreover there was no real support for higher
+%order functions, while there was considerable use of imperative features.
+%Nevertheless LISP deserves to be considered as the first functional programming
+%language, and pioneered many of the associated techniques such as automatic
+%storage allocation and garbage collection.
 
-The influence of lambda calculus really took off with the work of Landin and
-Strachey in the 60s. In particular, Landin showed how many features of current
-(imperative) languages could usefully be analyzed in terms of lambda calculus,
-e.g. the notion of variable scoping in Algol 60. \citeN{landin-700} went on to
-propose the use of lambda calculus as a core for programming languages, and
-invented a functional language ISWIM (`If you See What I Mean'). This was
-widely influential and spawned many real languages.
+Влияние лямбда-исчисления на языки программирования приобрело реальный вес
+с появлением в 1960-х работ Лэндина и Стрейчи. В частности, Лэндин показал,
+что множество свойств распространённых в то время (императивных) языков может
+успешно анализироваться в терминах лямбда-исчисления, к примеру, понятие
+областей видимости переменных в Algol~60. В работе~\citeN{landin-700} было
+предложено использовать лямбда-исчисление как основу языков программирования,
+примером чего послужил функциональный язык~ISWIM
+(<<If you See What I Mean>>---досл.\ <<Если вам понятно, о чём речь>>).
+Эта публикация завоевала в дальнейшем широкую известность и стала отправной 
+точкой в разработке многих других языков, нашедших практическое применение.
+%The influence of lambda calculus really took off with the work of Landin and
+%Strachey in the 60s. In particular, Landin showed how many features of current
+%(imperative) languages could usefully be analyzed in terms of lambda calculus,
+%e.g. the notion of variable scoping in Algol 60. \citeN{landin-700} went on to
+%propose the use of lambda calculus as a core for programming languages, and
+%invented a functional language ISWIM (`If you See What I Mean'). This was
+%widely influential and spawned many real languages.
 
-ML started life as the metalanguage (hence the name ML) of a theorem proving
-system called Edinburgh LCF \cite{gordon-lcfbook}. That is, it was intended as
-a language in which to write algorithms for proving theorems in a formal
-deductive calculus. It was strongly influenced by ISWIM but added an innovative
-polymorphic type system including abstract types, as well as a system of {\em
-exceptions} to deal with error conditions. These facilities were dictated by
-the application at hand, and this policy resulted in a coherent and focused
-design. This narrowness of focus is typical of successful languages (C is
-another good example) and contrasts sharply with the failure of
-committee-designed languages like Algol 60 which have served more as a source
-of important ideas than as popular practical tools. We will have more to say
-about ML later. Let us now see how {\em pure lambda calculus} can be used as a
-programming language.
+Язык~ML ведёт свою историю с появления в роли метаязыка (откуда, собственно,
+и происходит его название ML, Meta Language) системы доказательства теорем
+Edinburgh LCF~\cite{gordon-lcfbook}. Это значит, что язык был предназначен
+для реализации алгоритмов логического вывода в формальном дедуктивном 
+исчислении. Определение языка обнаруживает существенное влияние~ISWIM, но
+в отличие от последнего, ML был расширен такими возможностями, как
+новаторская полиморфная типизация, включающая абстрактные типы данных,
+либо система обработки ошибок на основе {\em исключений}. Эти черты языка
+были введены, исходя из реальных практических потребностей, что в итоге
+привело к целостному и точному дизайну.
+Подобная узкая специализация характерна для успешных языков (язык~C может
+служить ещё одним хорошим примером) и резко их отличает от провальных попыток
+коллективного проектирования, таких как Algol~60, который оказался скорее
+источником важных идей, нежели практичным инструментом. Дальнейшее знакомство
+с ML состоится позже, а в данный момент мы рассмотрим, как в роли языка
+программирования может быть использовано {\em чистое лямбда-исчисление.}
+%ML started life as the metalanguage (hence the name ML) of a theorem proving
+%system called Edinburgh LCF \cite{gordon-lcfbook}. That is, it was intended as
+%a language in which to write algorithms for proving theorems in a formal
+%deductive calculus. It was strongly influenced by ISWIM but added an innovative
+%polymorphic type system including abstract types, as well as a system of {\em
+%exceptions} to deal with error conditions. These facilities were dictated by
+%the application at hand, and this policy resulted in a coherent and focused
+%design. This narrowness of focus is typical of successful languages (C is
+%another good example) and contrasts sharply with the failure of
+%committee-designed languages like Algol 60 which have served more as a source
+%of important ideas than as popular practical tools. We will have more to say
+%about ML later. Let us now see how {\em pure lambda calculus} can be used as a
+%programming language.
 
 \section{Representing data in lambda calculus}
 
