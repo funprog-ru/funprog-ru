@@ -184,94 +184,142 @@ Edinburgh LCF~\cite{gordon-lcfbook}. Это значит, что язык был предназначен
 %about ML later. Let us now see how {\em pure lambda calculus} can be used as a
 %programming language.
 
-\section{Representing data in lambda calculus}
+\section{Представление данных в лямбда-исчислении}
+%\section{Representing data in lambda calculus}
+Программы для своей работы требуют входных данных, поэтому мы начнём с фиксации
+определенного способа представления данных в виде выражений лямбда-исчисления.
+Далее введём некоторые базовые операции над этим представлением. Во многих
+случаях оказывается, что выражение~$s$, представленное в форме, удобной для
+восприятия человеком, может напрямую отображаться в лямбда-выражение~$s'$.
+Этот процесс получил жаргонное название <<синтаксическая глазировка>> 
+(<<syntactic sugaring>>), поскольку делает горькую пилюлю чистой 
+лямбда-нотации более удобоваримой. Введём следующее обозначение:
+%Programs need data to work on, so we start by fixing lambda expressions to
+%encode data. Furthermore, we define a few basic operations on this data. In
+%many cases, we show how a string of human-readable syntax $s$ can be translated
+%directly into a lambda expression $s'$. This procedure is known as `syntactic
+%sugaring' --- it makes the bitter pill of pure lambda notation easier to
+%digest. We write such definitions as:
+%
+$$ 
+ s \defeq s'.
+$$
 
-Programs need data to work on, so we start by fixing lambda expressions to
-encode data. Furthermore, we define a few basic operations on this data. In
-many cases, we show how a string of human-readable syntax $s$ can be translated
-directly into a lambda expression $s'$. This procedure is known as `syntactic
-sugaring' --- it makes the bitter pill of pure lambda notation easier to
-digest. We write such definitions as:
+Будем говорить, что <<$s = s'$ по определению>>; другая общепринятая форма
+записи этого отношения~--- $s =_{def} s'$. При желании, мы можем всегда
+считать, что вводим некоторое константное выражение, определяющее семантику 
+операции, которая затем применяется к своим аргументам в обычном стиле 
+лямбда-исчисления, абстрагируясь тем самым от конкретных обозначений.
+Например, выражение $\mbox{if } E \mbox{ then } E_1 \mbox{else } E_2$
+возможно трактовать как~$\mbox{COND } E\; E_1\; E_2$, где~$\mbox{COND}$~---
+некоторая константа. В подобном случае все переменные в левой части определения
+должны быть связаны операцией абстракции, т.~е.\ вместо
+%
+%This notation means `$s = s'$ by definition'; one also commonly sees this
+%written as `$s =_{def} s'$'. If preferred, we could always regard these as
+%defining a single constant denoting that operation, which is then applied to
+%arguments in the usual lambda calculus style, the surface notation being
+%irrelevant. For example we can imagine `$\mbox{if } E \mbox{ then } E_1 \mbox{
+%else } E_2$' as `$\mbox{COND } E\; E_1\; E_2$' for some constant $\mbox{COND}$.
+%In such cases, any variables on the left of the definition need to be
+%abstracted over, e.g. instead of
+%
+$$ 
+ \mbox{fst}\; p \defeq p\; \mbox{true} 
+$$
+(см.\ ниже) мы можем написать
+%
+%\noindent (see below) we could write
+%
+$$ 
+ \mbox{fst} \defeq \lamb{p} p\; \mbox{true}. 
+$$
 
-$$ s \defeq s' $$
-
-This notation means `$s = s'$ by definition'; one also commonly sees this
-written as `$s =_{def} s'$'. If preferred, we could always regard these as
-defining a single constant denoting that operation, which is then applied to
-arguments in the usual lambda calculus style, the surface notation being
-irrelevant. For example we can imagine `$\mbox{if } E \mbox{ then } E_1 \mbox{
-else } E_2$' as `$\mbox{COND } E\; E_1\; E_2$' for some constant $\mbox{COND}$.
-In such cases, any variables on the left of the definition need to be
-abstracted over, e.g. instead of
-
-$$ \mbox{fst}\; p \defeq p\; \mbox{true} $$
-
-\noindent (see below) we could write
-
-$$ \mbox{fst} \defeq \lamb{p} p\; \mbox{true} $$
-
-\subsection{Truth values and the conditional}
-
-We can use any unequal lambda expressions to stand for `true' and `false', but
-the following work particularly smoothly:
-
+\subsection{Логические значения и условия}
+%\subsection{Truth values and the conditional}
+%
+Для представления логических значений true (<<истина>>) и~false (<<ложь>>)
+годятся любые два различных лямбда-выражения, но наиболее удобно использовать
+следующие:
+%We can use any unequal lambda expressions to stand for `true' and `false', but
+%the following work particularly smoothly:
+%
 \begin{eqnarray*}
 \mbox{true} & \defeq & \lamb{x\; y} x                   \\
 \mbox{false} & \defeq & \lamb{x\; y} y
 \end{eqnarray*}
 
-Given those definitions, we can easily define a conditional expression just
-like C's `{\tt ?:}' construct. Note that this is a conditional {\em expression}
-not a conditional {\em command} (this notion makes no sense in our context) and
-therefore the `else' arm is compulsory:
-
-$$ \mbox{if } E \mbox{ then } E_1 \mbox{ else } E_2 \defeq E\; E_1\; E_2 $$
-
-\noindent indeed we have:
-
+Используя эти определения, легко ввести понятие условного выражения, 
+соответствующего конструкции~{\tt ?~:} языка~C. Отметим, что это условное
+{\em выражение}, а не {\em оператор} (который не имеет смысла в данном 
+контексте), поэтому наличие альтернативы обязательно.
+%Given those definitions, we can easily define a conditional expression just
+%like C's `{\tt ?:}' construct. Note that this is a conditional {\em expression}
+%not a conditional {\em command} (this notion makes no sense in our context) and
+%therefore the `else' arm is compulsory:
+%
+$$ 
+ \mbox{if } E \mbox{ then } E_1 \mbox{ else } E_2 \defeq E\; E_1\; E_2 
+$$
+В самом деле, мы имеем:
+%\noindent indeed we have:
+%
 \begin{eqnarray*}
 \mbox{if } \mbox{true} \mbox{ then } E_1 \mbox{ else } E_2
   & = & \mbox{true}\; E_1\; E_2                 \\
   & = & (\lamb{x\; y} x)\; E_1\; E_2            \\
   & = & E_1
 \end{eqnarray*}
-
-\noindent and
-
+%
+и
+%
+%\noindent and
+%
 \begin{eqnarray*}
 \mbox{if } \mbox{false} \mbox{ then } E_1 \mbox{ else } E_2
   & = & \mbox{false}\; E_1\; E_2                \\
   & = & (\lamb{x\; y} y)\; E_1\; E_2            \\
   & = & E_2
 \end{eqnarray*}
-
-\noindent Once we have the conditional, it is easy to define all the usual
-logical operations:
-
+%
+Определив условное выражение, на его базе легко построить весь традиционный
+набор логических операций:
+%\noindent Once we have the conditional, it is easy to define all the usual
+%logical operations:
+%
 \begin{eqnarray*}
 \mbox{not } p  & \defeq & \mbox{if } p \mbox{ then false else true}          \\
 p \mbox{ and } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
 p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
 \end{eqnarray*}
 
-\subsection{Pairs and tuples}
+\subsection{Пары и кортежи}
+%\subsection{Pairs and tuples}
+%
+Определим представление упорядоченных пар следующим образом:
+%We can represent ordered pairs as follows:
+%
+$$ 
+ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 
+$$
 
-We can represent ordered pairs as follows:
-
-$$ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 $$
-
-The parentheses are not obligatory, but we often use them for the sake of
-familiarity or to enforce associations. In fact we simply regard the comma as
-an infix operator like $+$. Given the above definition, the corresponding
-destructors for pairs can be defined as:
-
+Использование скобок не обязательно, хотя мы часто будем использовать их для
+удобства восприятия либо подчеркивания ассоциативности. На самом деле, мы можем
+трактовать запятую как инфиксную операцию наподобие~$+$. Определив пару, как
+указано выше, зададим соответствующие операции извлечения компонент пары как:
+%The parentheses are not obligatory, but we often use them for the sake of
+%familiarity or to enforce associations. In fact we simply regard the comma as
+%an infix operator like $+$. Given the above definition, the corresponding
+%destructors for pairs can be defined as:
+%
 \begin{eqnarray*}
 \mbox{fst } p & \defeq & p \mbox{ true}                                 \\
 \mbox{snd } p & \defeq & p \mbox{ false}
 \end{eqnarray*}
-
-\noindent It is easy to see that these work as required:
-
+%
+Легко убедиться, что эти определения работают, как требуется:
+%\noindent It is easy to see that these work as required:
+%
 \begin{eqnarray*}
 \mbox{fst}\; (p,q) & = & (p,q)\; \mbox{true}                            \\
                    & = & (\lamb{f} f\; p\; q)\; \mbox{true}             \\
@@ -279,9 +327,10 @@ destructors for pairs can be defined as:
                    & = & (\lamb{x\; y} x)\; p\; q                       \\
                    & = & p
 \end{eqnarray*}
-
-\noindent and
-
+%
+и
+%\noindent and
+%
 \begin{eqnarray*}
 \mbox{snd}\; (p,q) & = & (p,q)\; \mbox{false}                           \\
                    & = & (\lamb{f} f\; p\; q)\; \mbox{false}            \\
@@ -290,14 +339,19 @@ destructors for pairs can be defined as:
                    & = & q
 \end{eqnarray*}
 
-We can build up triples, quadruples, quintuples, indeed arbitrary $n$-tuples,
-by iterating the pairing construct:
-
+Построение троек, четвёрок, пятёрок и так далее вплоть до кортежей произвольной 
+длины~$n$ производится композицией пар:
+%We can build up triples, quadruples, quintuples, indeed arbitrary $n$-tuples,
+%by iterating the pairing construct:
+%
 $$ (E_1,E_2,\ldots,E_n) = (E_1,(E_2,\ldots E_n)) $$
 
-We need simply say that the infix comma operator is right-associative, and can
-understand this without any other conventions. For example:
-
+Всё, что нам при этом потребуется~--- определение, что инфиксный оператор
+запятая правоассоциативен. Дальнейшее понятно без введения дополнительных
+соглашений. Например:
+%We need simply say that the infix comma operator is right-associative, and can
+%understand this without any other conventions. For example:
+%
 \begin{eqnarray*}
 (p,q,r,s) & = & (p,(q,(r,s)))                                            \\
           & = & \lamb{f} f\; p\;  (q,(r,s))                              \\
@@ -305,36 +359,53 @@ understand this without any other conventions. For example:
           & = & \lamb{f} f\; p\; (\lamb{f} f\; q\; (\lamb{f} f\; r\; s)) \\
           & = & \lamb{f} f\; p\; (\lamb{g} g\; q\; (\lamb{h} h\; r\; s))
 \end{eqnarray*}
-
-\noindent where in the last line we have performed an alpha-conversion for the
-sake of clarity. Although tuples are built up in a flat manner, it is easy to
-create arbitrary finitely-branching tree structures by using tupling
-repeatedly. Finally, if one prefers conventional functions over Cartesian
-products to our `curried' functions, one can convert between the two using the
-following:
-
+В последнем выражении для удобства восприятия было произведено 
+альфа-преобразование. Несмотря на то, что кортежи представляют собой 
+<<плоскую>> структуру данных, путём последовательной их композиции возможно
+представить произвольную конечную древовидную структуру. Наконец,
+если кто-то предпочитает традиционные функции, заданные на декартовом 
+произведении, нашим каррированным функциям, преобразовать их друг в друга 
+нетрудно:
+%\noindent where in the last line we have performed an alpha-conversion for the
+%sake of clarity. Although tuples are built up in a flat manner, it is easy to
+%create arbitrary finitely-branching tree structures by using tupling
+%repeatedly. Finally, if one prefers conventional functions over Cartesian
+%products to our `curried' functions, one can convert between the two using the
+%following:
+%
 \begin{eqnarray*}
 \mbox{CURRY}\; f  & \defeq & \lamb{x\; y} f(x,y)             \\
 \mbox{UNCURRY}\;g & \defeq & \lamb{p} g\; (\mbox{fst}\; p)\; (\mbox{snd}\; p)
 \end{eqnarray*}
 
-These special operations for pairs can easily be generalized to arbitrary
-$n$-tuples. For example, we can define a selector function to get the $i^{th}$
-component of a flat tuple $p$. We will write this operation as $(p)_i$ and
-define $(p)_1 = \mbox{fst}\; p$ and the others by $(p)_i = \mbox{fst}\;
-(\mbox{snd}^{i-1}\; p)$. Likewise we can generalize $\mbox{CURRY}$ and
-$\mbox{UNCURRY}$:
-
+Эти специальные операции над парами нетрудно обобщить на случай кортежей
+произвольной длины~$n$. Например, мы можем задать функцию-селектор выборки
+$i\mbox{-го}$ компонента из кортежа~$p$. Обозначим эту операцию~$(p)_i$,
+и определим её как~$(p)_1 = \mbox{fst}\; p$, 
+$(p)_i = \mbox{fst}\;(\mbox{snd}^{i-1}\; p)$. Аналогичным образом возможно
+обобщение~$\mbox{CURRY}$ и~$\mbox{UNCURRY}$:
+%These special operations for pairs can easily be generalized to arbitrary
+%$n$-tuples. For example, we can define a selector function to get the $i^{th}$
+%component of a flat tuple $p$. We will write this operation as $(p)_i$ and
+%define $(p)_1 = \mbox{fst}\; p$ and the others by $(p)_i = \mbox{fst}\;
+%(\mbox{snd}^{i-1}\; p)$. Likewise we can generalize $\mbox{CURRY}$ and
+%$\mbox{UNCURRY}$:
+%
 \begin{eqnarray*}
 \mbox{CURRY}_n\; f  & \defeq & \lamb{x_1\; \cdots \; x_n} f(x_1,\ldots,x_n) \\
 \mbox{UNCURRY}_n\;g & \defeq & \lamb{p} g\; (p)_1 \; \cdots \; (p)_n
 \end{eqnarray*}
-
-\noindent We can now write $\lamb{(x_1,\ldots,x_n)} t$ as an abbreviation for:
-
-$$\mbox{UNCURRY}_n\; (\lamb{x_1\; \cdots \; x_n} t)$$
-
-\noindent giving a natural notation for functions over Cartesian products.
+%
+Воспользуемся обозначением~$\lamb{(x_1,\ldots,x_n)} t$ как сокращённой формой
+записи для
+%\noindent We can now write $\lamb{(x_1,\ldots,x_n)} t$ as an abbreviation for:
+%
+$$
+ \mbox{UNCURRY}_n\; (\lamb{x_1\; \cdots \; x_n} t),
+$$
+обеспечив тем самым естественную нотацию для функций над декартовыми 
+произведениями.
+%\noindent giving a natural notation for functions over Cartesian products.
 
 \subsection{The natural numbers}
 
