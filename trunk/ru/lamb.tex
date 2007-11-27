@@ -1,4 +1,4 @@
-\chapter{$\lambda$-исчисление}
+\chapter[Lambda-исчисление]{$\lambda$-исчисление}
 $\lambda$-исчисление основывается на так называемой `$\lambda$-нотации' для обозначения
 функций.  В неформальной математике, когда кто-то хочет сослаться на функцию, то обычно
 сначала дает этой функции произвольное имя, а затем использует его, например:
@@ -18,14 +18,14 @@ $$ f(x) = \left\{ \begin{array}{ll}
 
 Большинство языков программирования, например C, в этом отношении похожи: мы можем
 определить функции только давая им имена.  Например, для того, чтобы использовать функцию
-successor (которая добавляет $1$ к своим аргументам) не самым простым способом (например,
-используя указатель на нее), то хотя она и является очень простой, но все равно нам нужно
-назвать ее используя определение функции, такое как:
+\texttt{successor} (которая добавляет $1$ к своим аргументам) не самым простым способом
+(например, используя указатель на нее), то хотя она и является очень простой, но все равно
+нам нужно назвать ее используя определение функции, такое как:
 
 \begin{lstlisting}[language=C]
-  int suc(int n)
-   { return n + 1;
-   }
+        int suc(int n) { 
+            return n + 1;
+        }
 \end{lstlisting}
 
 В математике или программировании это кажется нормальным, и в общем случае, работает
@@ -64,14 +64,14 @@ $\lamb{x} x$ является функцией отображения (????? identity function), которая пр
 
 Выбор символа $\lambda$ является произвольным, и не несет никакой смысловой нагрузки.
 (Можно часто видеть, особенно во французских текстах, альтернативную нотацию $[x]\;
-t[x]$.)  Apparently it arose by a complicated process of evolution. Originally, the famous
-{\em Principia Mathematica} \cite{whitehead-principia} used the `hat' notation
-$t[\hat{x}]$ for the function of $x$ yielding $t[x]$. Church modified this to
-$\hat{x}.\;t[x]$, but since the typesetter could not place the hat on top of the $x$, this
-appeared as ${\tiny \wedge} x.\;t[x]$, which then mutated into $\lamb{x} t[x]$ in the
-hands of another typesetter.
+t[x]$.)  Вероятно, что она возникла во время сложного процесса эволюции.  В начале, в
+известной книге {\em Principia Mathematica} \cite{whitehead-principia} использовалась
+`hat'-нотация $t[\hat{x}]$ для функции от $x$ производящей $t[x]$.  Черч (Church) изменил
+его на $\hat{x}.\;t[x]$, но поскольку наборщики текстов не могли поместить значок `hat'
+(крыша) над $x$, то оно появилось как ${\tiny \wedge} x.\;t[x]$, которое затем
+трансформировалось в $\lamb{x} t[x]$ в руках других наборщиков.
 
-\section{Преимущества $\lambda$-нотации}
+\section[Преимущества Lambda-нотации]{Преимущества $\lambda$-нотации}
 
 Using $\lambda$- notation we can clear up some of the confusion engendered by
 informal mathematical notation. For example, it's common to talk sloppily about
@@ -237,7 +237,7 @@ $\lambda$- notation with a notion of {\em type}; we shall consider this in a lat
 chapter. However the paradox itself is suggestive of some interesting
 possibilities in the standard, untyped, system, as we shall see later.
 
-\section{$\lambda$- calculus as a formal system}
+\section[Lambda-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
 
 We have taken for granted certain obvious facts, e.g. that $(\lamb{y} 1 + y)\;2
 = 1 + 2$, since these reflect the intended meaning of abstraction and
@@ -257,7 +257,7 @@ brain. [\ldots] Civilisation advances by extending the number of important
 operations which can be performed without thinking about them.
 \end{quote}
 
-\subsection{$\lambda$- terms}
+\subsection[Lambda-термы]{$\lambda$-термы}
 
 $\lambda$- calculus is based on a formal notion of $\lambda$- term, and these terms are
 built up from variables and some fixed set of constants using the operations of
@@ -482,7 +482,7 @@ a technical device to change the names of bound variables, while
 $\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
 interest to those taking a logical, not a programming, view of $\lambda$- calculus.
 
-\subsection{$\lambda$- equality}
+\subsection[Равенство Lambda]{Равенство $\lambda$}
 
 Using these conversion rules, we can define formally when two $\lambda$- terms are
 to be considered equal. Roughly, two terms are equal if it is possible to get
@@ -551,7 +551,7 @@ $y$ when $x$ is not free in $t$. This is the import of $\eta$-conversion, and
 having discussed that, we will largely ignore it in favour of the more
 computationally significant $\beta$-conversion.
 
-\subsection{$\lambda$- reduction}
+\subsection[Lambda-редукция]{$\lambda$-редукция}
 
 $\lambda$- equality, unsurprisingly, is a symmetric relation. Though it captures
 the notion of equivalence of $\lambda$- terms well, it is more interesting from a
@@ -852,7 +852,7 @@ evaluate combinatory expressions.
 % Term model is possible and by CRT nontrivial, but there's little point; such a
 % model is not so likely to give new insight.
 
-\section*{Further reading}
+\section*{Дополнительная литература}
 
 An encyclopedic but clear book on $\lambda$- calculus is \citeN{barendregt}.
 Another popular textbook is \citeN{hindley-seldin}. Both these contain proofs
@@ -860,7 +860,7 @@ of the results that we have merely asserted. A more elementary treatment
 focused towards computer science is Part II of \citeN{gordon-plt}. Much of our
 presentation here and later is based on this last book.
 
-\section*{Exercises}
+\section*{Упражнения}
 
 \begin{enumerate}
 
