@@ -570,14 +570,14 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы учитывать
        | t -> t;;
 \end{verbatim}\end{boxed}
 
-Мы просто применяем упрощение, начиная с корня дерева выражения. Мы выполняем 
+Упрощение применяется, начиная с корня дерева выражения. Мы выполняем 
 его в обходе снизу - вверх. 
 % This will also bring negations upwards through products. 
 % - что - то про знак "-"  
-В некоторых случаях было бы более эффективно упрощение при обходе сверху - вниз, 
-например, для $0 * t$ и сложного выражения $t$, но это потребует повторения
-в случае термов вроде $(0 + 0) * 2$. Выбор здесь напоминает выбор между
-нормальным и аппликативным порядком редукции в лямбда-исчислении.
+В некоторых случаях было бы более эффективно упрощение при обходе сверху~~- 
+вниз, например, для $0 * t$ и сложного выражения $t$, но это потребует 
+повторения в случае термов вроде $(0 + 0) * 2$. Выбор здесь напоминает выбор 
+между нормальным и аппликативным порядком редукции в лямбда-исчислении.
 
 
 %%This just applies the simplification at the top level of the term. We need to
@@ -671,10 +671,10 @@ $x - (y - z)$ и $(x - y) - z$. (Более усложнённая схема могла бы учитывать
   sec(x) ^ 2
 \end{verbatim}\end{boxed}
 
-Такая запись и короче, и более привычна. Тем не менее, такое решение основывается
-на том, что мы знаем определения  довольно неприметных тригонометрических функций,
-вроде {\tt sec}. Что бы машина не решила делать, вероятно, найдётся
-пользователь, которого это не устроит.
+Такая запись и короче, и более привычна. Тем не менее, такое решение 
+основывается на том, что мы знаем определения  довольно редко используемых 
+тригонометрических функций, вроде {\tt sec}. Что бы машина не решила делать, 
+вероятно, найдётся пользователь, которого это не устроит.
 
 %%Certainly, it is shorter and more conventional. However it relies on the fact
 %%that we know the definitions of these fairly obscure trig functions like {\tt
@@ -3287,7 +3287,7 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
   P55 : int * (string * term) list = 6, []
 \end{verbatim}\end{boxed}
 
-\noindent Фактически, доказыватель может работать <<детективом>>:
+\noindent Фактически доказыватель может работать детективом:
 % \noindent In fact, the prover can work out `whodunit':
 
 \begin{boxed}\begin{verbatim}
@@ -3312,7 +3312,10 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 \section*{Дальнейшее чтение}
 
 Символьное дифференцирование~~- классическое приложение для функциональных
-языков. Другие символьные операции
+языков. Другие символьные операции имеют ???определённые ограничения~-- 
+\citeN{davenport-ca} содержит обзор того, что могут делать системы компьютерной
+алгебры и как они работают. В \citeN{paulson-rewriting} обсуждается
+стратегия упрощения, использованная нами в более общих условиях. 
 % Symbolic differentiation is a classic application of functional languages.
 % Other symbolic operations are major research issues in their own right ---
 % \citeN{davenport-ca} give a readable overview of what computer algebra systems
@@ -3320,12 +3323,24 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 % simplification strategy we use here in a much more general setting.
 
 Синтаксический анализ с помощью функций высшего порядка~~- другой популярный
-пример.
+пример. Похоже он давно уже вошёл в в фольклор функционального программирования;
+первоначально он был рассмотрен в \citeN{burge-recursive}. Наши примеры 
+основываются на \citeN{paulson-ml} и \citeN{reade-efp}.
 % Parsing with higher order functions is another popular example. It seems to
 % have existed in the functional programming folklore for a long time; an early
 % treatment is given by \citeN{burge-recursive}. Our presentation has been
 % influenced by the treatments in \citeN{paulson-ml} and \citeN{reade-efp}.
 
+Первое определение <<вычислимого вещественного числа>> в нашем смысле 
+первоначально было дано в \citeN{turing}. Его подход основывался на
+десятичных расширениях, но позже потребовались изменения~--\cite{turing2},
+по причинам, рассматриваемым нами далее в упражнениях. Подход к 
+вещественной арифметике, осуществлённый нами, основывается на работе 
+\citeN{boehm-cartwright}. Недавняя более эффективная реализация в CAML Light
+была описана в \citeN{menisse-thesis}. Эта статья (на французском)
+содержит подробное доказательство корректности всех алгоритмов для 
+элементарных трансцендентных функций???. Альтернативное решение использует
+<<дробно-линейные преобразования>>, см. \citeN{potts-thesis}.
 % The first definition of `computable real number' in our sense was in the
 % original paper of \citeN{turing}. His approach was based on decimal expansions,
 % but he needed to modify it \cite{turing2} for reasons explored in the exercises
@@ -3336,6 +3351,18 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 % transcendental functions. For an alternative approach using `linear fractional
 % transformations', see \citeN{potts-thesis}.
 
+Наш подход к прологовскому поиску и возврату, основанный на использовании 
+списков и продолжений, достаточно стандартен. За подробностями о реализации
+Пролога обращайтесь, например, к \citeN{boizumault-prolog}, с подробностями о 
+текущем использовании языка стоит ознакомиться по \citeN{clocksin-mellish}.
+Детальное обсуждение продолжений, во многих их проявлениях, даётся 
+в \citeN{reynolds-continuations}. Алгоритм унификации, расммотренный в 
+курсе прост и достаточно функционален, но не блещет эффективностью.
+За информацией о более быстрых императивных алгоритмах обращайтесь к
+\citeN{martelli-montanari}. Наш доказыватель теорем основывается на 
+\mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$} \cite{beckert-posegga}.
+О другом важном методе доказывания теорем, для удобства основывающемся
+на прологовском стиле поиска, можно прочитать в \cite{stickel-pttp}.
 % Our approach to Prolog search and backtracking, either using lists or
 % continuations, is fairly standard. For more on implementing Prolog, see for
 % example \citeN{boizumault-prolog}, while for more on the actual use of the
@@ -3357,67 +3384,93 @@ exists(X,p)      & существует X такой что p (квантор существования)\\
 % \item Modify the printer so that each operator has an associativity, used when
 % printing iterated cases of the operator to avoid excessive parentheses.
 
-\item The differentiation rules for inverses $1 / g(x)$ and quotients $f(x) /
-g(x)$ are not valid when $g(x) = 0$. Several others for functions like $ln$ are
-also true only under certain conditions. Actually most commercial computer
-algebra systems ignore this fact. However, try to do better, by writing a new
-version of the differentiator that not only produces the derivative but also a
-list of conditions that must be assumed for the derivative to be valid.
+\item Правила дифференцирования для $1 / g(x)$ и $f(x) / g(x)$  не корректны,
+когда $g(x) = 0$. В действительности большинство коммерческих систем 
+компьютерной алгебры игнорирует это факт. Напишите новую версию
+{\tt differentiate}, которая возвращает не только производную, но также и список
+условий, которые должны удовлетворяться, чтобы производная считалась корректной.
+% \item The differentiation rules for inverses $1 / g(x)$ and quotients $f(x) /
+% g(x)$ are not valid when $g(x) = 0$. Several others for functions like $ln$ are
+% also true only under certain conditions. Actually most commercial computer
+% algebra systems ignore this fact. However, try to do better, by writing a new
+% version of the differentiator that not only produces the derivative but also a
+% list of conditions that must be assumed for the derivative to be valid.
 
-\item Try programming a simple procedure for indefinite integration. In
-general, it will not be able to do every integral, but try to make it
-understand a few basic principles.\footnote{In fact there are algorithms that
-can integrate all algebraic expressions (not involving $sin$, $ln$ etc.) ---
-see \citeN{davenport-integration}.}
+\item Попробуйте запрограммировать простую процедуру интегрирования.
+В общем, она не 
+% \item Try programming a simple procedure for indefinite integration. In
+% general, it will not be able to do every integral, but try to make it
+% understand a few basic principles.\footnote{In fact there are algorithms that
+% can integrate all algebraic expressions (not involving $sin$, $ln$ etc.) ---
+% see \citeN{davenport-integration}.}
 
-\item Read the documentation for the {\tt format} library, and try to implement
-a printer that behaves better when the output is longer than one line.
+\item Прочитайте документацию на библиотеку {\tt format}, и попробуйте 
+реализовать форматированную печать многострочного вывода.
+% \item Read the documentation for the {\tt format} library, and try to implement
+% a printer that behaves better when the output is longer than one line.
 
-\item What happens if the parser functions like {\tt term}, {\tt atom} etc. are
-all eta-reduced by deleting the word {\tt input}? What happens if
-{\tt precedence} is consistently eta-reduced by deleting {\tt input}?
+\item Что случится, если функции синтаксического анализатора~~- {\tt term},
+{\tt atom}  и прочие будут \eta~~-редуцированы удалением слова {\tt input}? 
+Что случится, если {\tt precedence} будет последовательно \eta~~-редуцироваться
+с помощью удаления {\tt input}?
+% \item What happens if the parser functions like {\tt term}, {\tt atom} etc. are
+% all eta-reduced by deleting the word {\tt input}? What happens if
+% {\tt precedence} is consistently eta-reduced by deleting {\tt input}?
 
-\item How well do precedence parsers generated by {\tt precedence} treat
-distinct operators with the same precedence? How can the behaviour be improved?
-Can you extend it to allow a mix of left and right associative operators? For
-example, one really wants subtraction to associate to the left.
+\item На сколько хорошо
+% \item How well do precedence parsers generated by {\tt precedence} treat
+% distinct operators with the same precedence? How can the behaviour be improved?
+% Can you extend it to allow a mix of left and right associative operators? For
+% example, one really wants subtraction to associate to the left.
 
-\item Rewrite the parser so that it gives helpful error messages when parsing
-fails.
+\item Перепишите анализатор так, чтобы при ошибках разбора он возвращал
+информативные сообщения.
+% \item Rewrite the parser so that it gives helpful error messages when parsing
+% fails.
 
-\item Try representing a real number by the function that generates the first
-$n$ digits in a decimal expansion. Can you implement the addition function?
+% \item Try representing a real number by the function that generates the first
+% $n$ digits in a decimal expansion. Can you implement the addition function?
 
-\item (*) How can you retain a positional representation while making the basic
-operations computable?
+% \item (*) How can you retain a positional representation while making the basic
+% operations computable?
 
-\item Implement multiprecision integer arithmetic operations yourself. Make
-your multiplication algorithm $O(n^{log_2 3})$ where $n$ is the number of
-digits in the arguments.
+% \item Implement multiprecision integer arithmetic operations yourself. Make
+% your multiplication algorithm $O(n^{log_2 3})$ where $n$ is the number of
+% digits in the arguments.
 
-\item Using {\tt memo} as we have defined it, is it the case that whatever
-series of arguments a function is applied to, it will always give the same
-answer for the same argument? That is, are the functions true mathematical
-functions despite the internal use of references?
+% \item Using {\tt memo} as we have defined it, is it the case that whatever
+% series of arguments a function is applied to, it will always give the same
+% answer for the same argument? That is, are the functions true mathematical
+% functions despite the internal use of references?
 
-\item Write a parser-evaluator to read real-valued expressions and create the
-functional representation for the answer.
+% \item Write a parser-evaluator to read real-valued expressions and create the
+% functional representation for the answer.
 
-\item (*) Extend the real arithmetic routines to some functions like $exp$ and
-$sin$.
+% \item (*) Extend the real arithmetic routines to some functions like $exp$ and
+% $sin$.
 
-\item Our preprocessing and negation normal form process can take exponential
-time in the length of the input in the case of many `if and only if's. Modify
-it so that it is linear in this number.
+\item Наша предподготовка и приведение к негативной нормальной форме могут
+выполняться за время экспоненциальное от длины ввода, если ввод содержит
+множество вхождений операторов эквивалентности. Модифицируйте функции так,
+чтобы зависимость времени от числа операторов была линейной.
+% \item Our preprocessing and negation normal form process can take exponential
+% time in the length of the input in the case of many `if and only if's. Modify
+% it so that it is linear in this number.
 
-\item Extend the initial transformation into negation normal form so that it
-gives Skolem normal form.\footnote{Skolem normal form is covered in most
-elementary logic books, e.g. \citeN{enderton-logic}.}
+\item Измените преобразование {\em nnf\_p / nnf\_n} так, чтобы оно возвращало 
+Сколемовскую нормальную форму.\footnote{Сколемовская нормальная форма 
+рассматривается в большинстве курсов элементарной логики,
+например в \citeN{enderton-logic}. TODO: вариант книги на русском} 
+% \item Extend the initial transformation into negation normal form so that it
+% gives Skolem normal form.\footnote{Skolem normal form is covered in most
+% elementary logic books, e.g. \citeN{enderton-logic}.}
 
-\item (*) Implement a more efficient unification algorithm, e.g. following
-\citeN{martelli-montanari}.
+\item (*) Следуя, например, \citeN{martelli-montanari} реализуйте более
+эффективный алгоритм унификации.
+% \item (*) Implement a more efficient unification algorithm, e.g. following
+% \citeN{martelli-montanari}.
 
-\item (*) Реализуйте аналог Prolog Technology Theorem Prover
+\item (*) Реализуйте аналог Prolog Technology Theorem Prover.
 % \item (*) Implement a version of the Prolog Technology Theorem Prover
 
 \cite{stickel-pttp}
