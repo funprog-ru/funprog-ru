@@ -37,6 +37,7 @@
   * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
   * (e) *plan.tex* - перевод alexott, прочитали
   * (e) *types.tex* - перевод Lambda Henchman, прочитали lg
+  * (e) *prog.tex* - перевод Lambda Henchman, прочитали
 
 = Остальные =
 
@@ -44,7 +45,6 @@
   * (t) *examples.tex* - перевод pr.dimiii ("Язык Prolog и доказательство теорем"), прочитали
   * (t) *ind-defs.tex* - перевод, прочитали
   * (t) *lamb.tex* - перевод, прочитали
-  * (t) *prog.tex* - перевод Lambda Henchman, прочитали
   * (t) *l12.tex* - перевод, pr.dimiii прочитали
 
 = File links =
