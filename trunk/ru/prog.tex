@@ -407,31 +407,54 @@ $$
 произведениями.
 %\noindent giving a natural notation for functions over Cartesian products.
 
-\subsection{The natural numbers}
-
-We will represent each natural number $n$ as follows:\footnote{The $n$ in
-$f^n\; x$ is just a meta-notation, and does not mean that there is anything
-circular about our definition.}
-
-$$ n \defeq \lamb{f\; x} f^n\; x $$
-
-\noindent that is, $0 = \lamb{f\; x} x$, $1 = \lamb{f\; x} f\; x$, $2 =
-\lamb{f\; x} f\;(f\; x)$ etc. These representations are known as {\em Church
-numerals}, though the basic idea was used earlier by
-\citeN{wittgenstein-tractatus}.\footnote{`6.021 A number is the exponent of an
-operation'.} They are not a very efficient representation, amounting
-essentially to counting in unary, $1, 11, 111, 1111, 11111, 111111, \ldots$.
-There are, from an efficiency point of view, much better ways of representing
-numbers, e.g. tuples of trues and falses as binary expansions. But at the
-moment we are only interested in computability `in principle' and Church
-numerals have various nice formal properties. For example, it is easy to give
-lambda expressions for the common arithmetic operators such as the successor
-operator which adds one to its argument:
-
-$$ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) $$
-
-\noindent Indeed
-
+\subsection{Натуральные числа}
+%\subsection{The natural numbers}
+Представим натуральное число~$n$ в виде%
+\footnote{Запись выражения~$f^n\; x$ с параметром~$n$ применяется исключительно
+для удобства записи, а не в силу его цикличности.}
+%We will represent each natural number $n$ as follows:\footnote{The $n$ in
+%$f^n\; x$ is just a meta-notation, and does not mean that there is anything
+%circular about our definition.}
+%
+$$ 
+ n \defeq \lamb{f\; x} f^n\; x,
+$$
+то есть, $0 = \lamb{f\; x} x$, $1 = \lamb{f\; x} f\; x$, 
+$2 = \lamb{f\; x} f\;(f\; x)$ и~т.~д. Такое представление получило название
+{\em нумералов Чёрча,} хотя его базовая идея была опубликована ранее в 
+работе~\citeN{wittgenstein-tractatus}.%
+\footnote{См.\ <<6.021 A number is the exponent of an operation>>.}
+Это представление не слишком эффективно, так как фактически представляет собой
+запись чисел в системе счисления по основанию~$1$: $1$, $11$, $111$, $1111$, 
+$11111$, $111111$, $\ldots$. С точки зрения эффективности можно разработать
+гораздо лучшие формы представления, к примеру, кортеж логических значений,
+который интерпретируется как двоичная запись числа. Впрочем, в данный момент
+нас интересует лишь принципиальная вычислимость, а нумералы Чёрча имеют
+различные удобные формальные свойства. Например, легко привести 
+лямбда-выражения такой общеизвестной арифметической операции, как получение
+числа, следующего в натуральном ряду за данным, то есть, прибавление единицы
+к аргументу операции:
+%
+%\noindent that is, $0 = \lamb{f\; x} x$, $1 = \lamb{f\; x} f\; x$, $2 =
+%\lamb{f\; x} f\;(f\; x)$ etc. These representations are known as {\em Church
+%numerals}, though the basic idea was used earlier by
+%\citeN{wittgenstein-tractatus}.\footnote{`6.021 A number is the exponent of an
+%operation'.} They are not a very efficient representation, amounting
+%essentially to counting in unary, $1, 11, 111, 1111, 11111, 111111, \ldots$.
+%There are, from an efficiency point of view, much better ways of representing
+%numbers, e.g. tuples of trues and falses as binary expansions. But at the
+%moment we are only interested in computability `in principle' and Church
+%numerals have various nice formal properties. For example, it is easy to give
+%lambda expressions for the common arithmetic operators such as the successor
+%operator which adds one to its argument:
+%
+$$ 
+ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) 
+$$
+%
+В самом деле,
+%\noindent Indeed
+%
 \begin{eqnarray*}
 \mbox{SUC}\; n & = & (\lamb{n\; f\; x} n\; f\; (f\; x)) (\lamb{f\; x} f^n\; x)  \\
              & = & \lamb{f\; x} (\lamb{f\; x} f^n\; x) f\; (f\; x)          \\
@@ -440,18 +463,26 @@ $$ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) $$
              & = & \lamb{f\; x} f^{n + 1}\; x                               \\
              & = & n + 1
 \end{eqnarray*}
-
-\noindent Similarly it is easy to test a numeral to see if it is zero:
-
-$$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$
-
-\noindent since:
-
-$$ \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
-                     = \mbox{true} $$
-
-\noindent and
-
+%
+Аналогично, легко реализуется проверка числа на равенство нулю:
+%\noindent Similarly it is easy to test a numeral to see if it is zero:
+%
+$$ 
+ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} 
+$$
+%
+поскольку
+%\noindent since:
+%
+$$ 
+   \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
+                     = \mbox{true} 
+$$
+%
+и
+%
+%\noindent and
+%
 \begin{eqnarray*}
 \mbox{ISZERO}\; (n + 1)
   & = & (\lamb{f\; x} f^{n + 1} x) (\lamb{x} \mbox{false}) \mbox{true}  \\
@@ -459,16 +490,18 @@ $$ \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
   & = & (\lamb{x} \mbox{false}) ((\lamb{x} \mbox{false})^n\; \mbox{true}) \\
   & = & \mbox{false}
 \end{eqnarray*}
-
-\noindent The following perform addition and multiplication on Church numerals:
-
+%
+Сумма и произведение двух нумералов Чёрча:
+%\noindent The following perform addition and multiplication on Church numerals:
+%
 \begin{eqnarray*}
  m + n & \defeq & \lamb{f\; x} m\; f\; (n\; f\; x)    \\
  m * n & \defeq & \lamb{f\; x} m\; (n\; f)\; x
 \end{eqnarray*}
-
-\noindent Indeed:
-
+%
+В справедливости этих определений легко убедиться:
+%\noindent Indeed:
+%
 \begin{eqnarray*}
  m + n  & = & \lamb{f\; x} m\; f\; (n\; f\; x)        \\
         & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; f\; (n\; f\; x)     \\
@@ -479,9 +512,11 @@ $$ \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
         & = & \lamb{f\; x} f^m\; (f^n\; x)                              \\
         & = & \lamb{f\; x} f^{m + n} x
 \end{eqnarray*}
-
-\noindent and:
-
+%
+и
+%
+%\noindent and:
+%
 \begin{eqnarray*}
  m * n  & = & \lamb{f\; x} m\; (n\; f)\; x                              \\
         & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; (n\; f)\; x         \\
@@ -493,71 +528,129 @@ $$ \mbox{ISZERO}\; 0 = (\lamb{f\; x} x) (\lamb{x} \mbox{false})\; \mbox{true}
         & = & \lamb{f\; x} f^{m n} x
 \end{eqnarray*}
 
-Although those operations on natural numbers were fairly easy, a `predecessor'
-function is much harder. What is required is a a lambda expression $PRE$ so
-that $PRE\; 0 = 0$ and $PRE\; (n + 1) = n$. Finding such an expression was the
-first piece of mathematical research by the logician \citeN{kleene-numbers}.
-His trick was, given $\lamb{f\;x} f^n\; x$, to `throw away' one of the
-applications of $f$. The first step is to define a function `PREFN' that
-operates on pairs such that:
+Несмотря на то, что эти операции на натуральных числах были определены 
+достаточно легко, вычисление числа, предшествующего данному, гораздо сложнее.
+Нам требуется выражение~$PRE$ такое, что~$PRE\; 0 = 0$ и~$PRE\; (n + 1) = n$.
+Решение этой задачи было предложено Клини в работе~\citeN{kleene-numbers}.
+Клини применил такой приём: для заданного~$\lamb{f\;x} f^n\; x$ требуется
+<<отбросить>> одно из применений~$f$. В качестве первого шага введём 
+на множестве пар функцию~PREFN такую, что
+%
+%Although those operations on natural numbers were fairly easy, a `predecessor'
+%function is much harder. What is required is a a lambda expression $PRE$ so
+%that $PRE\; 0 = 0$ and $PRE\; (n + 1) = n$. Finding such an expression was the
+%first piece of mathematical research by the logician \citeN{kleene-numbers}.
+%His trick was, given $\lamb{f\;x} f^n\; x$, to `throw away' one of the
+%applications of $f$. The first step is to define a function `PREFN' that
+%operates on pairs such that:
+%
+$$ 
+ \mbox{PREFN}\; f\; (\mbox{true},x) = (\mbox{false},x) 
+$$
+%
+и
+%\noindent and
+%
+$$ 
+ \mbox{PREFN}\; f\; (\mbox{false},x) = (\mbox{false},f\; x) 
+$$
 
-$$ \mbox{PREFN}\; f\; (\mbox{true},x) = (\mbox{false},x) $$
-
-\noindent and
-
-$$ \mbox{PREFN}\; f\; (\mbox{false},x) = (\mbox{false},f\; x) $$
-
-Given this function, then $(\mbox{PREFN}\; f)^{n + 1} (\mbox{true},x) =
-(\mbox{false},f^n\;x)$, which is enough to let us define a predecessor
-function without much difficulty. Here is a suitable definition of `PREFN':
-
-$$ \mbox{PREFN} \defeq
+Предположив, что подобная функция существует, можно показать, 
+что~$(\mbox{PREFN}\; f)^{n + 1} (\mbox{true},x) = (\mbox{false},f^n\;x)$.
+В свою очередь, этого достаточно, чтобы задать функцию~$\mbox{PRE}$,
+не испытывая особых затруднений. Определение~PREFN, удовлетворяющее
+нашим нуждам, таково:
+%
+%Given this function, then $(\mbox{PREFN}\; f)^{n + 1} (\mbox{true},x) =
+%(\mbox{false},f^n\;x)$, which is enough to let us define a predecessor
+%function without much difficulty. Here is a suitable definition of `PREFN':
+%
+$$ 
+ \mbox{PREFN} \defeq
    \lamb{f\; p} (\mbox{false},
-      \mbox{if fst } p \mbox{ then snd } p \mbox{ else } f(\mbox{snd}\; p) $$
+      \mbox{if fst } p \mbox{ then snd } p \mbox{ else } f(\mbox{snd}\; p) 
+$$
+%
+В свою очередь,
+%\noindent Now we define:
+%
+$$ 
+ \mbox{PRE}\; n \defeq \lamb{f\; x}
+       \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) 
+$$
+Доказательство корректности этого определения предлагается читателю в качестве
+упражнения.
+%\noindent It is left as an exercise to the reader to see that this works
+%correctly.
 
-\noindent Now we define:
+\section{Рекурсивные функции}
+%\section{Recursive functions}
+Возможность определения рекурсивных функций является краеугольным камнем 
+функционального программирования, поскольку в его рамках это единственный 
+общий способ реализовать итерацию. На первый взгляд, сделать подобное 
+средствами лямбда-исчисления невозможно. В самом деле, {\em именование}
+функций представляется непременной частью рекурсивных определений, так как
+в противном случае неясно, как можно сослаться на функцию в её собственном 
+определении, не зацикливаясь. Тем не менее, существует решение и этой проблемы,
+которое, однако, удалось найти лишь ценой значительных усилий, подобно 
+построению функции~$\mbox{PRE}$.
+%
+%Being able to define functions by recursion is a central feature of functional
+%programming: it is the only general way of performing something comparable to
+%iteration. At first sight, it appears that we have no way of doing this in
+%lambda calculus. Indeed, it would seem that the {\em naming} of the function is
+%a vital part of making a recursive definition, since otherwise, how can we
+%refer to it on the right hand side of the definition without descending into
+%infinite regress? Rather surprisingly, it can be done, although as with the
+%existence of a predecessor function, this fact was only discovered after
+%considerable effort.
 
-$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
-       \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$
+Ключом к решению оказалось существование так называемых 
+{\em комбинаторов неподвижной точки}. Замкнутый терм~$Y$ называется 
+комбинатором неподвижной точки, если для произвольного терма~$f$ 
+выполняется равенство~$f(Y\; f) = Y\; f$. Другими словами, комбинатор 
+неподвижной точки определяет по заданному терму~$f$ его фиксированную точку,
+т.~е.\ находит такой терм~$x$, что~$f(x) = x$. Первый пример такого 
+комбинатора, найденный Карри, принято обозначать~$Y$. Своим появлением он
+обязан парадоксу Рассела, чем объясняется его другое популярное название~--- 
+<<парадоксальный комбинатор>>. Мы определили
+%
+%The key is the existence of so-called {\em fixed point combinators}. A closed
+%lambda term $Y$ is said to be a fixed point (or fixpoint) combinator when for
+%all lambda terms $f$, we have $f(Y\; f) = Y\; f$. That is, a fixed point
+%combinator, given any term $f$ as an argument, returns a fixed point for $f$,
+%i.e. a term $x$ such that $f(x) = x$. The first such combinator to be found (by
+%Curry) is usually called $Y$. It can be motivated by recalling the Russell
+%paradox, and for this reason is often called the `paradoxical combinator'. We
+%defined:
+%
+$$ 
+ R = \lamb{x} \Not (x\; x), 
+$$
+%
+после чего обнаружили справедливость
+%\noindent and found that:
+%
+$$ 
+ R\; R = \Not (R\; R) 
+$$
 
-\noindent It is left as an exercise to the reader to see that this works
-correctly.
-
-\section{Recursive functions}
-
-Being able to define functions by recursion is a central feature of functional
-programming: it is the only general way of performing something comparable to
-iteration. At first sight, it appears that we have no way of doing this in
-lambda calculus. Indeed, it would seem that the {\em naming} of the function is
-a vital part of making a recursive definition, since otherwise, how can we
-refer to it on the right hand side of the definition without descending into
-infinite regress? Rather surprisingly, it can be done, although as with the
-existence of a predecessor function, this fact was only discovered after
-considerable effort.
-
-The key is the existence of so-called {\em fixed point combinators}. A closed
-lambda term $Y$ is said to be a fixed point (or fixpoint) combinator when for
-all lambda terms $f$, we have $f(Y\; f) = Y\; f$. That is, a fixed point
-combinator, given any term $f$ as an argument, returns a fixed point for $f$,
-i.e. a term $x$ such that $f(x) = x$. The first such combinator to be found (by
-Curry) is usually called $Y$. It can be motivated by recalling the Russell
-paradox, and for this reason is often called the `paradoxical combinator'. We
-defined:
-
-$$ R = \lamb{x} \Not (x\; x) $$
-
-\noindent and found that:
-
-$$ R\; R = \Not (R\; R) $$
-
-That is, $R\; R$ is a fixed point of the negation operator. So in order to get
-a general fixed point combinator, all we need to do is generalize $\Not$ into
-whatever function is given it as argument. Therefore we set:
-
-$$ Y \defeq \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)) $$
-
-\noindent It is a simple matter to show that it works:
-
+Таким образом, $R\; R$ представляет собой неподвижную точку операции отрицания.
+Отсюда, чтобы построить универсальный комбинатор неподвижной точки, нам 
+потребуется лишь обобщить данное выражение, заменив~$\Not$ произвольной 
+функцией, заданной аргументом~$f$. В результате мы получаем
+%That is, $R\; R$ is a fixed point of the negation operator. So in order to get
+%a general fixed point combinator, all we need to do is generalize $\Not$ into
+%whatever function is given it as argument. Therefore we set:
+%
+$$ 
+ Y \defeq \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)) 
+$$
+%
+Убедиться в справедливости этого определения несложно:
+%
+%\noindent It is a simple matter to show that it works:
+%
 \begin{eqnarray*}
 Y f  & = & (\lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))\; f       \\
      & = & (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))                      \\
@@ -565,155 +658,268 @@ Y f  & = & (\lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))\; f       \\
      & = & f(Y\; f)
 \end{eqnarray*}
 
-Though valid from a mathematical point of view, this is not so attractive from
-a programming point of view since the above was only valid for lambda equality,
-not reduction (in the last line we performed a {\em backwards} beta
-conversion). For this reason the following alternative, due to Turing, may be
-preferred:
+Однако, несмотря на математическую корректность, предложенное решение не
+слишком привлекательно с точки зрения программирования, поскольку оно
+справедливо лишь в смысле лямбда-эквивалентности, но не редукции
+(в последнем выражении мы применяли {\em обратное} бета-преобразование).
+С учётом этих сображений альтернативное определение Тьюринга может оказаться
+более предпочтительным:
+%
+%Though valid from a mathematical point of view, this is not so attractive from
+%a programming point of view since the above was only valid for lambda equality,
+%not reduction (in the last line we performed a {\em backwards} beta
+%conversion). For this reason the following alternative, due to Turing, may be
+%preferred:
+%
+$$ 
+ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\; y)) 
+$$
+%
+(Доказательство справедливости~$T\; f \goesto f(T\; f)$ предоставляется 
+читателю в качестве упражнения.) Однако, мы можем без особого ущерба для 
+строгости изложения считать, что~$Y f$ может подвергаться бета-редукции
+в соответствии с последовательностью редукции для рекурсивных функций.
+Рассмотрим, как комбинатор неподвижной точки (например, $Y$) может применяться
+для реализации рекурсии. Воспользуемся в качестве примера вычислением 
+факториала. Мы хотим определить функцию~$\mbox{fact}$ следующим образом:
+%
+%(The proof that $T\; f \goesto f(T\; f)$ is left as an exercise.) However it
+%does no harm if we simply allow $Y f$ to be beta-reduced throughout the
+%reduction sequence for a recursively defined function. Now let us see how to
+%use a fixed point combinator (say $Y$) to implement recursive functions. We
+%will take the factorial function as an example. We want to define a function
+%$\mbox{fact}$ with:
+%
+$$ 
+ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\;
+                   n * \mbox{fact}(\mbox{PRE}\; n) 
+$$
 
-$$ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\; y)) $$
+Прежде всего, преобразуем эту функцию в эквивалентную:
+%The first step is to transform this into the following equivalent:
+%
+$$ 
+ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+ \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) 
+$$
+которая, в свою очередь, эквивалентна
+%\noindent which in its turn is equivalent to:
+%
+$$ 
+ \mbox{fact} = (\lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+ \mbox{else}\; n * f(\mbox{PRE}\; n))\; \mbox{fact}
+$$
+Отсюда следует, что $\mbox{fact}$ представляет собой неподвижную точку
+такой функции~$F$:
+%\noindent This exhibits $\mbox{fact}$ as the fixed point of a function
+%$F$, namely:
+%
+$$ 
+ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; 
+ n * f(\mbox{PRE}\; n) 
+$$
 
-(The proof that $T\; f \goesto f(T\; f)$ is left as an exercise.) However it
-does no harm if we simply allow $Y f$ to be beta-reduced throughout the
-reduction sequence for a recursively defined function. Now let us see how to
-use a fixed point combinator (say $Y$) to implement recursive functions. We
-will take the factorial function as an example. We want to define a function
-$\mbox{fact}$ with:
-
-$$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\;
-                   n * \mbox{fact}(\mbox{PRE}\; n) $$
-
-The first step is to transform this into the following equivalent:
-
-$$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
-\mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
-
-\noindent which in its turn is equivalent to:
-
-$$ \mbox{fact} = (\lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
-\mbox{else}\; n * f(\mbox{PRE}\; n))\; \mbox{fact} $$
-
-\noindent This exhibits $\mbox{fact}$ as the fixed point of a function
-$F$, namely:
-
-$$ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; n *
-f(\mbox{PRE}\; n) $$
-
-Consequently we merely need to set $\mbox{fact} = Y\; F$. Similar techniques
-work for mutually recursive functions, i.e. a set of functions whose
-definitions are mutually dependent. A definition such as:
-
+В результате всё, что нам потребуется, это положить~$\mbox{fact} = Y\; F$.
+Аналогичным способом можно воспользоваться и в случае взаимно рекурсивных
+функций, т.~е.\ множества функций, определения которых зависят друг от друга.
+Такие определения, как
+%Consequently we merely need to set $\mbox{fact} = Y\; F$. Similar techniques
+%work for mutually recursive functions, i.e. a set of functions whose
+%definitions are mutually dependent. A definition such as:
+%
 \begin{eqnarray*}
 f_1 & = & F_1\; f_1\; \cdots \; f_n             \\
 f_2 & = & F_2\; f_1\; \cdots \; f_n             \\
 \ldots & = & \ldots                             \\
 f_n & = & F_n\; f_1\; \cdots \; f_n
 \end{eqnarray*}
-
-\noindent can be transformed, using tuples, into a single equation:
-
-$$ (f_1,f_2,\ldots,f_n) = (F_1\; f_1\; \cdots \; f_n,
+%
+могут быть при помощи кортежей преобразованы в одно:
+%\noindent can be transformed, using tuples, into a single equation:
+%
+$$ 
+   (f_1,f_2,\ldots,f_n) = (F_1\; f_1\; \cdots \; f_n,
                            F_2\; f_1\; \cdots \; f_n,
                            \ldots,
-                           F_n\; f_1\; \cdots \; f_n) $$
+                           F_n\; f_1\; \cdots \; f_n) 
+$$
 
-If we now write $t = (f_1,f_2,\ldots,f_n)$, then each of the functions on the
-right can be recovered by applying the appropriate selector to $t$: we have
-$f_i = (t)_i$. After abstracting out $t$, this gives an equation in the
-canonical form $t = F\; t$ which can be solved by $t = Y\; F$. Now the
-individual functions can be recovered from $t$ by the same method of selecting
-components of the tuple.
+Положив~$t = (f_1,f_2,\ldots,f_n)$, видим, что каждая из функций в правой
+части равенства может быть вычислена по заданному~$t$ применением 
+соответствующей функции-селектора: $f_i = (t)_i$. Применив абстракцию по
+переменной~$t$, получаем уравнение в канонической форме~$t = F\; t$,
+решением которого является~$t = Y\; F$, откуда в свою очередь находятся 
+значения отдельных функций.
+%If we now write $t = (f_1,f_2,\ldots,f_n)$, then each of the functions on the
+%right can be recovered by applying the appropriate selector to $t$: we have
+%$f_i = (t)_i$. After abstracting out $t$, this gives an equation in the
+%canonical form $t = F\; t$ which can be solved by $t = Y\; F$. Now the
+%individual functions can be recovered from $t$ by the same method of selecting
+%components of the tuple.
 
-\section{Let expressions}
+\section{\texttt{Let}-выражения}
+%\section{Let expressions}
+Возможность использования безымянных функций была нами ранее преподнесена как 
+одно из достоинств лямбда-исчисления. Более того, имена оказались 
+необязательными даже при определении рекурсивных функций. Однако, зачастую всё
+же удобно иметь возможность давать выражениям имена с тем, чтобы избежать
+утомительного повторения больших термов. Простая форма такого именования может
+быть реализована как ещё один вид синтаксической глазури поверх чистого 
+лямбда-исчисления:
+%
+%We've touted the ability to write anonymous functions as one of the merits of
+%lambda calculus, and shown that names are not necessary to define recursive
+%functions. Nevertheless it is often useful to be able to give names to
+%%expressions, to avoid tedious repetition of large terms. A simple form of
+%naming can be supported as another syntactic sugar on top of pure lambda
+%calculus:
+%
+$$ 
+ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s 
+$$
+Простой пример применения этой конструкции работает, как и ожидается:
+%\noindent For example, as we would expect:
+$$ 
+  (\mbox{let } z = 2 + 3 \mbox{ in } z + z) = (\lamb{z} z + z)\; (2 + 3) 
+                 = (2 + 3) + (2 + 3) 
+$$
 
-We've touted the ability to write anonymous functions as one of the merits of
-lambda calculus, and shown that names are not necessary to define recursive
-functions. Nevertheless it is often useful to be able to give names to
-expressions, to avoid tedious repetition of large terms. A simple form of
-naming can be supported as another syntactic sugar on top of pure lambda
-calculus:
-
-$$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$
-
-\noindent For example, as we would expect:
-
-$$ (\mbox{let } z = 2 + 3 \mbox{ in } z + z) = (\lamb{z} z + z)\; (2 + 3) =
-   (2 + 3) + (2 + 3) $$
-
-We can achieve the binding of multiple names to expressions either in a serial
-or parallel fashion. For the first, we will simply iterate the above construct.
-For the latter, we will write multiple bindings separated by `and':
-
-$$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
-     \mbox{ in } t $$
-
-\noindent and regard it as syntactic sugar for:
-
-$$ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) $$
-
-\noindent To illustrate the distinction between serial and parallel binding,
-consider:
-
-$$ \mbox{let } x = 1 \mbox{ in }
+Мы можем добиться как последовательного, так и параллельного связывания 
+множества имён с выражениями. Первый случай реализуется простым многократным
+применением конструкции связывания, приведённой выше. Во втором случае введём
+возможность одновременного задания множества связываний, отделяемых друг от
+друга служебным словом~\texttt{and}:
+%
+%We can achieve the binding of multiple names to expressions either in a serial
+%or parallel fashion. For the first, we will simply iterate the above construct.
+%For the latter, we will write multiple bindings separated by `and':
+%
+$$ 
+ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
+     \mbox{ in } t
+$$
+Будем рассматривать эту конструкцию как синтаксическую глазурь для
+%\noindent and regard it as syntactic sugar for:
+%
+$$ 
+ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) 
+$$
+Продемонстрируем различия в семантике последовательного и параллельного
+связывания на примере:
+%\noindent To illustrate the distinction between serial and parallel binding,
+%consider:
+%
+$$ 
+   \mbox{let } x = 1 \mbox{ in }
    \mbox{let } x = 2 \mbox{ in }
-   \mbox{let } y = x \mbox{ in } x + y $$
-
-\noindent which should yield $4$, while:
-
-$$ \mbox{let } x = 1 \mbox{ in }
+   \mbox{let } y = x \mbox{ in } x + y 
+$$
+и
+%\noindent which should yield $4$, while:
+%
+$$ 
+ \mbox{let } x = 1 \mbox{ in }
    \mbox{let } x = 2
-   \mbox{ and } y = x \mbox{ in } x + y $$
+   \mbox{ and } y = x \mbox{ in } x + y 
+$$
+дают в результате~$4$ и~$3$ соответственно.
 
-\noindent should yield $3$. We will also allow arguments to names bound by
-`{\tt let}'; again this can be regarded as syntactic sugar, with $f\; x_1\;
-\cdots \; x_n = t$ meaning $f = \lamb{x_1\; \cdots \; x_n} t$. Instead of a
-prefix `$\mbox{let } x = s \mbox{ in } t$', we will allow a postfix version,
-which is sometimes more readable:
+В дополнение к этому разрешим связывать выражения с именами,
+за которыми следует список параметров; такая форма конструкции {\tt let}
+представляет собой ещё одну разновидность синтаксической глазури, 
+позволяющую трактовать~$f\; x_1\; \cdots \; x_n = t$ 
+как~$f = \lamb{x_1\; \cdots \; x_n} t$. Наконец, помимо префиксной
+формы связывания~$\mbox{let } x = s \mbox{ in } t$ введём постфиксную, которая
+в некоторых случаях оказывается удобнее для восприятия:
+%\noindent should yield $3$. We will also allow arguments to names bound by
+%`{\tt let}'; again this can be regarded as syntactic sugar, with $f\; x_1\;
+%\cdots \; x_n = t$ meaning $f = \lamb{x_1\; \cdots \; x_n} t$. Instead of a
+%prefix `$\mbox{let } x = s \mbox{ in } t$', we will allow a postfix version,
+%which is sometimes more readable:
+%
+$$ 
+ t \mbox{ where } x = s 
+$$
+Например, мы можем написать так: $y < y^2 \mbox{ where } y = 1 + x$.
 
-$$ t \mbox{ where } x = s $$
+Обычно конструкции \texttt{let} и~\texttt{where} интерпретируются, как показано
+выше, без привлечения рекурсии. Например,
+%For example, we might write `$y < y^2 \mbox{ where } y = 1 + x$'. Normally, the
+%`let' and `where' constructs will be interpreted as above, in a non-recursive
+%fashion. For example:
+%
+$$ 
+ \mbox{let } x = x - 1 \mbox{ in } \cdots 
+$$
+связывает~$x$ с уменьшенным на единицу значением, которое уже было связано 
+с именем~$x$ в охватывающем контексте, а не пытается найти неподвижную точку
+выражения~$x = x - 1$.%
+\footnote{Неподвижная точка этого выражения существует, но соответствующий
+лямбда-терм не имеет нормальной формы, т.~е.\ в известном смысле неопределен.
+Семантика незавершимых термов достаточно сложна и не будет нами 
+рассматриваться. В действительности, основной вопрос заключается в наличии 
+у терма не нормальной, а так называемой {\em головной нормальной формы},
+что подробнее рассматривается в работах~\citeN{barendregt} 
+и~\citeN{abramsky-lazy}.
+}
+В случае, когда нам требуется рекурсивная интерпретация, это может быть
+указано добавлением служебного слова~\texttt{rec} в конструкции связывания
+(т.~е.\ использованием~\texttt{let rec} и~\texttt{where rec} соответственно).
+Например,
+%
+%\noindent binds $x$ to one less than whatever value it is bound to outside,
+%rather than trying to bind $x$ to the fixed point of $x = x -
+%1$.\footnote{There is such a fixed point, but the lambda term involved has no
+%normal form, so is in a sense `undefined'. The semantics of nonterminating
+%terms is subtle, and we will not consider it at length here. Actually, the
+%salient question is not whether a term has a normal form but whether it has a
+%so-called {\em head normal form} --- see \citeN{barendregt} and also
+%\citeN{abramsky-lazy}.} However where a recursive interpretation is required,
+%we add the word `rec', writing `let rec' or `where rec', e.g.
+%
+$$ 
+   \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+                            \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) 
+$$
+Это выражение может считаться сокращённой формой 
+записи~$\mbox{let fact} = Y\; F$, где
+%\noindent This can be regarded as a shorthand for `$\mbox{let fact} = Y\; F$'
+%where
+$$ 
+ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; n * f(\mbox{PRE}\; n),
+$$
+как было показано выше.
+%\noindent as explained above.
 
-For example, we might write `$y < y^2 \mbox{ where } y = 1 + x$'. Normally, the
-`let' and `where' constructs will be interpreted as above, in a non-recursive
-fashion. For example:
+\section{Достижение уровня полноценного языка программирования}
+%\section{Steps towards a real programming language}
+На данный момент мы ввели достаточно обширный набор средств 
+<<синтаксической глазировки>>, реализующих удобочитаемый синтаксис поверх
+чистого лямбда-исчисления. Примечательно то, что этих средств достаточно
+для определения функции факториала в форме, очень близкой к языку~ML. 
+В связи с этим возникает вопрос, уместно ли считать лямбда-исчисление, 
+расширенное предложенными обозначениями, практически пригодным языком 
+программирования?
+%We have established a fairly extensive system of `syntactic sugar' to support a
+%human-readable syntax on top of pure lambda calculus. It is remarkable that
+%this device is enough to bring us to the point where we can write the
+%definition of the factorial function almost in the way we can in ML. In what
+%sense, though, is the lambda calculus augmented with these notational
+%conventions really a programming language?
 
-$$ \mbox{let } x = x - 1 \mbox{ in } \cdots $$
-
-\noindent binds $x$ to one less than whatever value it is bound to outside,
-rather than trying to bind $x$ to the fixed point of $x = x -
-1$.\footnote{There is such a fixed point, but the lambda term involved has no
-normal form, so is in a sense `undefined'. The semantics of nonterminating
-terms is subtle, and we will not consider it at length here. Actually, the
-salient question is not whether a term has a normal form but whether it has a
-so-called {\em head normal form} --- see \citeN{barendregt} and also
-\citeN{abramsky-lazy}.} However where a recursive interpretation is required,
-we add the word `rec', writing `let rec' or `where rec', e.g.
-
-$$ \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
-                            \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$
-
-\noindent This can be regarded as a shorthand for `$\mbox{let fact} = Y\; F$'
-where
-
-$$ F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\; \mbox{else}\; n *
-f(\mbox{PRE}\; n)$$
-
-\noindent as explained above.
-
-\section{Steps towards a real programming language}
-
-We have established a fairly extensive system of `syntactic sugar' to support a
-human-readable syntax on top of pure lambda calculus. It is remarkable that
-this device is enough to bring us to the point where we can write the
-definition of the factorial function almost in the way we can in ML. In what
-sense, though, is the lambda calculus augmented with these notational
-conventions really a programming language?
-
-Ultimately, a program is just a single expression. However, given the use of
-{\tt let} to bind various important subexpressions to names, it is natural
-instead to view the program as a set of {\em definitions} of auxiliary
-functions, followed finally by the expression itself, e.g:
-
-$$ \BA \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+В конечном счёте, программа представляет собой единственное выражение.
+Однако, использование {\tt let} для именования различных важных подвыражений,
+делает вполне естественной трактовку программы как множества {\em определений}
+различных вспомогательных функций, за которыми следует итоговое выражение,
+например:
+%
+%Ultimately, a program is just a single expression. However, given the use of
+%{\tt let} to bind various important subexpressions to names, it is natural
+%instead to view the program as a set of {\em definitions} of auxiliary
+%functions, followed finally by the expression itself, e.g:
+%
+$$ 
+   \BA \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
                             \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n)
                         \mbox{ in }\\
        \cdots\\
@@ -721,82 +927,147 @@ $$ \BA \mbox{let rec fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
    \EA
 $$
 
-We can read these definitions of auxiliary functions as equations in the
-mathematical sense. Understood in this way, they do not give any explicit
-instructions on how to evaluate expressions, or even in which direction the
-equations are to be used. For this reason, functional programming is often
-referred to as a {\em declarative} programming method, as also is logic
-programming (e.g. PROLOG).\footnote{Apparently Landin preferred `denotative' to
-`declarative'.} The program does not incorporate explicit instructions, merely
-declares certain properties of the relevant notions, and leaves the rest to the
-machine.
+Эти определения вспомогательных функций могут трактоваться с математической
+точки зрения как уравнения. Подобная интерпретация не задаёт никаких 
+ограничений ни на способ вычисления выражений, ни даже направление,
+в котором уравнения будут использоваться. Благодаря этому, функциональный
+подход к программированию часто называют {\em декларативным} наряду с 
+логическим (примером последнего служит язык~PROLOG).%
+\footnote{
+ По всей видимости, Лэндин предпочитал термин <<денотационный>>.
+}
+В рамках такого подхода программа не содержит явных инструкций, а лишь
+объявляет некоторые свойства соответствующих понятий, оставляя подробности
+своего выполнения комппьютеру.
+%We can read these definitions of auxiliary functions as equations in the
+%mathematical sense. Understood in this way, they do not give any explicit
+%instructions on how to evaluate expressions, or even in which direction the
+%equations are to be used. For this reason, functional programming is often
+%referred to as a {\em declarative} programming method, as also is logic
+%programming (e.g. PROLOG).\footnote{Apparently Landin preferred `denotative' to
+%`declarative'.} The program does not incorporate explicit instructions, merely
+%declares certain properties of the relevant notions, and leaves the rest to the
+%machine.
 
-At the same time, the program is useless, or at least ambiguous, unless the
-machine somehow reacts sensibly to it. Therefore it must be understood that the
-program, albeit from a superficial point of view purely declarative, is to be
-executed in a certain way. In fact, the expression is evaluated by expanding
-all instances of defined notions (i.e. reading the equations from left to
-right), and then repeatedly performing $\beta$-conversions. That is, although
-there seems to be no procedural information in the program, {\em a particular
-execution strategy is understood}. In a sense then, the term `declarative' is
-largely a matter of human psychology.
+В то же время, программа бесполезна или, по крайней мере, неоднозначна, если
+для неё не определены некоторые содержательные действия компьютера. 
+Следовательно, требуется понимание того, что внешне полностью декларативная
+программа должна быть выполнена неким определённым образом. В самом деле,
+вычисление выражения начинается с раскрытия всех входящих в него имён 
+определений (т.~е.\ уравнения интерпретируются слева направо), после чего 
+производится последовательность $\beta\mbox{-преобразований}$. 
+Это значит, что несмотря на отсутствие процедурной информации в программе, 
+{\em неявно подразумевается наличие некоторой конкретной стратегии выполнения}. 
+Таким образом, понятие <<декларативности>> относится в большей степени к 
+восприятию программ человеком.
+%
+%At the same time, the program is useless, or at least ambiguous, unless the
+%machine somehow reacts sensibly to it. Therefore it must be understood that the
+%program, albeit from a superficial point of view purely declarative, is to be
+%executed in a certain way. In fact, the expression is evaluated by expanding
+%all instances of defined notions (i.e. reading the equations from left to
+%right), and then repeatedly performing $\beta$-conversions. That is, although
+%there seems to be no procedural information in the program, {\em a particular
+%execution strategy is understood}. In a sense then, the term `declarative' is
+%largely a matter of human psychology.
 
-Moreover, there must be a definite convention for the reduction strategy to
-use, for we know that different choices of $\beta$-redex can lead to different
-behaviour with respect to termination. Consequently, it is only when we specify
-this that we really get a definite programming language. We will see in later
-chapters how different functional languages make different choices here. But
-first we pause to consider the incorporation of types.
+Кроме того, должны существовать определённые правила, касающиеся стратегии
+редукции, поскольку выбор различных $\beta\mbox{-редексов}$, как мы знаем,
+может оказать решающее влияние на завершимость. Как следствие, полностью
+определённый язык программирования из лямбда-исчисления получается лишь тогда,
+когда мы зададим эту стратегию. В дальнейшем мы увидим, какие решения были
+приняты в ходе проектирования различных функциональных языков, но перед этим
+нам придётся прервать наше изложение и обсудить введение понятия типа.
+%
+%Moreover, there must be a definite convention for the reduction strategy to
+%use, for we know that different choices of $\beta$-redex can lead to different
+%behaviour with respect to termination. Consequently, it is only when we specify
+%this that we really get a definite programming language. We will see in later
+%chapters how different functional languages make different choices here. But
+%first we pause to consider the incorporation of types.
 
-\section{Further reading}
-
-Many of the standard texts already cited include details about the matters
-discussed here. In particular \citeN{gordon-plt} gives a clear proof that
-lambda calculus is Turing-complete, and that the lambda calculus analog of the
-`halting problem' (whether a term has a normal form) is unsolvable. The
-influence of lambda calculus on real programming languages and the evolution of
-functional languages are discussed by \citeN{hudak-survey}.
+\section{Дополнительная литература}
+%\section{Further reading}
+Многие из упомянутых стандартных работ включают в себя подробный анализ
+вопросов, затронутых в этом разделе. В частности, в работе~\citeN{gordon-plt}
+даётся строгое доказательство Тьюринг-полноты лямбда-исчисления, а также
+того, что задача проверки существования нормальной формы терма (аналог 
+<<проблемы останова>> в лямбда-исчислении) алгоритмически неразрешим. Влияние
+лямбда-исчисления на полноценные языки программирования, а также на эволюцию
+функциональных языков в частности обсуждается в работе~\citeN{hudak-survey}. 
+%
+%Many of the standard texts already cited include details about the matters
+%discussed here. In particular \citeN{gordon-plt} gives a clear proof that
+%lambda calculus is Turing-complete, and that the lambda calculus analog of the
+%`halting problem' (whether a term has a normal form) is unsolvable. The
+%influence of lambda calculus on real programming languages and the evolution of
+%functional languages are discussed by \citeN{hudak-survey}.
 
 %\section{An undecidable problem*}
 %
 %Final gaps about representing the recursive functions. Then the undecidability
 %of normalization, i.e. the halting problem.
 
-\section*{Exercises}
+\section*{Упражнения}
+%\section*{Exercises}
 
 \begin{enumerate}
 
-\item Justify `generalized $\beta$-conversion', i.e. prove that:
+\item Дайте обоснование <<обобщенного $\beta\hbox{-преобразования}$>>, 
+т.~е.\ докажите, что
+$$
+ (\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) 
+  = t[t_1,\ldots,t_n]
+$$
+%\item Justify `generalized $\beta$-conversion', i.e. prove that:
+%
+%$$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
+%t[t_1,\ldots,t_n]$$
 
-$$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
-t[t_1,\ldots,t_n]$$
+\item 
+Пусть~$f \circ g \defeq \lamb{x} f(g\; x)$. Приняв во внимание, 
+что~$I = \lamb{x} x$, докажите, что~$\mbox{CURRY} \circ \mbox{UNCURRY} = I$. 
+Верно ли также, что~$\mbox{UNCURRY} \circ \mbox{CURRY} = I$?
 
-\item Define $f \circ g \defeq \lamb{x} f(g\; x)$, and recall that $I =
-\lamb{x} x$. Prove that $\mbox{CURRY} \circ \mbox{UNCURRY} = I$. Is it also
-true that $\mbox{UNCURRY} \circ \mbox{CURRY} = I$?.
+%\item Define $f \circ g \defeq \lamb{x} f(g\; x)$, and recall that $I =
+%\lamb{x} x$. Prove that $\mbox{CURRY} \circ \mbox{UNCURRY} = I$. Is it also
+%true that $\mbox{UNCURRY} \circ \mbox{CURRY} = I$?.
 
-\item What arithmetical operation does $\lamb{n\; f\; x} f(n\; f\; x)$ perform
-on Church numerals? What about $\lamb{m\; n} n\; m$?
+\item 
+Какие арифметические операции соответствует заданным на множестве нумералов 
+Чёрча функциям~$\lamb{n\; f\; x} f(n\; f\; x)$ и~$\lamb{m\; n} n\; m$?
+%\item What arithmetical operation does $\lamb{n\; f\; x} f(n\; f\; x)$ perform
+%on Church numerals? What about $\lamb{m\; n} n\; m$?
 
-\item Prove that the following (due to Klop) is a fixed point combinator:
-
-$$ \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
+\item (Клоп)
+Докажите, что следующее выражение представляет собой комбинатор неподвижной
+точки:
+%\item Prove that the following (due to Klop) is a fixed point combinator:
+%
+$$ 
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
    \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
    \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
    \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
    \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}\mbox{\pounds}
-   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds} $$
+   \mbox{\pounds}\mbox{\pounds}\mbox{\pounds}, 
+$$
+где
+%\noindent where:
+$$ 
+  \mbox{\pounds} \defeq \lamb{abcdefghijklmnopqstuvwxyzr}
+                         r(thisisafixedpointcombinator) 
+$$
 
-\noindent where:
+\item 
+Дайте рекурсивное определение операции вычитания натуральных чисел.
+%\item Make a recursive definition of natural number subtraction.
 
-$$ \mbox{\pounds} \defeq \lamb{abcdefghijklmnopqstuvwxyzr}
-                         r(thisisafixedpointcombinator) $$
-
-\item Make a recursive definition of natural number subtraction.
-
-\item Consider the following representation of lists, due to
-\citeN{mairson-param}:
-
+\item 
+Пусть задано следующее представление списков~\citeN{mairson-param}:
+%\item Consider the following representation of lists, due to
+%\citeN{mairson-param}:
+%
 \begin{eqnarray*}
 \mbox{nil}   & = & \lamb{c\; n} n                                                                                                         \\
 \mbox{cons}  & = & \lamb{x\; l\; c\; n} c\; x\; (l\; c\; n)                                                                               \\
@@ -810,9 +1081,10 @@ $$ \mbox{\pounds} \defeq \lamb{abcdefghijklmnopqstuvwxyzr}
 \mbox{reverse}  & = & \lamb{l} l\; \mbox{tack}\; \mbox{nil}                                                                               \\
 \mbox{filter}  & = & \lamb{l\; test} l\; (\lamb{x} (test\; x) (\mbox{cons}\; x) (\lamb{y} y))\; \mbox{nil}
 \end{eqnarray*}
-
-Why does Mairson call them `Church lists'? What do all these functions do?
-
+%
+Почему автор этого представления Мэйрсон назвал его <<списками Чёрча>>?
+Каково назначение каждой из приведённых функций?
+%Why does Mairson call them `Church lists'? What do all these functions do?
 \end{enumerate}
 
 
