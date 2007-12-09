@@ -35,7 +35,7 @@
   * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
   * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
-  * (e) *plan.tex* - перевод alexott, прочитали
+  * (e) *plan.tex* - перевод alexott, прочитали lg
   * (e) *types.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *prog.tex* - перевод Lambda Henchman, прочитали
 
