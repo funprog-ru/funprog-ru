@@ -29,7 +29,7 @@
   * (e) *l9.tex* - перевод pr.dimiii, прочитали lg
   * (e) *l10.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *l11.tex* - перевод Lambda Henchman, прочитали lg
-  * (e) *intro.tex* - перевод alexott, прочитали lg, dimiii, alexey_mikhailov (r206)
+  * (e) *intro.tex* - перевод alexott, прочитали lg, dimiii, alexey_mikhailov (r206), Lambda Henchman
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали lg
   * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
