@@ -307,20 +307,20 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 \end{lstlisting}}
 
 
-\section*{Лекция 12. Примеры на ML IV: Prolog и Доказательство Теорем}
+\section*{Лекция 12. Примеры на ML IV: Пролог и Доказательство Теорем}
 
 \frame{
   \frametitle{Темы}
   \begin{itemize}
-   \item Выражения Prolog: разбор и печать
+   \item Выражения в Прологе: анализ и печать
 %  \item Prolog terms: parsing and printing
     \maybepause
 
-  \item Унификация и поиск с возвратом в Prolog
+  \item Унификация и поиск с возвратом в прологе
 %  \item Unification and Prolog backtracking
     \maybepause
 
-  \item Примеры на Prolog
+  \item Примеры на Прологе
 %  \item Prolog examples
     \maybepause
 
@@ -340,44 +340,44 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
   \frametitle{Обзор}
 %  \frametitle{Overview}
 
-  Prolog это <<декларативный>> язык программирования хорошо известный
-  в исследованиях Искусственного Интеллекта.
+  Пролог это <<декларативный>> язык программирования популярный
+  в области исследований по Искусственному Интеллекту.
 %  Prolog is another <<declarative>> language, popular in Artificial Intelligence
 %  research.
 
 %  You will learn more about it in the lecture course <<Prolog for Artificial
 %  Intelligence>>.
 
-  │Э│т│о логический │я│з│ы│к программирования, │и говорится, что он
+  Это логический язык программирования, и говорится, что он
   <<реляционный>>, а не функциональный.
 %  It is a logic programming language, and is said to be <<relational>> rather than
 %  functional.
 
-  │Е│г│о │с│т│р│а│т│е│г│и│я │п│о│и│с│к│а, обратный (логический) вывод │с унификацией │и
-  поиском с возвратом, являются полезными │д│л│я │ш│и│р│о│к│о│г│о круга
-  │п│р│и│л│о│ж│е│н│и│й, таких как: │б│а│з│ы │д│а│н│н│ы│х, экспертные системы │и средства
-  доказательства │т│е│о│р│е│м.
+  Его стратегия поиска, обратный (логический) вывод с унификацией и
+  поиском с возвратом, являются полезными для широкого круга
+  приложений, таких как: базы данных, экспертные системы и средства
+  доказательства теорем.
 %  Its standard search strategy, backward chaining with unification and
 %  backtracking, is useful for a wide range of applications including databases,
 %  expert systems and theorem provers.
 
-  │М│ы │п│о│к│а│ж│е│м, │к│а│к на ML сделать урезанный вариант интерпретатора
-  Prolog.
+  Мы покажем, как на ML сделать урезанный вариант интерпретатора
+  Пролог.
 %  We will show how to implement a cut-down Prolog interpreter in ML.
 
-  │П│о│с│л│е │э│т│о│г│о, используя │те │ж│е средства и методы мы создадим простое
-  средство доказательства │т│е│о│р│е│м.
+  После этого, используя те же средства и методы мы создадим простое
+  средство доказательства теорем.
 %  We will then use the same tools and techniques to build a simple theorem
 %  prover.
 }
 
 
 \frame{
-  \frametitle{Выражения Prolog}
+  \frametitle{Выражения в Прологе}
 %  \frametitle{Prolog terms}
 
-  Данные и код на Prolog представлены с использованием единой системы
-  выражений первого порядка.
+  Данные и код в Прологе представляются с помощью единой системы
+  термов первого порядка.
 %  Prolog code and data is represented using a uniform system of first order
 %  terms.
 
@@ -398,7 +398,7 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 %  {\tt Fn(s,[])}.
 
   Заметим также, что мы будем рассматривать функции разной арности
-  (разного количества принимаемых аргументов) как различные, даже если
+  (разного числа принимаемых аргументов) как различные, даже если
   у них одинаковые имена.
 %  Note that we will treat functions of different arities (different numbers of
 %  arguments) as distinct, even if they have the same name.
@@ -410,10 +410,10 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
    \frametitle{Лексический анализ (1)}
 %  \frametitle{Lexical analysis (1)}
 
-   В Prolog │и│д│е│н│т│и│ф│и│к│а│т│о│р│ы, │к│о│т│о│р│ы│е │н│а│ч│и│н│а│ю│т│с│я │с заглавной буквы │и│л│и
-   подчёркивания, рассматриваются │к│а│к │п│е│р│е│м│е│н│н│ы│е, │а │д│р│у│г│и│е
-   буквенно-цифровые │и│д│е│н│т│и│ф│и│к│а│т│о│р│ы наряду │с числами, рассматриваются
-   │к│а│к │к│о│н│с│т│а│н│т│ы.
+   В Прологе идентификаторы, которые начинаются с заглавной буквы или
+   подчёркивания, рассматриваются как переменные, а другие
+   буквенно-цифровые идентификаторы наряду с числами, рассматриваются
+   как константы.
 %  In Prolog, identifiers that begin with an {\em upper case} letter or an
 %  underscore are treated as variables, while other alphanumeric identifiers,
 %  along with numerals, are treated as constants.
@@ -430,7 +430,7 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 %  distinguish the punctuation symbols: left and right brackets, commas and
 %  semicolons.
 
-  Не пунктуационные символы можно объединять в строки любой длины,
+  Непунктуационные символы можно объединять в строки любой длины,
   таким образом не требуется, чтобы символьный идентификатор состоял
   только из одного символа.
 %  Non-punctuation symbols are collected together into the longest strings
@@ -441,7 +441,7 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
 
 
-\frame{
+\frame[shrink=10]{
    \frametitle{Лексический анализ (2)}
 %  \frametitle{Lexical analysis (2)}
 
@@ -449,141 +449,208 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 }
 
 
-
 \frame{
-  \frametitle{Parsing and printing}
+  \frametitle{Разбор и печать}
+%  \frametitle{Parsing and printing}
 
-  The printer is exactly the same as before.
+  Принтер остаётся в точности таким же каким был раньше.
+%  The printer is exactly the same as before.
 
-  The parser is almost the same as before; again we allow some operators like
-  addition to be written infix. We also allow a special syntax for lists.
+  Разборщик почти такой как раньше; повторим что мы допускаем запись
+  некоторых операторов, таких как сложение, в инфиксной форме.  Мы
+  также допускаем специальную запись для списков.
+%  The parser is almost the same as before; again we allow some operators like
+%  addition to be written infix. We also allow a special syntax for lists.
 
-  We regard {\tt [x1,x2,\ldots,xn]} as shorthand for
-
+  Мы рассматриваем {\tt [x1,x2,\ldots,xn]} как короткую запись для
   {\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
+%  We regard {\tt [x1,x2,\ldots,xn]} as shorthand for
+%  {\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
 
-  where {\tt cons} is the function corresponding to a list constructor,
-  just like {\tt ::} in ML. The printer writes it as an infix dot.
-  Also, {\tt [H|T]} is allowed instead of {\tt cons(H,T)}.
+  где {\tt cons}~-- это функция для создания списков, подобно {\tt ::}
+  в ML.  Принтер печатает её как инфиксную точку.  Также допустимо
+  использовать {\tt [H|T]} вместо {\tt cons(H,T)}.
+%  where {\tt cons} is the function corresponding to a list constructor,
+%  just like {\tt ::} in ML. The printer writes it as an infix dot.
+%  Also, {\tt [H|T]} is allowed instead of {\tt cons(H,T)}.
 
-  A Prolog {\em rule} is of one of these forms:
+  {\em Правило} в Прологе это одна из следующих форм:
+%  A Prolog {\em rule} is of one of these forms:
   \begin{eqnarray*}
     term\mbox{.}    & &                                             \\
     term            & \mbox{ :- } & term,\ldots,term\mbox{.}
   \end{eqnarray*}
-  \noindent We have a parser for these, returning a {\tt term * term list}.
+  \noindent Для них у нас есть разборщик, который возвращает {\tt term * term list}.
+%  \noindent We have a parser for these, returning a {\tt term * term list}.
 }
 
 
 
 \frame{
-  \frametitle{Unification}
+  \frametitle{Унификация}
+%  \frametitle{Unification}
 
-  Prolog uses a set of rules to solve a current {\em goal} by trying to match one
-  of the rules against the goal.
+  Пролог использует набор правил для разрешения текущей {\em цели},
+  пытаясь сопоставить одно из правил с целью.
+%  Prolog uses a set of rules to solve a current {\em goal} by trying to match one
+%  of the rules against the goal.
 
-  A rule consisting of a single term can solve a goal immediately.
+  Правило, состоящие из единственного терма, можно сразу разрешить цель.
+%  A rule consisting of a single term can solve a goal immediately.
 
-  In the case of a rule \alert{$term \mbox{ :- } term_1,\ldots,term_n\mbox{.}$},
-  if the goal matches \alert{$term$}, then Prolog needs to solve each \alert{
-    $term_i$} as a subgoal in order to finish the original goal.
+  В случае правила вида \alert{$term \mbox{ :- }
+    term_1,\ldots,term_n\mbox{.}$}, то чтобы разрешить цель,
+  сопоставимую с термом \alert{$term$}, Прологу необходимо разрешить
+  каждый терм \alert{$term_i$} как подцель.
+%  In the case of a rule \alert{$term \mbox{ :- } term_1,\ldots,term_n\mbox{.}$},
+%  if the goal matches \alert{$term$}, then Prolog needs to solve each \alert{
+%    $term_i$} as a subgoal in order to finish the original goal.
 
-  However, goals and rules do not have to be exactly the same. Instead, Prolog
-  assigns variables in both to make them match up. This process is called {\em
-    unification}.
+  Однако, цели и правила могут не совпадать в точности.  Чтобы они
+  совпадали, Пролог находит набор переменных.  Этот процесс называется
+  {\em унификация}.
 
-  This means that we can end up proving a special case of the original goal, e.g.
-  \alert{$P(f(X))$} instead of \alert{$P(Y)$}.
+%  However, goals and rules do not have to be exactly the same. Instead, Prolog
+%  assigns variables in both to make them match up. This process is called {\em
+%    unification}.
+
+  Это означает, что в конечном счёте мы можем получить частный случай
+  изначальной цели, например получить \alert{$P(f(X))$} вместо
+  \alert{$P(Y)$}.
+%  This means that we can end up proving a special case of the original goal, e.g.
+%  \alert{$P(f(X))$} instead of \alert{$P(Y)$}.
 }
 
 
 
 \frame{
-  \frametitle{Unification: examples and algorithm}
+  \frametitle{Унификация: примеры и алгоритм}
 
-  To unify \alert{$f(g(X),Y)$} and \alert{$f(g(a),X)$} we need to set \alert{$X =
-    a$} and \alert{$Y = a$}. Then both terms are \alert{$f(g(a),a)$}.
+  Чтобы унифицировать выражения \alert{$f(g(X),Y)$} и
+  \alert{$f(g(a),X)$} необходимо задать \alert{$X = a$} и \alert{$Y =
+    a$}.  Тогда оба терма будут иметь вид \alert{$f(g(a),a)$}.
+%  To unify \alert{$f(g(X),Y)$} and \alert{$f(g(a),X)$} we need to set
+%\alert{$X = a$} and \alert{$Y = a$}. Then both terms are
+%\alert{$f(g(a),a)$}.
 
-  To unify \alert{$f(a,X,Y)$} and \alert{$f(X,a,Z)$} we need to set \alert{$X = a$}
-  and \alert{$Y = Z$}, and then both terms are \alert{$f(a,a,Z)$}.
+  Для унификации \alert{$f(a,X,Y)$} и \alert{$f(X,a,Z)$} необходимо
+  задать \alert{$X = a$} и \alert{$Y = Z$}, тогда оба терма будут
+  равны \alert{$f(a,a,Z)$}.
+%  To unify \alert{$f(a,X,Y)$} and \alert{$f(X,a,Z)$} we need to set
+%\alert{$X = a$} and \alert{$Y = Z$}, and then both terms are
+%\alert{$f(a,a,Z)$}.
 
-  It is impossible to unify \alert{$f(X)$} and \alert{$X$}.
+  Невозможно унифицировать \alert{$f(X)$} и \alert{$X$}.
+%  It is impossible to unify \alert{$f(X)$} and \alert{$X$}.
 
-  There is a systematic procedure for finding a {\em most general} unifier.
+  Есть общий способ отыскания {\em наиболее общего} унификатора.
+%  There is a systematic procedure for finding a {\em most general}
+%unifier.
 
-  Roughly, one descends the two terms recursively in parallel, and on finding a
-  variable on either side, assigns it to whatever the term on the other side is.
+  Грубо говоря, одновременно анализируем оба терма методом
+  рекурсивного спуска и, найдя переменную в одном из термов, задаём ей
+  значение, которое осталось в другом терме.
 
-  One needs to check that the variable hasn't already been assigned to something
-  else, and that it doesn't occur in the term being assigned to it (as in the
-  last example above).
+%  Roughly, one descends the two terms recursively in parallel, and on
+%finding a variable on either side, assigns it to whatever the term on
+%the other side is.
+
+  Необходимо проверять, что переменная не была задана другим значением
+  и что она не используется в терме, которым она задана.
+%  One needs to check that the variable hasn't already been assigned to
+%something else, and that it doesn't occur in the term being assigned
+%to it (as in the last example above).
 }
 
 
 
-\frame{
-  \frametitle{Unification: code}
+\frame[shrink=10]{
+  \frametitle{Унификация: код}
 
-  We have a set of existing instantiations, and we look each variable up
-  to see if it is already assigned before proceeding.
+  Мы проверяем каждую переменную была ли она задана, согласно набору
+  уже заданных переменных.
+%   We have a set of existing instantiations, and we
+%  look each variable up to see if it is already assigned before
+%  proceeding.
 
   \Unify
 
-  We use the existing instantiations as an accumulator.
+  Мы используем набор уже заданных переменных как аккумулятор.
+%  We use the existing instantiations as an accumulator.
 }
 
 
-
-\frame{
-  \frametitle{Augmenting instantiations}
-
+\frame[shrink=10]{
+  \frametitle{Пополняем набор заданных переменных}
+%  \frametitle{Augmenting instantiations}
   \OccursIn
 }
 
 
 
-\frame{
-  \frametitle{Backtracking}
+\frame[shrink=10]{
+  \frametitle{Поиск с возвратом}
 
-  Prolog proceeds by depth-first search, but it may backtrack: even if a rule
-  unifies successfully, if all the remaining goals cannot be solved under the
-  resulting instantiations, then another initial rule is tried. Thus we consider
-  the whole list of goals rather than one at a time:
+  Пролог ведёт поиск в глубину, но может применить процедуру возврата
+  (бектрекинг): даже если одно правило унифицируется, а все остальные
+  цели не достигаются согласно полученному набору переменных, то
+  рассматривается другое начальное правило.  Таким образом мы
+  рассматриваем все цели сразу, а не только одну.
+
+% #ISSUE: поправить текстовку, проверить семантику --lg
+%         Есть словарь по ИИ:
+%         http://www.raai.org/library/tolk/aivoc.html
+
+  % Prolog proceeds by depth-first search, but it may backtrack: even
+  % if a rule unifies successfully, if all the remaining goals cannot
+  % be solved under the resulting instantiations, then another initial
+  % rule is tried. Thus we consider the whole list of goals rather
+  % than one at a time:
 
   \BackTracking
 }
 
 
 
-\frame{
-  \frametitle{Other details}
+\frame[shrink=10]{
+  \frametitle{Другие детали}
 
-  Note that we produce fresh variables for the rules each time:
+  Заметим, что для каждого правила, мы создаём новый набор переменных.
+%  Note that we produce fresh variables for the rules each time:
 
   \OdO
 
-  Finally, we package everything up:
+  Наконец, собираем всё воедино:
+%  Finally, we package everything up:
 
   \OdOO
 
-  This says either that the goal cannot be solved, or that it can be solved with
-  the given instantiations. Note that we only return one answer in this case, but
-  this is easy to fix.
+  Это означает, что либо цель не может быть разрешена, либо она
+  разрешима при заданном наборе переменных.  Заметим, что мы
+  возвращаем только один набор переменных, в случае если цель
+  разрешима, но это легко исправить.
+
+%  This says either that the goal cannot be solved, or that it can be
+%  solved with the given instantiations. Note that we only return one
+%  answer in this case, but this is easy to fix.
+
 }
 
-\frame{
-  \frametitle{Prolog examples (1)}
+\frame[shrink=10]{
+  \frametitle{Примеры на Прологе (1)}
 
   \PrologExamplesO
 }
 
 \frame{
-  \frametitle{Prolog examples (2)}
+  \frametitle{Примеры на Прологе (2)}
 
   \PrologExamplesOO
 
-  Prolog is less `directional' than ML. However it has its
-  limitations, e.g.  the following will loop indefinitely:
+  Пролог менее <<управляемый>> чем ML, поэтому у него есть свои
+  ограничения, например, следующая конструкция зациклится.
+%  Prolog is less `directional' than ML. However it has its
+%  limitations, e.g.  the following will loop indefinitely:
 
   \PrologExamplesOOO
 }
@@ -592,32 +659,50 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
 
 \frame{
-  \frametitle{Prolog-style theorem proving}
+  \frametitle{Доказательство теорем в стиле Пролог}
+%  \frametitle{Prolog-style theorem proving}
 
-  With a few minor changes, Prolog-style search can be used for general theorem
-  proving. Examples of such provers include PTTP (Stickel, 1988) and \mbox{{\sf
-      lean}$T^{\!\!\textstyle A}\!\!P$} (Beckert and Possega 1994).
+  Метод, используемый в поиске Пролога, можно приспособить для
+  создания средств доказательства теорем, внеся в него небольшие
+  изменения.  Примеры таких стредств доказательства включают PTTP
+  (Стикель, 1988) и \mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$}
+  (Beckert and Possega 1994).
 
-  Unification is an efficient method for deciding how to specialize universally
-  quantified variables (Prawitz, Robinson 1960).
+% #ISSUE: Возможноц необходимо разместить ссылку на
+%         http://www.ai.sri.com/~stickel/pttp.html
 
-  For example, given the facts that \alert{$\all{X} p(X) \Imp q(X)$} and \alert{
-    $p(f(a))$}, we can unify the two expressions involving \alert{$p$} and thus
-  discover that we need to set \alert{$X$} to \alert{$f(a)$}. By contrast, the very
-  earliest theorem provers tried all possible terms!
+%  With a few minor changes, Prolog-style search can be used for
+%  general theorem proving. Examples of such provers include PTTP
+%  (Stickel, 1988) and \mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$}
+%  (Beckert and Possega 1994).
 
-  Usually, depth-first search would go into an infinite loop, so we need to
-  modify the Prolog strategy slightly. We will use {\em depth first iterative
-    deepening}.
+  Унификация является рациональным методом для отыскания оптимального
+  способа использования переменных, снабжённых квантором общности
+  (Правиц, Робинсон 1960).
+% #ISSUE: надо проверить и уточнить семантику этого предложения --lg
+
+%  Unification is an efficient method for deciding how to specialize
+%  universally quantified variables (Prawitz, Robinson 1960).
+
+  For example, given the facts that \alert{$\all{X} p(X) \Imp q(X)$}
+  and \alert{ $p(f(a))$}, we can unify the two expressions involving
+  \alert{$p$} and thus discover that we need to set \alert{$X$} to
+  \alert{$f(a)$}. By contrast, the very earliest theorem provers tried
+  all possible terms!
+
+  Usually, depth-first search would go into an infinite loop, so we
+  need to modify the Prolog strategy slightly. We will use {\em depth
+    first iterative deepening}.
 }
 
 
-
 \frame{
-  \frametitle{Manipulating formulas}
+  \frametitle{Работа с формулами}
+%  \frametitle{Manipulating formulas}
 
-  We will simply use our terms to denote formulas, introducing new constants for
-  the logical operators. Many of these are written infix.
+  We will simply use our terms to denote formulas, introducing new
+  constants for the logical operators. Many of these are written
+  infix.
 
   \begin{center}
     \begin{tabular}{|l|l|}
@@ -641,7 +726,8 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 }
 
 \frame{
-  \frametitle{Preprocessing formulas}
+  \frametitle{Предварительная обработка формул}
+%  \frametitle{Preprocessing formulas}
 
   It's convenient if the main part of the prover need not cope with
   implications and `if and only if's. Therefore we first define a
@@ -649,26 +735,36 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
   \ProcForm
 
+  , приведа её в так называемую <<отрицательную нормальную форму>>
+  (ОНФ).
+
   The next step is to push the negations down the formula, putting it
   into so-called `negation normal form' (NNF).
 }
 
 \frame{
-  \frametitle{NNF code}
+  \frametitle{ОНФ код}
+%  \frametitle{NNF code}
 
-  We define two mutually recursive functions that create NNF for a
-  formula, and its negation.
+  Мы определим две взаимно рекурсивные функции, которые создают ОНФ
+  для формулы и для её отрицания.
+%  We define two mutually recursive functions that create NNF for a
+%  formula, and its negation.
 
   \NnfCode
 
-  We will convert the negation of the input formula into negation
-  normal form, and the main prover will then try to derive a
-  contradiction from it.
+  Мы преобразуем отрицание заданной формулы в отрицательную нормальую
+  форму, а основное средство доказательства попробует получить из
+  этого противоречие.
+%  We will convert the negation of the input formula into negation
+%  normal form, and the main prover will then try to derive a
+%  contradiction from it.
 }
 
 
 \frame{
-  \frametitle{The main prover}
+  \frametitle{Основное средство доказательства}
+%  \frametitle{The main prover}
 
   At each stage, the prover has a current formula, a list of formulas yet to be
   considered, and a list of literals. It is trying to reach a contradiction.
@@ -696,7 +792,8 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
 
 \frame{
-  \frametitle{Continuations}
+  \frametitle{Продолжения}
+%  \frametitle{Continuations}
 
   We desire a similar backtracking strategy to Prolog: only if the current
   instantiations allow all remaining goals to be solved do we accept it.
@@ -714,13 +811,15 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
 
 \frame{
-  \frametitle{Prover code}
+  \frametitle{Средство доказательства: код}
+%  \frametitle{Prover code}
 
   \Prover
 }
 
 \frame{
-  \frametitle{Prover examples (1)}
+  \frametitle{Средство доказательства: примеры (1)}
+%  \frametitle{Prover examples (1)}
 
   We set up the final prover as follows:
 
@@ -734,7 +833,8 @@ P55' : int * (string * term) list = 6, ["X", `agatha`]
 
 
 \frame{
-  \frametitle{Prover examples (2)}
+  \frametitle{Средство доказательства: примеры (2)}
+%  \frametitle{Prover examples (2)}
 
   A bigger example is the following:
 
