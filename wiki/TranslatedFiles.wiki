@@ -32,7 +32,7 @@
   * (e) *intro.tex* - перевод alexott, прочитали lg, dimiii, alexey_mikhailov (r206), Lambda Henchman
   * (e) *effect.tex* - перевод pr.dimiii, прочитали lg
   * (e) *preface.tex* - перевод pr.dimiii, прочитали lg
-  * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii
+  * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii, Lambda Henchman 
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
   * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
   * (e) *plan.tex* - перевод alexott, прочитали lg
