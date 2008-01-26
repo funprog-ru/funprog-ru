@@ -718,25 +718,45 @@ same result, and moreover it is never too late to abandon a given strategy and
 start using normal order reduction. We will see later how this translates into
 practical terms.
 
-\section{Combinators}
+\section{Комбинаторы}
+%\section{Combinators}
+Впервые понятие комбинатора и основанная на нём теория были сформулированы
+М.~И.~Шейнфинкелем в работе~\citeN{schonfinkel} ещё до появления 
+$\lambda$-исчисления. Вскоре после этого аналогичные результаты были получены 
+Карри, независимо от Шейнфинкеля и Чёрча. (Когда Карри ознакомился с 
+работами Шейнфинкеля, он предпринял попытку с ним связаться, но к этому
+времени Шейнфинкель оказался в психиатрической лечебнице.) В данной работе
+мы позволим себе не соблюдать историческую достоверность, изложив теорию 
+комбинаторов как один из аспектов $\lambda$-исчисления.
+%
+%Combinators were actually developed as an independent theory by
+%\citeN{schonfinkel} before $\lambda$- notation came along. Moreover Curry
+%rediscovered the theory soon afterwards, independently of Sch\"onfinkel and of
+%Church. (When he found out about Sch\"onfinkel's work, Curry attempted to
+%contact him, but by that time, Sch\"onfinkel had been committed to a lunatic
+%asylum.) We will distort the historical development by presenting the theory of
+%combinators as an aspect of $\lambda$- calculus.
 
-Combinators were actually developed as an independent theory by
-\citeN{schonfinkel} before $\lambda$- notation came along. Moreover Curry
-rediscovered the theory soon afterwards, independently of Sch\"onfinkel and of
-Church. (When he found out about Sch\"onfinkel's work, Curry attempted to
-contact him, but by that time, Sch\"onfinkel had been committed to a lunatic
-asylum.) We will distort the historical development by presenting the theory of
-combinators as an aspect of $\lambda$- calculus.
-
-We will define a {\em combinator} simply to be a $\lambda$- term with no free
-variables. Such a term is also said to be {\em closed}; it has a fixed meaning
-independent of the values of any variables. Now we will later, in the course of
-functional programming, come across many useful combinators. But the
-cornerstone of the theory of combinators is that one can get away with just a
-few combinators, and express in terms of those and variables {\em any} term at
-all: the operation of $\lambda$- abstraction is unnecessary. In particular, a
-closed term can be expressed purely in terms of these few combinators. We start
-by defining:
+Будем называть {\em комбинатором} терм $\lambda$-исчисления без свободных 
+переменных. Такие термы также принято называть {\em замкнутыми}, поскольку их
+значение не зависит от значений каких-либо переменных. В дальнейшем в курсе
+функционального программирования мы встретимся с большим количеством полезных
+комбинаторов, но краеугольным камнем теории комбинаторов служит тот факт, что
+на самом деле достаточно лишь лишь немногих из них. Оказывается, что 
+произвольный терм может быть выражен при помощи определённого множества 
+комбинаторов и всевозможных переменных, операция $\lambda$-абстракции 
+становится ненужной. В частности, замкнутый терм может быть представлен 
+исключительно через эти комбинаторы. Дадим их определения:
+%
+%We will define a {\em combinator} simply to be a $\lambda$- term with no free
+%variables. Such a term is also said to be {\em closed}; it has a fixed meaning
+%independent of the values of any variables. Now we will later, in the course of
+%functional programming, come across many useful combinators. But the
+%cornerstone of the theory of combinators is that one can get away with just a
+%few combinators, and express in terms of those and variables {\em any} term at
+%all: the operation of $\lambda$- abstraction is unnecessary. In particular, a
+%closed term can be expressed purely in terms of these few combinators. We start
+%by defining:
 
 \begin{eqnarray*}
 I & = & \lamb{x} x                              \\
@@ -744,13 +764,27 @@ K & = & \lamb{x\; y} x                          \\
 S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
 \end{eqnarray*}
 
-We can motivate the names as follows.\footnote{We are not claiming these are
-the historical reasons for them.} $I$ is the identity function. $K$ produces
-constant functions:\footnote{Konstant --- Sch\"onfinkel was German, though in
-fact he originally used $C$.} when applied to an argument $a$ it gives the
-function $\lamb{y} a$. Finally $S$ is a `sharing' combinator, which takes two
-functions and an argument and shares out the argument among the functions. Now
-we prove the following:
+Чтобы легче их запомнить, можно воспользоваться простыми мнемоническими
+правилами.%
+\footnote{Мы не утверждаем, что эти правила имеют под собой историческую основу.}
+Комбинатор~$I$ представляет собой тождественную функцию (<<идентичность>>), 
+комбинатор~$K$ порождает семейство константных%
+\footnote{Шейнфинкель использовал обозначение~$C$, но мы предлагаем своё,
+основанное на нем.\ Konstant, в честь его немецкого происхождения (автор 
+ошибается, М.~И.~Шейнфинкель работал в Германии, но родился в России~--- 
+\textsl{Прим.\ перев.})}
+функций: после применения к аргументу~$a$ он даёт функцию~$\lamb{y} a$.
+Наконец, $S$~--- комбинатор <<совместного применения>>, который принимает
+в качестве аргументов две функции, применяемые к общему аргументу. Докажем
+следующее утверждение:
+%
+%We can motivate the names as follows.\footnote{We are not claiming these are
+%the historical reasons for them.} $I$ is the identity function. $K$ produces
+%constant functions:\footnote{Konstant --- Sch\"onfinkel was German, though in
+%fact he originally used $C$.} when applied to an argument $a$ it gives the
+%function $\lamb{y} a$. Finally $S$ is a `sharing' combinator, which takes two
+%functions and an argument and shares out the argument among the functions. Now
+%we prove the following:
 
 \begin{lemma}
 For any $\lambda$- term $t$ not involving $\lambda$- abstraction, there is a term $u$
