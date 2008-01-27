@@ -786,27 +786,49 @@ S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
 %functions and an argument and shares out the argument among the functions. Now
 %we prove the following:
 
-\begin{lemma}
-For any $\lambda$- term $t$ not involving $\lambda$- abstraction, there is a term $u$
-also not containing $\lambda$- abstractions, built up from $S$, $K$, $I$ and
-variables, with $FV(u) = FV(t) - \{x\}$ and $u = \lamb{x} t$, i.e. $u$ is
-$\lambda$--equal to $\lamb{x} t$.
+\begin{lemma}\label{lemma-2-6}
+Для произвольного $\lambda$-терма~$t$, не содержащего $\lambda$-абстракций,
+найдётся терм~$u$, который также не содержит $\lambda$-абстракций и 
+представляет собой композицию $S$, $K$, $I$ и переменных, 
+причём~$FV(u) = FV(t) - \{x\}$ и~$u = \lamb{x} t$, т.~е.\ терм~$u$ 
+$\lambda$-эквивалентен~$\lamb{x} t$.
+%For any $\lambda$- term $t$ not involving $\lambda$- abstraction, there is a term $u$
+%also not containing $\lambda$- abstractions, built up from $S$, $K$, $I$ and
+%variables, with $FV(u) = FV(t) - \{x\}$ and $u = \lamb{x} t$, i.e. $u$ is
+%$\lambda$--equal to $\lamb{x} t$.
 
-\proof By structural induction on the term $t$. By hypothesis, it cannot
-be an abstraction, so there are just three cases to consider.
+\proof 
+Применим к терму~$t$ структурную индукцию. Согласно условию, он не может
+быть абстракцией, поэтому нам требуется рассмотреть лишь три случая.
+%By structural induction on the term $t$. By hypothesis, it cannot
+%be an abstraction, so there are just three cases to consider.
 
 \begin{itemize}
 
-\item If $t$ is a variable, then there are two possibilities. If it is equal to
-$x$, then $\lamb{x} x = I$, so we are finished. If not, say $t = y$, then
-$\lamb{x} y = K\; y$.
+\item 
+Если $t$~представляет собой переменную, возможны два случая, из которых
+непосредственно следует требуемый вывод: при~$t = x$ мы получаем 
+$\lamb{x} x = I$, иначе, например, при~$t = y$, $\lamb{x} y = K\; y$.
+%
+%If $t$ is a variable, then there are two possibilities. If it is equal to
+%$x$, then $\lamb{x} x = I$, so we are finished. If not, say $t = y$, then
+%$\lamb{x} y = K\; y$.
 
-\item If $t$ is a constant $c$, then $\lamb{x} c = K\; c$.
+\item 
+Если~$t$~--- константа~$c$, то~$\lamb{x} c = K\; c$.
+%If $t$ is a constant $c$, then $\lamb{x} c = K\; c$.
 
-\item If $t$ is a combination, say $s\; u$, then by the inductive hypothesis,
-there are $\lambda$--free terms $s'$ and $u'$ with $s' = \lamb{x} s$ and $u' =
-\lamb{x} u$. Now we claim $S\;s'\;u'$ suffices. Indeed:
-
+\item 
+Если $t$~представляет собой комбинацию термов, например, $s\; u$, то
+согласно индуктивному предположению найдутся термы~$s'$ и~$u'$, которые не
+содержат $\lambda$-абстракций и для которых справедливы 
+равенства~$s' = \lamb{x} s$ и~$u' = \lamb{x} u$. Из этого можно сделать вывод, 
+что $S\;s'\;u'$~является искомым выражением. В самом деле,
+%
+%If $t$ is a combination, say $s\; u$, then by the inductive hypothesis,
+%there are $\lambda$--free terms $s'$ and $u'$ with $s' = \lamb{x} s$ and $u' =
+%\lamb{x} u$. Now we claim $S\;s'\;u'$ suffices. Indeed:
+%
 \begin{eqnarray*}
 S\;s'\;u'\;x & = & S\;(\lamb{x} s)\; (\lamb{x} u)\; x     \\
              & = & ((\lamb{x} s)\; x) ((\lamb{x} u)\; x)  \\
@@ -814,66 +836,116 @@ S\;s'\;u'\;x & = & S\;(\lamb{x} s)\; (\lamb{x} u)\; x     \\
              & = & t
 \end{eqnarray*}
 
-Therefore, by $\eta$-conversion, we have $S\;s'\;u' = \lamb{x} S\;s'\;u'\; x =
-\lamb{x} t$, since by the inductive hypothesis $x$ is not free in $s'$ or $u'$.
-
+Таким образом, применив $\eta$-преобразование, мы получаем
+$S\;s'\;u' = \lamb{x} S\;s'\;u'\; x = \lamb{x} t$, поскольку согласно 
+индуктивному предположению переменная~$x$ не является свободной в термах~$s'$ 
+либо~$u'$.
+%
+%Therefore, by $\eta$-conversion, we have $S\;s'\;u' = \lamb{x} S\;s'\;u'\; x =
+%\lamb{x} t$, since by the inductive hypothesis $x$ is not free in $s'$ or $u'$.
+%
 \end{itemize}
-
 \qed
-
 \end{lemma}
 
 \begin{theorem}
-For any $\lambda$- term $t$, there is a $\lambda$--free term $t'$ built up from $S$,
-$K$, $I$ and variables, with $FV(t') = FV(t)$ and $t' = t$.
+Для произвольного $\lambda$-терма~$t$ существует не содержащий 
+$\lambda$-абстракций терм~$t'$, полученный композицией~$K$, $I$ и переменных,
+такой, что~$FV(t') = FV(t)$ и~$t' = t$.
+%For any $\lambda$- term $t$, there is a $\lambda$--free term $t'$ built up from $S$,
+%$K$, $I$ and variables, with $FV(t') = FV(t)$ and $t' = t$.
 
-\proof By structural induction on $t$, using the lemma. For example, if $t$ is
-$\lamb{x} s$, we first find, by the inductive hypothesis, a $\lambda$--free
-equivalent $s'$ of $s$. Now the lemma can be applied to $\lamb{x} s'$. The
-other cases are straightforward. \qed
+\proof 
+Применим структурную индукцию к терму~$t$ и воспользуемся 
+леммой~\ref{lemma-2-6}. Например, если терм~$t$ имеет вид~$\lamb{x} s$, то мы
+сначала можем получить, согласно индуктивному предположению, терм~$s'$~---
+свободный от $\lambda$-абстракций эквивалент~$s$. Далее применим лемму 
+к~$\lamb{x} s'$. Прочие случаи очевидны.
+%By structural induction on $t$, using the lemma. For example, if $t$ is
+%$\lamb{x} s$, we first find, by the inductive hypothesis, a $\lambda$--free
+%equivalent $s'$ of $s$. Now the lemma can be applied to $\lamb{x} s'$. The
+%other cases are straightforward. 
+\qed
 
 \end{theorem}
 
-This remarkable fact can be strengthened, since $I$ is definable in terms of
-$S$ and $K$. Note that for any $A$:
-
+Это примечательное утверждение может быть даже усилено, поскольку 
+комбинатор~$I$ выражается через~$S$ и~$K$. Отметим, что для произвольного~$A$
+%This remarkable fact can be strengthened, since $I$ is definable in terms of
+%$S$ and $K$. Note that for any $A$:
+%
 \begin{eqnarray*}
 S\;K\;A\;x & = & (K\; x) (A\; x)                \\
            & = & (\lamb{y} x) (A\; x)           \\
            & = & x
 \end{eqnarray*}
+Отсюда, применив $\eta$-преобразование, получаем, что~$I = S\;K\;A$ для 
+любых~$A$. Однако, по причинам, которые станут яснее после знакомства
+с понятием типа, наболее удобно положить~$A = K$. Таким образом, $I = S\;K\;K$,
+что даёт нам возможность устранить все вхождения~$I$ в комбинаторные выражения.
+%So again by $\eta$-converting, we see that $I = S\;K\;A$ for any $A$. It is
+%customary, for reasons that will become clear when we look at types, to use $A
+%= K$. So $I = S\;K\;K$, and we can avoid the use of $I$ in our combinatory
+%expression.
 
-So again by $\eta$-converting, we see that $I = S\;K\;A$ for any $A$. It is
-customary, for reasons that will become clear when we look at types, to use $A
-= K$. So $I = S\;K\;K$, and we can avoid the use of $I$ in our combinatory
-expression.
+Заметим, что приведённые выше доказательства имеют конструктивный характер,
+поскольку предлагают конкретные процедуры получения по заданному терму 
+эквивалентного комбинаторного выражения. Процесс его построения идёт в 
+направлении снизу вверх, и для каждой $\lambda$-абстракции, которая по 
+построению имеет тело, свободное от $\lambda$-абстракций, применяются
+сверху вниз преобразования, изложенные в лемме. 
+%Note that the proofs above are constructive, in the sense that they guide one
+%in a definite procedure that, given a $\lambda$- term, produces a combinator
+%equivalent. One proceeds bottom-up, and at each $\lambda$- abstraction, which by
+%construction has a $\lambda$--free body, applies the top-down transformations given
+%in the lemma.
 
-Note that the proofs above are constructive, in the sense that they guide one
-in a definite procedure that, given a $\lambda$- term, produces a combinator
-equivalent. One proceeds bottom-up, and at each $\lambda$- abstraction, which by
-construction has a $\lambda$--free body, applies the top-down transformations given
-in the lemma.
+Несмотря на то, что мы рассматриваем комбинаторы как некоторые термы 
+$\lambda$-исчисления, на их основе можно сформулировать независимую теорию. Её
+построение начинается с определения формальных правил конструирования выражений,
+в которые не входит $\lambda$-абстракция, но входят комбинаторы. Далее
+вместо $\alpha$, $\beta$ и~$\eta$-преобразований вводятся правила 
+преобразования для выражений, включающих комбинаторы, например, 
+$K\; x\; y \goesto x$. Такая теория будет иметь множество аналогий в 
+традиционном $\lambda$-исчислении, например, теорема Чёрча-Россера оказывается
+справедливой и для приведённого выше определения редукции. Кроме того, 
+полностью устраняются сложности со связыванием переменных.
+% ISSUE:  в оригинале "bound variables", но возможно, имеется в виду variable capture?
+Тем не менее, мы считаем полученный формализм не слишком интуитивным,
+поскольку комбинаторные выражения нередко бывают весьма неясными.
+%
+%Although we have presented combinators as certain $\lambda$- terms, they can also
+%be developed as a theory in their own right. That is, one starts with a formal
+%syntax excluding $\lambda$- abstractions but including combinators. Instead of
+%$\alpha$, $\beta$ and $\eta$ conversions, one posits {\em conversion rules} for
+%expressions involving combinators, e.g. $K\; x\; y \goesto x$. As an
+%independent theory, this has many analogies with $\lambda$- calculus, e.g. the
+%Church-Rosser theorem holds for this notion of reduction too. Moreover, the
+%ugly difficulties connected with bound variables are avoided completely.
+%However the resulting system is, we feel, less intuitive, since combinatory
+%expressions can get rather obscure.
 
-Although we have presented combinators as certain $\lambda$- terms, they can also
-be developed as a theory in their own right. That is, one starts with a formal
-syntax excluding $\lambda$- abstractions but including combinators. Instead of
-$\alpha$, $\beta$ and $\eta$ conversions, one posits {\em conversion rules} for
-expressions involving combinators, e.g. $K\; x\; y \goesto x$. As an
-independent theory, this has many analogies with $\lambda$- calculus, e.g. the
-Church-Rosser theorem holds for this notion of reduction too. Moreover, the
-ugly difficulties connected with bound variables are avoided completely.
-However the resulting system is, we feel, less intuitive, since combinatory
-expressions can get rather obscure.
-
-Apart from their purely logical interest, combinators have a certain practical
-potential. As we have already hinted, and as will become much clearer in the
-later chapters, $\lambda$- calculus can be seen as a simple functional language,
-forming the core of real practical languages like ML. We might say that the
-theorem of combinatory completeness shows that $\lambda$- calculus can be `compiled
-down' to a `machine code' of combinators. This computing terminology is not as
-fanciful as it appears. Combinators have been used as an implementation
-technique for functional languages, and real hardware has been built to
-evaluate combinatory expressions.
+Помимо важной роли, которую комбинаторы играют в логике, они также имеют
+и определённый практический потенциал. Как мы уже кратко упоминали (подробное
+изложение ожидается в следующих разделах), $\lambda$-исчисление может считаться
+простым функциональным языком, основой для более развитых и практически 
+применимых языков, наподобие~ML. Теорема о комбинаторной полноте даёт основание
+говорить, что выражения $\lambda$-исчисления могут быть <<скомпилированы>>
+в <<машинный код>> комбинаторов. Эта терминология из теории языковых 
+процессоров оказывается на самом деле вполне уместной. Комбинаторы применялись
+как средство реализации функциональных языков, в том числе и на уровне
+аппаратного обеспечения, предназначенного для вычисления комбинаторных 
+выражений.
+%
+%Apart from their purely logical interest, combinators have a certain practical
+%potential. As we have already hinted, and as will become much clearer in the
+%later chapters, $\lambda$- calculus can be seen as a simple functional language,
+%forming the core of real practical languages like ML. We might say that the
+%theorem of combinatory completeness shows that $\lambda$- calculus can be `compiled
+%down' to a `machine code' of combinators. This computing terminology is not as
+%fanciful as it appears. Combinators have been used as an implementation
+%technique for functional languages, and real hardware has been built to
+%evaluate combinatory expressions.
 
 % \section{Proof of the Church-Rosser theorem*}
 %
