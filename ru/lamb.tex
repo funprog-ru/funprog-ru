@@ -1,4 +1,4 @@
-\chapter[Lambda-исчисление]{$\lambda$-исчисление}
+\chapter[Лямбда-исчисление]{$\lambda$-исчисление}
 $\lambda$-исчисление основывается на так называемой `$\lambda$-нотации' для обозначения
 функций.  В неформальной математике, когда кто-то хочет сослаться на функцию, то обычно
 сначала дает этой функции произвольное имя, а затем использует его, например:
@@ -71,7 +71,7 @@ t[x]$.)  Вероятно, что она возникла во время сложного процесса эволюции.  В нача
 (крыша) над $x$, то оно появилось как ${\tiny \wedge} x.\;t[x]$, которое затем
 трансформировалось в $\lamb{x} t[x]$ в руках других наборщиков.
 
-\section[Преимущества Lambda-нотации]{Преимущества $\lambda$-нотации}
+\section[Преимущества лямбда-нотации]{Преимущества $\lambda$-нотации}
 
 Используя $\lambda$-нотацию мы можем прояснить некоторые неточности, внесенные
 неформальной математической нотацией.  Например, часто говорят о~`$f(x)$', используя
@@ -81,27 +81,27 @@ t[x]$.)  Вероятно, что она возникла во время сложного процесса эволюции.  В нача
 констант, и построим выражение используя лишь $\lambda$-абстрацию и применение функций к
 аргументом, то мы сможем предтавлять очень сложные математические выражения.
 
-We will use the conventional notation $f(x)$ for the application of a function
-$f$ to an argument $x$, except that, as is traditional in $\lambda$- notation, the
-brackets may be omitted, allowing us to write just $f\;x$. For reasons that
-will become clear in the next paragraph, we assume that function application
-associates to the left, i.e. $f\;x\;y$ means $(f(x))(y)$. As a shorthand for
-$\lamb{x} \lamb{y} t[x,y]$ we will use $\lamb{x\;y} t[x,y]$, and so on. We also
-assume that the scope of a $\lambda$- abstraction extends as far to the right as
-possible. For example $\lamb{x} x\; y$ means $\lamb{x} (x\; y)$ rather than
-$(\lamb{x} x)\; y$.
+Мы будем использовать общепринятую нотацию~$f(x)$ для операции применения функции~$f$ к
+аргументу~$x$, за тем исключением, что в традиционной $\lambda$-нотации, скобки могут быть
+опущены, что позволяет нам записывать это выражение в виде~$f\;x$.  По причинам, которые
+станут понятны в процессе чтения следующего параграфа, мы считаем, что применение функции
+ассоциативно слева,~т.е.  $f\;x\;y$ означает $(f(x))(y)$.  В качестве сокращенной записи
+для $\lamb{x} \lamb{y} t[x,y]$ мы будем использовать $\lamb{x\;y} t[x,y]$, и~т.д.  Мы
+также предполагаем, что область $\lambda$-абстракции распространяется вправо, насколько
+это возможно.  Например,, $\lamb{x} x\; y$ означает $\lamb{x} (x\; y)$, а не~$(\lamb{x}
+x)\; y$.
 
-At first sight, we need some special notation for functions of several
-arguments. However there is a way of breaking down such applications into
-ordinary $\lambda$- notation, called {\em currying}, after the logician
-\citeN{curry-comb}. (Actually the device had previously been used by both
-\citeN{frege-arith} and \citeN{schonfinkel}, but it's easy to understand why
-the corresponding appellations haven't caught the public imagination.) The idea
-is to use expressions like $\lamb{x\;y} x + y$. This may be regarded as a
-function $\real \to (\real \to \real)$, so it is said to be a `higher order
-function' or `functional' since when applied to one argument, it yields another
-function, which then accepts the second argument. In a sense, it takes its
-arguments one at a time rather than both together. So we have for example:
+На первый взгляд нам необходимо введение специальной нотации для функций нескольких
+аргументов.  Однако существует способ перевода таких функций на обычную $\lambda$-нотацию.
+Этот способ называется \emph{каррированием} ({\em currying}), по имени
+математика-логика\citeN{curry-comb}. (Actually the device had previously been used by both
+\citeN{frege-arith} and \citeN{schonfinkel}, but it's easy to understand why the
+corresponding appellations haven't caught the public imagination.) The idea is to use
+expressions like $\lamb{x\;y} x + y$. This may be regarded as a function $\real \to (\real
+\to \real)$, so it is said to be a `higher order function' or `functional' since when
+applied to one argument, it yields another function, which then accepts the second
+argument. In a sense, it takes its arguments one at a time rather than both together. So
+we have for example:
 
 $$ (\lamb{x\;y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$
 
@@ -236,7 +236,7 @@ $\lambda$- notation with a notion of {\em type}; we shall consider this in a lat
 chapter. However the paradox itself is suggestive of some interesting
 possibilities in the standard, untyped, system, as we shall see later.
 
-\section[Lambda-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
+\section[Лямбда-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
 
 We have taken for granted certain obvious facts, e.g. that $(\lamb{y} 1 + y)\;2
 = 1 + 2$, since these reflect the intended meaning of abstraction and
@@ -256,7 +256,7 @@ brain. [\ldots] Civilisation advances by extending the number of important
 operations which can be performed without thinking about them.
 \end{quote}
 
-\subsection[Lambda-термы]{$\lambda$-термы}
+\subsection[Лямбда-термы]{$\lambda$-термы}
 
 $\lambda$- calculus is based on a formal notion of $\lambda$- term, and these terms are
 built up from variables and some fixed set of constants using the operations of
@@ -481,7 +481,7 @@ a technical device to change the names of bound variables, while
 $\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
 interest to those taking a logical, not a programming, view of $\lambda$- calculus.
 
-\subsection[Равенство Lambda]{Равенство $\lambda$}
+\subsection[Равенство лямбда-выражений]{Равенство $\lambda$}
 
 Using these conversion rules, we can define formally when two $\lambda$- terms are
 to be considered equal. Roughly, two terms are equal if it is possible to get
@@ -550,7 +550,7 @@ $y$ when $x$ is not free in $t$. This is the import of $\eta$-conversion, and
 having discussed that, we will largely ignore it in favour of the more
 computationally significant $\beta$-conversion.
 
-\subsection[Lambda-редукция]{$\lambda$-редукция}
+\subsection[Лямбда-редукция]{$\lambda$-редукция}
 
 $\lambda$- equality, unsurprisingly, is a symmetric relation. Though it captures
 the notion of equivalence of $\lambda$- terms well, it is more interesting from a
@@ -721,7 +721,7 @@ practical terms.
 \section{Комбинаторы}
 %\section{Combinators}
 Впервые понятие комбинатора и основанная на нём теория были сформулированы
-М.~И.~Шейнфинкелем в работе~\citeN{schonfinkel} ещё до появления 
+М.И.~Шейнфинкелем в работе~\citeN{schonfinkel} ещё до появления 
 $\lambda$-исчисления. Вскоре после этого аналогичные результаты были получены 
 Карри, независимо от Шейнфинкеля и Чёрча. (Когда Карри ознакомился с 
 работами Шейнфинкеля, он предпринял попытку с ним связаться, но к этому
