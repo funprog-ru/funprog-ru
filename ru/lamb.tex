@@ -635,29 +635,49 @@ leftmost outermost redex of $s$, and for an abstraction $\lamb{x} s$ it is the
 leftmost outermost redex of $s$. In terms of concrete syntax, we always reduce
 the redex whose $\lambda$ is the furthest to the left.
 
-\subsection{The Church-Rosser theorem}
-
-The next assertion, the famous Church-Rosser theorem, states that if we start
-from a term $t$ and perform any two finite reduction sequences, there are
-always two more reduction sequences that bring the two back to the same term
-(though of course this might not be in normal form).
+\subsection{Теорема Чёрча-Россера}
+%\subsection{The Church-Rosser theorem}
+Следующее утверждение, которое мы рассмотрим, широко известно как теорема
+Чёрча-Россера. Оно гласит, что для двух конечных последовательностей редукций,
+начатых с терма~$t$, всегда найдутся две другие последовательности, сводящие
+результаты предыдущих к одному и тому же терму (который, впрочем, может и не
+быть в нормальной форме).
+%
+%The next assertion, the famous Church-Rosser theorem, states that if we start
+%from a term $t$ and perform any two finite reduction sequences, there are
+%always two more reduction sequences that bring the two back to the same term
+%(though of course this might not be in normal form).
 
 \begin{theorem}
-If $t \goesto s_1$ and $t \goesto s_2$, then there is a term $u$ such that $s_1
-\goesto u$ and $s_2 \goesto u$.
+Если~$t \goesto s_1$ и~$t \goesto s_2$, то существует терм~$u$ такой, 
+что~$s_1 \goesto u$ и~$s_2 \goesto u$.
+%
+%If $t \goesto s_1$ and $t \goesto s_2$, then there is a term $u$ such that $s_1
+%\goesto u$ and $s_2 \goesto u$.
 \end{theorem}
 
-\noindent This has at least the following important consequences:
+Важные следствия данного утверждения:
+%\noindent This has at least the following important consequences:
 
 \begin{corollary}
-If $t_1 = t_2$ then there is a term $u$ with $t_1 \goesto u$ and $t_2 \goesto
-u$.
+Если~$t_1 = t_2$ то найдётся терм~$u$ такой, что~$t_1 \goesto u$ 
+и~$t_2 \goesto u$.
+%
+%If $t_1 = t_2$ then there is a term $u$ with $t_1 \goesto u$ and $t_2 \goesto
+%u$.
 
-\proof It is easy to see (by structural induction) that the equality relation
-$=$ is in fact the symmetric transitive closure of the reduction relation. Now
-we can proceed by induction over the construction of the symmetric transitive
-closure. However less formally minded readers will probably find the following
-diagram more convincing:
+\proof 
+Легко показать (при помощи структурной индукции), что отношение 
+эквивалентности~$=$ представляет собой симметричное транзитивное замыкание
+отношения редукции. Дальнейшее следует по индукции согласно свойствам 
+симметричного транзитивного замыкания. Приведённая ниже диаграмма может
+показаться читателям, не склонным к формальным построениям, более доходчивой:
+%
+%It is easy to see (by structural induction) that the equality relation
+%$=$ is in fact the symmetric transitive closure of the reduction relation. Now
+%we can proceed by induction over the construction of the symmetric transitive
+%closure. However less formally minded readers will probably find the following
+%diagram more convincing:
 
 \begin{picture}(140,140)(-100,-20)
 
@@ -686,37 +706,70 @@ diagram more convincing:
 \put(76,10){$u$}
 \end{picture}
 
-We assume $t_1 = t_2$, so there is some sequence of reductions in both directions
-(i.e. the zigzag at the top) that connects them. Now the Church-Rosser theorem
-allows us to fill in the remainder of the sides in the above diagram, and hence
-reach the result by composing these reductions. \qed
+Мы полагаем, что~$t_1 = t_2$, т.~е.\ существует некоторая последовательность
+редукций в обеих направлениях (зигзагообразная линия в верхней части рисунка),
+которая их объединяет. Теорема Чёрча-Россера позволяет нам заполнить 
+недостающие участки на краях диаграммы, после чего требуемый результат 
+достигается композицией этих редукций.
+%
+%We assume $t_1 = t_2$, so there is some sequence of reductions in both directions
+%(i.e. the zigzag at the top) that connects them. Now the Church-Rosser theorem
+%allows us to fill in the remainder of the sides in the above diagram, and hence
+%reach the result by composing these reductions. \qed
 
 \end{corollary}
 
 \begin{corollary}
-If $t = t_1$ and $t = t_2$ with $t_1$ and $t_2$ in normal form, then $t_1
-\equiv_{\alpha} t_2$, i.e. $t_1$ and $t_2$ are equal apart from $\alpha$
-conversions.
+Если~$t = t_1$ и~$t = t_2$, причём~$t_1$ и~$t_2$ имеют нормальную форму,
+то~$t_1\equiv_{\alpha} t_2$, т.~е.\ $t_1$ и~$t_2$ эквивалентны с точностью
+до~$\alpha$-преобразований.
+%
+%If $t = t_1$ and $t = t_2$ with $t_1$ and $t_2$ in normal form, then $t_1
+%\equiv_{\alpha} t_2$, i.e. $t_1$ and $t_2$ are equal apart from $\alpha$
+%conversions.
 
-\proof By the first corollary, we have some $u$ with $t_1 \goesto u$ and $t_2
-\goesto u$. But since $t_1$ and $t_2$ are already in normal form, these
-reduction sequences to $u$ can only consist of alpha conversions. \qed
-
+\proof 
+Согласно изложенному выше, найдется некоторый терм~$u$ такой, 
+что~$t_1 \goesto u$ и~$t_2\goesto u$. Но так как~$t_1$ и~$t_2$ уже имеют
+нормальную форму, последовательность редукций, приводящая к терму~$u$, может
+состоять лишь из $\alpha$-преобразований.
+%
+%By the first corollary, we have some $u$ with $t_1 \goesto u$ and $t_2
+%\goesto u$. But since $t_1$ and $t_2$ are already in normal form, these
+%reduction sequences to $u$ can only consist of alpha conversions. 
+\qed
 \end{corollary}
 
-Hence normal forms, when they do exist, are unique up to alpha conversion. This
-gives us the first proof we have available that the relation of $\lambda$- equality
-isn't completely trivial, i.e. that there are any unequal terms. For example,
-since $\lamb{x\; y} x$ and $\lamb{x\; y} y$ are not interconvertible by alpha
-conversions alone, they cannot be equal.
+Таким образом, нормальные формы, если они существуют, являются единственными
+с точностью до $\alpha$-преобразования. Это даёт нам первое обоснование того,
+что отношение $\lambda$-эквивалентности нетривиально, т.~е.\ что существуют
+неэквивалентные термы. Например, поскольку $\lamb{x\; y} x$ 
+и~$\lamb{x\; y} y$ несводимы друг к другу исключительно при помощи 
+$\alpha$-преобразований, они не эквивалентны.
+%
+%Hence normal forms, when they do exist, are unique up to alpha conversion. This
+%gives us the first proof we have available that the relation of $\lambda$- equality
+%isn't completely trivial, i.e. that there are any unequal terms. For example,
+%since $\lamb{x\; y} x$ and $\lamb{x\; y} y$ are not interconvertible by alpha
+%conversions alone, they cannot be equal.
 
-Let us sum up the computational significance of all these assertions. In some
-sense, reducing the leftmost outermost redex is the best strategy, since it
-will work if any strategy will. This is known as {\em normal order reduction}.
-On the other hand {\em any} terminating reduction sequence will always give the
-same result, and moreover it is never too late to abandon a given strategy and
-start using normal order reduction. We will see later how this translates into
-practical terms.
+Подытожим важность полученных результатов в свете теории вычислимости. Стратегия
+редукции, в которой на каждом шаге выбирается внешний редекс, расположенный 
+в выражении левее других, считается, в известном смысле, наилучшей, поскольку
+она применима всегда, когда применима любая другая стратегия. Такая стратегия
+получила название {\em нормального порядка редукции}. С другой стороны, 
+{\em любая} другая конечная последовательность редукций будет всегда давать
+тот же самый результат; более того, всегда остаётся возможность прекратить
+применение этой стратегии, перейдя при необходимости к нормальному порядку.
+Мы увидим практическое применение этого принципа далее.
+%
+%Let us sum up the computational significance of all these assertions. In some
+%sense, reducing the leftmost outermost redex is the best strategy, since it
+%will work if any strategy will. This is known as {\em normal order reduction}.
+%On the other hand {\em any} terminating reduction sequence will always give the
+%same result, and moreover it is never too late to abandon a given strategy and
+%start using normal order reduction. We will see later how this translates into
+%practical terms.
 
 \section{Комбинаторы}
 %\section{Combinators}
@@ -958,40 +1011,79 @@ $K\; x\; y \goesto x$. Такая теория будет иметь множество аналогий в
 % model is not so likely to give new insight.
 
 \section*{Дополнительная литература}
-
-An encyclopedic but clear book on $\lambda$- calculus is \citeN{barendregt}.
-Another popular textbook is \citeN{hindley-seldin}. Both these contain proofs
-of the results that we have merely asserted. A more elementary treatment
-focused towards computer science is Part II of \citeN{gordon-plt}. Much of our
-presentation here and later is based on this last book.
+Энциклопедическая, но при этом доступная работа по теории 
+$\lambda$-исчисления~--- \citeN{barendregt}. Другой популярный 
+учебник~--- \citeN{hindley-seldin}. Обе эти книги содержат доказательства
+результатов, которые мы приводим без обоснования. Вторая 
+часть~\citeN{gordon-plt} представляет собой упрощенное изложение предмета,
+ориентированное на его применение в прикладной математике. Существенная часть
+% "computer science" = "prikladnaia matematika" (c) D.E.Knuth
+данного курса базируется на последней работе.
+%
+%An encyclopedic but clear book on $\lambda$- calculus is \citeN{barendregt}.
+%Another popular textbook is \citeN{hindley-seldin}. Both these contain proofs
+%of the results that we have merely asserted. A more elementary treatment
+%focused towards computer science is Part II of \citeN{gordon-plt}. Much of our
+%presentation here and later is based on this last book.
 
 \section*{Упражнения}
 
 \begin{enumerate}
 
-\item Find a normal form for $(\lamb{x\; x\; x} x)\; a\; b\; c$.
+\item 
+Найдите нормальную форму терма~$(\lamb{x\; x\; x} x)\; a\; b\; c$.
+%
+%Find a normal form for $(\lamb{x\; x\; x} x)\; a\; b\; c$.
 
-\item Define $twice = \lamb{f\; x} f(f x)$. What is the intuitive meaning of
-$twice$? Find a normal form for $twice\; twice\; twice\; f\; x$. (Remember that
-function application associates to the left.)
+\item 
+Пусть~$twice = \lamb{f\; x} f(f x)$. Каков интуитивный смысл~$twice$?
+Найдите нормальную форму~$twice\; twice\; twice\; f\; x$. (Напомним, что
+операция применения функции левоассоциативна.)
+%
+%Define $twice = \lamb{f\; x} f(f x)$. What is the intuitive meaning of
+%$twice$? Find a normal form for $twice\; twice\; twice\; f\; x$. (Remember that
+%function application associates to the left.)
 
-\item Find a term $t$ such that $t \betas t$. Is it true to say that a term is
-in normal form if and only if whenever $t \goesto t'$ then $t \equiv_{\alpha}
-t'$?
+\item 
+Найдите терм~$t$ такой, что~$t \betas t$. Можно ли утверждать, что терм
+имеет нормальную форму тогда и только тогда, когда из $t \goesto t'$
+следует~$t \equiv_{\alpha}t'$?
+%
+%Find a term $t$ such that $t \betas t$. Is it true to say that a term is
+%in normal form if and only if whenever $t \goesto t'$ then $t \equiv_{\alpha}
+%t'$?
 
-\item What are the circumstances under which $s [t/x] [u/y] \equiv_{\alpha} s
-[u/y] [t/x]$?
+\item 
+В каком случае справедливо~$s [t/x] [u/y] \equiv_{\alpha} s [u/y] [t/x]$?
+%
+%What are the circumstances under which $s [t/x] [u/y] \equiv_{\alpha} s
+%[u/y] [t/x]$?
 
-\item Find an equivalent in terms of the $S$, $K$ and $I$ combinators alone for
-$\lamb{f\; x} f(x\; x)$.
+\item 
+Постройте выражение, равносильное~$\lamb{f\; x} f(x\; x)$, используя лишь 
+комбинаторы~$I$, $K$ и~$S$.
+%
+%Find an equivalent in terms of the $S$, $K$ and $I$ combinators alone for
+%$\lamb{f\; x} f(x\; x)$.
 
-\item Find a {\em single} combinator $X$ such that all $\lambda$-terms are
-equal to a term built from $X$ and variables. You may find it helpful to
-consider $A = \lamb{p} p\; K\; S\; K$ and then think about $A\; A\; A$ and $A\;
-(A\; A)$.
+\item 
+Найдите {\em единственный} комбинатор~$X$ такой, что все $\lambda$-термы
+эквивалентны термам, построенным композицией~$X$ и переменных. Указание:
+положите~$A = \lamb{p} p\; K\; S\; K$, а затем рассмотрите~$A\; A\; A$ 
+и~$A\;(A\; A)$.
+%
+%Find a {\em single} combinator $X$ such that all $\lambda$-terms are
+%equal to a term built from $X$ and variables. You may find it helpful to
+%consider $A = \lamb{p} p\; K\; S\; K$ and then think about $A\; A\; A$ and $A\;
+%(A\; A)$.
 
-\item Prove that any $X$ is a fixed point combinator if and only if it is
-itself a fixed point of $G$, where $G = \lamb{y\; m} m(y\; m)$.
+\item 
+Докажите, что терм~$X$ является комбинатором неподвижной точки тогда и только
+тогда, когда он представляет собой неподвижную точку комбинатора~$G$ такого, 
+что~$G = \lamb{y\; m} m(y\; m)$.
+%
+%Prove that any $X$ is a fixed point combinator if and only if it is
+%itself a fixed point of $G$, where $G = \lamb{y\; m} m(y\; m)$.
 
 \end{enumerate}
 
