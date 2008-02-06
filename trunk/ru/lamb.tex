@@ -94,62 +94,63 @@ x)\; y$.
 На первый взгляд нам необходимо введение специальной нотации для функций нескольких
 аргументов.  Однако существует способ перевода таких функций на обычную $\lambda$-нотацию.
 Этот способ называется \emph{каррированием} ({\em currying}), по имени
-математика-логика\citeN{curry-comb}. (Actually the device had previously been used by both
-\citeN{frege-arith} and \citeN{schonfinkel}, but it's easy to understand why the
-corresponding appellations haven't caught the public imagination.) The idea is to use
-expressions like $\lamb{x\;y} x + y$. This may be regarded as a function $\real \to (\real
-\to \real)$, so it is said to be a `higher order function' or `functional' since when
-applied to one argument, it yields another function, which then accepts the second
-argument. In a sense, it takes its arguments one at a time rather than both together. So
-we have for example:
+математика-логика\citeN{curry-comb}. (В действительности, этот способ уже использовался и
+\citeN{frege-arith}, и \citeN{schonfinkel}, но легко понять, почему соответствующие
+применения не получили общественного призвания.)  Идея заключается в использовании
+выражений, вида $\lamb{x\;y} x + y$. Это выражение может рассматриваться как функция
+$\real \to (\real \to \real)$, так что можно сказать, что оно является `функцией высшего
+порядка (higher order function)' или `функциоанлом (functional)', поскольку при применении
+к другой функции, она производит другую функцию, которая получает второй аргумент.  На
+самом деле, она получает аргументы по очереди, по одному, а не все сразу.  Например,
+рассмотрим:
 
 $$ (\lamb{x\;y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$
 
-Observe that function application is assumed to associate to the left in $\lambda$-
-notation precisely because currying is used so much.
+Заметьте, что в $\lambda$-нотации, применение функции считается лево-ассоциативной
+операцией, поскольку каррирование используется очень часто.
 
-$\lambda$- notation is particularly helpful in providing a unified treatment of
-bound variables. Variables in mathematics normally express the dependency of
-some expression on the value of that variable; for example, the value of $x^2 +
-2$ depends on the value of $x$. In such contexts, we will say that a variable
-is {\em free}. However there are other situations where a variable is merely
-used as a place-marker, and does not indicate such a dependency. Two common
-examples are the variable $m$ in
+$\lambda$-нотация в частности полезна в обеспечении унифицированной обработки связанных
+переменных.  В математике переменные обычно выражают зависимость некоторого выражения от
+значения этой переменной; например, значение $x^2 + 2$ зависит от значения~$x$. В таком
+контексте, мы будем говорить, что переменная является  {\em свободной}.  Однако,
+существуют другие ситуации, где переменная просто используется в качестве обозначения, а
+не показывает зависимость от значения.  В качестве примеров можно рассмотреть переменную
+$m$ в выражении
 
 $$ \sum_{m = 1}^{n} m = \frac{n (n + 1)}{2} $$
 
-\noindent and the variable $y$ in
+\noindent и переменную  $y$ в выражении
 
 $$ \int_{0}^{x} 2 y + a \ dy = x^2 + a x $$
 
-In logic, the quantifiers $\all{x} P[x]$ (`for all $x$, $P[x]$') and $\ex{x}
-P[x]$ (`there exists an $x$ such that $P[x]$') provide further examples, and in
-set theory we have set abstractions like $\{x \mid P[x]\}$ as well as indexed
-unions and intersections. In such cases, a variable is said to be {\em bound}.
-In a certain subexpression it is free, but in the whole expression, it is bound
-by a {\em variable-binding operation} like summation. The part `inside' this
-variable-binding operation is called the {\em scope} of the bound variable.
+В логике, квантификаторы $\all{x} P[x]$ (`для всех $x$, $P[x]$') и $\ex{x} P[x]$
+(`существует такой $x$ так что $P[x]$') являются дополнительными примерами, а в теории
+множеств, мы имеем абстрактные множества, наподобие $\{x \mid P[x]\}$, а также
+индексированные объединения и пересечения.  В таких случаях говорят, что переменная должна
+быть {\em связанной (bound)}.  В определенных подвыражениях она является свободной, но в
+полном выражении, она связана {\em операцией связывания переменных}, такой как сложение.
+Часть, находящаяся `внутри' этой операции связывания переменных называется {\em областью
+  видимости (scope)} связанной переменной.
 
-A similar situation occurs in most programming languages, at least from Algol
-60 onwards. Variables have a definite scope, and the formal arguments of
-procedures and functions are effectively bound variables, e.g. $n$ in the C
-definition of the successor function given above. One can actually regard
-variable declarations as binding operations for the enclosed instances of the
-corresponding variable(s). Note, by the way, that the {\em scope} of a variable
-should be distinguished sharply from its {\em lifetime}. In the C function {\tt
-rand} that we gave in the introduction, $n$ had a textually limited scope but
-it retained its value even outside the execution of that part of the code.
+Аналогичная ситуация возникает в большинстве языков программирования, по крайней мере, в
+произошедших от Algol 60.  Переменные имеют определенную области видимости, а формальные
+аргументы процедур и функций, являются связанными переменными, например, $n$ в определении
+на языке C функции \texttt{successor}, данном выше.  Кто-то может рассматривать объявления
+переменных как операцию связывания для вложенных объектов соответствующих переменных.
+Между прочим, заметьте, что {\em область видимости} переменной должна быть отделена от ее
+{\em времени жизни}.  В функции {\tt rand} языка C, которую мы привели в введении,
+переменная $n$ имеет ограниченную область видимости, но сохраняет свое значение, даже за
+пределами данного блока кода.
 
-We can freely change the name of a bound variable without changing the meaning
-of the expression, e.g.
+Мы можем свободно изменить имя связанной переменной, без изменения смысла выражения.
+Например,
 
 $$ \int_{0}^{x} 2 z + a \ dz = x^2 + a x $$
 
-Similarly, in $\lambda$- notation, $\lamb{x} E[x]$ and $\lamb{y} E[y]$ are
-equivalent; this is called {\em alpha}-equivalence and the process of
-transforming between such pairs is called alpha-conversion. We should add the
-proviso that $y$ is not a free variable in $E[x]$, or the meaning clearly may
-change, just as
+Similarly, in $\lambda$- notation, $\lamb{x} E[x]$ and $\lamb{y} E[y]$ are equivalent;
+this is called {\em alpha}-equivalence and the process of transforming between such pairs
+is called alpha-conversion. We should add the proviso that $y$ is not a free variable in
+$E[x]$, or the meaning clearly may change, just as
 
 $$ \int_{0}^{x} 2 a + a \  da \not= x^2 + a x $$
 
