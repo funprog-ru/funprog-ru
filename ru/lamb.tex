@@ -588,21 +588,39 @@ term by repeatedly evaluating combinations $f(x)$ where $f$ is a $\lambda$-
 abstraction. When no more reductions except for $\alpha$ conversions are
 possible we say that the term is in {\em normal form}.
 
-\subsection{Reduction strategies}
-
-Let us recall, in the middle of these theoretical considerations, the relevance
-of all this to functional programming. A functional program is an {\em
-expression} and executing it means evaluating the expression. In terms of the
-concepts discussed here, we are proposing to start with the relevant term and
-keep on applying reductions until there is nothing more to be evaluated. But
-how are we to choose which reduction to apply at each stage? The reduction
-relation is not deterministic, i.e. for some terms $t$ there are several $t_i$
-such that $t \goesto t_i$. Sometimes this can make the difference between a
-finite and infinite reduction sequence, i.e. between a program terminating and
-failing to terminate. For example, by reducing the innermost {\em redex}
-(reducible expression) in the following, we have an infinite reduction
-sequence:
-
+\subsection{Стратегии редукции}
+%\subsection{Reduction strategies}
+Отложив на время наши теоретические рассуждения, напомним их взаимосвязь с
+практикой функционального программирования. Программа на функциональном языке
+представляет собой {\em выражение}, а её выполнение~--- вычисление этого 
+выражения. То есть, в терминах, изложенных выше, мы собираемся начать процесс 
+вычислений с соответствующего терма и применять к нему правила редукции до
+тех пор, пока это возможно. Возникает вопрос: какое из имеющихся правил
+следует применять на каждом этапе? Отношение редукции~--- недетерминированное,
+то есть, для некоторых термов~$t$ найдётся множество термов~$t_i$ таких, 
+что~$t \goesto t_i$. Выбор того или иного варианта оказывается иногда 
+принципиально важным, поскольку может привести как к конечной, так и к 
+бесконечной последовательности редукций (выполнение соответствующей программы 
+при этом либо завершается, либо зацикливается). Например, подвергая редукции
+наиболее глубокий {\em редекс}%
+\footnote{англ.\ {\em redex} (reducible expression)~--- 
+<<редуцируемое выражение>>} 
+в выражении, приведённом ниже, мы получаем бесконечную последовательность 
+редукций:
+%
+%Let us recall, in the middle of these theoretical considerations, the relevance
+%of all this to functional programming. A functional program is an {\em
+%expression} and executing it means evaluating the expression. In terms of the
+%concepts discussed here, we are proposing to start with the relevant term and
+%keep on applying reductions until there is nothing more to be evaluated. But
+%how are we to choose which reduction to apply at each stage? The reduction
+%relation is not deterministic, i.e. for some terms $t$ there are several $t_i$
+%such that $t \goesto t_i$. Sometimes this can make the difference between a
+%finite and infinite reduction sequence, i.e. between a program terminating and
+%failing to terminate. For example, by reducing the innermost {\em redex}
+%(reducible expression) in the following, we have an infinite reduction
+%sequence:
+%
 \begin{eqnarray*}
 & & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)) \\
 & \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
@@ -611,30 +629,53 @@ sequence:
                             (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x))  \\
 & \goesto & \cdots
 \end{eqnarray*}
-
-\noindent and so ad infinitum. However the alternative of reducing the
-outermost redex first gives:
-
+В то же время, редукция самого внешнего редекса
+%\noindent and so ad infinitum. However the alternative of reducing the
+%outermost redex first gives:
+%
 $$ (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)) \goesto y $$
+%
+немедленно ведёт нас к желаемому результату.
+%\noindent immediately, and there are no more reductions to apply.
 
-\noindent immediately, and there are no more reductions to apply.
-
-The situation is clarified by the following theorems, whose proofs are too long
-to be given here. The first one says that the situation we have noted above is
-true in a more general sense, i.e. that reducing the leftmost outermost redex
-is the best strategy for ensuring termination.
+Значение выбора стратегии редукции окончательно проясняется следующими 
+теоремами, которые мы рассмотрим без доказательств, поскольку они слишком 
+велики для данного учебника. Первая теорема утверждает, что ситуация, 
+с которой мы столкнулись в последнем примере, и её решение достаточно 
+общие, т.~е.\ стратегия редукции самого левого редекса является наилучшей 
+с точки зрения её завершимости.
+%
+%The situation is clarified by the following theorems, whose proofs are too long
+%to be given here. The first one says that the situation we have noted above is
+%true in a more general sense, i.e. that reducing the leftmost outermost redex
+%is the best strategy for ensuring termination.
 
 \begin{theorem}
-If $s \goesto t$ with $t$ in normal form, then the reduction sequence that
-arises from $s$ by always reducing the leftmost outermost redex is guaranteed
-to terminate in normal form.
+Если справедливо~$s \goesto t$, где терм~$t$ имеет нормальную форму, то
+последовательность редукций, которая начинается с терма~$s$ и состоит в
+применении правил редукции к самому левому редексу, всегда завершается
+и приводит к терму в нормальной форме.
+%If $s \goesto t$ with $t$ in normal form, then the reduction sequence that
+%arises from $s$ by always reducing the leftmost outermost redex is guaranteed
+%to terminate in normal form.
 \end{theorem}
 
-Formally, we define the `leftmost outermost' redex recursively: for a term
-$(\lamb{x} s)\;t$ it is the term itself; for any other term $s\;t$ it is the
-leftmost outermost redex of $s$, and for an abstraction $\lamb{x} s$ it is the
-leftmost outermost redex of $s$. In terms of concrete syntax, we always reduce
-the redex whose $\lambda$ is the furthest to the left.
+% LH: В оригинале leftmost outermost, но у Барендрегта просто "самый левый"
+% очень вероятно, что это уже устоявшийся термин.
+%
+Применение этой теоремы требует формального определения понятия 
+{\em самого левого редекса}: для терма~$(\lamb{x} s)\;t$ это он сам,
+для произвольного другого терма вида~$s\;t$ самым левым является самый
+левый редекс~$s$, наконец, для абстракции~$\lamb{x} s$ это тоже самый левый
+редекс~$s$. В рамках принятых в данном пособии обозначений мы будем всегда
+выбирать такой редекс, чтобы соответствующий ему символ~$\lambda$ был 
+расположен левее прочих.
+%
+%Formally, we define the `leftmost outermost' redex recursively: for a term
+%$(\lamb{x} s)\;t$ it is the term itself; for any other term $s\;t$ it is the
+%leftmost outermost redex of $s$, and for an abstraction $\lamb{x} s$ it is the
+%leftmost outermost redex of $s$. In terms of concrete syntax, we always reduce
+%the redex whose $\lambda$ is the furthest to the left.
 
 \subsection{Теорема Чёрча-Россера}
 %\subsection{The Church-Rosser theorem}
@@ -755,8 +796,8 @@ $\alpha$-преобразований, они не эквивалентны.
 %conversions alone, they cannot be equal.
 
 Подытожим важность полученных результатов в свете теории вычислимости. Стратегия
-редукции, в которой на каждом шаге выбирается внешний редекс, расположенный 
-в выражении левее других, считается, в известном смысле, наилучшей, поскольку
+редукции, в которой на каждом шаге выбирается самый левый редекс,
+считается, в известном смысле, наилучшей, поскольку
 она применима всегда, когда применима любая другая стратегия. Такая стратегия
 получила название {\em нормального порядка редукции}. С другой стороны, 
 {\em любая} другая конечная последовательность редукций будет всегда давать
