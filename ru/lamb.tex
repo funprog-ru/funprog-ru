@@ -529,52 +529,86 @@ $\equiv_{\alpha}$. There are alternative formalizations of syntax where bound
 variables are unnamed \cite{debruijn-terms}, and here syntactic identity
 corresponds to our $\equiv_{\alpha}$.
 
-\subsection{Extensionality}
+\subsection{Экстенсиональность}
+%\subsection{Extensionality}
+Мы уже упоминали ранее, что $\eta$-преобразование воплощает принцип
+{\em экстенсиональности}. В рамках общепринятых философских понятий два 
+свойства называются {\em экстенсионально эквивалентными} 
+(либо {\em коэкстенсивными}), если этими свойствами обладают в точности одни
+и те же объекты. В теории множеств принята аксиома экстенсиональности, согласно
+которой два множества совпадают, если они состоят из одних и тех же элементов.
+Аналогично, будем говорить, что две функции эквивалентны, если области их
+определения совпадают, а значения функций для всевозможных аргументов также
+одинаковы.
+%
+%We have said that $\eta$-conversion embodies a principle of {\em
+%extensionality}. In general philosophical terms, two properties are said to be
+%{\em extensionally} equivalent (or {\em coextensive}) when they are satisfied
+%by exactly the same objects. In mathematics, we usually take an extensional
+%view of sets, i.e. say that two sets are equal precisely if they have the same
+%elements. Similarly, we normally say that two functions are equal precisely if
+%they have the same domain and give the same result on all arguments in that
+%domain.
 
-We have said that $\eta$-conversion embodies a principle of {\em
-extensionality}. In general philosophical terms, two properties are said to be
-{\em extensionally} equivalent (or {\em coextensive}) when they are satisfied
-by exactly the same objects. In mathematics, we usually take an extensional
-view of sets, i.e. say that two sets are equal precisely if they have the same
-elements. Similarly, we normally say that two functions are equal precisely if
-they have the same domain and give the same result on all arguments in that
-domain.
-
-As a consequence of $\eta$-conversion, our notion of $\lambda$- equality is
-extensional. Indeed, if $f\;x$ and $g\;x$ are equal for any $x$, then in
-particular $f\;y = g\;y$ where $y$ is chosen not to be free in either $f$ or
-$g$. Therefore by the last rule above, $\lamb{y} f\;y = \lamb{y} g\;y$. Now by
-$\eta$-converting a couple of times at depth, we see that $f = g$. Conversely,
-extensionality implies that all instances of $\eta$-conversion do indeed give a
-valid equation, since by $\beta$-reduction, $(\lamb{x} t\;x)\;y = t\;y$ for any
-$y$ when $x$ is not free in $t$. This is the import of $\eta$-conversion, and
-having discussed that, we will largely ignore it in favour of the more
-computationally significant $\beta$-conversion.
+Введение $\eta$-преобразования делает наше понятие $\lambda$-эквивалентности
+экстенсиональным. В самом деле, пусть~$f\;x$ и~$g\;x$ равны для произвольного
+значения~$x$; в частности, $f\;y = g\;y$, где переменная~$y$ выбирается так,
+чтобы она не была свободной как в~$f$, так и в~$g$. Согласно последнему из
+приведённых выше правил эквивалентности, $\lamb{y} f\;y = \lamb{y} g\;y$.
+Применив дважды $\eta$-преобразование, получаем, что~$f = g$. С другой стороны,
+из экстенсиональности следует, что всевозможные $\eta$-преобразования не 
+нарушают эквивалентности, поскольку согласно правилу $\beta$-редукции
+$(\lamb{x} t\;x)\;y = t\;y$ для произвольного~$y$, если переменная~$x$
+не является свободной в терме~$t$. На этом мы завершаем обсуждение сущности
+$\eta$-преобразования и его влияния на теорию в целом, чтобы уделить больше
+внимания более перспективному с точки зрения вычислимости 
+$\beta$-преобразованию.
+%
+%As a consequence of $\eta$-conversion, our notion of $\lambda$- equality is
+%extensional. Indeed, if $f\;x$ and $g\;x$ are equal for any $x$, then in
+%particular $f\;y = g\;y$ where $y$ is chosen not to be free in either $f$ or
+%$g$. Therefore by the last rule above, $\lamb{y} f\;y = \lamb{y} g\;y$. Now by
+%$\eta$-converting a couple of times at depth, we see that $f = g$. Conversely,
+%extensionality implies that all instances of $\eta$-conversion do indeed give a
+%valid equation, since by $\beta$-reduction, $(\lamb{x} t\;x)\;y = t\;y$ for any
+%$y$ when $x$ is not free in $t$. This is the import of $\eta$-conversion, and
+%having discussed that, we will largely ignore it in favour of the more
+%computationally significant $\beta$-conversion.
 
 \subsection[Лямбда-редукция]{$\lambda$-редукция}
-
-$\lambda$- equality, unsurprisingly, is a symmetric relation. Though it captures
-the notion of equivalence of $\lambda$- terms well, it is more interesting from a
-computational point of view to consider an asymmetric version. We will define a
-`reduction' relation $\goesto$ as follows:
-
-$$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}
+Отношение $\lambda$-эквивалентности, как и следовало ожидать, является 
+симметричным. Оно достаточно хорошо соответствует интуитивному понятию 
+эквивалентности $\lambda$-термов, но с алгоритмической точки зрения более
+интересен его несимметричный аналог. Определим отношение 
+{\em редукции}~$\goesto$ следующим образом:
+% 
+%$\lambda$- equality, unsurprisingly, is a symmetric relation. Though it captures
+%the notion of equivalence of $\lambda$- terms well, it is more interesting from a
+%computational point of view to consider an asymmetric version. We will define a
+%`reduction' relation $\goesto$ as follows:
+%
+$$ \frac{s \alphas t \mbox{ или } s \betas t \mbox{ или } s \etas t}
         {s \goesto t} $$
-
+%
 $$ \frac{}{t \goesto t} $$
-
-$$ \frac{s \goesto t \mbox{ and } t \goesto u}{s \goesto u} $$
-
+%
+$$ \frac{s \goesto t \mbox{ и } t \goesto u}{s \goesto u} $$
+%
 $$ \frac{s \goesto t}{s\; u \goesto t\; u} $$
-
+%
 $$ \frac{s \goesto t}{u\; s \goesto u\; t} $$
-
+%
 $$ \frac{s \goesto t}{\lamb{x} s \goesto \lamb{x} t}$$
 
-Actually the name `reduction' (and one also hears $\beta$-conversion called
-$\beta$-reduction) is a slight misnomer, since it can cause the size of a term
-to grow, e.g.
-
+В действительности слово <<редукция>> (в частности, термин $\beta$-редукция,
+которым иногда называют $\beta$-преобразования) не отражает точно сути 
+происходящего, поскольку в процессе редукции терм может увеличиваться, 
+например:
+%
+%Actually the name `reduction' (and one also hears $\beta$-conversion called
+%$\beta$-reduction) is a slight misnomer, since it can cause the size of a term
+%to grow, e.g.
+%
 \begin{eqnarray*}
 (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)
 & \goesto & (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
@@ -582,11 +616,17 @@ to grow, e.g.
 & \goesto & (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\;
 x)\; (\lamb{x} x\; x\; x) \\ & \goesto & \ldots
 \end{eqnarray*}
-
-However reduction does correspond to a systematic attempt to evaluate a
-term by repeatedly evaluating combinations $f(x)$ where $f$ is a $\lambda$-
-abstraction. When no more reductions except for $\alpha$ conversions are
-possible we say that the term is in {\em normal form}.
+%
+Однако, несмотря на это редукция имеет прямое отношение к процедуре вычисления
+терма, в ходе которой последовательно вычисляются комбинации вида~$f(x)$,
+где $f$~--- $\lambda$-абстракция. Если на некотором этапе оказывается, что
+не могут быть применены никакие правила редукции, кроме 
+$\alpha$-преобразований, то говорят, что терм имеет {\em нормальную форму}.
+%
+%However reduction does correspond to a systematic attempt to evaluate a
+%term by repeatedly evaluating combinations $f(x)$ where $f$ is a $\lambda$-
+%abstraction. When no more reductions except for $\alpha$ conversions are
+%possible we say that the term is in {\em normal form}.
 
 \subsection{Стратегии редукции}
 %\subsection{Reduction strategies}
