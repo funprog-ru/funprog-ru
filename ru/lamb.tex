@@ -482,52 +482,87 @@ a technical device to change the names of bound variables, while
 $\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
 interest to those taking a logical, not a programming, view of $\lambda$- calculus.
 
-\subsection[Равенство лямбда-выражений]{Равенство $\lambda$}
-
-Using these conversion rules, we can define formally when two $\lambda$- terms are
-to be considered equal. Roughly, two terms are equal if it is possible to get
-from one to the other by a finite sequence of conversions ($\alpha$, $\beta$ or
-$\eta$), either forward or backward, at any depth inside the term. We can say
-that $\lambda$- equality is the {\em congruence closure} of the three reduction
-operations together, i.e. the smallest relation containing the three conversion
-operations and closed under reflexivity, symmetry, transitivity and
-substitutivity. Formally we can define it inductively as follows, where the
-horizontal lines should be read as `if what is above the line holds, then so
-does what is below'.
-
-$$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}{s = t} $$
-
+\subsection[Равенство лямбда-выражений]{Равенство $\lambda$-выражений}
+Используя приведённые выше правила преобразований, мы можем определить 
+формально условия, при которых два $\lambda$-терма считаются равными.
+В общих чертах, два терма равны, если один из них может быть получен из другого
+в ходе конечной последовательности $\alpha$, $\beta$ либо $\eta$-преобразований,
+которые применяются к произвольным подтермам как в прямом, так и в обратном 
+направлении. Другими словами, отношение $\lambda$-равенства представляет собой
+{\em congruence closure} трёх преобразований и обладает свойствами 
+%% ISSUE: конгруэнтное замыкание??? рефлексивное транзитивное замыкание
+%% ISSUE: действительно ли closed under \approx "обладает свойствами"
+рефлексивности, симметричности, транзитивности и заменяемости. Ниже приводится
+формальное индуктивное определение, правила которого трактуются следующим 
+образом: если утверждение над горизонтальной чертой выполняется, то справедливо
+и утверждение под ней.
+%
+%Using these conversion rules, we can define formally when two $\lambda$- terms are
+%to be considered equal. Roughly, two terms are equal if it is possible to get
+%from one to the other by a finite sequence of conversions ($\alpha$, $\beta$ or
+%$\eta$), either forward or backward, at any depth inside the term. We can say
+%that $\lambda$- equality is the {\em congruence closure} of the three reduction
+%operations together, i.e. the smallest relation containing the three conversion
+%operations and closed under reflexivity, symmetry, transitivity and
+%substitutivity. Formally we can define it inductively as follows, where the
+%horizontal lines should be read as `if what is above the line holds, then so
+%does what is below'.
+%
+$$ \frac{s \alphas t \mbox{ или } s \betas t \mbox{ или } s \etas t}{s = t} $$
+%
 $$ \frac{}{t = t} $$
-
+%
 $$ \frac{s = t}{t = s} $$
-
-$$ \frac{s = t \mbox{ and } t = u}{s = u} $$
-
+%
+$$ \frac{s = t \mbox{ и } t = u}{s = u} $$
+%
 $$ \frac{s = t}{s\; u = t\; u} $$
-
+%
 $$ \frac{s = t}{u\; s = u\; t} $$
-
+%
 $$ \frac{s = t}{\lamb{x} s = \lamb{x} t}$$
 
-Note that the use of the ordinary equality symbol ($=$) here is misleading. We
-are actually {\em defining} the relation of $\lambda$- equality, and it isn't clear
-that it corresponds to equality of the corresponding mathematical objects in
-the usual sense.\footnote{Indeed, we haven't been very precise about what the
-corresponding mathematical objects {\em are}. But there are models of the
-$\lambda$- calculus where our $\lambda$- equality is interpreted as actual equality.}
-Certainly it must be distinguished sharply from equality at the {\em syntactic}
-level. We will refer to this latter kind of equality as `identity' and use the
-special symbol $\equiv$. For example $\lamb{x} x \not\equiv \lamb{y} y$ but
-$\lamb{x} x = \lamb{y} y$.
+Отметим, что использование обычного знака равенства~($=$) в данном контексте
+может ввести в заблуждение. В самом деле, мы {\em задаём} некоторое 
+отношение $\lambda$-равенства, взаимосвязь которого с понятием равенства 
+соответствующих математических объектов остаётся неясной.%
+\footnote{Действительно, ведь мы не определяем достаточно точно, каково это
+соответствие {\em само по себе}. Тем не менее, существуют модели 
+$\lambda$-исчисления, в которых $\lambda$-равенство трактуется как обычное.}
+В то же время очевидно, что следует отличать $\lambda$-равенство от 
+{\em синтаксического}. Последнее будем называть <<тождеством>> и обозначим
+символом~$\equiv$. Например, $\lamb{x} x \not\equiv \lamb{y} y$, хотя в то же
+время~$\lamb{x} x = \lamb{y} y$.
+%
+%Note that the use of the ordinary equality symbol ($=$) here is misleading. We
+%are actually {\em defining} the relation of $\lambda$- equality, and it isn't clear
+%that it corresponds to equality of the corresponding mathematical objects in
+%the usual sense.\footnote{Indeed, we haven't been very precise about what the
+%corresponding mathematical objects {\em are}. But there are models of the
+%$\lambda$- calculus where our $\lambda$- equality is interpreted as actual equality.}
+%Certainly it must be distinguished sharply from equality at the {\em syntactic}
+%level. We will refer to this latter kind of equality as `identity' and use the
+%special symbol $\equiv$. For example $\lamb{x} x \not\equiv \lamb{y} y$ but
+%$\lamb{x} x = \lamb{y} y$.
 
-For many purposes, $\alpha$-conversions are immaterial, and often
-$\equiv_{\alpha}$ is used instead of strict identity. This is defined like
-$\lambda$- equality, except that only $\alpha$-conversions are allowed. For
-example, $(\lamb{x} x) y \equiv_{\alpha} (\lamb{y} y) y$. Many writers use this
-as identity on $\lambda$- terms, i.e. consider equivalence classes of terms under
-$\equiv_{\alpha}$. There are alternative formalizations of syntax where bound
-variables are unnamed \cite{debruijn-terms}, and here syntactic identity
-corresponds to our $\equiv_{\alpha}$.
+Во многих случаях оказывается, что $\alpha$-преобразования не играют роли, 
+в силу чего вместо строгого тождества применяется его вариант~$\equiv_{\alpha}$.
+Это отношение определяется подобно $\lambda$-равенству, но исключительно для
+$\alpha$-преобразований. Например, $(\lamb{x} x) y \equiv_{\alpha} (\lamb{y} y) y$.
+Многие авторы используют его как тождество $\lambda$-термов, тем самым разбивая
+множество термов на соответствующие классы эквивалентности. Существуют 
+альтернативные системы обозначений, например~\cite{debruijn-terms}, в которых
+связанные переменные не имеют имён. В таких системах традиционное понятие 
+тождества совпадает с~$\equiv_{\alpha}$.
+%
+%For many purposes, $\alpha$-conversions are immaterial, and often
+%$\equiv_{\alpha}$ is used instead of strict identity. This is defined like
+%$\lambda$- equality, except that only $\alpha$-conversions are allowed. For
+%example, $(\lamb{x} x) y \equiv_{\alpha} (\lamb{y} y) y$. Many writers use this
+%as identity on $\lambda$- terms, i.e. consider equivalence classes of terms under
+%$\equiv_{\alpha}$. There are alternative formalizations of syntax where bound
+%variables are unnamed \cite{debruijn-terms}, and here syntactic identity
+%corresponds to our $\equiv_{\alpha}$.
 
 \subsection{Экстенсиональность}
 %\subsection{Extensionality}
@@ -550,7 +585,7 @@ corresponds to our $\equiv_{\alpha}$.
 %they have the same domain and give the same result on all arguments in that
 %domain.
 
-Введение $\eta$-преобразования делает наше понятие $\lambda$-эквивалентности
+Введение $\eta$-преобразования делает наше понятие $\lambda$-равенства
 экстенсиональным. В самом деле, пусть~$f\;x$ и~$g\;x$ равны для произвольного
 значения~$x$; в частности, $f\;y = g\;y$, где переменная~$y$ выбирается так,
 чтобы она не была свободной как в~$f$, так и в~$g$. Согласно последнему из
@@ -576,7 +611,7 @@ $\beta$-преобразованию.
 %computationally significant $\beta$-conversion.
 
 \subsection[Лямбда-редукция]{$\lambda$-редукция}
-Отношение $\lambda$-эквивалентности, как и следовало ожидать, является 
+Отношение $\lambda$-равенства, как и следовало ожидать, является 
 симметричным. Оно достаточно хорошо соответствует интуитивному понятию 
 эквивалентности $\lambda$-термов, но с алгоритмической точки зрения более
 интересен его несимметричный аналог. Определим отношение 
@@ -750,7 +785,7 @@ $$ (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)) \goesto y $$
 
 \proof 
 Легко показать (при помощи структурной индукции), что отношение 
-эквивалентности~$=$ представляет собой симметричное транзитивное замыкание
+$\lambda$-равенства~$=$ представляет собой симметричное транзитивное замыкание
 отношения редукции. Дальнейшее следует по индукции согласно свойствам 
 симметричного транзитивного замыкания. Приведённая ниже диаграмма может
 показаться читателям, не склонным к формальным построениям, более доходчивой:
@@ -803,7 +838,7 @@ $$ (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)) \goesto y $$
 
 \begin{corollary}
 Если~$t = t_1$ и~$t = t_2$, причём~$t_1$ и~$t_2$ имеют нормальную форму,
-то~$t_1\equiv_{\alpha} t_2$, т.~е.\ $t_1$ и~$t_2$ эквивалентны с точностью
+то~$t_1\equiv_{\alpha} t_2$, т.~е.\ $t_1$ и~$t_2$ равны с точностью
 до~$\alpha$-преобразований.
 %
 %If $t = t_1$ and $t = t_2$ with $t_1$ and $t_2$ in normal form, then $t_1
@@ -824,10 +859,10 @@ $$ (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)) \goesto y $$
 
 Таким образом, нормальные формы, если они существуют, являются единственными
 с точностью до $\alpha$-преобразования. Это даёт нам первое обоснование того,
-что отношение $\lambda$-эквивалентности нетривиально, т.~е.\ что существуют
-неэквивалентные термы. Например, поскольку $\lamb{x\; y} x$ 
+что отношение $\lambda$-равенства нетривиально, т.~е.\ что существуют
+неравные термы. Например, поскольку $\lamb{x\; y} x$ 
 и~$\lamb{x\; y} y$ несводимы друг к другу исключительно при помощи 
-$\alpha$-преобразований, они не эквивалентны.
+$\alpha$-преобразований, они не равны.
 %
 %Hence normal forms, when they do exist, are unique up to alpha conversion. This
 %gives us the first proof we have available that the relation of $\lambda$- equality
@@ -926,7 +961,7 @@ S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
 найдётся терм~$u$, который также не содержит $\lambda$-абстракций и 
 представляет собой композицию $S$, $K$, $I$ и переменных, 
 причём~$FV(u) = FV(t) - \{x\}$ и~$u = \lamb{x} t$, т.~е.\ терм~$u$ 
-$\lambda$-эквивалентен~$\lamb{x} t$.
+$\lambda$-равен~$\lamb{x} t$.
 %For any $\lambda$- term $t$ not involving $\lambda$- abstraction, there is a term $u$
 %also not containing $\lambda$- abstractions, built up from $S$, $K$, $I$ and
 %variables, with $FV(u) = FV(t) - \{x\}$ and $u = \lamb{x} t$, i.e. $u$ is
