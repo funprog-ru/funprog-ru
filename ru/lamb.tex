@@ -452,35 +452,62 @@ strengthening an induction hypothesis during a proof by induction. Note that by
 construction the pair of substitutions in the last line can be done in
 parallel rather than sequentially without affecting the result.}
 
-\subsection{Conversions}
-
-$\lambda$- calculus is based on three `conversions', which transform one term into
-another one intuitively equivalent to it. These are traditionally denoted by
-the Greek letters $\alpha$ (alpha), $\beta$ (beta) and $\eta$
-(eta).\footnote{These names are due to Curry. Church originally referred to
-$\alpha$-conversion and $\beta$-conversion as `rule of procedure I' and `rule
-of procedure II' respectively.} Here are the formal definitions of the
-operations, using annotated arrows for the conversion relations.
+\subsection{Преобразования}
+%\subsection{Conversions}
+Ещё одной из основ $\lambda$-исчисления служат три <<преобразования>>~--- %
+операции получения по заданному терму другого, равного ему в интуитивном смысле. 
+Традиционно их обозначают буквами греческого алфавита: $\alpha$ (альфа), 
+$\beta$ (бета) и~$\eta$ (эта).%
+\footnote{Такие имена преобразований были введены Карри. Первоначально Чёрч
+называл $\alpha$- и~$\beta$-преобразования <<правило действий~I>> и 
+<<правило действий~II>> соответственно.}
+Приведём формальные определения этих операций, обозначив каждую из них 
+помеченной стрелкой.
+%
+%$\lambda$- calculus is based on three `conversions', which transform one term into
+%another one intuitively equivalent to it. These are traditionally denoted by
+%the Greek letters $\alpha$ (alpha), $\beta$ (beta) and $\eta$
+%(eta).\footnote{These names are due to Curry. Church originally referred to
+%$\alpha$-conversion and $\beta$-conversion as `rule of procedure I' and `rule
+%of procedure II' respectively.} Here are the formal definitions of the
+%operations, using annotated arrows for the conversion relations.
 
 \begin{itemize}
 
-\item Alpha conversion: $\lamb{x} s \alphas \lamb{y} s[y/x]$ provided $y
-\not\in FV(s)$. For example, $\lamb{u} u\; v \alphas \lamb{w} w\; v$, but
-$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$. The restriction avoids another
-instance of variable capture.
+\item 
+Альфа-преобразование: $\lamb{x} s \alphas \lamb{y} s[y/x]$, при условии, 
+что~$y \not\in FV(s)$. Например, $\lamb{u} u\; v \alphas \lamb{w} w\; v$,
+но~$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$. Такое ограничение устраняет
+возможность еще одного случая захвата переменной.
+%
+%\item Alpha conversion: $\lamb{x} s \alphas \lamb{y} s[y/x]$ provided $y
+%\not\in FV(s)$. For example, $\lamb{u} u\; v \alphas \lamb{w} w\; v$, but
+%$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$. The restriction avoids another
+%instance of variable capture.
 
-\item Beta conversion: $(\lamb{x} s)\; t \betas s[t/x]$.
+\item 
+Бета-преобразование: $(\lamb{x} s)\; t \betas s[t/x]$.
+%\item Beta conversion: $(\lamb{x} s)\; t \betas s[t/x]$.
 
-\item Eta conversion: $\lamb{x} t\; x \etas t$, provided $x \not\in FV(t)$. For
-example $\lamb{u} v\; u \etas v$ but $\lamb{u} u\; u \not\etas u$.
-
+\item 
+Эта-преобразование: $\lamb{x} t\; x \etas t$, если~$x \not\in FV(t)$. 
+Например, $\lamb{u} v\; u \etas v$, но~$\lamb{u} u\; u \not\etas u$.
+%\item Eta conversion: $\lamb{x} t\; x \etas t$, provided $x \not\in FV(t)$. For
+%example $\lamb{u} v\; u \etas v$ but $\lamb{u} u\; u \not\etas u$.
 \end{itemize}
 
-Of the three, $\beta$-conversion is the most important one to us, since it
-represents the evaluation of a function on an argument. $\alpha$-conversion is
-a technical device to change the names of bound variables, while
-$\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
-interest to those taking a logical, not a programming, view of $\lambda$- calculus.
+Среди этих трех операций наиболее важной для нас является 
+$\beta$-преобразование, поскольку оно соответствует вычислению функции для 
+заданного аргумента. В то же время, $\alpha$-преобразование играет роль
+вспомогательного средства переименования связанных переменных, а 
+$\eta$-преобразование представляет собой разновидность {\em экстенсиональности},
+в силу чего интересно главным образом с точки зрения логика, а не программиста.
+%
+%Of the three, $\beta$-conversion is the most important one to us, since it
+%represents the evaluation of a function on an argument. $\alpha$-conversion is
+%a technical device to change the names of bound variables, while
+%$\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
+%interest to those taking a logical, not a programming, view of $\lambda$- calculus.
 
 \subsection[Равенство лямбда-выражений]{Равенство $\lambda$-выражений}
 Используя приведённые выше правила преобразований, мы можем определить 
