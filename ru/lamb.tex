@@ -371,86 +371,148 @@ too, since it is no larger. \qed
 
 \end{theorem}
 
-\subsection{Substitution}
+\subsection{Подстановка}
+%\subsection{Substitution}
+Одним из правил, которые мы хотим формализовать, является соглашение о том,
+что $\lambda$-абстракция и применение функции представляют собой взаимно 
+обратные операции. То есть, если мы возьмём терм~$\lamb{x} s$ и применим его
+как функцию к терму-аргументу~$t$, результатом будет терм~$s$, в котором все
+свободные вхождения переменной~$x$ заменены термом~$t$. Для большей наглядности
+это действие принято обозначать $\lamb{x} s[x]$ и~$s[t]$ соответственно.
+%% ISSUE: почему именно "взаимно обратные"? Применение функции --- не то же
+%% самое, что просто снятие лишней лямбды?
+%
+%The rules we want to formalize include the stipulation that $\lambda$- abstraction
+%and function application are inverse operations. That is, if we take a term
+%$\lamb{x} s$ and apply it as a function to an argument term $t$, the answer is
+%the term $s$ with all free instances of $x$ replaced by $t$. We often make this
+%more transparent in discussions by using the notation $\lamb{x} s[x]$ and
+%$s[t]$ for the respective terms.
 
-The rules we want to formalize include the stipulation that $\lambda$- abstraction
-and function application are inverse operations. That is, if we take a term
-$\lamb{x} s$ and apply it as a function to an argument term $t$, the answer is
-the term $s$ with all free instances of $x$ replaced by $t$. We often make this
-more transparent in discussions by using the notation $\lamb{x} s[x]$ and
-$s[t]$ for the respective terms.
+Однако, простое на первый взгляд понятие подстановки одного терма вместо 
+переменной в другой терм на самом деле оказалось весьма коварным, так что
+даже некоторые выдающиеся логики не избежали ложных утверждений относительно
+его свойств. Подобный грустный опыт разочаровывает довольно сильно, ведь как
+мы говорили ранее, одним из привлекательных свойств формальных правил служит
+возможность их чисто механического применения.
+%
+%However this simple-looking notion of substituting one term for a variable in
+%another term is surprisingly difficult. Some notable logicians have made faulty
+%statements regarding substitution. In fact, this difficulty is rather
+%unfortunate since as we have said, the appeal of formal rules is that they can
+%be applied mechanically.
 
-However this simple-looking notion of substituting one term for a variable in
-another term is surprisingly difficult. Some notable logicians have made faulty
-statements regarding substitution. In fact, this difficulty is rather
-unfortunate since as we have said, the appeal of formal rules is that they can
-be applied mechanically.
-
-We will denote the operation of substituting a term $s$ for a variable $x$ in
-another term $t$ by $t[s/x]$. One sometimes sees various other notations, e.g.
-$t[x \mbox{:=} s]$, $[s/x]t$, or even $t[x/s]$. The notation we use is perhaps
-most easily remembered by noting the vague analogy with multiplication of
-fractions: $x[t/x] = t$. At first sight, one can define substitution formally
-by recursion as follows:
-
+Обозначим операцию подстановки терма~$s$ вместо переменной~$x$ в другой 
+терм~$t$ как~$t[s/x]$. Иногда можно встретить другие обозначения, например,
+$t[x \mbox{:=} s]$, $[s/x]t$, или даже~$t[x/s]$. Мы полагаем, что предложенный
+нами вариант легче всего запомнить по аналогии с умножением дробей: 
+$x[t/x] = t$. На первый взгляд, рекуррентное определение понятия подстановки
+выглядит так:
+%
+%We will denote the operation of substituting a term $s$ for a variable $x$ in
+%another term $t$ by $t[s/x]$. One sometimes sees various other notations, e.g.
+%$t[x \mbox{:=} s]$, $[s/x]t$, or even $t[x/s]$. The notation we use is perhaps
+%most easily remembered by noting the vague analogy with multiplication of
+%fractions: $x[t/x] = t$. At first sight, one can define substitution formally
+%by recursion as follows:
+%
 \begin{eqnarray*}
    x[t/x]            & = & t                           \\
-   y[t/x]            & = & y \mbox{ if $x \not= y$}    \\
+   y[t/x]            & = & y, \mbox{ если $x \not= y$}    \\
    c[t/x]            & = & c                           \\
    (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
    (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
-   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]) \mbox{ if $x \not= y$}
+   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]), \mbox{ если $x \not= y$}
 \end{eqnarray*}
 
-However this isn't quite right. For example $(\lamb{y} x + y)[y/x] = \lamb{y} y
-+ y$, which doesn't correspond to the intuitive answer.\footnote{We will
-continue to use infix syntax for standard operators; strictly we should write
-$+\; x\; y$ rather than $x + y$.} The original $\lambda$- term was `the
-function that adds $x$ to its argument', so after substitution, we might expect
-to get `the function that adds $y$ to its argument'. What we actually get is
-`the function that doubles its argument'. The problem is that the variable $y$
-that we have substituted is {\em captured} by the variable-binding operation
-$\lamb{y} \ldots$. We should first rename the bound variable:
-
-$$ (\lamb{y} x + y) = (\lamb{w} x + w) $$
-
-\noindent and only now perform a naive substitution operation:
-
+К сожалению, это определение не совсем верно. Например, подстановка
+$(\lamb{y} x + y)[y/x] = \lamb{y} y + y$ не соответствует интуитивным ожиданиям
+от ее результата.%
+\footnote{Строго говоря, нам следовало бы писать~$+\; x\; y$, нежели~$x + y$,
+но мы будем, как прежде, использовать стандартные операции в инфиксной форме.}
+Исходный $\lambda$-терм интерпретировался как функция, прибавляющая~$x$
+к своему аргументу, так что после подстановки мы ожидали получить функцию,
+которая прибавляет~$y$, а на деле получили функцию, которая свой аргумент
+удваивает. Источником проблемы служит {\em захват} переменной~$y$, которую
+мы подставляем, операцией $\lamb{y} \ldots$, которая связывает одноименную 
+переменную. Чтобы этого не произошло, связанную переменную требуется 
+предварительно переименовать:
+%
+%However this isn't quite right. For example $(\lamb{y} x + y)[y/x] = \lamb{y} y
+%+ y$, which doesn't correspond to the intuitive answer.\footnote{We will
+%continue to use infix syntax for standard operators; strictly we should write
+%$+\; x\; y$ rather than $x + y$.} The original $\lambda$- term was `the
+%function that adds $x$ to its argument', so after substitution, we might expect
+%to get `the function that adds $y$ to its argument'. What we actually get is
+%`the function that doubles its argument'. The problem is that the variable $y$
+%that we have substituted is {\em captured} by the variable-binding operation
+%$\lamb{y} \ldots$. We should first rename the bound variable:
+%
+$$ 
+ (\lamb{y} x + y) = (\lamb{w} x + w), 
+$$
+а лишь затем производить подстановку:
+%\noindent and only now perform a naive substitution operation:
+%
 $$ (\lamb{w} x + w)[y/x] = \lamb{w} y + w $$
 
-We can take two approaches to this problem. Either we can add a condition on
-all instances of substitution to disallow it wherever variable capture would
-occur, or we can modify the formal definition of substitution so that it
-performs the appropriate renamings automatically. We will opt for this latter
-approach. Here is the definition of substitution that we use:
-
+Существуют два подхода к решению этой проблемы. С одной стороны, можно 
+условиться, что подстановка недопустима в ситуации захвата переменной, а с
+другой~--- расширить формальное определение подстановки таким образом, чтобы
+требуемое переименование переменных происходило автоматически. Мы остановимся
+на последнем варианте:  
+%We can take two approaches to this problem. Either we can add a condition on
+%all instances of substitution to disallow it wherever variable capture would
+%occur, or we can modify the formal definition of substitution so that it
+%performs the appropriate renamings automatically. We will opt for this latter
+%approach. Here is the definition of substitution that we use:
+%
 \begin{eqnarray*}
    x[t/x]            & = & t                           \\
-   y[t/x]            & = & y \mbox{  if $x \not= y$}    \\
+   y[t/x]            & = & y, \mbox{ если $x \not= y$} \\
    c[t/x]            & = & c                           \\
    (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
    (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
-   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]) \mbox{  if $x \not= y$ and
-                                                    either $x \not\in FV(s)$
-                                                    or $y \not\in FV(t)$}\\
-   (\lamb{y} s)[t/x] & = & \lamb{z} (s[z/y][t/x]) \mbox{  otherwise, where
+   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]),\mbox{ если $x \not= y$ и
+                                                    либо $x \not\in FV(s)$,
+                                                    либо $y \not\in FV(t)$}\\
+   (\lamb{y} s)[t/x] & = & \lamb{z} (s[z/y][t/x]) \mbox{ в противном случае, причём
                                                $z \not\in FV(s) \Union FV(t)$}
 \end{eqnarray*}
 
-The only difference is in the last two lines. We substitute as before in the
-two safe situations where either $x$ isn't free in $s$, so the substitution is
-trivial, or where $y$ isn't free in $t$, so variable capture won't occur (at
-this level). However where these conditions fail, we first rename $y$ to a new
-variable $z$, chosen not to be free in either $s$ or $t$, then proceed as
-before. For definiteness, the variable $z$ can be chosen in some canonical way,
-e.g. the lexicographically first name not occurring as a free variable in
-either $s$ or $t$.\footnote{Cognoscenti may also be worried that this
-definition is not in fact, {\em primitive} recursive, because of the last
-clause. However it can easily be modified into a primitive recursive definition
-of multiple, parallel, substitution. This procedure is analogous to
-strengthening an induction hypothesis during a proof by induction. Note that by
-construction the pair of substitutions in the last line can be done in
-parallel rather than sequentially without affecting the result.}
+Единственное отличие этого определения заключается в двух последних правилах.
+Мы следуем предыдущему определению в двух безопасных ситуациях, когда либо
+переменная~$x$ не свободна в терме~$s$, так что подстановка оказывается
+тривиальной, либо когда~$y$ не свободна в~$t$, так что захват переменной
+не произойдет (на данном уровне). Однако, в случае, когда оба эти условия не
+выполняются, мы предварительно переименовываем переменную~$y$ в~$z$, выбранную
+так, чтобы она не была свободной ни в терме~$s$, ни в терме~$t$, после чего
+продолжаем, как описано выше. Для определенности, переменная~$z$ может 
+выбираться некоторым фиксированным способом, например, как первая в 
+лексикографическом порядке имен переменная из множества всех переменных,
+не имеющих свободных вхождений ни в~$s$, ни в~$t$.%
+\footnote{Знатоки могут быть обеспокоены тем, что последнее правило не 
+позволяет считать это определение {\em примитивно}-рекурсивным. Однако, его
+легко преобразовать в примитивно-рекурсивную множественную параллельную 
+подстановку. Подобная процедура напоминает усиление индуктивного предположения
+в ходе доказательства. Отметим, что по построению пара подстановок в последнем
+правиле может осуществляться как параллельно, так и последовательно без ущерба
+для результата.}
+%
+%The only difference is in the last two lines. We substitute as before in the
+%two safe situations where either $x$ isn't free in $s$, so the substitution is
+%trivial, or where $y$ isn't free in $t$, so variable capture won't occur (at
+%this level). However where these conditions fail, we first rename $y$ to a new
+%variable $z$, chosen not to be free in either $s$ or $t$, then proceed as
+%before. For definiteness, the variable $z$ can be chosen in some canonical way,
+%e.g. the lexicographically first name not occurring as a free variable in
+%either $s$ or $t$.\footnote{Cognoscenti may also be worried that this
+%definition is not in fact, {\em primitive} recursive, because of the last
+%clause. However it can easily be modified into a primitive recursive definition
+%of multiple, parallel, substitution. This procedure is analogous to
+%strengthening an induction hypothesis during a proof by induction. Note that by
+%construction the pair of substitutions in the last line can be done in
+%parallel rather than sequentially without affecting the result.}
 
 \subsection{Преобразования}
 %\subsection{Conversions}
