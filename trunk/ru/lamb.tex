@@ -147,33 +147,35 @@ $$ \int_{0}^{x} 2 y + a \ dy = x^2 + a x $$
 
 $$ \int_{0}^{x} 2 z + a \ dz = x^2 + a x $$
 
-Similarly, in $\lambda$- notation, $\lamb{x} E[x]$ and $\lamb{y} E[y]$ are equivalent;
-this is called {\em alpha}-equivalence and the process of transforming between such pairs
-is called alpha-conversion. We should add the proviso that $y$ is not a free variable in
-$E[x]$, or the meaning clearly may change, just as
+Аналогичным образом, при использовании $\lambda$-нотации выражения $\lamb{x} E[x]$ и
+$\lamb{y} E[y]$ являются эквивалентными; это называется {\em альфа}-эквивалентностью, а
+процесс преобразования между такими парами, называется альфа-конверсией.  Мы должны
+добавить оговорку, что~$y$ не является свободной переменной в выражении~$E[x]$, иначе
+значение выражения изменится, например, как в
 
 $$ \int_{0}^{x} 2 a + a \  da \not= x^2 + a x $$
 
-It is possible to have identically-named free and bound variables in the same
-expression; though this can be confusing, it is technically unambiguous, e.g.
+Также возможно использовать в одном выражении одинаковые имена для свободных и связанных
+переменных;  хотя это может сбивать с толку, но с технической точки зрения это не является
+неоднозначным, например
 
 $$ \int_{0}^{x} 2 x + a \ dx = x^2 + a x $$
 
-\noindent In fact the usual Leibniz notation for derivatives has just this
-property, e.g. in:
+\noindent В действительности, обычная нотация Лейбница для производных имеет то же самое
+свойство, например, в:
 
 $$ \frac{d}{dx}x^2 = 2 x$$
 
-\noindent $x$ is used both as a bound variable to indicate that differentiation
-is to take place with respect to $x$, and as a free variable to show where to
-evaluate the resulting derivative. This can be confusing; e.g. $f'(g(x))$ is
-usually taken to mean something different from $\frac{d}{dx} f(g(x))$. Careful
-writers, especially in multivariate work, often make the separation explicit by
-writing:
+\noindent $x$ используется и как связанная переменная ля того, чтобы показать, что
+дифференцирование производится относительно~$x$, и как свободная переменная, чтобы
+показать где будет происходить окончательное вычисление производной.  Это может сбивать с
+толку, например, $f'(g(x))$ обычно означает что-то отличное от $\frac{d}{dx} f(g(x))$.
+Внимательные писатели, особенно в многомерных (FIXME multivariate) работах, часто явно
+показывают это отличие, записывая:
 
 $$ |\frac{d}{dx}x^2|_x = 2 x $$
 
-\noindent or
+\noindent или
 
 $$ |\frac{d}{dz}z^2|_x = 2 x $$
 
