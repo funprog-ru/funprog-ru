@@ -260,17 +260,24 @@ operations which can be performed without thinking about them.
 \end{quote}
 
 \subsection[Лямбда-термы]{$\lambda$-термы}
-
-$\lambda$- calculus is based on a formal notion of $\lambda$- term, and these terms are
-built up from variables and some fixed set of constants using the operations of
-function application and $\lambda$- abstraction. This means that every $\lambda$- term
-falls into one of the following four categories:
+Основой $\lambda$-исчисления служит формальное понятие $\lambda$-термов,
+которые строятся из переменных и некоторого фиксированного множества констант
+при помощи операций применения (аппликации) функций и $\lambda$-абстракции.
+Это значит, что всевозможные $\lambda$-термы разбиваются на четыре класса: 
+% 
+%$\lambda$- calculus is based on a formal notion of $\lambda$- term, and these terms are
+%built up from variables and some fixed set of constants using the operations of
+%function application and $\lambda$- abstraction. This means that every $\lambda$- term
+%falls into one of the following four categories:
 
 \begin{enumerate}
-
-\item {\bf Variables:} these are indexed by arbitrary alphanumeric strings;
-typically we will use single letters from towards the end of the alphabet, e.g.
-$x$, $y$ and $z$.
+\item
+{\bf Переменные:} обозначаются произвольными алфавитно-цифровыми строками;
+как правило, мы будем использовать в качестве имен буквы, расположенные
+ближе к концу латинского алфавита, например, $x$, $y$ и~$z$.
+%{\bf Variables:} these are indexed by arbitrary alphanumeric strings;
+%typically we will use single letters from towards the end of the alphabet, e.g.
+%$x$, $y$ and $z$.
 
 \item {\bf Constants:} how many constants there are in a given syntax of $\lambda$-
 terms depends on context. Sometimes there are none at all. We will also
@@ -327,24 +334,31 @@ variable) and likewise the constant $k$ by $C_k$ --- then all the variables in
 terms would have the same status. However this makes the resulting terms a bit
 cluttered.
 
-\subsection{Free and bound variables}
-
-We now formalize the intuitive idea of free and bound variables in a
-term, which, incidentally, gives a good illustration of defining a
-function by primitive recursion. Intuitively, a variable in a term is
-free if it does not occur inside the scope of a corresponding abstraction. We
-will denote the set of free variables in a term $s$ by $FV(s)$, and
-define it by recursion as follows:
-
+\subsection{Свободные и связанные переменные}
+%\subsection{Free and bound variables}
+В этом разделе мы формализуем интуитивное понятие свободных и связанных 
+переменных, которое, между прочим, служит хорошим примером определения
+примитивно-рекурсивных функций. Интуитивно, вхождение переменной в заданный
+терм считается свободным, если оно не лежит в области действия соответствующей
+абстракции. Обозначим множество свободных переменных в терме~$s$ через~$FV(s)$
+и дадим его рекурсивное определение:
+%
+%We now formalize the intuitive idea of free and bound variables in a
+%term, which, incidentally, gives a good illustration of defining a
+%function by primitive recursion. Intuitively, a variable in a term is
+%free if it does not occur inside the scope of a corresponding abstraction. We
+%will denote the set of free variables in a term $s$ by $FV(s)$, and
+%define it by recursion as follows:
+%
 \begin{eqnarray*}
    FV(x)          & = & \{ x \}                 \\
    FV(c)          & = & \emptyset               \\
    FV(s\; t)      & = & FV(s) \Union FV(t)      \\
    FV(\lamb{x} s) & = & FV(s) - \{ x \}
 \end{eqnarray*}
-
-\noindent Similarly we can define the set of bound variables in a term $BV(s)$:
-
+Аналогично вводится и понятие множества связанных переменных~$BV(s)$:
+%\noindent Similarly we can define the set of bound variables in a term $BV(s)$:
+%
 \begin{eqnarray*}
    BV(x)          & = & \emptyset               \\
    BV(c)          & = & \emptyset               \\
@@ -352,24 +366,43 @@ define it by recursion as follows:
    BV(\lamb{x} s) & = & BV(s) \Union \{ x \}
 \end{eqnarray*}
 
-For example, if $s = (\lamb{x\; y} x)\; (\lamb{x} z\; x)$ we have $FV(s) = \{ z
-\}$ and $BV(s) = \{ x, y \}$. Note that in general a variable can be both free
-and bound in the same term, as illustrated by some of the mathematical examples
-earlier. As an example of using structural induction to establish properties of
-$\lambda$- terms, we will prove the following theorem (a similar proof works for
-$BV$ too):
+Например, если~$s = (\lamb{x\; y} x)\; (\lamb{x} z\; x)$, то~$FV(s) = \{ z \}$
+и~$BV(s) = \{ x, y \}$. Отметим, что в общем случае переменная может быть 
+одновременно и свободной, и связанной в одном и том же терме, как это было
+показано выше. Воспользуемся структурной индукцией, чтобы продемонстрировать 
+доказательство утверждений о свойствах $\lambda$-термов на примере следующей
+теоремы (аналогичные рассуждения применимы и ко множеству~$BV$).
+%
+%For example, if $s = (\lamb{x\; y} x)\; (\lamb{x} z\; x)$ we have $FV(s) = \{ z
+%\}$ and $BV(s) = \{ x, y \}$. Note that in general a variable can be both free
+%and bound in the same term, as illustrated by some of the mathematical examples
+%earlier. As an example of using structural induction to establish properties of
+%$\lambda$- terms, we will prove the following theorem (a similar proof works for
+%$BV$ too):
 
 \begin{theorem}
-For any $\lambda$- term $s$, the set $FV(s)$ is finite.
+Для произвольного $\lambda$-терма~$s$ множество~$FV(s)$ конечно.
+%For any $\lambda$- term $s$, the set $FV(s)$ is finite.
 
-\proof By structural induction. Certainly if $s$ is a variable or a constant,
-then by definition $FV(s)$ is finite, since it is either a singleton or empty.
-If $s$ is a combination $t\;u$ then by the inductive hypothesis, $FV(t)$ and
-$FV(u)$ are both finite, and then $FV(s) = FV(t) \Union FV(u)$, which is
-therefore also finite (the union of two finite sets is finite). Finally, if $s$
-is of the form $\lamb{x} t$ then $FV(t)$ is finite, by the inductive
-hypothesis, and by definition $FV(s) = FV(t) - \{ x \}$ which must be finite
-too, since it is no larger. \qed
+\proof 
+Применим структурную индукцию. Очевидно, что для терма~$s$, имеющего вид
+переменной либо константы, множество~$FV(s)$ конечно по определению (содержит
+единственный элемент либо пусто соответственно). Если терм~$s$ представляет
+собой комбинацию~$t\;u$, то согласно индуктивному предположению, как~$FV(t)$,
+так и~$FV(u)$ конечны, в силу чего $FV(s) = FV(t) \Union FV(u)$ также конечно,
+как объединение двух конечных множеств. Наконец, если $s$ имеет 
+форму~$\lamb{x} t$, то по определению~$FV(s) = FV(t) - \{ x \}$, а~$FV(t)$ 
+конечно по индуктивному предположению, откуда следует, что~$FV(s)$ также
+конечно, поскольку его мощность не может превышать мощности~$FV(t)$.\qed
+%                                                             
+%By structural induction. Certainly if $s$ is a variable or a constant,
+%then by definition $FV(s)$ is finite, since it is either a singleton or empty.
+%If $s$ is a combination $t\;u$ then by the inductive hypothesis, $FV(t)$ and
+%$FV(u)$ are both finite, and then $FV(s) = FV(t) \Union FV(u)$, which is
+%therefore also finite (the union of two finite sets is finite). Finally, if $s$
+%is of the form $\lamb{x} t$ then $FV(t)$ is finite, by the inductive
+%hypothesis, and by definition $FV(s) = FV(t) - \{ x \}$ which must be finite
+%too, since it is no larger. \qed
 
 \end{theorem}
 
