@@ -179,17 +179,17 @@ $$ |\frac{d}{dx}x^2|_x = 2 x $$
 
 $$ |\frac{d}{dz}z^2|_x = 2 x $$
 
-Part of the appeal of $\lambda$- notation is that all variable-binding operations
-like summation, differentiation and integration can be regarded as functions
-applied to $\lambda$--expressions. Subsuming all variable-binding operations by
-$\lambda$- abstraction allows us to concentrate on the technical problems of bound
-variables in one particular situation. For example, we can view
-$\frac{d}{dx}x^2$ as a syntactic sugaring of $D\; (\lamb{x} x^2)\; x$ where
-$D:(\real \to \real) \to \real \to \real$ is a differentiation operator,
-yielding the derivative of its first (function) argument at the point indicated
-by its second argument. Breaking down the everyday syntax completely into
-$\lambda$- notation, we have $D\; (\lamb{x} \mbox{EXP } x\; 2)\; x$ for some
-constant $\mbox{EXP}$ representing the exponential function.
+Одной из составляющей привлекательности $\lambda$-нотации является то, что все операции
+связавания переменных, такие как суммирование, дифференцирование и интегрирование, могут
+рассматриваться как функции, применяемые к $\lambda$-выражениям.  Обобщение всех операций
+связвания переменных с помощью $\lambda$-абстракции, позволяет нам сконцентрироваться на
+технических проблемах связанных переменных в конкретной ситуации.  Например, мы можем
+рассматривать $\frac{d}{dx}x^2$ как синтаксическую обвязку (syntactic sugaring) для $D\;
+(\lamb{x} x^2)\; x$ где $D:(\real \to \real) \to \real \to \real$ является оператором
+дифференцирования, производящий производную первого аргумента (функции) в точке, указанной
+вторым аргументом.  Преобразуя обычный синтаксис в $\lambda$-нотацию, мы получим $D\;
+(\lamb{x} \mbox{EXP } x\; 2)\; x$ для некоторой константы $\mbox{EXP}$, представляющей
+экспотенциальную функцию.
 
 In this way, $\lambda$- notation is an attractively general `abstract syntax' for
 mathematics; all we need is the appropriate stock of constants to start with.
