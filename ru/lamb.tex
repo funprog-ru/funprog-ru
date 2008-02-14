@@ -240,23 +240,42 @@ chapter. However the paradox itself is suggestive of some interesting
 possibilities in the standard, untyped, system, as we shall see later.
 
 \section[Лямбда-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
-
-We have taken for granted certain obvious facts, e.g. that $(\lamb{y} 1 + y)\;2
-= 1 + 2$, since these reflect the intended meaning of abstraction and
-application, which are in a sense converse operations. $\lambda$- {\em calculus}
-arises if we enshrine certain such principles, and {\em only} those, as a set
-of formal rules. The appeal of this is that the rules can then be used
-mechanically, just as one might transform $x - 3 = 5 - x$ into $2 x = 5 + 3$
-without pausing each time to think about {\em why} these rules about moving
-things from one side of the equation to the other are valid. As
-\citeN{whitehead-intro} says, symbolism and formal rules of manipulation:
+Некоторые очевидные факты принимались нами без обоснования, например, 
+что~$(\lamb{y} 1 + y)\;2 = 1 + 2$, поскольку это соответствует желаемым
+свойствам операций применения и абстракции, которые считаются в определённом
+смысле взаимно обратными. Чтобы перейти от интуитивных действий к 
+$\lambda$-{\em исчислению}, нам потребуется зафиксировать некоторые из основных
+принципов, объявив их (и {\em только} их) формальными правилами. 
+Привлекательность этого шага в том, что правила в дальнейшем могут применяться
+механически, подобно тому, как преобразование уравнения~$x - 3 = 5 - x$
+в равносильное ему~$2 x = 5 + 3$ не требует каждый раз задумываться, 
+{\em почему} допустимо такое перемещение слагаемых из одной части равенства
+в другую. Как писал Уайтхед в работе~\citeN{whitehead-intro}, формальная
+символика и правила действий\dots 
+%
+%We have taken for granted certain obvious facts, e.g. that $(\lamb{y} 1 + y)\;2
+%= 1 + 2$, since these reflect the intended meaning of abstraction and
+%application, which are in a sense converse operations. $\lambda$- {\em calculus}
+%arises if we enshrine certain such principles, and {\em only} those, as a set
+%of formal rules. The appeal of this is that the rules can then be used
+%mechanically, just as one might transform $x - 3 = 5 - x$ into $2 x = 5 + 3$
+%without pausing each time to think about {\em why} these rules about moving
+%things from one side of the equation to the other are valid. As
+%\citeN{whitehead-intro} says, symbolism and formal rules of manipulation:
 
 \begin{quote}
-[\ldots] have invariably been introduced to make things easy. [\ldots] by
-the aid of symbolism, we can make transitions in reasoning almost mechanically
-by the eye, which otherwise would call into play the higher faculties of the
-brain. [\ldots] Civilisation advances by extending the number of important
-operations which can be performed without thinking about them.
+[\ldots] вводились всякий раз, когда требовались что-либо упростить.
+[\ldots] используя формальные обозначения, мы можем переходить от одного этапа 
+рассуждений к другому почти механически, зрительно, в противном же случае нам
+пришлось бы задействовать гораздо больше интеллектуальных ресурсов.
+[\ldots] Цивилизация прогрессирует, увеличивая количество важных операций, 
+которые могут производиться, не задумывась.
+%
+%[\ldots] have invariably been introduced to make things easy. [\ldots] by
+%the aid of symbolism, we can make transitions in reasoning almost mechanically
+%by the eye, which otherwise would call into play the higher faculties of the
+%brain. [\ldots] Civilisation advances by extending the number of important
+%operations which can be performed without thinking about them.
 \end{quote}
 
 \subsection[Лямбда-термы]{$\lambda$-термы}
@@ -279,60 +298,119 @@ operations which can be performed without thinking about them.
 %typically we will use single letters from towards the end of the alphabet, e.g.
 %$x$, $y$ and $z$.
 
-\item {\bf Constants:} how many constants there are in a given syntax of $\lambda$-
-terms depends on context. Sometimes there are none at all. We will also
-denote them by alphanumeric strings, leaving context to determine when they are
-meant to be constants.
+\item 
+{\bf Константы:} количество констант определяется конкретной $\lambda$-нотацией,
+иногда их нет вовсе. Мы будем также обозначать их алфавитно-цифровыми строками,
+как и переменные, отличая их друг от друга по контексту.
+%% ISSUE: не до конца ясно, что такое depends on context? -- LH
+%
+%{\bf Constants:} how many constants there are in a given syntax of $\lambda$-
+%terms depends on context. Sometimes there are none at all. We will also
+%denote them by alphanumeric strings, leaving context to determine when they are
+%meant to be constants.
 
-\item {\bf Combinations}, i.e. the application of a function $s$ to an argument
-$t$; both these components $s$ and $t$ may themselves be arbitrary
-$\lambda$-terms. We will write combinations simply as $s\;t$. We often
-refer to $s$ as the `rator' and $t$ as the `rand' (short for `operator' and
-`operand' respectively).
+\item 
+{\bf Комбинации:} применение функции~$s$ к аргументу~$t$, где~$s$ и~$t$
+представляют собой произвольные термы. Будем обозначать комбинации как~$s\;t$,
+а их составные части называть <<ратор>> и <<ранд>> соответственно.%
+\footnote{Сокр.\ <<опе\textit{ратор}>> и~<<опе\textit{ранд}>>.}
+% ISSUE: звучит просто ужасно (IMHO), может, не стоит загрязнять язык
+% и не упоминать в переводе эти отходы словотворчества? -- LH
+%
+%{\bf Combinations}, i.e. the application of a function $s$ to an argument
+%$t$; both these components $s$ and $t$ may themselves be arbitrary
+%$\lambda$-terms. We will write combinations simply as $s\;t$. We often
+%refer to $s$ as the `rator' and $t$ as the `rand' (short for `operator' and
+%`operand' respectively).
 
-\item {\bf Abstractions} of an arbitrary $\lambda$--term $s$ over a variable
-$x$ (which may or may not occur free in $s$), denoted by $\lamb{x} s$.
-
+\item 
+{\bf Абстракция} произвольного $\lambda$-терма~$s$ по переменной~$x$
+(которая может как входить свободно в~$s$, так и нет) имеет вид~$\lamb{x} s$.
+%
+%{\bf Abstractions} of an arbitrary $\lambda$--term $s$ over a variable
+%$x$ (which may or may not occur free in $s$), denoted by $\lamb{x} s$.
 \end{enumerate}
 
-Formally, this defines the set of $\lambda$- terms inductively, i.e. $\lambda$-
-terms arise {\em only} in these four ways. This justifies our:
+Формально, этот набор правил представляет собой индуктивное определение 
+множества $\lambda$-термов, т.~е.\ последние могут конструироваться 
+{\em только так}, как описано выше. Благодаря этому, мы получаем основания
+для
+%
+%Formally, this defines the set of $\lambda$- terms inductively, i.e. $\lambda$-
+%terms arise {\em only} in these four ways. This justifies our:
 
 \begin{itemize}
 
-\item Defining functions over $\lambda$- terms by primitive recursion.
+\item 
+определения функций над $\lambda$-термами при помощи примитивной рекурсии;
+%Defining functions over $\lambda$- terms by primitive recursion.
 
-\item Proving properties of $\lambda$- terms by structural induction.
-
+\item 
+доказательства утверждений о свойствах $\lambda$-термов методом структурной
+индукции.
+%Proving properties of $\lambda$- terms by structural induction.
 \end{itemize}
 
-A formal discussion of inductive generation, and the notions of primitive
-recursion and structural induction, may be found elsewhere. We hope most
-readers who are unfamiliar with these terms will find that the examples below
-give them a sufficient grasp of the basic ideas.
+Формальное изложение понятий индуктивного построения, а также примитивной
+рекурсии и структурной индукции доступно из многих источников.
+Мы надеемся, что читатель, не знакомый с этими формализмами, сможет получить
+достаточное представление об их базовых идеях на основе примеров, которые
+приводятся ниже.
+%
+%A formal discussion of inductive generation, and the notions of primitive
+%recursion and structural induction, may be found elsewhere. We hope most
+%readers who are unfamiliar with these terms will find that the examples below
+%give them a sufficient grasp of the basic ideas.
 
-We can describe the syntax of $\lambda$- terms by a BNF (Backus-Naur form)
-grammar, just as we do for programming languages.
+Подобно языкам программирования, синтаксис $\lambda$-термов может быть задан
+при помощи БНФ (форм Бэкуса-Наура):
+%
+%We can describe the syntax of $\lambda$- terms by a BNF (Backus-Naur form)
+%grammar, just as we do for programming languages.
+%
+$$ 
+ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp 
+$$
+%	
+после чего мы можем трактовать их, как это принято в теории формальных языков,
+не просто как цепочки символов, а как абстрактные синтаксические деревья.
+Это значит, что соглашения наподобие левоассоциативности операции применения
+функции либо интерпретации $\lamb{x\;y} s$ как~$\lamb{x} \lamb{y} s$, а также
+неразличимость переменных и констант по именам не являются неотъемлемой частью
+формализма $\lambda$-исчисления, а имеют смысл исключительно в
+момент преобразования терма в форму, подходящую для восприятия человеком, либо
+в обратном направлении. 
+%
+%\noindent and, following the usual computer science view, we will identify
+%$\lambda$- terms with abstract syntax trees, rather than with sequences of
+%characters. This means that conventions such as the left-association of
+%function application, the reading of $\lamb{x\;y} s$ as $\lamb{x} \lamb{y} s$,
+%and the ambiguity over constant and variable names are purely a matter of
+%parsing and printing for human convenience, and not part of the formal system.
 
-$$ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp $$
-
-\noindent and, following the usual computer science view, we will identify
-$\lambda$- terms with abstract syntax trees, rather than with sequences of
-characters. This means that conventions such as the left-association of
-function application, the reading of $\lamb{x\;y} s$ as $\lamb{x} \lamb{y} s$,
-and the ambiguity over constant and variable names are purely a matter of
-parsing and printing for human convenience, and not part of the formal system.
-
-One feature worth mentioning is that we use single characters to stand for
-variables and constants in the formal system of $\lambda$- terms {\em} and as
-so-called `metavariables' standing for arbitrary terms. For example, $\lamb{x}
-s$ might represent the constant function with value $s$, or an arbitrary $\lambda$-
-abstraction using the variable $x$. To make this less confusing, we will
-normally use letters such as $s$, $t$ and $u$ for metavariables over terms. It
-would be more precise if we denoted the variable $x$ by $V_x$ (the $x$'th
-variable) and likewise the constant $k$ by $C_k$ --- then all the variables in
-terms would have the same status. However this makes the resulting terms a bit
-cluttered.
+В завершение упомянем ещё одно соглашение, принятое в данном пособии. Будем
+использовать в $\lambda$-термах односимвольные имена не только для констант 
+и переменных, но и для так называемых {\em метапеременных}, обозначающих 
+любые термы. Например, выражение $\lamb{x} s$ может представлять как 
+константную функцию со значением~$s$, так и произвольную $\lambda$-абстракцию
+по переменной~$x$. Для предотвращения путаницы, условимся применять буквы
+$s$, $t$ и~$u$ в качестве метапеременных. 
+%% ISSUE: только эти буквы, или буквы вообще? -- LH
+Устранить неоднозначность полностью возможно, например, за счёт потери 
+компактности записи: введением имён переменных вида~$V_x$ вместо~$x$, 
+а констант~--- $C_k$ вместо~$k$, после чего исчезает необходимость приписывать 
+именам особый статус.
+%
+%One feature worth mentioning is that we use single characters to stand for
+%variables and constants in the formal system of $\lambda$- terms {\em} and as
+%so-called `metavariables' standing for arbitrary terms. For example, $\lamb{x}
+%s$ might represent the constant function with value $s$, or an arbitrary $\lambda$-
+%abstraction using the variable $x$. To make this less confusing, we will
+%normally use letters such as $s$, $t$ and $u$ for metavariables over terms. It
+%would be more precise if we denoted the variable $x$ by $V_x$ (the $x$'th
+%variable) and likewise the constant $k$ by $C_k$ --- then all the variables in
+%terms would have the same status. However this makes the resulting terms a bit
+%cluttered.
 
 \subsection{Свободные и связанные переменные}
 %\subsection{Free and bound variables}
