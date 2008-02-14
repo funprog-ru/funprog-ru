@@ -191,53 +191,58 @@ $$ |\frac{d}{dz}z^2|_x = 2 x $$
 (\lamb{x} \mbox{EXP } x\; 2)\; x$ для некоторой константы $\mbox{EXP}$, представляющей
 экспотенциальную функцию.
 
-In this way, $\lambda$- notation is an attractively general `abstract syntax' for
-mathematics; all we need is the appropriate stock of constants to start with.
-$\lambda$- abstraction seems, in retrospect, to be the appropriate primitive in
-terms of which to analyze variable binding. This idea goes back to Church's
-encoding of higher order logic in $\lambda$- notation, and as we shall see in the
-next chapter, Landin has pointed out how many constructs from programming
-languages have a similar interpretation. In recent times, the idea of using
-$\lambda$- notation as a universal abstract syntax has been put especially clearly
-by Martin-L\"of, and is often referred to in some circles as `Martin-L\"of's
-theory of expressions and arities'.\footnote{This was presented at the Brouwer
-Symposium in 1981, but was not described in the printed proceedings.}
+Таким образом, $\lambda$-нотация очень привлекательна для математиков в качестве общего
+`абстрактного синтаксиса'; все что нам нужно~-- соответствующий набор констант с которыми
+мы начнем работать.  $\lambda$-абстрация выглядит, ретроспективно, как подходящий примитив
+в терминах которого проводится анализ связывания переменных.  Эта идея уходит корнями к
+записи логики высшего порядка в $\lambda$-нотации, использованой Черчем, а также, как мы
+увидим в следующей главе, Landin указывал на то, как много конструкций в языках
+программирования имеет аналогичную интерпретацию.  В последнее время, идея использования
+$\lambda$-нотации в качестве универсального абстрактного синтаксиса была введена
+Martin-L\"of, и часто на нее ссылаются как на `теорию Martin-L\"of для выражений и арности
+(arity)'.\footnote{Она была представлена на симпозиуме в Brouwer в 1981 году, но не попала
+  в печатные материалы симпозиума.}
 
 \section{Парадокс Рассела}
 
-As we have said, one of the appeals of $\lambda$- notation is that it permits an
-analysis of more or less all of mathematical syntax. Originally, Church hoped
-to go further and include set theory, which, as is well known, is powerful
-enough to form a foundation for much of modern mathematics. Given any set $S$,
-we can form its so-called {\em characteristic predicate} $\chi_S$, such that:
+Как мы уже упоминали, одной из привлекательной сторон $\lambda$-нотации является то, что
+она разрешает анализ почти всего математического синтаксиса.  Первоначально, Черч надеялся
+продвинуться дальше, и затронуть теорию множеств, которая, как хорошо известно, является
+достаточно мощным средством для формирования основания для большей части современной
+математики.  Взяв любое множество~$S$, мы можем сформировать для него так называемый {\em
+  параметрический предикат (characteristic predicate)} $\chi_S$, такой, что:
 
-$$ \chi_S(x) = \left\{ \begin{array}{ll}
+$$ 
+\chi_S(x) = \left\{ \begin{array}{ll}
                         true & \mbox{if $x \in S$} \\
                         false & \mbox{if $x \not\in S$}
-                 \end{array} \right. $$
+                 \end{array} \right. 
+$$
 
-Conversely, given any unary predicate (i.e. function of one argument) $P$, we
-can consider the set of all $x$ satisfying $P(x)$ --- we will just write $P(x)$
-for $P(x) = true$. Thus, we see that sets and predicates are just different
-ways of talking about the same thing. Instead of regarding $S$ as a set, and
-writing $x \in S$, we can regard it as a predicate and write $S(x)$.
+И наоборот, для любого унарного предиката (т.е. функции одного аргумента)~$P$, мы можем
+рассмотреть множество всех~$x$ удовлетворяющих~$P(x)$~--- мы будем просто
+записывать~$P(x)$ для $P(x) = true$.  Таким образом, мы видим, что множества и предикаты
+являются лишь различными способами обсуждения одних и тех же вещей.  Вместо
+рассмотрения~$S$ как множества, и записи $x \in S$, мы можем рассматривать его как
+предикат, и записывать как~$S(x)$.
 
-This permits a natural analysis into $\lambda$- notation: we can allow arbitrary
-$\lambda$- expressions as functions, and hence indirectly as sets. Unfortunately,
-this turns out to be inconsistent. The simplest way to see this is to consider
-the Russell paradox of the set of all sets that do not contain themselves:
+Это позволяет проведение обычного анализа в $\lambda$-нотации: мы можем допустить что
+произвольные $\lambda$-выражения являются функциями, и косвенным образом, и множествами.
+К сожалению, это приводит к несовместимости.  Простейшим способом убедиться в этом,
+является рассмотрение парадокса Рассела про множество всех множеств, которые не содержат
+сами себя:
 
 $$ R = \{x \mid x \not\in x\} $$
 
-We have $R \in R \Iff R \not\in R$, a stark contradiction. In terms of
-$\lambda$- defined functions, we set $R = \lamb{x} \Not (x\; x)$, and find that
-$R\; R = \Not(R\; R)$, obviously counter to the intuitive meaning of the
-negation operator $\Not$.
+У нас имеется $R \in R \Iff R \not\in R$, сильное противоречие.  В терминах функций,
+определенных с помощью $\lambda$-нотации, мы задаем $R = \lamb{x} \Not (x\; x)$, а затем
+находим, что $R\; R = \Not(R\; R)$, рассчитывая на интуитивное понимание операции отрицания
+$\Not$.
 
-To avoid such paradoxes, \citeN{church-types} followed Russell in augmenting
-$\lambda$- notation with a notion of {\em type}; we shall consider this in a later
-chapter. However the paradox itself is suggestive of some interesting
-possibilities in the standard, untyped, system, as we shall see later.
+Для того, чтобы избежать таких парадоксов, \citeN{church-types} развивает идею Рассела
+путем добавления в $\lambda$-нотацию понятия {\em типа}; мы должны рассмотреть это в
+следующей главе.  Однако сам парадокс предлагает некоторые интересные возможности в
+стандартной, нетипизированной системе, в чем мы убедимся позже.
 
 \section[Лямбда-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
 Некоторые очевидные факты принимались нами без обоснования, например, 
@@ -1409,3 +1414,5 @@ $\lambda$-исчисления~--- \citeN{barendregt}. Другой популярный
 %%% Local Variables:
 %%% TeX-master: "all"
 %%% End:
+
+% LocalWords:  Рассела
