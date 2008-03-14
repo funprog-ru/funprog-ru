@@ -34,11 +34,11 @@
   * (e) *preface.tex* - перевод pr.dimiii, прочитали lg
   * (e) *ml.tex* - перевод alexott, прочитали lg, dimiii, Lambda Henchman 
   * (e) *proving.tex* - перевод Lambda Henchman, прочитали
-  * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg
+  * (e) *fml.tex* - перевод pr.dimiii,alexott прочитали lg, Lambda Henchman
   * (e) *plan.tex* - перевод alexott, прочитали lg
   * (e) *types.tex* - перевод Lambda Henchman, прочитали lg
   * (e) *prog.tex* - перевод Lambda Henchman, прочитали
-  * (t) *lamb.tex* - перевод alexott/Lambda Henchman, прочитали
+  * (t) *lamb.tex* - перевод alexott/Lambda Henchman, прочитали Lambda Henchman
 
 = Остальные =
 
