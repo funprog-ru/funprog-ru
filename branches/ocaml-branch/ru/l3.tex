@@ -1,0 +1,601 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section*{Лекция 3. $\lambda$-исчисление как язык программирования}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+
+  \item Вычислимость и полнота по Тьюрингу
+    % \item Computability and Turing completeness
+    \maybepause
+
+  \item $\lambda$-исчисление как язык программирования
+    % \item $\lambda$-calculus and programming languages
+    \maybepause
+
+  \item Представление основных типов данных
+    % \item Representing basic data types
+    \maybepause
+
+  \item Рекурсивные функции и комбинаторы неподвижной точки
+    % \item Recursive functions and fixpoint combinators
+    \maybepause
+
+  \item Let-выражения
+    % \item Let expressions
+    \maybepause
+
+  \item Шаги к декларативному языку программирования
+    % \item Steps to a declarative programming language
+    \maybepause
+
+  \end{itemize}
+
+}
+
+
+\frame{
+  \frametitle{Вычислимость; Полнота по Тьюрингу}
+  % \heading{Computability; Turing completeness}
+
+  До того как появились компьютеры, проблема разрешимости ({\em
+    Entscheidungsproblem}) стимулировала создание множества равноценных
+  определений <<вычислимости>>.
+  % Before computers, stimulated by the {\em Entscheidungsproblem}, many equivalent
+  % definitions of <<computable>> were proposed.
+
+  \begin{itemize}
+  \item Машины Тьюринга
+    % \item Turing machines
+    \maybepause
+
+  \item Регистровые машины
+    % \item Register machines
+    \maybepause
+
+  \item $\mu$-рекурсивные функции
+    % \item $\mu$-recursive functions
+    \maybepause
+
+  \item Алгоритмы Маркова
+    % \item Markov algorithms
+    \maybepause
+
+  \item \alert{ $\lambda$-исчисление }
+    % \item \begin{red} $\lambda$-calculus \end{red}
+    \maybepause
+
+  \end{itemize}
+
+  Многие из них соответствуют методам программирования, несмотря даже на
+  то, что они появились раньше компьютеров!  Например, алгоритмы Маркова
+  относятся к SNOBOL, а $\lambda$-исчисление к функциональному
+  программированию.
+  % Many of them correspond to programming methods, even though they came before
+  % computers! For example, Markov algorithms are related to SNOBOL, and {\em
+  %   $\lambda$-calculus to functional programming}.
+}
+
+\frame{
+  \frametitle{Влияние $\lambda$-исчисления}
+  % \heading{The influence of $\lambda$-calculus}
+
+  LISP вобрал некоторые идеи из $\lambda$-исчисления, но не был основан
+  на нём.  В действительности же $\lambda$-исчисление начало оказывать влияние
+  благодаря Ландину.
+  % LISP took some ideas from $\lambda$-calculus, but was not really
+  % based on it.  It was really with Landin that the influence of
+  % $\lambda$-calculus took off.
+
+  Ландин показал как можно использовать $\lambda$-исчисление, чтобы
+  объяснить возможности некоторых существующих языков программирования,
+  например, область видимости переменных в Algol 60.
+  % Landin pointed out how $\lambda$-calculus could be used to explain
+  % features of some existing programming languages, e.g. the scoping
+  % of variables in Algol 60.
+
+  Он предложил простой функциональных язык ISWIM (<<If you See What I
+  Mean>>), основанный на $\lambda$-исчислении.  Многие современные
+  функциональные языки, включая ML, произошли от ISWIM.
+  % He proposed a simple functional language ISWIM (<<If you See What
+  % I Mean>>), based on $\lambda$-calculus. Many of today's functional
+  % languages, including ML, are descended from ISWIM.
+
+  ML начал жить как метаязык для средства доказательства теорем
+  Edinburgh LCF.  ML добавил в ISWIM новейшую систему типов и {\em
+    исключения}.  Минималистичный замысел породил добротный язык.
+  % ML started life as the metalanguage for the Edinburgh LCF theorem prover. It
+  % added to ISWIM an innovative type system, and {\em exceptions}. The narrow
+  % design focus resulted in a coherent language.
+
+  Начнём с $\lambda$-исчисления.  За работу!
+  % We'll start with $\lambda$-calculus and work up!
+}
+
+\frame{
+  \frametitle{Булевы значения (1)}
+  % \heading{Booleans (1)}
+
+  Мы можем определить булевы значения следующим образом:
+  % We can define the truth values as follows:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{true} & \defeq & \lamb{x\; y} x                   \\
+      \mbox{false} & \defeq & \lamb{x\; y} y
+    \end{eqnarray*}
+  }
+  Условные выражения сродни конструкции <<{\tt ?:}>> языка C:
+
+  % Then we get conditional expressions, like C's <<{tt ?:}>> construct:
+
+  \alert{$$ \mbox{if } E \mbox{ then } E_1 \mbox{ else } E_2 \defeq
+    E\; E_1\; E_2 $$}
+  Например:
+  % For example:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{if } \mbox{true} \mbox{ then } E_1 \mbox{ else } E_2
+      & = & \mbox{true}\; E_1\; E_2                 \\
+      & = & (\lamb{x\; y} x)\; E_1\; E_2            \\
+      & = & E_1
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Булевы значения (2)}
+  % \heading{Booleans (2)}
+
+  и
+  % and
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{if } \mbox{false} \mbox{ then } E_1 \mbox{ else } E_2
+      & = & \mbox{false}\; E_1\; E_2                \\
+      & = & (\lamb{x\; y} y)\; E_1\; E_2            \\
+      & = & E_2
+    \end{eqnarray*}
+  }
+  Теперь, когда у нас есть условное выражение, нам будет легко
+  определить все логические операции:
+  % Once we have the conditional, it is easy to define all the usual
+  % logical operations:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{not } p  & \defeq & \mbox{if } p \mbox{ then false else true}          \\
+      p \mbox{ and } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
+      p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q            \\
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Пары}
+  % \heading{Pairs}
+
+  Мы можем представить упорядоченные пары следующим образом:
+  % We can represent ordered pairs as follows:
+
+  \alert{$$ (E_1,E_2) \defeq \lamb{f} f\; E_1\; E_2 $$}
+  Для такого представления соответствующие деструкторы пар будут
+  выглядеть как:
+  % Given this definition, the corresponding destructors for pairs can be
+  % defined as:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{fst } p & \defeq & p \mbox{ true}                                 \\
+      \mbox{snd } p & \defeq & p \mbox{ false}
+    \end{eqnarray*}
+  }
+  Они работают как полагается
+  % These work as required, e.g.
+  \alert{
+    \begin{eqnarray*}
+      \mbox{fst}\; (p,q) & = & (p,q)\; \mbox{true}                            \\
+      & = & (\lamb{f} f\; p\; q)\; \mbox{true}             \\
+      & = & \mbox{true}\; p\; q                            \\
+      & = & (\lamb{x\; y} x)\; p\; q                       \\
+      & = & p
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Кортежи}
+  % \heading{Tuples}
+
+  Мы получаем кортежи, повторяя операцию создания пары:
+  % We get tuples by iterating the pairing operation:
+
+  \alert{$$ (E_1,E_2,\ldots,E_n) = (E_1,(E_2,\ldots E_n)) $$}
+
+  Затем мы можем определить основные <<отображения>>:
+  % We can then define general <<projections>>:
+
+  \alert{$$ (p)_1 = \mbox{fst}\; p $$}
+
+  и для \alert{$i > 1$}:
+  % and for \alert{$i > 1$}:
+
+  \alert{$$ (p)_i = \mbox{fst}\; (\mbox{snd}^{i-1}\; p) $$}
+
+  Мы получаем \alert{$(E_1,E_2,\ldots,E_n)_i = E_i$} для \alert{$i \leq n$}.
+  % We have \alert{$(E_1,E_2,\ldots,E_n)_i = E_i$} for \alert{$i \leq n$}.
+}
+
+\frame{
+  \frametitle{Декаррированные функции}
+  % \heading{Uncurried functions}
+
+  Теперь мы определим не-каррированные функции от многих аргументов.
+  Вот функции для перевода функций в каррированный и декаррированный
+  вид:
+  % We can now define functions of multiple arguments that are non-curried. Here
+  % are functions to translate between curried and uncurried versions:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{CURRY}_n\; f  & \defeq & \lamb{x_1\; \cdots \; x_n} f(x_1,\ldots,x_n) \\
+      \mbox{UNCURRY}_n\;g & \defeq & \lamb{p} g\; (p)_1 \; \cdots \; (p)_n
+    \end{eqnarray*}
+  }
+  Можно писать \alert{$\lamb{(x_1,\ldots,x_n)} t$} вместо:
+  % Now we can write \alert{$\lamb{(x_1,\ldots,x_n)} t$} for:
+
+  \alert{$$\mbox{UNCURRY}_n\; (\lamb{x_1\; \cdots \; x_n} t)$$}
+  И мы получаем обобщённую $\beta$-конверсию:
+  % Then we have generalized $\beta$-conversion:
+
+  \alert{$$(\lamb{(x_1,\ldots,x_n)} t[x_1,\ldots,x_n]) (t_1,\ldots,t_n) =
+    t[t_1,\ldots,t_n]$$}
+}
+
+\frame{
+  \frametitle{Натуральные числа}
+  % \heading{Natural numbers}
+
+  Мы можем кодировать числа множеством способов.  Похоже, что самый
+  простой~-- это {\em нумералы Чёрча}:
+  % We can encode numbers in many ways. The simplest seems to be as {\em Church
+  %   numerals}:
+
+  \alert{$$ {\bf n} \defeq \lamb{f\; x} f^n\; x $$}
+
+  Это выражение означает, что:
+  % This means:
+
+  \alert{
+    \begin{eqnarray*}
+      {\bf 0} & = & \lamb{f\; x} x                    \\
+      {\bf 1} & = & \lamb{f\; x} f\; x                \\
+      {\bf 2} & = & \lamb{f\; x} f\;(f\; x)           \\
+      {\bf 3} & = & \lamb{f\; x} f\;(f\; (f\; x))     \\
+      {\bf 4} & = & \lamb{f\; x} f\;(f\; (f\; (f\; x)))
+    \end{eqnarray*}
+  }
+  и так далее.
+  % and so on.
+}
+
+\frame{
+  \frametitle{Инкремент}
+  % \heading{Successor}
+
+  Следующая операция прибавляет единицу к нумералу Чёрча:
+  % The following operation adds one to a Church numeral:
+
+  \alert{$$ \mbox{SUC} \defeq \lamb{n\; f\; x} n\; f\; (f\; x) $$}
+  В самом деле:
+  % Indeed:
+
+  \alert{
+    \begin{eqnarray*}
+      \mbox{SUC}\; {\bf n} & = &
+      (\lamb{n\; f\; x} n\; f\; (f\; x)) (\lamb{f\; x} f^n\; x) \\
+      & = & \lamb{f\; x} (\lamb{f\; x} f^n\; x) f\; (f\; x)          \\
+      & = & \lamb{f\; x} (\lamb{x} f^n\; x) (f\; x)                \\
+      & = & \lamb{f\; x} f^n\; (f\; x)                                \\
+      & = & \lamb{f\; x} f^{n + 1}\; x                               \\
+      & = & {\bf n + 1}
+    \end{eqnarray*}
+  }
+
+  Также можно проверить является ли нумерал Чёрча нулём с помощью:
+  \alert{$$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$}
+  % We can also test if a Church numeral is zero with:
+  % \alert{$$ \mbox{ISZERO}\; n \defeq n\; (\lamb{x} \mbox{false})\; \mbox{true} $$}
+}
+
+\frame{
+  \frametitle{Сложение}
+  % \heading{Addition}
+
+  Сложение нумералов Чёрча определяется как
+  % Here's addition of Church numerals:
+
+  \alert{$$m + n \defeq \lamb{f\; x} m\; f\; (n\; f\; x) $$}
+
+  В самом деле:
+  % Indeed:
+
+  \alert{
+    \begin{eqnarray*}
+      m + n  & = & \lamb{f\; x} m\; f\; (n\; f\; x)        \\
+      & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; f\; (n\; f\; x)     \\
+      & = & \lamb{f\; x} (\lamb{x} f^m\; x)\; (n\; f\; x)     \\
+      & = & \lamb{f\; x} f^m\; (n\; f\; x)                    \\
+      & = & \lamb{f\; x} f^m\; ((\lamb{f\; x} f^n\; x)\; f\; x)   \\
+      & = & \lamb{f\; x} f^m\; ((\lamb{x} f^n\; x)\; x)               \\
+      & = & \lamb{f\; x} f^m\; (f^n\; x)                              \\
+      & = & \lamb{f\; x} f^{m + n} x
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Умножение}
+  % \heading{Multiplication}
+
+  Умножение определяется как
+  % and here's multiplication:
+
+  \alert{$$ m * n \defeq \lamb{f\; x} m\; (n\; f)\; x $$}
+
+  В самом деле:
+  % Indeed:
+
+  \alert{
+    \begin{eqnarray*}
+      m * n  & = & \lamb{f\; x} m\; (n\; f)\; x                              \\
+      & = & \lamb{f\; x} (\lamb{f\; x} f^m\; x)\; (n\; f)\; x         \\
+      & = & \lamb{f\; x} (\lamb{x} (n\; f)^m\; x)\; x                 \\
+      & = & \lamb{f\; x} (n\; f)^m\; x                                \\
+      & = & \lamb{f\; x} ((\lamb{f\; x} f^n\; x)\; f)^m\; x           \\
+      & = & \lamb{f\; x} (\lamb{x} f^n\; x)^m\; x                     \\
+      & = & \lamb{f\; x} (f^n)^m\; x                                  \\
+      & = & \lamb{f\; x} f^{m n} x
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Декремент}
+  % \heading{Predecessor}
+
+  Это уже намного сложнее.  Сначала нам надо определить вспомогательную
+  функцию для работы с парами:
+  % This is much harder. First we define an auxiliary function on pairs:
+
+  \alert{$$ \mbox{PREFN} \defeq
+    \lamb{f\; p}
+    (\BA \mbox{false},\\
+    \mbox{if fst } p \mbox{ then snd } p \mbox{ else } f(\mbox{snd}\; p)
+    )\EA
+    $$}
+  Мы получаем:
+  % We have:
+  \alert{
+    \begin{eqnarray*}
+      \mbox{PREFN}\; f\; (\mbox{true},x)  & = & (\mbox{false},x)       \\
+      \mbox{PREFN}\; f\; (\mbox{false},x) & = & (\mbox{false},f\; x)
+    \end{eqnarray*}
+  }
+  Мы можем использовать эту функцию для того, чтобы <<отбросить>> одно из
+  применений \alert{$f$} в \alert{$f^n\; x$}.  Эта выдумка принадлежит
+  Клини.  Теперь определим: \alert{$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+    \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
+  % We can use this to <<throw away>> one of the applications of \alert{$f$} in
+  % \alert{$f^n\; x$}. This trick is due to Kleene. Now define:
+  % \alert{$$ \mbox{PRE}\; n \defeq \lamb{f\; x}
+  %   \mbox{snd} (n\; (\mbox{PREFN}\; f)\; (\mbox{true},x)) $$}
+}
+
+\frame{
+  \frametitle{Рекурсивные функции (1)}
+  % \heading{Recursive functions (1)}
+
+  Кажется, что сложно определить рекурсивную функцию не задав ей
+  имени.  Однако, мы можем это сделать, используя {\em комбинаторы
+    неподвижной точки}.
+  % This looks difficult without using names for functions. We can do
+  % it though --- the key is to use {\em fixed point combinators}.
+
+  Говорят, что \alert{$Y$}~-- комбинатор неподвижной точки, если, применив
+  его к функции \alert{$f$}, мы получим неподвижную точку \alert{$x$} для
+  \alert{$f$}, то есть такое \alert{$x$}, что \alert{$f(x) = x$}.  Для всех
+  \alert{$f$} имеем: \alert{$$ f(Y\; f) = Y\; f $$} Мы сможем понять как
+  составить такой комбинатор, вспомнив парадокс Рассела.  Мы определяли
+  \alert{$R = \lamb{x} \Not (x\; x)$} и приходили к тому, что \alert{$R\; R
+    = \Not (R\; R)$}.  Всё, что нам потребуется, это заменить \alert{
+    $\Not$} на функцию \alert{$f$}.  Таким образом: \alert{$$Y \defeq
+    \lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))$$}
+  % A closed term \alert{$Y$} is said to be a fixed point combinator
+  % if, when applied to a function \alert{$f$}, it gives a fixed point
+  % \alert{$x$} for \alert{$f$}, i.e. an \alert{$x$} with \alert{$f(x)
+  %   = x$}.  Hence for all \alert{$f$}: \alert{$$ f(Y\; f) = Y\; f
+  %   $$} We can get an idea how to produce such a combinator by
+  % recalling the Russell paradox. We defined \alert{$R = \lamb{x}
+  %   \Not (x\; x)$} and found \alert{$R\; R = \Not (R\; R)$}. All we
+  % need to do is replace \alert{$\Not$} with the function \alert{$f$}
+  % concerned. Thus: \alert{$$Y \defeq \lamb{f} (\lamb{x} f(x\; x))
+  %   (\lamb{x} f(x\; x))$$}
+}
+
+\frame{
+  \frametitle{Рекурсивные функции (2)}
+  % \heading{Recursive functions (2)}
+
+  Достаточно просто показать, что \alert{$Y$} работает как положено:
+  % It is a simple matter to show that \alert{$Y$} works as advertised:
+  \alert{
+    \begin{eqnarray*}
+      Y f  & = & (\lamb{f} (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))\; f       \\
+      & = & (\lamb{x} f(x\; x)) (\lamb{x} f(x\; x))                      \\
+      & = & f((\lamb{x} f(x\; x)) (\lamb{x} f(x\; x)))                   \\
+      & = & f(Y\; f)
+    \end{eqnarray*}
+  }
+
+  Как альтернативу $Y$, можно задать выражение:
+  % An alternative to $Y$ is given by:
+
+  \alert{$$ T \defeq (\lamb{x\; y} y\; (x\; x\; y))\; (\lamb{x\; y} y\; (x\; x\;
+    y)) $$}
+
+  Оно имеет более сильное свойство: \alert{$T\; f \goesto f(T\; f)$}.
+
+  % This has the even better property that \alert{$T\; f \goesto f(T\; f)$}.
+}
+
+\frame{
+  \frametitle{Рекурсивные функции (3)}
+  % \heading{Recursive functions (3)}
+
+  Как нам использовать комбинатор неподвижной точки для определения
+  рекурсивных функций?  Рассмотрим функцию факториала.  Хотелось бы
+  определить \alert{$\mbox{fact}$} следующим образом:
+  \alert{$$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+  \noindent Сначала преобразуем его в:
+  \alert{$$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+  \noindent Таким образом, если мы определим:
+  \alert{$$F \defeq \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
+  то мы обнаружим, что \alert{$\mbox{fact}$} есть неподвижная точка функции
+  \alert{$F$}, т.е. \alert{$\mbox{fact} = F\; \mbox{fact}$}.  Поэтому мы определим:
+  \alert{$$\mbox{fact} = Y\; F$$}
+  % How do we use a fixpoint combinator to define recursive functions? Consider the
+  % factorial function. We would like to define \alert{$\mbox{fact}$} such that:
+  % \alert{$$ \mbox{fact}(n) = \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+  %   \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+  % \noindent First transform it to:
+  % \alert{$$ \mbox{fact} = \lamb{n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+  %   \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) $$}
+  % \noindent so if we define:
+  % \alert{$$F \defeq \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+  %   \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
+  % we find that \alert{$\mbox{fact}$} is the fixpoint of \alert{$F$}, i.e. \alert{
+  %   $\mbox{fact} = F\; \mbox{fact}$}. Therefore we define:
+  % \alert{$$\mbox{fact} = Y\; F$$}
+}
+
+\frame{
+  \frametitle{Let-выражения}
+  % \heading{Let expressions}
+
+  Зачастую, удобно привязать выражение к некоторому имени, чтобы избежать
+  множества повторов одного и того же выражения.  Введём следующий
+  вариант синтаксического сахара XXX:
+  \alert{$$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$}
+  Введём также запись для множества {\em совместных} привязок:
+  \alert{$$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
+    \mbox{ in } t $$}
+  которая является синтаксическим сахаром для:
+  \alert{$$ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) $$}
+  Ещё мы можем использовать запись \alert{$\mbox{let } f\; x_1\; \cdots x_n = t$},
+  которая является синтаксическим сахаром для:
+  \alert{$$\mbox{let } f = \lamb{x_1\; \cdots \; x_n} t$$}
+
+  % It's often useful to bind expressions to names, to avoid repeating the
+  % expression many times. We will allow the following syntactic sugar:
+  % \alert{$$ \mbox{let } x = s \mbox{ in } t \defeq (\lamb{x} t)\; s $$}
+  % We also allow multiple {\em parallel} bindings using the following:
+  % \alert{$$ \mbox{let } x_1 = s_1 \mbox{ and } \cdots \mbox{ and } x_n = s_n
+  %   \mbox{ in } t $$}
+  % which is syntactic sugar for:
+  % \alert{$$ (\lamb{(x_1,\ldots,x_n)} t)\; (s_1,\ldots,s_n) $$}
+  % Also, we may say \alert{$\mbox{let } f\; x_1\; \cdots x_n = t$},
+  % which is a sugaring for
+  % \alert{$$\mbox{let } f = \lamb{x_1\; \cdots \; x_n} t$$}
+}
+
+\frame{
+  \frametitle{Рекурсивные let-выражения}
+  % \heading{Recursive let expressions}
+
+  Обычно \alert{$\mbox{let}$} интерпретируется не рекурсивно.  Когда мы
+  хотим задать выражение рекурсивно, то добавляем слово \alert{
+    $\mbox{rec}$}.  Например:
+  % Normally \alert{$\mbox{let}$} is interpreted nonrecursively. When we want to
+  % make a recursive definition, we add the word \alert{$\mbox{rec}$}. For example:
+
+  \alert{$$ \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\; \mbox{then}\; 1\\
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) \EA $$}
+
+  равнозначно
+  % is a shorthand for
+
+  \alert{$$\mbox{let fact} = Y\; F$$}
+
+  где, как и раньше:
+  % where as above:
+
+  \alert{$$F = \lamb{f\; n} \mbox{if ISZERO}\; n\; \mbox{then}\; 1\;
+    \mbox{else}\; n * f(\mbox{PRE}\; n)$$}
+}
+
+\frame{
+  \frametitle{Функциональные программы}
+  % \heading{Functional programs}
+
+  Мы уже говорили, что функциональная программа это просто выражение.
+  % We have said that a functional program is simply an expression.
+
+  Однако, мы обычно выделяем некоторые общие и интересные выражения в
+  \alert{\tt let} конструкции; таким образом, программа приобретает
+  форму: серия определений подвыражений и основное выражение, например
+  % However, we normally extract certain common and interesting subexpressions as
+  % \alert{\tt let} constructs, so the program has the form: a series of
+  % definitions, followed by the main expression, e.g.
+  \alert{$$\BA \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\; \mbox{then}\;1\\
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n)
+    \mbox{ in } \EA \\
+    \cdots\\
+    fact(6)
+    \EA
+    $$}
+  Таким образом, программа может быть прочитана <<декларативно>>, как
+  множество математических уравнений, определяющих свойства значимых
+  понятий.  Вся информация о вычислении задана {\em неявно}.
+  % Thus the program can be read <<declaratively>>, as a set of mathematical
+  % equations giving some properties of the relevant notions. The computational
+  % information is all {\em implicit}.
+}
+
+\frame{
+  \frametitle{Способ вычисления}
+  % \heading{Computational interpretation}
+
+  Тем не менее, способ вычисления всё же {\em существует}.
+  % The computational interpretation {\em is} still there though!
+
+  Грубо говоря, все уравнения читаются слева направо, и все имена
+  заменяются на соответствующие выражения.  Затем, мы постоянно
+  выполняем $\beta$-конверсии.
+  % Roughly, all the equations are read left-to-right and used to expand away any
+  % instance of the relevant names. Then we repeatedly perform $\beta$-conversions.
+
+  Основной вопрос состоит в том, как выполнить серию $\beta$-конверсий.
+  Мы знаем, что от этого зависит завершится вычисление или нет.
+  % The main question is how to perform the series of $\beta$-conversions. We know
+  % that this can make a difference with respect to termination.
+
+  Как мы увидим, различные функциональные языки выбирают разные подходы.
+  % Different functional languages make different choices, as we shall see.
+
+  Однако сейчас время подумать о {\em типах}.
+  % The next step, however, is to think about {\em types}.
+}
+
+\end{document}

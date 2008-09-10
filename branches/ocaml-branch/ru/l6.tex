@@ -1,0 +1,798 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+%%%%%%%%%%%%%%% Define code blocks
+\defverbatim[colored]\ExamplePythag{
+  \begin{lstlisting}[frame=single]
+  let pythag x y z =
+    x * x + y * y = z * z;;
+
+  pythag 3 4 5;;
+
+  pythag 5 12 13;;
+
+  pythag 1 2 3;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleInclude{
+  \begin{lstlisting}[frame=single]
+  #include "myprog.ml";;
+  pythag : int -> int -> int -> bool = <fun>
+  - : bool = true
+  - : bool = true
+  - : bool = false
+  - : unit = ()
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleComment{
+  \begin{lstlisting}[frame=single]
+  (* ----------------------------------- *)
+  (* Is (x,y,z) is a Pythagorean triple? *)
+  (* ----------------------------------- *)
+
+  let pythag x y z =
+      x * x + y * y = z * z;;
+
+  (*comments*) pythag (*can*) 3 (*go*) 4
+  (*almost*) 5 (*anywhere*)
+  (* and (* can (* be (* nested *)
+  quite *) arbitrarily *) *);;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleInfix{
+  \begin{lstlisting}[frame=single]
+  #let o f g = fun x -> f(g x);;
+  o : ('a -> 'b) -> ('c -> 'a) ->
+      'c -> 'b = <fun>
+  ##infix "o";;
+  #let add2 = successor o successor;;
+  add2 : int -> int = <fun>
+  #add2 0;;
+  - : int = 2
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFunPow{
+  \begin{lstlisting}[frame=single]
+  #let rec funpow n f x =
+     if n = 0 then x
+     else funpow (n - 1) f (f x);;
+  funpow : int -> ('a -> 'a) ->
+           'a -> 'a = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleDefrock{
+  \begin{lstlisting}[frame=single]
+  #let defrock n = n (fun x -> x + 1) 0;;
+  defrock : ((int -> int) -> int -> 'a) ->
+            'a = <fun>
+  #defrock(funpow 32);;
+  - : int = 32
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleArith{
+  \begin{lstlisting}[frame=single]
+  #let add m n f x = m f (n f x)
+   and mul m n f x = m (n f) x
+   and exp m n f x = n m f x;;
+   and test bop x y =
+     defrock (bop (funpow x) (funpow y));;
+...
+  #test add 2 10;;
+  - : int = 12
+  #test mul 2 10;;
+  - : int = 20
+  #test exp 2 10;;
+  - : int = 1024
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleNewType{
+  \begin{lstlisting}[frame=single]
+  #type ('a,'b)sum = inl of 'a
+                   | inr of 'b;;
+  Type sum defined.
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleConstructors{
+  \begin{lstlisting}[frame=single]
+  #inl;;
+  - : 'a -> ('a, 'b) sum = <fun>
+  #inr;;
+  - : 'a -> ('b, 'a) sum = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePatMatch{
+  \begin{lstlisting}[frame=single]
+  #fun (inl n) -> n > 6
+     | (inr b) -> b;;
+  - : (int, bool) sum -> bool = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleNonExhMatch{
+  \begin{lstlisting}[frame=single]
+  #fun (inr b) -> b;;
+  Toplevel input:
+  >fun (inr b) -> b;;
+  >^^^^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  - : ('a, 'b) sum -> 'b = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleMatchFailure{
+  \begin{lstlisting}[frame=single]
+  #(...) (inl 3);;
+  Uncaught exception: Match_failure
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleGeneralMatchingO{
+  \begin{lstlisting}[frame=single]
+  #(fun 0 -> true | n -> false) 0;;
+  - : bool = true
+  #(fun 0 -> true | n -> false) 1;;
+  - : bool = false
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleGeneralMatchingOO{
+  \begin{lstlisting}[frame=single]
+  #(fun true -> 1 | false -> 0) (4 < 3);;
+  - : int = 0
+  #let true_1 = true and false_1 = false in
+  (fun true_1 -> 1 | false_1 -> 0) (4 < 3);;
+  - : int = 1
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleOtherMatching{
+  \begin{lstlisting}[frame=single]
+  #let (inl x) = inl 3;;
+  Toplevel input:
+  >let (inl x) = inl 3;;
+  >^^^^^^^^^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  x : int = 3
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRecTypesO{
+  \begin{lstlisting}[frame=single]
+  #type ('a)list = Nil
+                 | Cons of 'a * ('a)list;;
+  Type list defined.
+  #Nil;;
+  - : 'a list = Nil
+  #Cons;;
+  - : 'a * 'a list -> 'a list = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRecTypesOO{
+  \begin{lstlisting}[frame=single]
+  Nil;;
+  Cons(1,Nil);;
+  Cons(1,Cons(2,Nil));;
+  Cons(1,Cons(2,Cons(3,Nil)));;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleListO{
+  \begin{lstlisting}[frame=single]
+  #[];;
+  - : 'a list = []
+  #1::[];;
+  - : int list = [1]
+  #1::2::[];;
+  - : int list = [1; 2]
+  #1::2::3::[];;
+  - : int list = [1; 2; 3]
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleListOO{
+  \begin{lstlisting}[frame=single]
+  #[1;2;3;4;5] = 1::2::3::4::5::[];;
+  - : bool = true
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleListPMatch{
+  \begin{lstlisting}[frame=single]
+  #let hd (h::t) = h;;
+  Toplevel input:
+  >let hd (h::t) = h;;
+  >    ^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  hd : 'a list -> 'a = <fun>
+  #let tl (h::t) = t;;
+  Toplevel input:
+  >let tl (h::t) = t;;
+  >    ^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  tl : 'a list -> 'a list = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRecList{
+  \begin{lstlisting}[frame=single]
+  #let rec length =
+     fun [] -> 0
+       | (h::t) -> 1 + length t;;
+  length : 'a list -> int = <fun>
+  #length [];;
+  - : int = 0
+  #length [5;3;1];;
+  - : int = 3
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleSubtletyOfRecTypesO{
+  \begin{lstlisting}[frame=single]
+  #type ('a)embedding =
+     K of ('a)embedding->'a;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleSubtletyOfRecTypesOO{
+  \begin{lstlisting}[frame=single]
+  #let Y h =
+    let g (K x) z = h (x (K x)) z in
+    g (K g);;
+  Y : (('a -> 'b) -> 'a -> 'b) ->
+      'a -> 'b = <fun>
+  #let fact = Y (fun f n ->
+     if n = 0 then 1 else n * f(n - 1));;
+  fact : int -> int = <fun>
+  #fact 6;;
+  - : int = 720
+  \end{lstlisting}}
+
+\frame{\titlepage}
+
+\section*{Лекция 6. Более подробно о ML}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+  \item Взаимодействие с ML; загрузка файлов
+    % \item Interaction with ML; loading files
+    \maybepause
+
+  \item Основные типы данных и операторы
+    % \item Basic datatypes and operators
+    \maybepause
+
+  \item Инфиксные операции и конкретный синтаксис
+    % \item Infixes and concrete syntax
+    \maybepause
+
+  \item Дополнительные примеры
+    % \item Further examples
+    \maybepause
+
+  \item Определение новых типов
+    % \item Defining new types
+    \maybepause
+
+  \end{itemize}
+
+}
+
+\frame{
+  \frametitle{Взаимодействие с ML}
+  % \heading{Interaction with ML}
+
+  Пока мы только вводили текст в ML и думали о результатах.  Однако, 
+  реальные программы так не пишутся.
+  % We have just been typing things into ML and thinking about the
+  % results. However one doesn't write real programs in this way.
+
+  Обычно записывают выражения и объявления в файл.  Чтобы попробовать их
+  в работе их можно поместить в ML используя команды <<вырезать и
+  вставить>>.
+  % Typically, one writes the expressions and declarations in a file.
+  % To try them out as you go, these can be inserted in the ML window
+  % using cut and paste.
+
+  Вы можете вырезать и вставить используя X Window System и схожие
+  системы, или редактор типа Emacs.
+  % You can cut and paste using X-windows and similar systems, or an
+  % editor like Emacs with multiple buffers.
+
+  Для больших программ удобнее загружать выражения из файла в сеанс
+  работы ML.  Это можно сделать с помощью команды ML {\tt include}.
+  % For larger programs, it's convenient simply to load them from file
+  % into the ML session. This can be done using the {\black \tt
+  %   include} command in ML.
+}
+
+\frame{
+  \frametitle{Загрузка из файлов (1)}
+  % \heading{Loading from files (1)}
+
+  Допустим файл {\tt myprog.ml} содержит следующие строки:
+  % Suppose that the file {\black \tt myprog.ml} contains the
+  % following lines:
+
+  \ExamplePythag
+}
+
+\frame{
+  \frametitle{Загрузка из файлов (2)}
+  % \heading{Loading from files (2)}
+
+  Используя команду {\tt include} для этого файла, мы получаем
+  следующее:
+  % Using {\black \tt include} on this file results in the following:
+
+  \ExampleInclude
+
+  ML отвечает так, как будто содержание файла было введено в сеанс
+  работы.
+  % ML responds just as if the file had been typed in at the top level.
+
+  Обычно процесс включения файла завершается как только была обнаружена
+  ошибка.  В сообщении об ошибке указывается номер строки.
+  % Normally, the inclusion process terminates as soon as an error is
+  % encountered.  The error message is accompanied by a line number.
+
+  Последняя строка это результат работы самой команды {\tt include}.
+  У него тип {\tt string -> unit}.
+  % The final line is the return from the {\black \tt include} command
+  % itself. It has type {\black \tt string -> unit}.
+
+  Допускается использование вложенных включений файлов.
+  % It is permissible to nest inclusions.
+}
+
+\frame{
+  \frametitle{Комментарии}
+  % \heading{Comments}
+
+  Комментарии записываются между {\tt (*} и {\tt *)}, например:
+  % Comments are written between {\black \tt (*} and {\black \tt *)}, e.g.
+
+  \ExampleComment
+
+  ML игнорирует комментарии, но комментарии полезны для людей читающих
+  код.
+  % The comments are ignored by ML, but are useful for people reading
+  % the code.
+}
+
+\begin{frame}[fragile]
+  \frametitle{Основные типы данных}
+  % \heading{Basic datatypes}
+
+  Важнейшие примитивные типы данных:
+  % The main primitive types are:
+
+  \begin{itemize}
+  \item Тип {\tt unit}~--- одноэлементный тип, чей единственный
+    элемент записывается как {\tt ()}.
+    % \item Type {\black \tt unit}, a 1-element type, whose only element is written
+    %   {\black \tt ()}.
+    \maybepause
+
+  \item Тип {\tt bool}~--- двухэлементный тип, чьи элементы
+    записываются как {\tt true} и {\tt false}.
+    % \item Type {\black \tt bool}, a 2-element type whose elements are written
+    %   {\black \tt true} and {\black \tt false}.
+    \maybepause
+
+  \item Тип {\tt int}~--- подмножество отрицательных и неотрицательных
+    чисел, записанных, например как {\tt 6} и {\tt -11}.
+    % \item Type {\black \tt int}, a subset of the positive and negative integers,
+    %   written for example {\black \tt 6} and {\black \tt -11}.
+    \maybepause
+
+  \item Тип {\tt string}, который соответствует последовательности
+    символов, записанных {\tt ``например так''}.
+    % \item Type {\black \tt string}, which corresponds to sequences of characters,
+    %   written {\black \tt "like this"}.
+    \maybepause
+
+  \end{itemize}
+
+  Типы могут быть соединены с помощью конструкторов типов, включая
+  конструктор функционального типа {\verb+->+} и конструктор
+  декартова произведения типов {\verb+*+}.
+  % These can be put together using type constructors, including the
+  % function constructor {\black \verb+->+} and the Cartesian product
+  % constructor {\black \verb+*+}.
+
+  Позже мы увидим как можно определять другие типы и конструкторы типов.
+  % We will see how to define other types and type constructors later.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Инфиксные операции}
+  % \heading{Infixes}
+
+  У многих встроенных констант, таких как, {\tt +}, есть статус
+  инфиксной операции.  Есть также понятие старшинства операции,
+  поэтому выражения связываются более или менее как ожидается
+  пользователем.
+  % Many built-in constants like {\black \tt +} have infix status. They
+  % also have a notion of precedence, so expressions associate more or
+  % less as expected.
+
+  Например {\tt x < 2 * y + z} разбирается как {\tt < x (+ (* 2 y)
+    z)}.
+  % For example, {\black \tt x < 2 * y + z} is parsed as {\black \tt < x (+ (* 2 y)
+  %   z)}.
+
+  Вы можете задать своей функции статус инфиксной операции используя
+  директиву {\verb+#infix+}.
+  % You can define your own infixes using the {\black \verb+#infix+} directive:
+
+  \ExampleInfix
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Основные инфиксные операторы}
+  % \heading{Basic infix operators}
+
+  \begin{center}
+%    \rowcolors{1}{Gray!15}{Gray!5}
+    \begin{tabular}{|l|l|}
+      \hline
+      Оператор   & Значение               \\
+      \hline
+      {\tt mod}  & Modulus (остаток)   \\
+      % {\tt mod}  & Modulus (remainder)   \\
+      {\tt *}    & Умножение        \\
+      % {\tt *}    & Multiplication        \\
+      {\tt /}    & Целочисленное деление   \\
+      % {\tt /}    & Truncating division   \\
+      {\tt +}    & Сложение              \\
+      % {\tt +}    & Addition              \\
+      {\tt -}    & Вычитание           \\
+      % {\tt -}    & Subtraction           \\
+      {\verb+^+} & Соединение строк  \\
+      % {\verb+^+} & String concatenation  \\
+      {\tt =}    & Проверка равенства              \\
+      % {\tt =}    & Equality              \\
+      {\tt <>}   & Проверка неравенства            \\
+      % {\tt <>}   & Inequality            \\
+      {\tt <}    & Строго меньше             \\
+      % {\tt <}    & Less than             \\
+      {\tt <=}   & Меньше или равно    \\
+      % {\tt <=}   & Less than or equal    \\
+      {\tt >}    & Строго больше          \\
+      % {\tt >}    & Greater than          \\
+      {\tt >=}   & Больше или равно \\
+      % {\tt >=}   & Greater than or equal \\
+      {\tt \&}   & Логическое <<и>>         \\
+      % {\tt \&}   & Boolean <<and>>         \\
+      {\tt or}   & Логическое <<или>>          \\
+      % {\tt or}   & Boolean <<or>>          \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Замечания про операторы}
+  % \heading{Notes on operators}
+
+  Заметим, что у логических операторов {\verb+&+} и {\verb+or+}
+  стратегия вычислений не энергичная.  Мы можем рассматривать их как
+  синонимы для:
+  % Note that the logical operators {\black \verb+&+} and {\black
+  %   \verb+or+} also have a non-eager evaluation strategy. You can
+  % regard them as synonyms:
+
+  \begin{eqnarray*}
+    p \mbox{ \& } q & \alert{\defeq} & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
+    p \mbox{ or } q & \alert{\defeq} & \mbox{if } p \mbox{ then true else } q
+  \end{eqnarray*}
+
+  Также есть две встроенные символьные операции над основными типами:
+  {\verb+-+} которая выполняет численное отрицание, и {\tt not}
+  которая выполняет логическое отрицание.
+  % There are also two built-in symbolic operations on the basic types, {\black
+  %   \verb+-+}, which performs numerical negation, and {\black \tt not} which
+  % performs logical negation.
+
+  У логического оператора {\tt not} необычный префиксный статус, так
+  что {\tt not not p} разбирается как {\tt not (not p)} в
+  противоположность обычному левоассоциативному разбору для функций.
+  % The logical {\black \tt not} operator has special prefix status,
+  % so that {\black \tt not not p} is parsed as {\black \tt not (not
+  %   p)}. This reverses the usual left-associativity convention for
+  % functions.
+\end{frame}
+
+\frame{
+  \frametitle{Примеры (1)}
+  % \heading{Examples (1)}
+
+  Мы определим рекурсивную функцию, которая принимает два аргумента:
+  положительное число \alert{$n$} и функцию \alert{$f$}, а возвращает
+  \alert{$f^n$}, то есть \alert{$f \circ \cdots \circ f$} (\alert{$n$}
+  раз):
+  % We define by recursion a function that takes a positive integer \alert{$n$}
+  % and a function \alert{$f$} and returns \alert{$f^n$}, i.e. \alert{$f \circ \cdots
+  %   \circ f$} (\alert{$n$} times):
+
+  \ExampleFunPow
+
+  На самом деле {\tt funpow} переводит машинное число {\tt n} в
+  соответствующий нумерал Чёрча.  Мы легко можем определить обратную
+  функцию следующим образом:
+  % In fact, {\black \tt funpow} takes a machine integer {\black \tt n} to the
+  % corresponding Church numeral. We can easily define an inverse function that
+  % goes the other way:
+
+  \ExampleDefrock
+}
+
+\frame{
+  \frametitle{Примеры (2)}
+
+  Вспомним арифметические операции над нумералами Чёрча.  Мы можем их
+  проверить:
+  % Recall the arithmetic operators on Church numerals. We can test them:
+
+  \ExampleArith
+
+  Похоже что они работают.  Но, конечно, они не очень эффективны!
+  % They seem to work. Of course they're not very efficient!
+}
+
+\frame{
+  \frametitle{Определение новых типов}
+  % \heading{Defining new types}
+
+  ML содержит средства определения новых типов и конструкторов типов.
+  % ML has facilities for defining new types and type constructors.
+
+  На деле конструкторы могут быть рекурсивными, то есть можно использовать
+  как аргументы не только существующие типы, но и сам новый тип.
+  % In fact, the constructors can be recursive, i.e. not only take
+  % existing types as arguments but the new type itself.
+
+  Посмотрим сначала на простой пример: несвязную сумму типов.
+  % We will look at a simple example first: the disjoint sum type.
+
+  \ExampleNewType
+
+  Эта запись создаёт новый тип {\tt sum} и два новых {\em
+    конструктора}:
+  % This creates a new type {\black \tt sum} and two new {\em constructors}:
+
+  \ExampleConstructors
+}
+
+\frame{
+  \frametitle{Свойства конструкторов типов}
+  % \heading{Properties of type constructors}
+
+  У всех конструкторов типов, возникающих таким образом, есть три
+  ключевых свойства:
+  % All type constructors arising in this way have three key properties:
+
+  \begin{enumerate}
+  \item Они полны, т.е. любой элемент нового типа доступен либо через
+    {\tt inl x} для некоторого {\tt x}, либо через {\tt inr y} для
+    некоторого {\tt y}.
+    % \item They are exhaustive, i.e. every element of the new type is
+    %   obtainable either by {\black \tt inl x} for some {\black \tt
+    %     x} or {\black \tt inr y} for some {\black \tt y}.
+    \maybepause
+
+  \item Они инъективны, т.е. равенство {\tt inl x = inl y} верно,
+    если, и только если {\tt x = y}, тоже самое и для {\tt inr}.
+    % \item They are injective, i.e. an equality test {\black \tt inl
+    %     x = inl y} is true if and only if {\black \tt x = y}, and
+    %   similarly for {\black \tt inr}.
+    \maybepause
+
+  \item Они раздельны, т.е. их области не пересекаются.  Конкретнее,
+    это означает, что, в примере выше, для любых {\tt x} и {\tt y}
+    сравнение {\tt inl x = inr y} всегда ложно.
+    % \item They are distinct, i.e. their ranges are disjoint. More
+    %   concretely this means in the above example that {\black \tt
+    %     inl x = inr y} is false whatever {\black \tt x} and {\black
+    %     \tt y} might be.
+    \maybepause
+
+  \end{enumerate}
+
+  Благодаря этим свойствам мы можем определять функции используя {\em
+    сопоставление с образцом}.
+  % Because of these properties, we can define functions by {\em
+  %   pattern matching}.
+}
+
+\begin{frame}[fragile]
+  \frametitle{Сопоставление с образцом}
+  % \heading{Pattern matching}
+
+  Мы производим сопоставление с образцом используя в роли аргументов к
+  $\lambda$-функциям более общие выражения, называемые {\em varstructs}.
+  Мы также можем рассмотреть несколько других случаев.  Например:
+  % We perform pattern matching by using more general expressions called {\em
+  %   varstructs} as the arguments to lambdas. We can also consider several different
+  % cases. For example:
+
+  \ExamplePatMatch
+
+  Как и ожидалось у этой функции есть свойство, такое, что когда она
+  применяется к {\tt inl n}, то возвращает {\verb+n > 6+}, а когда
+  применяется к {\tt inr b}, то возвращает {\tt b}.  Чем это
+  обосновано?
+  % This function has the property, naturally enough, that when
+  % applied to {\black \tt inl n} it returns {\black \verb+n > 6+} and
+  % when applied to {\black \tt inr b} it returns {\black \tt b}. Why
+  % is this valid?
+
+  Допускается восстановить {\tt n} из {\tt inl n}, потому что
+  конструкторы инъективны.  Экземпляры образца не конфликтуют, потому
+  что конструкторы раздельны.  В заключение, функция определена на
+  всех допустимых значениях, потому что конструкторы полны.
+  % It is permissible to recover {\black \tt n} from {\black \tt inl
+  %   n} because the constructors are injective. The cases cannot
+  % clash because the constructors are distinct. Finally, the function
+  % is defined everywhere because the constructors are exhaustive.
+\end{frame}
+
+\frame{
+  \frametitle{Неполное сопоставление}
+  % \heading{Non-exhaustive matching}
+
+  Вообще, мы можем определить частичную функцию, которая определена не
+  для всех допустимых значений.
+  % In fact, we can define partial functions that don't cover every case:
+
+  \ExampleNonExhMatch
+
+  Компилятор предупреждает нас об этом.  Если мы попробуем применить
+  функцию над аргументом не в форме {\tt inr x}, то она не будет
+  работать:
+  % The compiler warns us of this fact. If we try to use the function on an
+  % argument not of the form {\black \tt inl x}, then it will not work:
+
+  \ExampleMatchFailure
+}
+
+\frame{
+  \frametitle{Повсеместное сопоставление}
+  % \heading{General matching}
+
+  Мы можем производить сопоставление и в других ситуациях, когда
+  образцы не взаимно исключающие.  В этом случае берётся первое
+  совпадение.
+  % We can perform matching even in other situations, when the matches
+  % might not be mutually exclusive. In this case, the first possible
+  % match is taken.
+
+  \ExampleGeneralMatchingO
+
+  Однако, в основном, необходимо чтобы у констант был статус
+  конструктора, иначе они будут рассматриваться как обычные связанные
+  переменные.
+  % However, in general, constants need special constructor status, or
+  % they will be treated just as variables for binding:
+
+  \ExampleGeneralMatchingOO
+}
+
+\begin{frame}[fragile]
+  \frametitle{Другие конструкции сопоставления}
+  % \heading{Other matching constructs}
+
+  Вместо использования {\tt fun} с различными образцами и применения
+  функции к выражению, существует другой синтаксис, который использует
+  выражения напрямую:
+  % Instead of using {\tt fun} with various patterns, and applying the
+  % function to an expression, there is an alternative syntax that
+  % uses the expression directly:
+  $$ \mbox{match}\; E\; \mbox{with}\;
+    pattern_1 {\verb+->+} E_1 \mid \cdots \mid
+    pattern_n {\verb+->+} E_n $$
+  Простейший выбор из всех вариантов~---  это использовать
+  % The simplest alternative of all is to use
+  $$ \mbox{let}\; pattern \mbox{ = } expression $$
+  \noindent но в данном случае разрешён только один образец.  Например:
+  % \noindent but in this case only a single pattern is allowed. For example:
+
+  \ExampleOtherMatching
+\end{frame}
+
+\frame{
+  \frametitle{Рекурсивные типы}
+  % \heading{Recursive types}
+
+  Как мы уже сказали, типы могут быть заданы рекурсивно, т.е. через
+  самих себя.
+  % As we have said, types can be defined recursively, i.e. in terms of themselves.
+
+  \ExampleRecTypesO
+
+  Представим, что {\tt Nil}~--- это пустой список, а {\tt Cons}~---
+  функция которая добавляет элемент в начало списка.  Списки {\tt
+    $[]$}, {\tt $[1]$}, {\tt $[1;2]$} и {\tt $[1;2;3]$} записываются
+  как:
+  % We imagine {\tt Nil} as the empty list and {\tt Cons} as a
+  % function that adds a new element on the front of a list. The lists
+  % {\tt $[]$}, {\tt $[1]$}, {\tt $[1;2]$} and {\tt $[1;2;3]$} are
+  % written:
+
+  \ExampleRecTypesOO
+}
+
+\begin{frame}[fragile]
+  \frametitle{Списки}
+  % \heading{Lists}
+
+  Вообще то, такой тип уже является встроенным.  Пустой список
+  записывается {\verb+[]+}, и у рекурсивного конструктора {\verb+::+}
+  есть статус инфиксной операции.  Поэтому списки выше, в
+  действительности, записываются так:
+  % Actually, this type is already built in. The empty list is written
+  % {\verb+[]+} and the recursive constructor {\verb+::+}, has infix
+  % status. Thus, the above lists are actually written:
+
+  \ExampleListO
+
+  Вариант который печатается на выводе может быть использован и для
+  записи в коде:
+  % The version that is printed can also be used for input:
+
+  \ExampleListOO
+\end{frame}
+
+\frame{
+  \frametitle{Сопоставление с образцом для списков}
+  % \heading{Pattern matching over lists}
+
+  Теперь мы можем определять функции используя сопоставление с образцом.
+  Например, мы можем определить функции взятия головы и хвоста списка:
+  % We can now define functions by pattern matching in the usual way.
+  % For example, we can define functions to take the head and tail of
+  % a list:
+
+  \ExampleListPMatch
+
+  ML предупреждает что возникнет ошибка если эти функции применить к
+  пустому списку.
+  % ML warns us that they will fail when applied to an empty list.
+}
+
+\frame{
+  \frametitle{Рекурсивные функции над списками}
+  % \heading{Recursive functions over lists}
+
+  Допускается совмещать сопоставление с образцом и рекурсию.  Это
+  выглядит естественно, поскольку сами типы были заданы рекурсивно.
+  Вот например функция, которая возвращает длину списка:
+  % It is possible to mix pattern matching and recursion. This is
+  % natural since the type itself is defined recursively. For example,
+  % here is a function to return the length of a list:
+
+  \ExampleRecList
+
+  С другой стороны, эта функция может быть написана используя ранее
+  определённые <<деструкторные>> функции {\tt hd} и {\tt tl}.  Такой
+  стиль определения функций принят во многих языках, особенно в LISP,
+  однако прямое использование сопоставления с образцом зачастую
+  элегантнее.
+  % Alternatively, this can be written in terms of our earlier
+  % <<destructor>> functions {\tt hd} and {\tt tl}. This style of
+  % function definition is more usual in many languages, notably LISP,
+  % but the direct use of pattern matching is often more elegant.
+}
+
+\frame{
+  \frametitle{Коварство рекурсивных типов}
+  % \heading{The subtlety of recursive types}
+
+  Рассмотрим следующую конструкцию:
+  % Consider the following:
+
+  \ExampleSubtletyOfRecTypesO
+
+  Она выглядит подозрительно, потому что вставляет функциональное
+  пространство \alert{$A \to B$} внутрь \alert{$A$}.  На самом деле
+  это так только для {\em вычислимых} функций.  Мы должны быть
+  внимательны как с семантикой, так и с типами:
+  % This looks suspicious because it embeds the function space \alert{$A \to B$}
+  % inside \alert{$A$}. In fact it only embeds the {\em computable} functions.
+  % We must be careful with semantics, and also types:
+
+  \ExampleSubtletyOfRecTypesOO
+}
+
+\end{document}

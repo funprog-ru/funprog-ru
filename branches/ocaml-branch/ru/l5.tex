@@ -1,0 +1,687 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+%%%%%%%%%%%%%%% Define code blocks
+
+\defverbatim[colored]\ExampleTenPlusFive{
+  \begin{lstlisting}[frame=single]
+    #10 + 5;;
+    - : int = 15
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleInvalidType{
+  \begin{lstlisting}[frame=single]
+    #1 + true;;
+    Toplevel input:
+    >let it = 1 + true;;
+    >             ^^^^
+    This expression has type bool,
+    but is used with type int.
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleSuccessor{
+  \begin{lstlisting}[frame=single]
+    #fun x -> x + 1;;
+    - : int -> int = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleSuccessorApplication{
+  \begin{lstlisting}[frame=single]
+    #(fun x -> x + 1) 4;;
+    - : int = 5
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFuncUseO{
+  \begin{lstlisting}[frame=single]
+    #(fun x -> fun y -> x + y) 1 2;;
+    - : int = 3
+    #(fun x y -> x + y) 1 2;;
+    - : int = 3
+    #fun x y -> x + y;;
+    - : int -> int -> int = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFuncUseOO{
+  \begin{lstlisting}[frame=single]
+    #((fun x -> (fun y -> x + y)) 1) 2;;
+    - : int = 3
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleLetBindO{
+  \begin{lstlisting}[frame=single]
+    #let successor = fun x -> x + 1 in
+    successor(successor(successor 0));;
+    - : int = 3
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleLetBindOO{
+  \begin{lstlisting}[frame=single]
+    #let successor x = x + 1 in
+    successor(successor(successor 0));;
+    - : int = 3
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleLetBindOOO{
+  \begin{lstlisting}[frame=single]
+    #let rec fact n = if n = 0 then 1
+                      else n * fact(n - 1) in
+    fact 6;;
+    - : int = 720
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleDeclO{
+  \begin{lstlisting}[frame=single]
+    #let successor x = x + 1;;
+    successor : int -> int = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleDeclOO{
+  \begin{lstlisting}[frame=single]
+    #let rec fact n = if n = 0 then 1
+                      else n * fact(n - 1);;
+    fact : int -> int = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleDeclOOO{
+  \begin{lstlisting}[frame=single]
+    #successor 6;;
+    - : int = 7
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePolyO{
+  \begin{lstlisting}[frame=single]
+    #let I = fun x -> x;;
+    I : 'a -> 'a = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePolyOO{
+  \begin{lstlisting}[frame=single]
+    #I true;;
+    - : bool = true
+    #I 1;;
+    - : int = 1
+    #I I I I 12;;
+    - : int = 12
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleCombO{
+  \begin{lstlisting}[frame=single]
+    #let I x = x;;
+    I : 'a -> 'a = <fun>
+    #let K x y = x;;
+    K : 'a -> 'b -> 'a = <fun>
+    #let S f g x = (f x) (g x);;
+    S : ('a -> 'b -> 'c) ->
+           ('a -> 'b) -> 'a -> 'c = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleCombOO{
+  \begin{lstlisting}[frame=single]
+    #let I' x = S K K x;;
+    I' : 'a -> 'a = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleCombOOO{
+  \begin{lstlisting}[frame=single]
+    #I' 3 = 3;;
+    - : bool = true
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFuncEq{
+  \begin{lstlisting}[frame=single]
+    #I' = I;;
+    Uncaught exception: Invalid_argument
+       "equal: functional value"
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePathology{
+  \begin{lstlisting}[frame=single]
+    let pair x y = fun z -> z x y in
+    let x1 = fun y -> pair y y in
+    let x2 = fun y -> x1(x1 y) in
+    let x3 = fun y -> x2(x2 y) in
+    let x4 = fun y -> x3(x3 y) in
+    let x5 = fun y -> x4(x4 y) in
+    x5(fun z -> z);;
+  \end{lstlisting}}
+
+\frame{\titlepage}
+
+\section*{Лекция 5. ML}
+
+\frame{
+  \frametitle{Темы}
+
+  \begin{itemize}
+  \item От $\lambda$-исчисления к ML
+    % \item From lambda calculus to ML
+    \maybepause
+
+  \item Энергичное вычисление и его значимость
+    % \item Eager evaluation and its consequences
+    \maybepause
+
+  \item Семейство языков ML
+    % \item The ML family
+    \maybepause
+
+  \item Запускаем ML
+    % \item Starting up ML
+    \maybepause
+
+  \item Основы взаимодействия; выражения и объявления
+    % \item Basic interaction; expressions and declarations
+    \maybepause
+
+  \item Примеры
+    % \item Examples
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{От $\lambda$-исчисления к ML}
+  % \heading{From $\lambda$-calculus to ML}
+
+  По ряду причин мы уже добавили некоторые примитивные возможности в
+  $\lambda$-исчисление, например:
+  % We have already added some new primitive features to
+  % $\lambda$-calculus for various reasons, e.g.
+
+  \begin{itemize}
+  \item Примитивную конструкцию {\tt let}, чтобы полиморфная система
+    типов была более мощной.
+    % \item The {\tt let} construct as primitive to make the
+    %   polymorphic type system more powerful.
+    \maybepause
+
+  \item Оператор рекурсии, чтобы восстановить полноту по Тьюрингу в
+    типизированном окружении.
+    % \item The recursion operator in order to regain Turing completeness in a typed
+    %   setting.
+    \maybepause
+
+  \end{itemize}
+
+  Так будет продолжаться до тех пор, пока мы не построим ML.  Особенно
+  интересно, что основные типы данных не реализованы в виде
+  $\lambda$-термов.
+  % This process continues until we reach ML. Notably, basic datatypes
+  % are not implemented as $\lambda$-terms.
+
+  Например, преобразование \alert{$2 + 2 \goesto 4$} происходит благодаря машинной
+  арифметике, а не манипулированию нумералами Чёрча.  Такие
+  дополнительные правила преобразования часто называют {\em
+    $\delta$-конверсиями}.
+  % For example, \alert{$2 + 2 \goesto 4$} happens by machine arithmetic, not by
+  % manipulating Church numerals. These extra reduction rules are often called
+  % {\em $\delta$-conversions}.
+}
+
+\frame{
+  \frametitle{Проблема с нормальным порядком редукции}
+  % \heading{Problem with normal order}
+
+  Мы уже сказали, что {\em нормальный порядок редукции} (<<вызов по
+  имени>>) является наилучшей редукционной стратегией, потому что если
+  хоть какая-то стратегия завершается, то эта тоже.  Вспомните пример
+  когда эта стратегия завершается, а другие нет:
+  % We have said that {\em normal order reduction} (<<call by name>>)
+  % is the best reduction strategy, because if any strategy
+  % terminates, that one does. Recall the example where this strategy
+  % terminates but others don't:
+  \alert{
+    \begin{eqnarray*}
+      & & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)) \\
+      & \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
+      (\lamb{x} x\; x\; x))               \\
+      & \goesto & \cdots
+    \end{eqnarray*}
+  }
+  Однако, встаёт вопрос эффективности:
+  % However, there is an efficiency problem:
+  \alert{$$ (\lamb{x} x + x + x)\; (10 + 5) $$}
+  Нормальный порядок редукции даст
+  % A normal order reduction gives
+  \alert{$$ (10 + 5) + (10 + 5) + (10 + 5) $$}
+  Нам придётся три раза вычислять одно и тоже выражение!  Было бы
+  эффективнее сначала вычислить аргумент \alert{$10 + 5$}.
+  % Then we need to evaluate three different instances of the same
+  % expression! If we evaluated the argument \alert{$10 + 5$} first,
+  % it would be more efficient.
+}
+
+\frame{
+  \frametitle{Ленивое и энергичное вычисление}
+  % \heading{Lazy versus eager}
+
+  Такие повторения вычислений недопустимы на практике.  Существует два решения
+  проблемы, которые делят мир функционального программирования на части:
+  % This reevaluation is unacceptable in practice. There are two
+  % solutions, which split the world of functional programming:
+
+  \begin{itemize}
+  \item {\bf Ленивое вычисление} выполняет нормальный порядок редукции,
+    но также использует хитрые способы совместного использования
+    выражений, сохраняя их в виде графа.  При таком способе выражения
+    вычисляются только один раз и только когда это понадобится.
+    % \item {\bf Lazy evaluation} keeps normal order reduction but
+    %   also uses clever sharing techniques, storing expressions as a
+    %   graph. In this way, an expression is never evaluated until
+    %   needed, and never more than once.
+    \maybepause
+
+  \item {\bf Энергичное вычисление} просто вычисляет сперва аргументы
+    (<<аппликативный порядок редукции>>), и сам программист должен следить,
+    чтобы не было зацикливаний.
+    % \item {\bf Eager evaluation} simply evaluates the arguments
+    %   first (<<applicative order reduction>>), and the programmer is
+    %   expected to avoid looping instances.
+    \maybepause
+
+  \end{itemize}
+
+  В некотором роде ленивое вычисление элегантнее и мощнее.
+  Однако, его не так просто реализовать и связать с императивными
+  возможностями.
+  % In some ways lazy evaluation is more elegant and powerful. However
+  % it is not easy to implement efficiently, and does not interact
+  % well with imperative features.
+}
+
+\frame{
+  \frametitle{Стратегия вычисления в ML}
+  % \heading{ML's evaluation strategy}
+
+  В ML реализовано энергичное вычисление.  Однако, как мы увидим, есть
+  способы добиться многих преимуществ ленивых вычислений.  Правила
+  вычислений следующие:
+  % ML implements eager evaluation. However, as we shall see, there
+  % are ways of achieving many of the benefits of laziness. The
+  % evaluation rules are:
+
+  \begin{itemize}
+  \item Константы вычисляются в самих себя.
+    % \item Constants evaluate to themselves
+    \maybepause
+
+  \item Выражения под $\lambda$-абстракциями не вычисляются.  В
+    частности, тут нет $\eta$-конверсии.
+    % \item Evaluation stops immediately at $\lambda$-abstractions and
+    %   does not look inside them. In particular, there is no
+    %   $\eta$-conversion.
+    \maybepause
+
+  \item При вычислении комбинации \alert{$s\; t$} {\em сначала}
+    вычисляются оба \alert{$s$} и \alert{$t$}.  Потом, при условии что
+    вычисление \alert{$s$} дало $\lambda$-абстракцию, производится
+    самая внешняя $\beta$-конверсия, и процесс повторяется.
+    % \item When evaluating a combination \alert{$s\; t$}, then {\em
+    %     first} both \alert{ $s$} and \alert{$t$} are evaluated.
+    %   Then, assuming that the evaluated form of \alert{$s$} is a
+    %   lambda abstraction, a toplevel $\beta$-conversion is performed
+    %   and the process is repeated.
+    \maybepause
+
+  \end{itemize}
+
+  Что бы правильно понимать работу ML, важно хорошо усвоить эти правила
+  вычислений.
+  % It is important to grasp this evaluation strategy in order to
+  % understand ML properly.
+}
+
+\frame{
+  \frametitle{Примеры}
+  % \heading{Examples}
+
+  \alert{
+    \begin{eqnarray*}
+      & & (\lamb{x} (\lamb{y} y + y)\; x) (2 + 2)     \\
+      & \goesto & (\lamb{x} (\lamb{y} y + y)\; x) 4   \\
+      & \goesto & (\lamb{y} y + y) 4                  \\
+      & \goesto & 4 + 4                               \\
+      & \goesto & 8
+    \end{eqnarray*}
+
+    \begin{eqnarray*}
+      & & ((\lamb{f x} f\; x)\; (\lamb{y} y + y))\; (2 + 2)             \\
+      & \goesto & ((\lamb{f x} f\; x)\; (\lamb{y} y + y))\; 4           \\
+      & \goesto & (\lamb{x} (\lamb{y} y + y)\; x)\; 4                   \\
+      & \goesto & (\lamb{y} y + y)\; 4                                  \\
+      & \goesto & 4 + 4
+    \end{eqnarray*}
+  }
+}
+
+\frame{
+  \frametitle{Условное выражение}
+  % \heading{The conditional}
+
+  Из-за энергичного вычисления нам необходимо создать примитив~--
+  условное выражение с собственной стратегией редукции.  Если мы
+  попытаемся реализовать
+  % Because of eager evaluation, we need to make the conditional
+  % primitive with its own special reduction strategy. If we tried to
+  % implement
+  \alert{$$ \mbox{if}\; b\; \mbox{then}\; e_1\; \mbox{else}\; e_2 $$}
+  как применение обычного тернарного оператора:
+  % as the application of a normal ternary operator:
+  \alert{$$ \mbox{COND}\; b\; e_1\; e_2 $$}
+  то самые интересные случаи будут зациклены, так как {\em все} $b$, $e_1$
+  и $e_2$ вычисляются до того, как вычисленное значение $b$ будет
+  использовано.  Рассмотрим:
+  % then most interesting cases would loop, because $b$, $e_1$ and
+  % $e_2$ are {\em all} evaluated before the value of $b$ is used.
+  % Consider:
+  \alert{$$ \mbox{let rec fact}(n) = \BA \mbox{if ISZERO}\; n\;
+    \mbox{then}\; 1\\
+    \mbox{else}\; n * \mbox{fact}(\mbox{PRE}\; n) \EA $$}
+  Если мы хотим вычислить \alert{$\mbox{fact}(0)$}, то нам надо будет
+  вычислить \alert{$\mbox{fact}(\mbox{PRE}\; 0)$}, \alert{
+    $\mbox{fact}(\mbox{PRE}\; (\mbox{PRE}\; 0))$} и так далее.
+  % If we want \alert{$\mbox{fact}(0)$}, we need to evaluate \alert{
+  %   $\mbox{fact}(\mbox{PRE}\; 0)$}, \alert{$\mbox{fact}(\mbox{PRE}\;
+  %   (\mbox{PRE}\; 0))$}, and so on.
+}
+
+\frame{
+  \frametitle{Новые примитивы}
+  % \heading{New primitives}
+
+  Из-за энергичного вычисления мы делаем два изменения.
+  % Because of eager evaluation, we make two changes.
+
+  \begin{itemize}
+  \item Мы делаем условное выражение примитивом языка и изменяем
+    стандартную стратегию вычислений для него таким образом, что {\em сначала}
+    вычисляется булево выражение, а потом {\em только одна} соответствующая ветвь.
+    % \item We make the conditional statement a primitive of the
+    %   language, and modify the standard evaluation strategy so that
+    %   {\em first} the boolean expression is evaluated, and only then
+    %   is {\em exactly one} of the two arms evaluated, as
+    %   appropriate.
+    \maybepause
+
+  \item Мы также немного поменяем правило редукции для оператора
+    рекурсии.
+    Вместо:
+    % \item We also slightly modify the reduction rule for the
+    %   recursion operator.  Instead of:
+    \alert{$$ Rec\; f \goesto f(Rec\; f) $$}
+    мы используем
+    % we use
+    \alert{$$ Rec\; f \goesto f(\lamb{x} Rec\; f\; x) $$}
+    Благодаря этому мы избежим зацикливаний, так так ML не будет вычислять
+    выражения под $\lambda$-абстракцией.
+    % This avoids looping because ML will not evaluate inside the
+    % lambda.
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Семейство языков ML}
+  % \heading{The ML family}
+
+  ML это не один язык.  Есть множество потомков первого ML, который
+  использовался как метаязык в Edinburgh LCF:
+  % ML is not a single language. There are many descendants of the
+  % original ML used as the metalanguage of Edinburgh LCF:
+
+  \begin{itemize}
+  \item Standard ML и SML/NJ
+
+  \item CAML и Objective CAML
+
+  \item Edinburgh ML и Cambridge ML
+
+  \item Lazy ML
+
+  \end{itemize}
+
+  Мы будем использовать CAML Light, маленькую и быструю реализацию языка
+  CAML.
+  % We will be using CAML Light, a small and efficient implementation
+  % of the CAML language.
+
+  Мы будем использовать возможности, которые легко можно перевести на
+  другие диалекты ML и другие функциональные языки.
+  % The features we use are general, and can easily be translated to other
+  % dialects, and other functional languages.
+}
+
+\frame{
+  \frametitle{Запускаем ML}
+  % \heading{Starting up ML}
+
+  Добавить описание централизованного онлайн доступа к OCaml.
+}
+
+\frame{
+  \frametitle{Взаимодействие с ML}
+  % \heading{Interacting with ML}
+
+  Самый простой способ взаимодействия с ML~--- это использование его в
+  роли простого калькулятора.
+  % The simplest way to interact with ML is to use it as a simple
+  % calculator.
+
+  \ExampleTenPlusFive
+
+  ML не только печатает результат, но также выводит {\em тип}
+  выражения, в данном случае {\tt int}.  Если ML не может назначить
+  тип выражению, то оно отвергается.
+  % ML not only prints the result, but also infers the {\em type} of the
+  % expression, namely {\black \tt int}. If ML cannot assign a type to an
+  % expression then it is rejected:
+
+  \ExampleInvalidType
+
+  ML знает тип встроенного оператора {\tt +}, и именно поэтому он
+  может вывести тип этого выражения.
+  % ML knows the type of the built-in operator {\black \tt +}, and that is how it
+  % makes its type inference.
+}
+
+\frame{
+  \frametitle{Используем функции (1)}
+  % \heading{Using functions (1)}
+
+  Поскольку ML является функциональным языком, то выражения могут
+  иметь функциональный тип.  Синтаксис ML для обозначения
+  $\lambda$-абстракции \alert{$\lamb{x} t[x]$} выглядит как {\tt fun x
+    -> t[x]}.  Например мы можем определить функцию вычисления целого
+  числа, следующего за данным:
+  % Since ML is a functional language, expressions are allowed to have function
+  % type. The ML syntax for a lambda abstraction \alert{$\lamb{x} t[x]$} is {\black
+  %   \tt fun x -> t[x]}. For example we can define the successor function:
+
+  \ExampleSuccessor
+
+  Опять же, тип выражения, в этот раз {\tt int -> int}, был выведен и
+  показан.  Однако сама функция не была показана; система просто
+  написала {\tt <fun>}.
+  % Again, the type of the expression, this time {\black \tt int ->
+  %   int}, is inferred and displayed. However the function itself is
+  % not printed; the system merely writes {\black \tt <fun>}.
+
+  Функции применяются к соседним аргументам, как в $\lambda$-исчислении:
+  % Functions are applied by juxtaposition, as in $\lambda$-calculus:
+
+  \ExampleSuccessorApplication
+}
+
+\frame{
+  \frametitle{Используем функции (2)}
+  % \heading{Using functions (2)}
+
+  ML использует синтаксис подобный принятому в $\lambda$-исчислении
+  для каррированных функций от нескольких аргументов.
+  % ML supports similar syntactic conventions to $\lambda$-calculus
+  % for curried functions of several arguments:
+
+  \ExampleFuncUseO
+
+  Первые две строчки полностью эквивалентны варианту со всеми скобками:
+  % The first two lines are treated completely equivalently, as is the fully
+  % bracketed version:
+
+  \ExampleFuncUseOO
+}
+
+\frame{
+  \frametitle{Let связывания}
+  % \heading{Let bindings}
+
+  Не обязательно вычислять всё выражение за раз.  Можно использовать
+  {\tt let} связывания:
+  % It is not necessary to evaluate an expresion all in one piece. You can use
+  % {\black \tt let} bindings:
+
+  \ExampleLetBindO
+
+  Когда связываются функции, можно использовать более элегантную
+  конструкцию:
+  % When binding functions, one can also use the more elegant sugaring:
+
+  \ExampleLetBindOO
+
+  Связывания функций могут быть рекурсивными, только добавьте ключевое
+  слово {\tt rec}:
+  % Function bindings can also be recursive: just add the {\black \tt rec} keyword:
+
+  \ExampleLetBindOOO
+}
+
+\frame{
+  \frametitle{Объявления}
+  % \heading{Declarations}
+
+  В действительности, набор связываний можно пополнять интерактивно.
+  Просто уберите {\tt in} и завершите выражение:
+  % In fact, the set of bindings can be augmented interactively.
+  % Simply omit the {\black \tt in} and terminate the phrase:
+
+  \ExampleDeclO
+
+  или
+  % or
+  
+  \ExampleDeclO
+
+  Таким образом можно создать набор объявлений функций, которые позже
+  могут быть использованы в процессе работы.
+  % Thus one can make a series of function declarations. These can then be used
+  % later in the session.
+
+  \ExampleDeclOOO
+
+  Замечание: это {\em не} тоже самое что и присвоение переменных!
+  % Note: this is {\em not} the same thing as variable assignment!
+}
+
+\frame{
+  \frametitle{Полиморфные функции}
+  % \heading{Polymorphic functions}
+
+  Мы можем определять полиморфные функции, такие как оператор
+  тождественного отображения:
+  % We can define polymorphic functions, like the identity operator:
+
+  \ExamplePolyO
+
+  ML печатает типовые переменные как {\tt 'a}, {\tt 'b} и~т.д.
+  Предполагается, что они являются ASCII представлением для $\alpha$,
+  $\beta$ и~т.д.  Теперь мы можем использовать тождество с разными
+  типами:
+  % ML prints type variables as {\black \tt 'a},{\black \tt 'b} etc.
+  % These are supposed to be ASCII representations of {\black
+  %   $\alpha$}, {\black $\beta$} and so on. We can now use it with
+  % different types:
+
+  \ExamplePolyOO
+
+  В последнем выражении все вхождения {\tt I} имеют различные типы и
+  интуитивно соответствуют разным функциям.
+  % Each instance of {\black \tt I} in the last expression has a different type, 
+  % and intutively corresponds to a different function.
+}
+
+\frame{
+  \frametitle{Комбинаторы}
+  % \heading{Combinators}
+
+  Вообще, давайте определим все комбинаторы:
+  % In fact, let's define all the combinators:
+
+  \ExampleCombO
+
+  Заметим, что система сама следит за типами.  Вспомним, что \alert{$I
+    = S\; K\; K$}; давайте попробуем это в ML:
+  % Note that the system keeps track of the types for us. Recall that \alert{$I =
+  %   S\; K\; K$}; let us try this out in ML:
+
+  \ExampleCombOO
+  У него правильный тип, и похоже это работает:
+  % It has the right type, and seems to work:
+  \ExampleCombOOO
+}
+
+\frame{
+  \frametitle{Равенство функций}
+  % \heading{Equality of functions}
+
+  Почему бы нам просто не сравнить два варианта оператора тождества?  Вот
+  почему:
+  % Why don't we just compare the two versions of the identity
+  % operator? Here's why:
+
+  \ExampleFuncEq
+
+  В общем случае {\em запрещено} сравнивать функции на равенство.  Почему?
+  Разве в ML функции не являются объектами высшего порядка?
+  % It is in general {\em forbidden} to compare functions for equality. Why? Aren't
+  % functions supposed to be first-class objects in ML?
+
+  Да, но к сожалению, (экстенсиональное) равенство функций невычислимо.
+  Это следствие из {\em теоремы Райса}, или просто из {\em
+    неразрешимости проблемы останова}.
+  % Yes, but unfortunately, (extensional) function equality is not computable. This
+  % is a consequence of {\em Rice's theorem}, or simply of the {\em unsolvability
+  %   of the halting problem}.
+
+  Некоторые версии ML отличают функции от остальных <<сравнимых типов>> и
+  фильтруют такие случаи во время проверки типов.
+  % Some versions of ML distinguish between functions and other <<equality types>>
+  % and filter out these cases during typechecking.
+
+}
+
+\frame{
+  \frametitle{Отклонения в проверке типов}
+  % \heading{Pathologies of typechecking}
+
+  Во всех наших примерах система очень быстро выводит наиболее общий тип
+  для каждого выражения и тип получается простым.  Так обычно и бывает
+  на практике, но бывают и патологические случаи, например следующий
+  вариант, приведённый в Майерсоне:
+  % In all our examples, the system very quickly infers a most general type for
+  % each expression, and the type is simple. This usually happens in practice, but
+  % there are pathological cases, e.g. the following example due to Mairson:
+
+  \ExamplePathology
+
+  Чтобы вычислить тип этого выражения потребуется порядка 10 секунд, а
+  печать займёт свыше 4000 строк на 80-символьном терминале.
+  % The type of this expression takes about 10 seconds to calculate, and occupies
+  % over 4000 lines on an 80-column terminal.
+
+  {\bf Не пробуйте дома}.
+  % {\bf Don't try this at home}.
+}
+
+\end{document}

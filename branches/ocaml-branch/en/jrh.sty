@@ -1,0 +1,214 @@
+% -*- LaTeX -*-
+%
+% chicago.sty: Style file for use with bibtex style chicago.bst.
+%
+% 'newapa.bst' was made from 'plain.bst', 'named.bst', and 'apalike.bst',
+% with lots of tweaking to make it look like APA style, along with tips
+% from Young Ryu and Brian Reiser's modifications of 'apalike.bst'.
+% newapa.sty formed the basis of this style, chicago.sty. Author-date
+% references in newapa.bst formed the basis for chicago.bst. Chicagoa.bst
+% supports annotations.
+%
+% Several bug fixes (such as spacing problems due to no ``%'' used at the
+% end of lines in function \def's) and enhancements (additional \cite
+% styles) by Glenn Paulley, University of Waterloo. Most enhancements
+% are from the Chicago Manual of Style.
+%
+%   Citation format: (author-last-name year)
+%             (author-last-name and author-last-name year)
+%             (author-last-name et al. year)
+%             (author-last-name)
+%             author-last-name
+%             author-last-name (year)
+%             (author-last-name and author-last-name)
+%             (author-last-name et al.)
+%             (year) or (year,year)
+%             year or year,year
+%
+%   Reference list ordering: alphabetical by author or whatever passes
+%    for author in the absence of one.
+%
+% This BibTeX style has support for abbreviated author lists and for
+%    year-only citations.  This is done by having the citations
+%    actually look like
+%
+%    \citeauthoryear{full-author-info}{abbrev-author-info}{year}
+%
+% The LaTeX style has to have the following (or similar)
+%
+%     \let\@internalcite\cite
+%     \def\fullcite{\def\citeauthoryear##1##2##3{##1, ##3}\@internalcite}
+%     \def\fullciteA{\def\citeauthoryear##1##2##3{##1}\@internalcite}
+%     \def\shortcite{\def\citeauthoryear##1##2##3{##2, ##3}\@internalcite}
+%     \def\shortciteA{\def\citeauthoryear##1##2##3{##2}\@internalcite}
+%     \def\citeyear{\def\citeauthoryear##1##2##3{##3}\@internalcite}
+%
+% -------------------------------------------------------------------------
+% This file implements citations for the ``chicago'' bibliography style.
+%  Place it in a file called chicago.sty in the TeX search path.
+%(Placing it in the same directory as the LaTeX document should also work.)
+%
+%    This file is a modification of the ``newapa'' LaTeX style,
+%    originally adapted by Steven Spencer from the ``apalike'' LaTeX style.
+%    It was originally modified by Stephen N. Spencer, with further
+%    modifications by Young U. Ryu.
+%
+% The ``chicago'' BibTeX bibliography style creates citations with labels:
+%       \citeauthoryear{author-info}{abbrev. author-info}{year}
+%
+% These labels are processed by the following LaTeX commands:
+%
+%  \cite{key}
+%    which produces citations with full author list and year.
+%    eg. (Brown 1978; Jarke, Turner, Stohl, et al. 1985)
+%  \citeNP{key}
+%    which produces citations with full author list and year, but without
+%    enclosing parentheses:
+%    eg. Brown 1978; Jarke, Turner and Stohl 1985
+%  \citeA{key}
+%    which produces citations with only the full author list.
+%    eg. (Brown; Jarke, Turner and Stohl)
+%  \citeANP{key}
+%    which produces citations with only the full author list, without
+%    parentheses eg. Brown; Jarke, Turner and Stohl
+%  \citeN{key}
+%    which produces citations with the full author list and year, but
+%    can be used as nouns in a sentence; no parentheses appear around
+%    the author names, but only around the year.
+%      eg. Shneiderman (1978) states that......
+%    \citeN should only be used for a single citation.
+%  \shortcite{key}
+%    which produces citations with abbreviated author list and year.
+%  \shortciteNP{key}
+%    which produces citations with abbreviated author list and year.
+%  \shortciteA{key}
+%    which produces only the abbreviated author list.
+%  \shortciteANP{key}
+%    which produces only the abbreviated author list.
+%  \shortciteN{key}
+%    which produces the abbreviated author list and year, with only the
+%    year in parentheses. Use with only one citation.
+%  \citeyear{key}
+%    which produces the year information only, within parentheses.
+%  \citeyearNP{key}
+%    which produces the year information only.
+%
+% Abbreviated author lists use the ``et al.'' construct.
+%
+% `NP' means `no parentheses'.
+%
+% This LaTeX style file must be used with the ``chicago'' or ``chicagoa''
+% (annotated chicago style) BibTeX styles.
+%
+\typeout{Using Chicago Manual of Style bibliography: July 30, 1992}
+%
+% [PC 8.12.94] Define \thebibliography (from apalike.sty) to get indentation
+% right for Computer Journal.
+% -------------------------------------------------------------------------
+%
+% Citation macros.
+%
+\let\@internalcite\cite
+%
+\def\cite{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{(##1\if@tempswa , ##2\fi)}%
+    \def\citeauthoryear##1##2##3{##1 ##3}\@internalcite}
+\def\citeNP{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2\fi}%
+    \def\citeauthoryear##1##2##3{##1 ##3}\@internalcite}
+\def\citeN{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2)\else{)}\fi}%
+    \def\citeauthoryear##1##2##3{##1 (##3}\@citedata}
+\def\citeA{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{(##1\if@tempswa , ##2\fi)}%
+    \def\citeauthoryear##1##2##3{##1}\@internalcite}
+\def\citeANP{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2\fi}%
+    \def\citeauthoryear##1##2##3{##1}\@internalcite}
+%
+\def\shortcite{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{(##1\if@tempswa , ##2\fi)}%
+    \def\citeauthoryear##1##2##3{##2 ##3}\@internalcite}
+\def\shortciteNP{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2\fi}%
+    \def\citeauthoryear##1##2##3{##2 ##3}\@internalcite}
+\def\shortciteN{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2)\else{)}\fi}%
+    \def\citeauthoryear##1##2##3{##2 (##3}\@citedata}
+\def\shortciteA{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{(##1\if@tempswa , ##2\fi)}%
+    \def\citeauthoryear##1##2##3{##2}\@internalcite}
+\def\shortciteANP{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2\fi}%
+    \def\citeauthoryear##1##2##3{##2}\@internalcite}
+%
+\def\citeyear{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{(##1\if@tempswa , ##2\fi)}%
+    \def\citeauthoryear##1##2##3{##3}\@citedata}
+\def\citeyearNP{\def\@citeseppen{-1000}%
+    \def\@cite##1##2{##1\if@tempswa , ##2\fi}%
+    \def\citeauthoryear##1##2##3{##3}\@citedata}
+
+%
+% \@citedata and \@citedatax:
+%
+% Place commas in-between citations in the same \citeyear, \citeyearNP,
+% \citeN, or \shortciteN command.
+% Use something like \citeN{ref1,ref2,ref3} and \citeN{ref4} for a list.
+%
+\def\@citedata{%
+        \@ifnextchar [{\@tempswatrue\@citedatax}%
+                                  {\@tempswafalse\@citedatax[]}%
+}
+
+\def\@citedatax[#1]#2{%
+\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi%
+  \def\@citea{}\@cite{\@for\@citeb:=#2\do%
+    {\@citea\def\@citea{, }\@ifundefined% by Young
+       {b@\@citeb}{{\bf ?}%
+       \@warning{Citation `\@citeb' on page \thepage \space undefined}}%
+{\csname b@\@citeb\endcsname}}}{#1}}%
+
+% don't box citations, separate with ; and a space
+% also, make the penalty between citations negative: a good place to break.
+%
+\def\@citex[#1]#2{%
+\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi%
+  \def\@citea{}\@cite{\@for\@citeb:=#2\do%
+    {\@citea\def\@citea{; }\@ifundefined% by Young
+       {b@\@citeb}{{\bf ?}%
+       \@warning{Citation `\@citeb' on page \thepage \space undefined}}%
+{\csname b@\@citeb\endcsname}}}{#1}}%
+
+% (from apalike.sty)
+% No labels in the bibliography.
+%
+\def\@biblabel#1{}
+
+% (from apalike.sty)
+% Set length of hanging indentation for bibliography entries.
+% [PC 8.12.94] Changed from 2em to 1em
+%
+\newlength{\bibhang}
+\setlength{\bibhang}{1em}
+
+% \thebibliography environment depends on whether or not `chapter's can exist
+% [PC 8.12.94] Redefine \thebibliography (from apalike.sty) to get indentation
+% right.
+%
+\@ifundefined{chapter}{\def\thebibliography#1{\section*{References\@mkboth
+  {REFERENCES}{REFERENCES}}\list
+  {\relax}{\setlength{\labelsep}{0em}
+        \setlength{\itemindent}{-\bibhang}
+        \setlength{\leftmargin}{\bibhang}}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}}%
+{\def\thebibliography#1{\chapter*{Bibliography\@mkboth
+  {BIBLIOGRAPHY}{BIBLIOGRAPHY}}\list
+  {\relax}{\setlength{\labelsep}{0em}
+        \setlength{\itemindent}{-\bibhang}
+        \setlength{\leftmargin}{\bibhang}}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}}

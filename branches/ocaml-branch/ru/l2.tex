@@ -1,0 +1,649 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section*{Лекция 2. $\lambda$-исчисление как формальная система}
+
+\frame{
+  \frametitle{Темы}
+
+  \begin{itemize}
+  \item Зачем нужна формальная система
+    % \item Why a formal system?
+    \maybepause
+  \item Свободные и связанные переменные
+    % \item Free and bound variables
+    \maybepause
+
+  \item Подстановка
+    % \item Substitution
+    \maybepause
+
+  \item Правила преобразования и эквивалентность $\lambda$-термов
+    % \item Conversion rules and lambda equality
+    \maybepause
+
+  \item Редукция, стратегии вычисления и теорема Чёрча-Россера
+    % \item Reduction, evaluation strategies and the Church-Rosser theorem(s)
+    \maybepause
+
+  \item Комбинаторы
+    % \item Combinators
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Зачем нужна формальная система?}
+  % \heading{Why a formal system?}
+
+  Мы принимаем некоторые факты, как <<очевидные>>, например
+  \alert{$$ (\lamb{x\; y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$}
+  потому что они согласуются с интуитивным пониманием.  Сейчас мы зададим
+  некоторые {\em формальные} правила вычислений с помощью
+  $\lambda$-выражений.
+  % We have taken certain facts as `obvious', e.g.
+  % \alert{$$ (\lamb{x\; y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$}
+  % because they respect the intuitive meanings. Now we specify some {\em
+  %   formal} rules for calculating with lambda expressions.
+
+  Эти правила могут применяться чисто механически, без всяких раздумий.
+  Например, можно было бы преобразовать выражение:
+  % BUG# как-то коряво звучит по моему --lg
+  % так лучше? --karma
+  \alert{$$ x - 3 = 5 - x$$}
+  в
+  \alert{$$ 2 x = 5 + 3 $$}
+  не раздумывая о том, какой за этим скрывается смысл.
+
+  % BUG# чтобы это значило? --lg
+  % так лучше? --karma
+
+  % These can then be applied mechanically, without thinking about them,
+  % just as one might take:
+  % \alert{$$ x - 3 = 5 - x$$}
+  % and transform it, without considering the underlying meanings, to
+  % \alert{$$ 2 x = 5 + 3 $$}
+
+}
+
+\frame{
+  \frametitle{Цитата Уайтхеда}
+
+  К вопросу об обозначениях и формальных правилах вывода.
+  % On the subject of symbolisms and formal rules of manipulation:
+
+  \begin{quote}
+    {\color{Green}
+      [\ldots] с помощью обозначений мы можем делать переходы в
+      рассуждениях почти механически; без обозначений нам бы потребовались
+      высшие способности мозга. [\ldots] Цивилизация развивается за счёт
+      увеличения числа важных операций, которые могут быть выполнены
+      машинально.
+    }
+  \end{quote}
+
+  % \begin{green}\begin{quote}
+  %     [\ldots] by the aid of symbolism, we can make transitions in reasoning almost
+  %     mechanically by the eye, which otherwise would call into play the higher
+  %     faculties of the brain. [\ldots] Civilisation advances by extending the number
+  %     of important operations which can be performed without thinking about them.
+  %   \end{quote}\end{green}
+
+  А.~Н.~Уайтхед: <<Введение в математику>>, 1919 г.
+
+  % A. N. Whitehead: An Introduction to Mathematics', 1919.
+}
+
+\frame{
+  \frametitle{Формальный синтаксис $\lambda$-термов}
+  % \heading{Formal syntax of $\lambda$-terms}
+
+  $\lambda$-термы строятся по индукции следующим образом:
+  % Lambda terms are built up inductively in the following ways:
+
+  \begin{itemize}
+  \item {\bf Переменные}, например \alert{$x$}, \alert{$u$} и \alert{$v_3$}.
+    % \item {\bf Variables}, e.g. \alert{$x$}, \alert{$u$} and \alert{$v_3$}.
+    \maybepause
+
+  \item {\bf Константы}, например \alert{$c$}, \alert{$0$} и \alert{$false$}.
+    % \item {\bf Constants}, e.g. \alert{$c$}, \alert{$0$} and {\red
+    %     $false$}.
+    \maybepause
+
+  \item {\bf Применения}, а именно \alert{$s\; t$} где \alert{$s$} и
+    \alert{$t$}~-- $\lambda$-термы, например \alert{$f(x)$}.
+    % \item {\bf Applications}, of the form \alert{$s\; t$} where \alert{$s$}
+    %   and {\red$t$} are $\lambda$-terms, e.g. \alert{$f(x)$}.
+    \maybepause
+
+  \item {\bf Абстракции}, а именно \alert{$\lamb{x} s$}, например
+    \alert{$\lamb{x}$}
+    % \item {\bf Abstractions}, of the form \alert{$\lamb{x} s$}, e.g. {\red
+    %     $\lamb{x}x$}.
+    \maybepause
+
+  \end{itemize}
+
+  Это может быть выражено следующей грамматикой BNF:
+
+  \alert{$$ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp $$}
+
+  Так как синтаксис задан по индукции, то мы можем {\em определять сущности
+    с помощью примитивной рекурсии} и {\em доказывать сущности с помощью
+    структурной индукции}.
+
+  % This can be described by the following BNF grammar:
+
+  % \alert{$$ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp $$}
+
+  % Since the syntax is defined inductively, we can {\em define things by
+  %   primitive recursion} and {\em prove things by structural induction}.
+
+}
+
+\frame{
+  \frametitle{Примитивная рекурсия: FV}
+
+  % \heading{Primitive recursion: FV}
+
+  В качестве пояснения к тому, как можно определять функции рекурсивно,
+  используя синтаксис $\lambda$-термов, я приведу формальное определение
+  множества свободных переменных, записываемое как \alert{$FV(t)$} для
+  терма \alert{$t$}.
+
+  % As an illustration of how to define functions recursively over the
+  % syntax of $\lambda$-terms, here is a formal definition of the set of free
+  % variables in a term \alert{$t$}, written \alert{$FV(t)$}.
+
+  \alert{
+    \begin{eqnarray*}
+      FV(x)          & = & \{ x \}                 \\
+      FV(c)          & = & \emptyset               \\
+      FV(s\; t)      & = & FV(s) \Union FV(t)      \\
+      FV(\lamb{x} s) & = & FV(s) - \{ x \}
+    \end{eqnarray*}
+  }
+
+  В общем случае, мы всегда можем определить значение функции для данного терма
+  относительно значений для подтермов, как это показано тут. Интуитивно
+  ясно, что мы всегда можем вычислить значение функции для какого-либо
+  конкретного терма.
+
+  % In general, we can always define the value of a function on a given term
+  % in terms of the value on the immediate subterms, as here. Intuitively, it
+  % is clear that we can always calculate the value of the function on any
+  % particular term.
+
+}
+
+\frame{
+  \frametitle{Структурная индукция: FV~-- конечно}
+
+
+  % \heading{Structural induction: FV is finite}
+
+  В качестве примера структурной индукции мы докажем, что для любого
+  $\lambda$-терма \alert{$t$} множество \alert{$FV(t)$} всегда конечно.
+
+  % As an illustration of structural induction, we will prove that for any
+  % $\lambda$-term \alert{$t$}, the set \alert{$FV(t)$} is always finite.
+
+  \begin{itemize}
+  \item Если \alert{$t$} является переменной \alert{$v$}, то \alert{$FV(t) = \{v\}$}
+    по определению, и это множество определённо конечно.
+    % \item If \alert{$t$} is a variable \alert{$v$}, then \alert{$FV(t) = \{v\}$} by
+    %   definition, and this is certainly finite.
+    \maybepause
+
+  \item Если \alert{$t$} является константой \alert{$c$}, то \alert{$FV(t) =
+      \emptyset$}, которое заведомо конечно.
+    % \item If \alert{$t$} is a constant \alert{$c$}, then \alert{$FV(t) = \emptyset$},
+    %   which is trivially finite.
+    \maybepause
+
+  \item Если \alert{$t$} является применением \alert{$s_1\; s_2$}, то по
+    предположению индукции \alert{$FV(s_1)$} и \alert{$FV(s_2)$}
+    конечны.  Но \alert{$FV(t) = FV(s_1) \Union FV(s_2)$}, а объединение
+    двух конечных множеств ~--- конечно.
+    % \item If \alert{$t$} is an application \alert{$s_1\; s_2$}, then by the inductive
+    %   hypothesis \alert{$FV(s_1)$} and \alert{$FV(s_2)$} are both finite. But \alert{
+    %     $FV(t) = FV(s_1) \Union FV(s_2)$} and the union of two finite sets is finite.
+    \maybepause
+
+  \item Если \alert{$t$} ~--- это абстракция \alert{$\lamb{x} s$}, то по
+    предположению индукции \alert{$FV(s)$} ~--- конечно.  Но \alert{$FV(t) =
+      FV(s) - \{x\}$}, которое должно быть конечным, ибо его мощность
+    меньше.
+    % \item If \alert{$t$} is an abstraction \alert{$\lamb{x} s$}, then by the
+    %   inductive hypothesis \alert{$FV(s)$} is finite. But \alert{$FV(t) = FV(s) -
+    %     \{x\}$}, which must also be finite as it is no larger.
+    \maybepause
+
+  \end{itemize}
+
+  \qed
+}
+
+\frame{
+  \frametitle{Подстановка}
+
+  Для того, чтобы выразить определённые правила, нам надо формализовать
+  понятие подстановки терма вместо переменной в другой терм.
+  % In order to express certain rules, we need to formalize the notion of
+  % substituting a term for a variable in another term.
+
+  Мы записываем \alert{$t[s/x]$} как результат подстановки терма \alert{
+    $s$} вместо переменной \alert{$x$} в другой терм \alert{$t$}. Иногда
+  записывают \alert{$t[x := s]$} и даже \alert{$t[x/s]$}.
+  % We write \alert{$t[s/x]$} for the result of substituting a term \alert{$s$} for a
+  % variable \alert{$x$} in another term \alert{$t$}. One also sees \alert{$t[x :=
+  %   s]$} and even \alert{$t[x/s]$}.
+
+  Нашу запись можно запомнить, проведя аналогию с умножении дробей:
+  % Ours can be remembered by thinking of multiplication of fractions:
+
+  \alert{$$ x[t/x] = t $$}
+
+  Например:
+  % For example:
+
+  \alert{$$ (\lamb{z} x + z + x)[y/x] = \lamb{z} y + z + y $$}
+  Конечно, мы делаем подстановку только для {\em свободных} переменных,
+  поэтому \alert{$(\lamb{x} x)[y/x] = \lamb{x} x$}.
+  % {\red $$ (\lamb{z} x + z + x)[y/x] = \lamb{z} y + z + y $$}
+  % Of course we only substitute for {\em free} variables, so {\red $(\lamb{x}
+  %   x)[y/x] = \lamb{x} x$}.
+}
+
+\frame{
+  \frametitle{Простая подстановка}
+
+  % \heading{Naive substitution}
+
+  На первый взгляд, кажется, что мы можем определить подстановку,
+  используя примитивную рекурсию следующим образом:
+  \alert{
+    \begin{eqnarray*}
+      x[t/x]            & = & t                           \\
+      y[t/x]            & = & y \mbox{ if $x \not= y$}    \\
+      c[t/x]            & = & c                           \\
+      (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
+      (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
+      (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]) \mbox{ if $x \not= y$}
+    \end{eqnarray*}}
+  Однако, это не так.  Имеем \alert{$(\lamb{y} x + y)[y/x] = \lamb{y} y
+    + y$}~--- {\em захват переменной}.  Нам следует сначала
+  переименовать переменную, чтобы получить \alert{$\lamb{w} x + w$}, и
+  только потом совершить простую подстановку.
+
+  \alert{$$ (\lamb{w} x + w)[y/x] = \lamb{w} y + w $$}
+
+  % At first sight we can define substitution by primitive recursion as follows:
+  % \alert{\begin{eqnarray*}
+  %     x[t/x]            & = & t                           \\
+  %     y[t/x]            & = & y \mbox{ if $x \not= y$}    \\
+  %     c[t/x]            & = & c                           \\
+  %     (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
+  %     (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
+  %     (\lamb{y} s)[t/x] & = & \lamb{x} (s[t/x]) \mbox{ if $x \not= y$}
+  %   \end{eqnarray*}}
+  % However this isn't right. We get \alert{$(\lamb{y} x + y)[y/x] = \lamb{y} y
+  %   + y$} --- {\em variable capture}. We should rename first to \alert{$\lamb{w} x +
+  %   w$}, and only then perform the naive substitution:
+  % 
+  % \alert{$$ (\lamb{w} x + w)[y/x] = \lamb{w} y + w $$}
+
+}
+
+\frame{
+  \frametitle{Подстановка переименовывания}
+
+  % \heading{Renaming substitution}
+
+  Рассмотрим два случая, определяя \alert{$(\lamb{y} s)[t/x]$} для \alert{
+    $x \not= y$}.
+  % So we consider two cases when defining \alert{$(\lamb{y} s)[t/x]$}
+  % for \alert{$x \not= y$}.
+
+  \begin{itemize}
+  \item Если \alert{$x \not\in FV(s)$} либо \alert{$y \not\in FV(t)$}, то
+    можно сделать подстановку как ни в чём ни бывало; захвата переменной
+    не произойдёт.
+    % \item If either \alert{$x \not\in FV(s)$} or \alert{$y \not\in FV(t)$}
+    %   then we can proceed as before; variable capture will not
+    %   occur.
+    \maybepause
+
+  \item Иначе мы берём новую переменную \alert{$z \not\in FV(s) \Union FV(t)$}
+    и составляем выражение \alert{$\lamb{z} (s[z/y][t/x])$}.  Сначала мы
+    переименовываем связанную переменную \alert{$y$} в \alert{$z$}, а потом
+    продолжаем делать подстановку как ни в чём ни бывало.
+    % \item Otherwise, we pick a new variable \alert{$z \not\in FV(s)
+    %     \Union FV(t)$} and form \alert{$\lamb{z} (s[z/y][t/x])$}. That is,
+    %   first we rename the bound variable \alert{$y$} to \alert{$z$}, then
+    %   proceed with the substitution as before.
+    \maybepause
+
+  \end{itemize}
+
+  Для определённости мы можем взять \alert{$z$} как самую первую
+  лексикографическую переменную, которая не является свободной ни в
+  \alert{$s$}, ни в \alert{$t$}.
+  % For definiteness, we can define \alert{$z$} to be the lexicographically earliest
+  % variable not occurring free in \alert{$s$} or \alert{$t$}.
+
+  Указанное выше определение гарантирует, что подстановка не нарушает
+  интуитивного представления.  Теперь мы можем свободно пользоваться
+  этой операцией.
+  % The above definition ensures that substitution always respects the intuitive
+  % interpretation. Now we can use this operation freely.
+}
+
+\frame{
+  \frametitle{Правила преобразования}
+
+  % \heading{Conversion rules}
+
+  $\lambda$-исчисление основано на трёх фундаментальных
+  <<конверсиях>>, которые преобразовывают одни термы в другие,
+  интуитивно эквивалентные термы.  Конверсии традиционно обозначаются
+  греческими буквами: {\color{Green} $\alpha$} (alpha), {\color{Green}
+    $\beta$} (beta) и {\color{Green} $\eta$} (eta).  Самая важная для
+  нас это {\color{Green} $\beta$}-конверсия.
+  % Lambda calculus is based on three fundamental <<conversions>> which transform one
+  % term into another one, intuitively equivalent to it. These are traditionally
+  % denoted by the Greek letters {\green $\alpha$} (alpha), {\green $\beta$} (beta)
+  % and {\green $\eta$} (eta). The most important to us is {\green $\beta$}.
+
+  \begin{itemize}
+  \item $\alpha$-конверсия: \alert{$\lamb{x} s \alphas \lamb{y} s[y/x]$},
+    где \alert{$y \not\in FV(s)$}.  Например, \alert{$\lamb{u}
+      u\; v \alphas \lamb{w} w\; v$}, но \alert{$\lamb{u} u\; v
+      \not\alphas \lamb{v} v\; v$}.  Это ограничение позволяет избежать
+    захвата переменной.
+    \maybepause
+    % \item Alpha conversion: \alert{$\lamb{x} s \alphas \lamb{y} s[y/x]$} provided
+    %   \alert{$y \not\in FV(s)$}. For example, \alert{$\lamb{u} u\; v \alphas \lamb{w}
+    %     w\; v$}, but \alert{$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$}. This
+    %   restriction avoids another instance of variable capture.
+    \maybepause
+
+  \item $\beta$-конверсия: \alert{$(\lamb{x} s)\; t \betas s[t/x]$}.
+    % \item Beta conversion: \alert{$(\lamb{x} s)\; t \betas s[t/x]$}.
+    \maybepause
+
+  \item $\eta$-конверсия: \alert{$\lamb{x} t\; x \etas t$}, где \alert{$x
+      \not\in FV(t)$}.  Например, \alert{$\lamb{u} v\; u \etas v$}, но
+    \alert{$\lamb{u} u\; u \not\etas u$}.
+    % \item Eta conversion: \alert{$\lamb{x} t\; x \etas t$}, provided \alert{$x
+    %     \not\in FV(t)$}. For example \alert{$\lamb{u} v\; u \etas v$} but \alert{
+    %     $\lamb{u} u\; u \not\etas u$}.
+    \maybepause
+
+  \end{itemize}
+
+}
+
+\frame{
+  \frametitle{Эквивалентность $\lambda$-термов}
+
+  % \heading{Lambda equality}
+
+  Говорят, что два терма \alert{$s$} и \alert{$t$} равны, если существует
+  конечная последовательность $\alpha$, $\beta$ или $\eta$ конверсий,
+  которая переводит один терм в другой. Это записывается как \alert{$s =
+    t$}.
+  % We say that two terms \alert{$s$} and \alert{$t$} are equal, and
+  % write \alert{$s = t$}, if there is a finite sequence of $\alpha$,
+  % $\beta$ or $\eta$ conversions, forwards or backwards, at any
+  % depth, which connects them.
+
+  Формально это отношение определяется по индукции (см. следующий слайд).
+  % Formally we define the relation inductively (see next slide).
+
+  Заметим, что понятие <<равенство>> {\em определено}, поэтому это не то же
+  самое, что и синтаксическое равенство.  Синтаксическим равенством мы
+  называем <<тождество>> и используем знак \alert{$\equiv$}.  Например,
+  \alert{$\lamb{x} x = \lamb{y} y$}, но \alert{$\lamb{x} x \not\equiv
+    \lamb{y} y$}.
+  % Note that this <<equality>> is a {\em defined} notion and is not
+  % the same as equality at the syntactic level. We'll call this
+  % <<identity>>, and use the symbol \alert{$\equiv$}. For example
+  % \alert{$\lamb{x} x = \lamb{y} y$} but \alert{ $\lamb{x} x
+  %   \not\equiv \lamb{y} y$}.
+
+  Отношение равенства {\em экстенсионально}, т.е. если две функции \alert{
+    $f$} и \alert{$g$} дают одинаковые значения для всех аргументов, то
+  эти функции равны.  Действительно, если \alert{$f$} и \alert{$g$}
+  обладают таким свойством, то взяв переменную \alert{$y$}, которая не
+  является свободной ни в \alert{$f$}, ни в \alert{$g$}, получим \alert{
+    $f\; y = g\; y$}.  Поэтому \alert{$\lamb{y} f\; y = \lamb{y} g\; y$}.
+  Применив $\eta$-конверсию пару раз, получим \alert{$f = g$}.
+  % The equality relation is {\em extensional}, i.e. if two functions
+  % \alert{$f$} and \alert{$g$} give equal results for all arguments,
+  % then they are themselves equal. Indeed, if \alert{$f$} and
+  % \alert{$g$} have this property, then choose a variable \alert{$y$}
+  % not free in \alert{$f$} or \alert{$g$}. We have \alert{$f\; y =
+  %   g\; y$} and therefore \alert{$\lamb{y} f\; y = \lamb{y} g\; y$}.
+  % But now by a couple of $\eta$-conversions, we get \alert{$f = g$}.
+}
+
+\frame{
+  \frametitle{Эквивалентность $\lambda$-термов: определение}
+
+  % \heading{Lambda equality: definition}
+
+  \alert{
+    $$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}{s = t} $$
+
+    $$ \frac{}{t = t} $$
+
+    $$ \frac{s = t}{t = s} $$
+
+    $$ \frac{s = t \mbox{ and } t = u}{s = u} $$
+
+    $$ \frac{s = t}{s\; u = t\; u} $$
+
+    $$ \frac{s = t}{u\; s = u\; t} $$
+
+    $$ \frac{s = t}{\lamb{x} s = \lamb{x} t}$$
+    }
+
+}
+
+\frame{
+  \frametitle{$\lambda$-редукция}
+
+  % \heading{Lambda reduction}
+
+  Вот <<подправленное>> определение эквивалентности $\lambda$-термов.
+
+  % This is a `directional' version of lambda equality.
+
+  \alert{
+    $$ \frac{s \alphas t \mbox{ or } s \betas t \mbox{ or } s \etas t}{s \goesto t}
+    $$
+
+    $$ \frac{}{t \goesto t} $$
+
+    $$ \frac{s \goesto t \mbox{ and } t \goesto u}{s \goesto u} $$
+
+    $$ \frac{s \goesto t}{s\; u \goesto t\; u} $$
+
+    $$ \frac{s \goesto t}{u\; s \goesto u\; t} $$
+
+    $$ \frac{s \goesto t}{\lamb{x} s \goesto \lamb{x} t}$$
+  }
+}
+
+\frame{
+  \frametitle{Стратегия вычислений}
+  % \heading{Evaluation strategy}
+
+  Идея заключается в том, что редукция соответствует постоянным попыткам
+  вычислить выражения путём применения функций к аргументам.  Однако,
+  зачастую существует несколько возможностей редуцировать данный терм.
+  Например:
+  % The idea is that reduction corresponds to a systematic attempt to
+  % evaluate expressions by applying functions to arguments. However
+  % there are often several different ways to reduce a given term. For
+  % example we have:
+
+  \alert{
+    \begin{eqnarray*}
+      & & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x))     \\
+      & \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)\;
+      (\lamb{x} x\; x\; x))                           \\
+      & \goesto & (\lamb{x} y)\; (\cdots)
+    \end{eqnarray*}
+  }
+
+  и так до бесконечности.  Однако, мы можем редуцировать самый левый
+  внешний {\em редекс}.  В результате получим терм \alert{$y$}, который
+  записан в нормальной форме, т.е. отсутствуют нетривиальные редукции.
+
+  В целом же, стратегия вычислений важна на практике.  Мы позже вернёмся
+  к этой теме.
+  % ad infinitum. However we can reduce the leftmost outermost {\em
+  %   redex} first and get simply \alert{$y$}, which is in normal
+  % form, i.e. no nontrivial reductions are possible.
+
+  % In general, then, evaluation strategy is practically important,
+  % and we will return to this subject.
+
+}
+
+\frame{
+  \frametitle{Теорема Чёрча-Россера}
+  % \heading{The Church Rosser theorem}
+
+  Теорема гласит, что если \alert{$s \goesto t_1$} и \alert{$s \goesto
+    t_2$}, то существует терм \alert{$u$} такой, что \alert{$t_1 \goesto
+    u$} и \alert{$t_2 \goesto u$}.
+  % This says that if \alert{$s \goesto t_1$} and \alert{$s \goesto
+  %   t_2$}, then there is a \alert{$u$} such that \alert{$t_1 \goesto
+  %   u$} and \alert{$t_2 \goesto u$}.
+
+  Применяя это действие неоднократно, мы получим более сильное
+  утверждение о том, что если \alert{$t_1 = t_2$}, то существует терм
+  \alert{$u$} такой, что \alert{$t_1 \goesto u$} и \alert{$t_2 \goesto
+    u$}.
+  % By applying this repeatedly, we get the stronger form that if
+  % \alert{$t_1 = t_2$} then there is a term \alert{$u$} with
+  % \alert{$t_1 \goesto u$} and \alert{ $t_2 \goesto u$}.
+
+  Таким образом, {\em если} терм редуцируется или в общем случае равен
+  терму в нормальной форме, то эта нормальная форма единственна с
+  точностью до $\alpha$-конверсии.
+  % So {\em if} a term reduces to, or in general is equal to, a term
+  % in normal form, that normal form is unique up to alpha conversion.
+
+  Также из теоремы следует, что эквивалентность $\lambda$-термов
+  нетривиальна, так как если два терма в нормальной форме не
+  $\alpha$-эквивалентны, то они не равны.  Например \alert{$\lamb{x\; y}
+    x \not= \lamb{x\; y} y$}.
+  % Also a consequence of the theorem is that lambda equality is
+  % nontrivial, because two terms in normal form that are not
+  % alpha-equivalent are not equal.  For example \alert{$\lamb{x\; y}
+  %   x \not= \lamb{x\; y} y$}.
+
+  Другая теорема (тоже доказанная Чёрчем и Россером) гласит, что если
+  {\em хоть какая-то} последовательность редукций завершается, то с тем
+  же результатом завершится и постоянное редуцирование самого левого
+  внешнего редекса.
+  % Another theorem (also proved by Church and Rosser) is that if {\em
+  %   any} reduction sequence terminates, then the one arrived at by
+  % systematically reducing the leftmost outermost redexes will
+  % terminate.
+}
+
+\frame{
+  \frametitle{Комбинаторы}
+  % \heading{Combinators}
+
+  Оказывается, мы можем освободиться от $\lambda$-абстракций, введя три
+  простых {\em комбинатора}:
+  % It turns out that we can dispense with $\lambda$-abstractions altogether if we
+  % introduce three very simple {\em combinators}:
+
+  \alert{
+    \begin{eqnarray*}
+      I & = & \lamb{x} x                              \\
+      K & = & \lamb{x\; y} x                          \\
+      S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
+    \end{eqnarray*}
+  }
+
+  Их названия можно запомнить так: \alert{$I$} = Identity (тождество),
+  \alert{$K$} = Konstant (константа) и \alert{$S$} = Sharing (выделение). 
+  % The names can be remembered by \alert{$I$} = Identity, \alert{$K$}
+  % = Konstant and \alert{$S$} = Sharing.
+
+  Комбинаторная полнота: для каждого $\lambda$-терма существует
+  эквивалент без $\lambda$-абстракций с теми же свободными переменными,
+  записанный с помощью комбинаторов.
+  % Combinatory completeness: every $\lambda$-term has an equivalent,
+  % with the same free variables, written using combinators and with
+  % no lambda abstractions.
+
+  Это достаточно интересный факт, так как с его помощью можно избежать таких
+  трудностей, как захват переменной.
+  % This is quite attractive, because it avoids all the complications
+  % like variable capture.
+}
+
+\frame{
+  \frametitle{Комбинаторная полнота}
+  % \heading{Combinatory completeness}
+
+  Достаточно найти комбинаторный эквивалент для любого \alert{$\lamb{x}
+    t$}, где \alert{$t$} ~--- \alert{$\lambda$}-свободен.  Тогда мы
+  сможем применить такую процедуру повторно восходящим способом к самым
+  внутренним абстракциям.
+  % It's enough to be able to find a combinatory equivalent for any
+  % \alert{$\lamb{x} t$} where \alert{$t$} is \alert{$\lambda$}-free.
+  % Then we can apply the procedure repeatedly to the innermost
+  % abstraction in a bottom-up fashion.
+
+  \begin{itemize}
+  \item Если \alert{$t$}~-- переменная, то либо \alert{$t = x$}, тогда
+    \alert{$\lamb{x} x = I$}, либо \alert{$t \not= x$}, тогда \alert{
+      $\lamb{x} y = K\; y$}.
+    % \item If \alert{$t$} is a variable, then either \alert{$t = x$},
+    %   when \alert{ $\lamb{x} x = I$}, or \alert{$t \not= x$}, when
+    %   \alert{$\lamb{x} y = K\; y$}.
+    \maybepause
+
+  \item Если \alert{$t$}~-- константа, скажем, \alert{$c$}, тогда
+    \alert{ $\lamb{x} y = K\; c$}.
+    % \item If \alert{$t$} is a constant, say \alert{$c$}, then
+    %   \alert{$\lamb{x} y = K\; c$}.
+    \maybepause
+
+  \item Если \alert{$t$}~-- абстракция, скажем \alert{$s\; u$} тогда по
+    предположению индукции существуют $\lambda$-свободные термы
+    \alert{ $s'$} и \alert{$u'$} такие, что \alert{$s' = \lamb{x} s$}
+    и \alert{ $u' = \lamb{x} u$}.  Простое вычисление показывает, что
+    \alert{ $\lamb{x} s\; u = S\;s'\;u'$}.
+    % \item If \alert{$t$} is an abstraction, say \alert{$s\; u$},
+    %   then by the inductive hypothesis, there are lambda-free terms
+    %   \alert{$s'$} and \alert{$u'$} with \alert{$s' = \lamb{x} s$}
+    %   and \alert{$u' = \lamb{x} u$}. A simple calculation shows that
+    %   \alert{$\lamb{x} s\; u = S\;s'\;u'$}.
+    \maybepause
+
+  \end{itemize}
+
+  На самом деле достаточно использования \alert{$S$} и \alert{$K$}, ибо \alert{$I = S\;
+    K\; K$}.
+  % In fact, \alert{$S$} and \alert{$K$} alone suffice, since
+  % \alert{$I = S\; K\; K$}.
+
+}
+
+\end{document}

@@ -1,0 +1,1425 @@
+\chapter[Лямбда-исчисление]{$\lambda$-исчисление}
+В основе $\lambda$-исчисления лежит идея представления функций в так называемой 
+$\lambda$-нотации. В неформальной математике, когда кто-то хочет сослаться на функцию, то обычно
+сначала даёт ей произвольное имя, а затем использует уже его, например:
+
+\begin{quote}
+
+Предположим, что функция~$f:\real \to \real$ определена выражением:
+
+$$ f(x) = \left\{ \begin{array}{ll}
+                                   0 & \mbox{if $x = 0$} \\
+                    x^2 sin(1 / x^2) & \mbox{if $x \not= 0$}
+                 \end{array} \right. $$
+
+Тогда $f'(x)$ не интегрируема по Лебегу в пределах $[0,1]$.
+
+\end{quote}
+
+Большинство языков программирования, например C, в этом отношении похожи: мы можем
+определять только именованные функции.  Например, для того, чтобы использовать функцию
+\texttt{successor} (которая добавляет $1$ к своему аргументу) нетривиально
+(например, через указатель), то несмотря на её простоту, нам всё равно
+придётся предварительно задать определение, в которое входит имя:
+
+\begin{lstlisting}[language=C]
+        int suc(int n) { 
+            return n + 1;
+        }
+\end{lstlisting}
+
+С точки зрения традиционной математики либо программирования это выглядит естественно и, в общем случае, 
+достаточно удобно.  Однако, такой подход начинает причинять массу затруднений при необходимости работы
+с функциями высшего порядка (которые манипулируют другими функциями).  В любом
+случае, если мы хотим рассматривать функции наравне с другими математическими объектами,
+то требование давать им имена будет нелогичным.  При обсуждении арифметического
+выражения, построенного из более простых подвыражений, мы просто записываем
+их без каких-либо имён. Представим, что было бы, если бы мы всегда работали с арифметическими выражениями
+таким образом:
+
+\begin{quote}
+
+  Определим $x$ и $y$ так, что $x = 2$ и $y = 4$. Тогда $x x = y$.
+
+\end{quote}
+
+Применение $\lambda$-нотации позволяет задавать функции практически тем же способом, что и
+остальные виды математических объектов.  Существуют общепринятые обозначения, которые иногда
+использовались в математике для этих целей, хотя обычно они встречаются в составе
+именованных определений.  Мы могли бы записать
+
+$$ x \mapsto t[x] $$
+
+\noindent для обозначения функции, отображающей любой аргумент $x$ в некоторое
+произвольное выражение $t[x]$, которое обычно, но не обязательно, содержит $x$ (иногда
+полезно ``отбросить'' аргумент).  Однако, мы будем использовать другую нотацию,
+разработанную Чёрчем~\cite{church-book}:
+
+$$ \lamb{x} t[x]$$
+
+\noindent Это выражение имеет точно такой же смысл, как и предыдущее. Например,
+$\lamb{x} x$ является тождественной функцией, которая просто
+возвращает переданный аргумент, в то время как $\lamb{x} x^2$ обозначает функцию возведения
+в квадрат.
+
+Выбор символа $\lambda$ является произвольным и не несёт никакой смысловой нагрузки.
+(Так, например, нередко встречается, особенно во французских текстах, обозначение $[x]\;t[x]$.)  
+Вероятно, что он возник в ходе сложного эволюционного процесса.  Первоначально в
+известной книге {\em Principia Mathematica}~\cite{whitehead-principia} использовалось
+обозначение~$t[\hat{x}]$ для функции от $x$, производящей $t[x]$.  Чёрч изменил
+его на $\hat{x}.\;t[x]$, но поскольку наборщики текстов не могли поместить значок~$\hat{}$
+над~$x$, то оно вышло в свет как $\land x.\;t[x]$, которое затем
+трансформировалось в $\lamb{x} t[x]$ в руках других наборщиков.
+
+\section[Преимущества лямбда-нотации]{Преимущества $\lambda$-нотации}
+
+Используя $\lambda$-нотацию мы можем прояснить некоторые неточности, присущие
+неформальным математическим обозначениям.  Например, часто говорят о~`$f(x)$', подразумевая,
+что из контекста понятно, о чём идёт речь~--- о самой функции~$f$, или о результате её
+применения к конкретному~$x$.  Дополнительной пользой будет то, что $\lambda$-нотация даёт
+нам возможности анализа почти всего языка математики.  Если мы начнём с переменных и
+констант и будем строить выражения, используя лишь $\lambda$-абстрацию и применение функций к
+аргументам, то сможем в конечном счёте представить очень сложные математические выражения.
+
+Будем использовать общепринятое обозначение~$f(x)$ для операции применения функции~$f$ к
+аргументу~$x$, за тем исключением, что в традиционной $\lambda$-нотации скобки могут быть
+опущены, позволяя тем самым записать это выражение в виде~$f\;x$.  По причинам, которые
+станут понятны в процессе чтения следующего абзаца, мы считаем, что применение функции
+ассоциативно слева, т.~е.\ $f\;x\;y$ означает $(f(x))(y)$.  В качестве сокращённой записи
+для $\lamb{x} \lamb{y} t[x,y]$ будем использовать $\lamb{x\;y} t[x,y]$, и~т.~д.  Мы
+также предполагаем, что область действия $\lambda$-абстракции распространяется вправо, насколько
+это возможно.  Например, $\lamb{x} x\; y$ означает $\lamb{x} (x\; y)$, а не~$(\lamb{x}
+x)\; y$.
+
+На первый взгляд, нам необходимо введение специальных обозначений для функций нескольких
+аргументов.  Однако, существует способ представления таких функций в обычной $\lambda$-нотации.
+Этот способ называется \emph{каррированием} ({\em currying}), по имени
+математика-логика Карри~\cite{curry-comb}. (В действительности, такой приём уже использовался и
+Фреге~\cite{frege-arith}, и Шейнфинкелем~\cite{schonfinkel}, но легко понять, почему соответствующие
+термины не получили общественного признания.)  Идея заключается в особой трактовке
+выражений вида $\lamb{x\;y} x + y$. Это выражение может рассматриваться как функция
+$\real \to (\real \to \real)$, так что можно сказать, что оно является `функцией высшего
+порядка (higher order function)' или `функционалом (functional)', поскольку в результате применения
+к другой функции производит новую функцию, которая получает второй аргумент.  На
+самом деле, она получает аргументы по очереди, по одному, а не все сразу.  Например,
+рассмотрим:
+
+$$ (\lamb{x\;y} x + y)\;1\;2 = (\lamb{y} 1 + y)\;2 = 1 + 2 $$
+
+Заметим, что в $\lambda$-нотации применение функции считается левоассоциативной
+операцией, поскольку каррирование используется очень часто.
+
+Возможности $\lambda$-нотации особенно полезны для унификации понятия связанных
+переменных.  В математике переменные обычно выражают зависимость некоторого выражения от
+значения этой переменной; например, значение $x^2 + 2$ зависит от значения~$x$. В таком
+контексте мы будем говорить, что переменная является  {\em свободной}.  Однако,
+существуют другие ситуации, где переменная просто используется в качестве обозначения, а
+не показывает зависимость от значения.  В качестве примеров можно рассмотреть переменную
+$m$ в выражении
+
+$$ \sum_{m = 1}^{n} m = \frac{n (n + 1)}{2} $$
+
+\noindent и переменную  $y$ в выражении
+
+$$ \int_{0}^{x} 2 y + a \ dy = x^2 + a x $$
+
+Немалое количество подобных примеров доступно и в других областях. Так, в логике
+применяются кванторы~$\all{x} P[x]$ (`для всех $x$, справедливо~$P[x]$') и~$\ex{x} P[x]$
+(`существует такое значение~$x$, для которого $P[x]$~истинно'); в теории
+множеств~--- абстрактные множества, наподобие $\{x \mid P[x]\}$, а также
+индексированные объединения и пересечения.  В таких случаях говорят, что переменная должна
+быть {\em связанной (bound)}.  В определённых подвыражениях она является свободной, но в
+полном выражении связана {\em операцией связывания переменных}, такой как сложение.
+Часть, находящаяся `внутри' этой операции связывания переменных, называется {\em областью
+  видимости (scope)} связанной переменной.
+
+Похожая ситуация возникает в большинстве языков программирования, по крайней мере, среди
+потомков Algol~60.  Переменные имеют определённую область видимости, а формальные
+аргументы процедур и функций являются связанными переменными, например, $n$ в приведённом
+выше определении функции \texttt{successor} на языке~C.  Кто-то может рассматривать объявления
+переменных как операцию связывания для вложенных объектов соответствующих переменных.
+Отметим, что {\em область видимости} переменной не следует отождествлять с её
+{\em временем жизни}.  В функции {\tt rand} на языке~C, которую мы привели во введении,
+переменная $n$ имеет ограниченную область видимости, но сохраняет своё значение даже за
+пределами данного блока кода.
+
+Мы можем свободно изменить имя связанной переменной, не затрагивая смысл выражения.
+Например,
+$$ 
+ \int_{0}^{x} 2 z + a \ dz = x^2 + a x 
+$$
+
+Аналогичным образом, при использовании $\lambda$-нотации выражения $\lamb{x} E[x]$ и
+$\lamb{y} E[y]$ являются эквивалентными; это называется {\em альфа}-эквивалентностью, а
+процесс преобразования одного выражения в другое~--- альфа-преобразованием.  Следует
+особо оговорить, что переменная~$y$ не должна быть свободной в выражении~$E[x]$, иначе
+его значение изменится, например, как в
+$$ 
+ \int_{0}^{x} 2 a + a \  da \not= x^2 + a x 
+$$
+
+Также возможно использовать в одном выражении одинаковые имена для свободных и связанных
+переменных;  хотя это может сбивать с толку, но с технической точки зрения 
+неоднозначности не возникает, например
+$$ 
+  \int_{0}^{x} 2 x + a \ dx = x^2 + a x 
+$$
+В действительности, обычная нотация Лейбница для производных имеет то же самое
+свойство, например, в
+$$ 
+  \frac{d}{dx}x^2 = 2 x
+$$
+переменная~$x$ используется и как связанная для того, чтобы показать, что
+дифференцирование производится относительно~$x$, и как свободная, чтобы
+показать, где будет происходить окончательное вычисление производной.  Это может сбивать с
+толку, например, $f'(g(x))$ обычно означает что-то отличное от $\frac{d}{dx} f(g(x))$.
+Авторы, стремящиеся к максимальной точности формулировок, особенно в работах,
+посвящённых функциям многих переменных, зачастую подчёркивают это различие
+специальными обозначениями, например,
+$$ 
+ |\frac{d}{dx}x^2|_x = 2 x 
+$$
+или
+$$ 
+ |\frac{d}{dz}z^2|_x = 2 x 
+$$
+
+Одной из привлекательных черт $\lambda$-нотации является возможность рассматривать
+все операции связывания переменных, такие как суммирование, дифференцирование 
+или интегрирование, как функции, применяемые к $\lambda$-выражениям.  Обобщение 
+таких операций с помощью $\lambda$-абстракции позволяет нам сконцентрироваться на
+технических проблемах связанных переменных в конкретной ситуации.  Например, мы можем
+рассматривать $\frac{d}{dx}x^2$ как синтаксическую обвязку (syntactic sugaring) для $D\;
+(\lamb{x} x^2)\; x$ где $D:(\real \to \real) \to \real \to \real$ является оператором
+дифференцирования, результат применения которого~--- производная первого аргумента (функции) в точке, указанной
+вторым аргументом.  Преобразуя обычный синтаксис в $\lambda$-нотацию, мы получим $D\;
+(\lamb{x} \mbox{EXP } x\; 2)\; x$ для некоторой константы $\mbox{EXP}$, представляющей
+экспоненциальную функцию.
+%% ISSUE: по смыслу скорее не "экспоненциальную" (EXP), а "степенную" (POW)
+
+Таким образом, $\lambda$-нотация очень привлекательна для математиков в качестве общего
+`абстрактного синтаксиса'; всё что нам нужно~-- соответствующий набор констант, с которыми
+мы будем работать. В ретроспективе, $\lambda$-абстракция выглядит как подходящий примитив,
+в терминах которого проводится анализ связывания переменных.  Эта идея уходит корнями к
+записи логики высшего порядка в $\lambda$-нотации, использованной Чёрчем, и ко мнению Лэндина, 
+которое будет продемонстрировано в следующей главе, что множество конструкций различных языков
+программирования имеет аналогичную интерпретацию.  В последнее время, идея использования
+$\lambda$-нотации в качестве универсального абстрактного синтаксиса была введена
+Мартином-Лёфом, и часто на неё ссылаются как на `теорию Мартина-Лёфа для выражений и арности
+(arity)'.\footnote{Она была представлена на симпозиуме в Brouwer в 1981 году, но не попала
+  в печатные материалы симпозиума.}
+
+\section{Парадокс Рассела}
+
+Как мы уже упоминали, одной из привлекательных сторон $\lambda$-нотации является
+её пригодность для анализа почти всего математического синтаксиса.  Первоначально, Чёрч надеялся
+продвинуться дальше и затронуть теорию множеств, которая, как хорошо известно, является
+достаточно мощным средством для формирования основания для большей части современной
+математики.  Взяв любое множество~$S$, мы можем задать для него так называемый
+{\em характеристический предикат}~$\chi_S$ такой, что:
+
+$$ 
+\chi_S(x) = \left\{ \begin{array}{ll}
+                        true & \mbox{if $x \in S$} \\
+                        false & \mbox{if $x \not\in S$}
+                 \end{array} \right. 
+$$
+
+И наоборот, для любого унарного предиката (т.е. функции одного аргумента)~$P$, мы можем
+рассмотреть множество всех~$x$, удовлетворяющих~$P(x)$~--- мы будем просто
+записывать~$P(x)$ для $P(x) = true$.  Таким образом, мы видим, что множества и предикаты
+%% ISSUE: возможно, имеется в виду "записывать~$x$ для которого $P(x) = true$"?
+являются лишь различными способами обсуждения одних и тех же вещей.  Вместо
+трактовки~$S$ как множества и записи $x \in S$, мы можем рассматривать его как
+предикат и записывать как~$S(x)$.
+
+Это позволяет проведение обычного анализа в $\lambda$-нотации: мы можем допустить что
+произвольные $\lambda$-выражения являются как функциями, так, косвенным образом, и множествами.
+К сожалению, это приводит к противоречиям. Простейшим способом убедиться в этом
+служит парадокс Рассела про множество всех множеств, которые не содержат
+сами себя:
+
+$$ R = \{x \mid x \not\in x\} $$
+
+У нас имеется $R \in R \Iff R \not\in R$, сильное противоречие.  В терминах функций,
+определённых с помощью $\lambda$-нотации, мы задаём $R = \lamb{x} \Not (x\; x)$, а затем
+находим, что $R\; R = \Not(R\; R)$, исходя из интуитивного понимания операции 
+отрицания~$\Not$.
+
+Для того, чтобы избежать таких парадоксов, Чёрч развивает идею Рассела путём 
+добавления в $\lambda$-нотацию понятия {\em типа}~\cite{church-types}, которое будет подробно рассмотрено
+далее.  Однако, сам парадокс предлагает некоторые интересные возможности в
+стандартной, нетипизированной системе, в чём мы убедимся позже.
+
+\section[Лямбда-исчисление как формальная система]{$\lambda$-исчисление как формальная система}
+До сих пор некоторые очевидные факты принимались нами без обоснования, например, 
+что~$(\lamb{y} 1 + y)\;2 = 1 + 2$, поскольку это соответствует желаемым
+свойствам операций применения и абстракции, которые считаются в определённом
+смысле взаимно обратными. Чтобы перейти от интуитивных действий к 
+$\lambda$-{\em исчислению}, нам потребуется зафиксировать некоторые из основных
+принципов, объявив их (и {\em только} их) формальными правилами. 
+Привлекательность этого шага в том, что правила в дальнейшем могут применяться
+механически, подобно тому, как преобразование уравнения~$x - 3 = 5 - x$
+в равносильное ему~$2 x = 5 + 3$ не требует каждый раз задумываться, 
+{\em почему} допустимо такое перемещение слагаемых из одной части равенства
+в другую. Как писал Уайтхед~\cite{whitehead-intro}, формальная
+символика и правила действий\dots 
+%
+%We have taken for granted certain obvious facts, e.g. that $(\lamb{y} 1 + y)\;2
+%= 1 + 2$, since these reflect the intended meaning of abstraction and
+%application, which are in a sense converse operations. $\lambda$- {\em calculus}
+%arises if we enshrine certain such principles, and {\em only} those, as a set
+%of formal rules. The appeal of this is that the rules can then be used
+%mechanically, just as one might transform $x - 3 = 5 - x$ into $2 x = 5 + 3$
+%without pausing each time to think about {\em why} these rules about moving
+%things from one side of the equation to the other are valid. As
+%\citeN{whitehead-intro} says, symbolism and formal rules of manipulation:
+
+\begin{quote}
+[\ldots] вводились всякий раз, когда требовались что-либо упростить.
+[\ldots] используя формальные обозначения, мы можем переходить от одного этапа 
+рассуждений к другому почти механически, зрительно, в противном же случае нам
+пришлось бы задействовать гораздо больше интеллектуальных ресурсов.
+[\ldots] Цивилизация прогрессирует, увеличивая количество важных операций, 
+которые могут производиться, не задумываясь.
+%
+%[\ldots] have invariably been introduced to make things easy. [\ldots] by
+%the aid of symbolism, we can make transitions in reasoning almost mechanically
+%by the eye, which otherwise would call into play the higher faculties of the
+%brain. [\ldots] Civilisation advances by extending the number of important
+%operations which can be performed without thinking about them.
+\end{quote}
+
+\subsection[Лямбда-термы]{$\lambda$-термы}
+Основой $\lambda$-исчисления служит формальное понятие $\lambda$-термов,
+которые строятся из переменных и некоторого фиксированного множества констант
+при помощи операций применения (аппликации) функций и $\lambda$-абстракции.
+Это значит, что всевозможные $\lambda$-термы разбиваются на четыре класса: 
+% 
+%$\lambda$- calculus is based on a formal notion of $\lambda$- term, and these terms are
+%built up from variables and some fixed set of constants using the operations of
+%function application and $\lambda$- abstraction. This means that every $\lambda$- term
+%falls into one of the following four categories:
+
+\begin{enumerate}
+\item
+{\bf Переменные:} обозначаются произвольными алфавитно-цифровыми строками;
+как правило, мы будем использовать в качестве имён буквы, расположенные
+ближе к концу латинского алфавита, например, $x$, $y$ и~$z$.
+%{\bf Variables:} these are indexed by arbitrary alphanumeric strings;
+%typically we will use single letters from towards the end of the alphabet, e.g.
+%$x$, $y$ and $z$.
+
+\item 
+{\bf Константы:} количество констант определяется конкретной $\lambda$-нотацией,
+иногда их нет вовсе. Мы будем также обозначать их алфавитно-цифровыми строками,
+как и переменные, отличая друг от друга по контексту.
+%% ISSUE: не до конца ясно, что такое depends on context? -- LH
+%
+%{\bf Constants:} how many constants there are in a given syntax of $\lambda$-
+%terms depends on context. Sometimes there are none at all. We will also
+%denote them by alphanumeric strings, leaving context to determine when they are
+%meant to be constants.
+
+\item 
+{\bf Комбинации:} применение функции~$s$ к аргументу~$t$, где~$s$ и~$t$
+представляют собой произвольные термы. Будем обозначать комбинации как~$s\;t$,
+а их составные части называть <<ратор>> и <<ранд>> соответственно.%
+\footnote{Сокр.\ <<опе\textit{ратор}>> и~<<опе\textit{ранд}>>.}
+% ISSUE: звучит просто ужасно (IMHO), может, не стоит загрязнять язык
+% и не упоминать в переводе эти отходы словотворчества? -- LH
+%
+%{\bf Combinations}, i.e. the application of a function $s$ to an argument
+%$t$; both these components $s$ and $t$ may themselves be arbitrary
+%$\lambda$-terms. We will write combinations simply as $s\;t$. We often
+%refer to $s$ as the `rator' and $t$ as the `rand' (short for `operator' and
+%`operand' respectively).
+
+\item 
+{\bf Абстракция} произвольного $\lambda$-терма~$s$ по переменной~$x$
+(которая может как входить свободно в~$s$, так и нет) имеет вид~$\lamb{x} s$.
+%
+%{\bf Abstractions} of an arbitrary $\lambda$--term $s$ over a variable
+%$x$ (which may or may not occur free in $s$), denoted by $\lamb{x} s$.
+\end{enumerate}
+
+Формально, этот набор правил представляет собой индуктивное определение 
+множества $\lambda$-термов, т.~е.\ последние могут конструироваться 
+{\em только так}, как описано выше. Благодаря этому, мы получаем основания
+для
+%
+%Formally, this defines the set of $\lambda$- terms inductively, i.e. $\lambda$-
+%terms arise {\em only} in these four ways. This justifies our:
+
+\begin{itemize}
+
+\item 
+определения функций над $\lambda$-термами при помощи примитивной рекурсии;
+%Defining functions over $\lambda$- terms by primitive recursion.
+
+\item 
+доказательства утверждений о свойствах $\lambda$-термов методом структурной
+индукции.
+%Proving properties of $\lambda$- terms by structural induction.
+\end{itemize}
+
+Формальное изложение понятий индуктивного построения, а также примитивной
+рекурсии и структурной индукции доступно из многих источников.
+Мы надеемся, что читатель, не знакомый с этими формализмами, сможет получить
+достаточное представление об их базовых идеях на основе примеров, которые
+приводятся ниже.
+%
+%A formal discussion of inductive generation, and the notions of primitive
+%recursion and structural induction, may be found elsewhere. We hope most
+%readers who are unfamiliar with these terms will find that the examples below
+%give them a sufficient grasp of the basic ideas.
+
+Подобно языкам программирования, синтаксис $\lambda$-термов может быть задан
+при помощи БНФ (форм Бэкуса-Наура):
+%
+%We can describe the syntax of $\lambda$- terms by a BNF (Backus-Naur form)
+%grammar, just as we do for programming languages.
+%
+$$ 
+ Exp = Var \mid Const \mid Exp\; Exp \mid \lambda\; Var . \; Exp 
+$$
+%	
+после чего мы можем трактовать их, как это принято в теории формальных языков,
+не просто как цепочки символов, а как абстрактные синтаксические деревья.
+Это значит, что соглашения наподобие левоассоциативности операции применения
+функции либо интерпретации $\lamb{x\;y} s$ как~$\lamb{x} \lamb{y} s$, а также
+неразличимость переменных и констант по именам не являются неотъемлемой частью
+формализма $\lambda$-исчисления, а имеют смысл исключительно в
+момент преобразования терма в форму, подходящую для восприятия человеком, либо
+в обратном направлении. 
+%
+%\noindent and, following the usual computer science view, we will identify
+%$\lambda$- terms with abstract syntax trees, rather than with sequences of
+%characters. This means that conventions such as the left-association of
+%function application, the reading of $\lamb{x\;y} s$ as $\lamb{x} \lamb{y} s$,
+%and the ambiguity over constant and variable names are purely a matter of
+%parsing and printing for human convenience, and not part of the formal system.
+
+В завершение упомянем ещё одно соглашение, принятое в данном пособии. Будем
+использовать в $\lambda$-термах односимвольные имена не только для констант 
+и переменных, но и для так называемых {\em метапеременных}, обозначающих 
+любые термы. Например, выражение $\lamb{x} s$ может представлять как 
+константную функцию со значением~$s$, так и произвольную $\lambda$-абстракцию
+по переменной~$x$. Для предотвращения путаницы, условимся применять буквы
+$s$, $t$ и~$u$ в качестве метапеременных. 
+%% ISSUE: только эти буквы, или буквы вообще? -- LH
+Устранить неоднозначность полностью возможно, например, за счёт потери 
+компактности записи: введением имён переменных вида~$V_x$ вместо~$x$, 
+а констант~--- $C_k$ вместо~$k$, после чего исчезает необходимость приписывать 
+именам особый статус.
+%
+%One feature worth mentioning is that we use single characters to stand for
+%variables and constants in the formal system of $\lambda$- terms {\em} and as
+%so-called `metavariables' standing for arbitrary terms. For example, $\lamb{x}
+%s$ might represent the constant function with value $s$, or an arbitrary $\lambda$-
+%abstraction using the variable $x$. To make this less confusing, we will
+%normally use letters such as $s$, $t$ and $u$ for metavariables over terms. It
+%would be more precise if we denoted the variable $x$ by $V_x$ (the $x$'th
+%variable) and likewise the constant $k$ by $C_k$ --- then all the variables in
+%terms would have the same status. However this makes the resulting terms a bit
+%cluttered.
+
+\subsection{Свободные и связанные переменные}
+%\subsection{Free and bound variables}
+В этом разделе мы формализуем интуитивное понятие свободных и связанных 
+переменных, которое, между прочим, служит хорошим примером определения
+примитивно-рекурсивных функций. Интуитивно, вхождение переменной в заданный
+терм считается свободным, если оно не лежит в области действия соответствующей
+абстракции. Обозначим множество свободных переменных в терме~$s$ через~$FV(s)$
+и дадим его рекурсивное определение:
+%
+%We now formalize the intuitive idea of free and bound variables in a
+%term, which, incidentally, gives a good illustration of defining a
+%function by primitive recursion. Intuitively, a variable in a term is
+%free if it does not occur inside the scope of a corresponding abstraction. We
+%will denote the set of free variables in a term $s$ by $FV(s)$, and
+%define it by recursion as follows:
+%
+\begin{eqnarray*}
+   FV(x)          & = & \{ x \}                 \\
+   FV(c)          & = & \emptyset               \\
+   FV(s\; t)      & = & FV(s) \Union FV(t)      \\
+   FV(\lamb{x} s) & = & FV(s) - \{ x \}
+\end{eqnarray*}
+Аналогично вводится и понятие множества связанных переменных~$BV(s)$:
+%\noindent Similarly we can define the set of bound variables in a term $BV(s)$:
+%
+\begin{eqnarray*}
+   BV(x)          & = & \emptyset               \\
+   BV(c)          & = & \emptyset               \\
+   BV(s\; t)      & = & BV(s) \Union BV(t)      \\
+   BV(\lamb{x} s) & = & BV(s) \Union \{ x \}
+\end{eqnarray*}
+
+Например, если~$s = (\lamb{x\; y} x)\; (\lamb{x} z\; x)$, то~$FV(s) = \{ z \}$
+и~$BV(s) = \{ x, y \}$. Отметим, что в общем случае переменная может быть 
+одновременно и свободной, и связанной в одном и том же терме, как это было
+показано выше. Воспользуемся структурной индукцией, чтобы продемонстрировать 
+доказательство утверждений о свойствах $\lambda$-термов на примере следующей
+теоремы (аналогичные рассуждения применимы и ко множеству~$BV$).
+%
+%For example, if $s = (\lamb{x\; y} x)\; (\lamb{x} z\; x)$ we have $FV(s) = \{ z
+%\}$ and $BV(s) = \{ x, y \}$. Note that in general a variable can be both free
+%and bound in the same term, as illustrated by some of the mathematical examples
+%earlier. As an example of using structural induction to establish properties of
+%$\lambda$- terms, we will prove the following theorem (a similar proof works for
+%$BV$ too):
+
+\begin{theorem}
+Для произвольного $\lambda$-терма~$s$ множество~$FV(s)$ конечно.
+%For any $\lambda$- term $s$, the set $FV(s)$ is finite.
+
+\proof 
+Применим структурную индукцию. Очевидно, что для терма~$s$, имеющего вид
+переменной либо константы, множество~$FV(s)$ конечно по определению (содержит
+единственный элемент либо пусто соответственно). Если терм~$s$ представляет
+собой комбинацию~$t\;u$, то согласно индуктивному предположению, как~$FV(t)$,
+так и~$FV(u)$ конечны, в силу чего $FV(s) = FV(t) \Union FV(u)$ также конечно,
+как объединение двух конечных множеств. Наконец, если $s$ имеет 
+форму~$\lamb{x} t$, то по определению~$FV(s) = FV(t) - \{ x \}$, а~$FV(t)$ 
+конечно по индуктивному предположению, откуда следует, что~$FV(s)$ также
+конечно, поскольку его мощность не может превышать мощности~$FV(t)$.\qed
+%                                                             
+%By structural induction. Certainly if $s$ is a variable or a constant,
+%then by definition $FV(s)$ is finite, since it is either a singleton or empty.
+%If $s$ is a combination $t\;u$ then by the inductive hypothesis, $FV(t)$ and
+%$FV(u)$ are both finite, and then $FV(s) = FV(t) \Union FV(u)$, which is
+%therefore also finite (the union of two finite sets is finite). Finally, if $s$
+%is of the form $\lamb{x} t$ then $FV(t)$ is finite, by the inductive
+%hypothesis, and by definition $FV(s) = FV(t) - \{ x \}$ which must be finite
+%too, since it is no larger. \qed
+
+\end{theorem}
+
+\subsection{Подстановка}
+%\subsection{Substitution}
+Одним из правил, которые мы хотим формализовать, является соглашение о том,
+что $\lambda$-абстракция и применение функции представляют собой взаимно 
+обратные операции. То есть, если мы возьмём терм~$\lamb{x} s$ и применим его
+как функцию к терму-аргументу~$t$, результатом будет терм~$s$, в котором все
+свободные вхождения переменной~$x$ заменены термом~$t$. Для большей наглядности
+это действие принято обозначать $\lamb{x} s[x]$ и~$s[t]$ соответственно.
+%% ISSUE: почему именно "взаимно обратные"? Применение функции --- не то же
+%% самое, что просто снятие лишней лямбды?
+%
+%The rules we want to formalize include the stipulation that $\lambda$- abstraction
+%and function application are inverse operations. That is, if we take a term
+%$\lamb{x} s$ and apply it as a function to an argument term $t$, the answer is
+%the term $s$ with all free instances of $x$ replaced by $t$. We often make this
+%more transparent in discussions by using the notation $\lamb{x} s[x]$ and
+%$s[t]$ for the respective terms.
+
+Однако, простое на первый взгляд понятие подстановки одного терма вместо 
+переменной в другой терм на самом деле оказалось весьма коварным, так что
+даже некоторые выдающиеся логики не избежали ложных утверждений относительно
+его свойств. Подобный грустный опыт разочаровывает довольно сильно, ведь как
+мы говорили ранее, одним из привлекательных свойств формальных правил служит
+возможность их чисто механического применения.
+%
+%However this simple-looking notion of substituting one term for a variable in
+%another term is surprisingly difficult. Some notable logicians have made faulty
+%statements regarding substitution. In fact, this difficulty is rather
+%unfortunate since as we have said, the appeal of formal rules is that they can
+%be applied mechanically.
+
+Обозначим операцию подстановки терма~$s$ вместо переменной~$x$ в другой 
+терм~$t$ как~$t[s/x]$. Иногда можно встретить другие обозначения, например,
+$t[x \mbox{:=} s]$, $[s/x]t$, или даже~$t[x/s]$. Мы полагаем, что предложенный
+нами вариант легче всего запомнить по аналогии с умножением дробей: 
+$x[t/x] = t$. На первый взгляд, рекуррентное определение понятия подстановки
+выглядит так:
+%
+%We will denote the operation of substituting a term $s$ for a variable $x$ in
+%another term $t$ by $t[s/x]$. One sometimes sees various other notations, e.g.
+%$t[x \mbox{:=} s]$, $[s/x]t$, or even $t[x/s]$. The notation we use is perhaps
+%most easily remembered by noting the vague analogy with multiplication of
+%fractions: $x[t/x] = t$. At first sight, one can define substitution formally
+%by recursion as follows:
+%
+\begin{eqnarray*}
+   x[t/x]            & = & t                           \\
+   y[t/x]            & = & y, \mbox{ если $x \not= y$}    \\
+   c[t/x]            & = & c                           \\
+   (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
+   (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
+   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]), \mbox{ если $x \not= y$}
+\end{eqnarray*}
+
+К сожалению, это определение не совсем верно. Например, подстановка
+$(\lamb{y} x + y)[y/x] = \lamb{y} y + y$ не соответствует интуитивным ожиданиям
+от её результата.%
+\footnote{Строго говоря, нам следовало бы писать~$+\; x\; y$, нежели~$x + y$,
+но мы будем, как прежде, использовать стандартные операции в инфиксной форме.}
+Исходный $\lambda$-терм интерпретировался как функция, прибавляющая~$x$
+к своему аргументу, так что после подстановки мы ожидали получить функцию,
+которая прибавляет~$y$, а на деле получили функцию, которая свой аргумент
+удваивает. Источником проблемы служит {\em захват} переменной~$y$, которую
+мы подставляем, операцией $\lamb{y} \ldots$, которая связывает одноимённую 
+переменную. Чтобы этого не произошло, связанную переменную требуется 
+предварительно переименовать:
+%
+%However this isn't quite right. For example $(\lamb{y} x + y)[y/x] = \lamb{y} y
+%+ y$, which doesn't correspond to the intuitive answer.\footnote{We will
+%continue to use infix syntax for standard operators; strictly we should write
+%$+\; x\; y$ rather than $x + y$.} The original $\lambda$- term was `the
+%function that adds $x$ to its argument', so after substitution, we might expect
+%to get `the function that adds $y$ to its argument'. What we actually get is
+%`the function that doubles its argument'. The problem is that the variable $y$
+%that we have substituted is {\em captured} by the variable-binding operation
+%$\lamb{y} \ldots$. We should first rename the bound variable:
+%
+$$ 
+ (\lamb{y} x + y) = (\lamb{w} x + w), 
+$$
+а лишь затем производить подстановку:
+%\noindent and only now perform a naive substitution operation:
+%
+$$ (\lamb{w} x + w)[y/x] = \lamb{w} y + w $$
+
+Существуют два подхода к решению этой проблемы. С одной стороны, можно 
+условиться, что подстановка недопустима в ситуации захвата переменной, а с
+другой~--- расширить формальное определение подстановки таким образом, чтобы
+требуемое переименование переменных происходило автоматически. Мы остановимся
+на последнем варианте:  
+%We can take two approaches to this problem. Either we can add a condition on
+%all instances of substitution to disallow it wherever variable capture would
+%occur, or we can modify the formal definition of substitution so that it
+%performs the appropriate renamings automatically. We will opt for this latter
+%approach. Here is the definition of substitution that we use:
+%
+\begin{eqnarray*}
+   x[t/x]            & = & t                           \\
+   y[t/x]            & = & y, \mbox{ если $x \not= y$} \\
+   c[t/x]            & = & c                           \\
+   (s_1\;s_2)[t/x]   & = & s_1[t/x] \; s_2[t/x]        \\
+   (\lamb{x} s)[t/x] & = & \lamb{x} s                  \\
+   (\lamb{y} s)[t/x] & = & \lamb{y} (s[t/x]),\mbox{ если $x \not= y$ и
+                                                    либо $x \not\in FV(s)$,
+                                                    либо $y \not\in FV(t)$}\\
+   (\lamb{y} s)[t/x] & = & \lamb{z} (s[z/y][t/x]) \mbox{ в противном случае, причём
+                                               $z \not\in FV(s) \Union FV(t)$}
+\end{eqnarray*}
+
+Единственное отличие этого определения заключается в двух последних правилах.
+Мы следуем предыдущему определению в двух безопасных ситуациях, когда либо
+переменная~$x$ не свободна в терме~$s$, так что подстановка оказывается
+тривиальной, либо когда~$y$ не свободна в~$t$, так что захват переменной
+не произойдёт (на данном уровне). Однако, в случае, когда оба эти условия не
+выполняются, мы предварительно переименовываем переменную~$y$ в~$z$, выбранную
+так, чтобы она не была свободной ни в терме~$s$, ни в терме~$t$, после чего
+продолжаем, как описано выше. Для определённости, переменная~$z$ может 
+выбираться некоторым фиксированным способом, например, как первая в 
+лексикографическом порядке имён переменная из множества всех переменных,
+не имеющих свободных вхождений ни в~$s$, ни в~$t$.%
+\footnote{Знатоки могут быть обеспокоены тем, что последнее правило не 
+позволяет считать это определение {\em примитивно}-рекурсивным. Однако, его
+легко преобразовать в примитивно-рекурсивную множественную параллельную 
+подстановку. Подобная процедура напоминает усиление индуктивного предположения
+в ходе доказательства. Отметим, что по построению пара подстановок в последнем
+правиле может осуществляться как параллельно, так и последовательно без ущерба
+для результата.}
+%
+%The only difference is in the last two lines. We substitute as before in the
+%two safe situations where either $x$ isn't free in $s$, so the substitution is
+%trivial, or where $y$ isn't free in $t$, so variable capture won't occur (at
+%this level). However where these conditions fail, we first rename $y$ to a new
+%variable $z$, chosen not to be free in either $s$ or $t$, then proceed as
+%before. For definiteness, the variable $z$ can be chosen in some canonical way,
+%e.g. the lexicographically first name not occurring as a free variable in
+%either $s$ or $t$.\footnote{Cognoscenti may also be worried that this
+%definition is not in fact, {\em primitive} recursive, because of the last
+%clause. However it can easily be modified into a primitive recursive definition
+%of multiple, parallel, substitution. This procedure is analogous to
+%strengthening an induction hypothesis during a proof by induction. Note that by
+%construction the pair of substitutions in the last line can be done in
+%parallel rather than sequentially without affecting the result.}
+
+\subsection{Преобразования}
+%\subsection{Conversions}
+Ещё одной из основ $\lambda$-исчисления служат три <<преобразования>>~--- %
+операции получения по заданному терму другого, равного ему в интуитивном смысле. 
+Традиционно их обозначают буквами греческого алфавита: $\alpha$ (альфа), 
+$\beta$ (бета) и~$\eta$ (эта).%
+\footnote{Такие имена преобразований были введены Карри. Первоначально Чёрч
+называл $\alpha$- и~$\beta$-преобразования <<правило действий~I>> и 
+<<правило действий~II>> соответственно.}
+Приведём формальные определения этих операций, обозначив каждую из них 
+помеченной стрелкой.
+%
+%$\lambda$- calculus is based on three `conversions', which transform one term into
+%another one intuitively equivalent to it. These are traditionally denoted by
+%the Greek letters $\alpha$ (alpha), $\beta$ (beta) and $\eta$
+%(eta).\footnote{These names are due to Curry. Church originally referred to
+%$\alpha$-conversion and $\beta$-conversion as `rule of procedure I' and `rule
+%of procedure II' respectively.} Here are the formal definitions of the
+%operations, using annotated arrows for the conversion relations.
+
+\begin{itemize}
+
+\item 
+Альфа-преобразование: $\lamb{x} s \alphas \lamb{y} s[y/x]$, при условии, 
+что~$y \not\in FV(s)$. Например, $\lamb{u} u\; v \alphas \lamb{w} w\; v$,
+но~$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$. Такое ограничение устраняет
+возможность ещё одного случая захвата переменной.
+%
+%\item Alpha conversion: $\lamb{x} s \alphas \lamb{y} s[y/x]$ provided $y
+%\not\in FV(s)$. For example, $\lamb{u} u\; v \alphas \lamb{w} w\; v$, but
+%$\lamb{u} u\; v \not\alphas \lamb{v} v\; v$. The restriction avoids another
+%instance of variable capture.
+
+\item 
+Бета-преобразование: $(\lamb{x} s)\; t \betas s[t/x]$.
+%\item Beta conversion: $(\lamb{x} s)\; t \betas s[t/x]$.
+
+\item 
+Эта-преобразование: $\lamb{x} t\; x \etas t$, если~$x \not\in FV(t)$. 
+Например, $\lamb{u} v\; u \etas v$, но~$\lamb{u} u\; u \not\etas u$.
+%\item Eta conversion: $\lamb{x} t\; x \etas t$, provided $x \not\in FV(t)$. For
+%example $\lamb{u} v\; u \etas v$ but $\lamb{u} u\; u \not\etas u$.
+\end{itemize}
+
+Среди этих трёх операций наиболее важной для нас является 
+$\beta$-преобразование, поскольку оно соответствует вычислению функции для 
+заданного аргумента. В то же время, $\alpha$-преобразование играет роль
+вспомогательного средства переименования связанных переменных, а 
+$\eta$-преобразование представляет собой разновидность {\em экстенсиональности},
+в силу чего интересно главным образом с точки зрения логика, а не программиста.
+%
+%Of the three, $\beta$-conversion is the most important one to us, since it
+%represents the evaluation of a function on an argument. $\alpha$-conversion is
+%a technical device to change the names of bound variables, while
+%$\eta$-conversion is a form of {\em extensionality} and is therefore mainly of
+%interest to those taking a logical, not a programming, view of $\lambda$- calculus.
+
+\subsection[Эквивалентность лямбда-выражений]{Эквивалентность $\lambda$-выражений}
+Используя приведённые выше правила преобразований, мы можем определить 
+формально условия, при которых два $\lambda$-терма считаются эквивалентными.
+В общих чертах, два терма эквивалентны, если один из них может быть получен из другого
+в ходе конечной последовательности $\alpha$, $\beta$ либо $\eta$-преобразований,
+которые применяются к произвольным подтермам как в прямом, так и в обратном 
+направлении. Другими словами, отношение $\lambda$-эквивалентности представляет собой
+{\em congruence closure} трёх преобразований и обладает свойствами 
+%% ISSUE: конгруэнтное замыкание??? рефлексивное транзитивное замыкание
+%% ISSUE: действительно ли closed under \approx "обладает свойствами"
+рефлексивности, симметричности, транзитивности и заменяемости. Ниже приводится
+формальное индуктивное определение, правила которого трактуются следующим 
+образом: если утверждение над горизонтальной чертой выполняется, то справедливо
+и утверждение под ней.
+%
+%Using these conversion rules, we can define formally when two $\lambda$- terms are
+%to be considered equal. Roughly, two terms are equal if it is possible to get
+%from one to the other by a finite sequence of conversions ($\alpha$, $\beta$ or
+%$\eta$), either forward or backward, at any depth inside the term. We can say
+%that $\lambda$- equality is the {\em congruence closure} of the three reduction
+%operations together, i.e. the smallest relation containing the three conversion
+%operations and closed under reflexivity, symmetry, transitivity and
+%substitutivity. Formally we can define it inductively as follows, where the
+%horizontal lines should be read as `if what is above the line holds, then so
+%does what is below'.
+%
+$$ \frac{s \alphas t \mbox{ или } s \betas t \mbox{ или } s \etas t}{s = t} $$
+%
+$$ \frac{}{t = t} $$
+%
+$$ \frac{s = t}{t = s} $$
+%
+$$ \frac{s = t \mbox{ и } t = u}{s = u} $$
+%
+$$ \frac{s = t}{s\; u = t\; u} $$
+%
+$$ \frac{s = t}{u\; s = u\; t} $$
+%
+$$ \frac{s = t}{\lamb{x} s = \lamb{x} t}$$
+
+Отметим, что использование обычного знака равенства~($=$) в данном контексте
+может ввести в заблуждение. В самом деле, мы {\em задаём} некоторое 
+отношение $\lambda$-эквивалентности, взаимосвязь которого с понятием равенства 
+соответствующих математических объектов остаётся неясной.%
+\footnote{Действительно, ведь мы не определяем достаточно точно, каково это
+соответствие {\em само по себе}. Тем не менее, существуют модели 
+$\lambda$-исчисления, в которых $\lambda$-эквивалентность трактуется как обычное равенство.}
+В то же время очевидно, что следует отличать $\lambda$-эквивалентность от 
+{\em синтаксического равенства}. Последнее будем называть <<тождеством>> и обозначим
+символом~$\equiv$. Например, $\lamb{x} x \not\equiv \lamb{y} y$, хотя в то же
+время~$\lamb{x} x = \lamb{y} y$.
+%
+%Note that the use of the ordinary equality symbol ($=$) here is misleading. We
+%are actually {\em defining} the relation of $\lambda$- equality, and it isn't clear
+%that it corresponds to equality of the corresponding mathematical objects in
+%the usual sense.\footnote{Indeed, we haven't been very precise about what the
+%corresponding mathematical objects {\em are}. But there are models of the
+%$\lambda$- calculus where our $\lambda$- equality is interpreted as actual equality.}
+%Certainly it must be distinguished sharply from equality at the {\em syntactic}
+%level. We will refer to this latter kind of equality as `identity' and use the
+%special symbol $\equiv$. For example $\lamb{x} x \not\equiv \lamb{y} y$ but
+%$\lamb{x} x = \lamb{y} y$.
+
+Во многих случаях оказывается, что $\alpha$-преобразования не играют роли, 
+в силу чего вместо строгого тождества применяется его вариант~$\equiv_{\alpha}$.
+Это отношение определяется подобно $\lambda$-эквивалентности, но исключительно для
+$\alpha$-преобразований. Например, $(\lamb{x} x) y \equiv_{\alpha} (\lamb{y} y) y$.
+Многие авторы используют его как тождество $\lambda$-термов, тем самым разбивая
+множество термов на соответствующие классы эквивалентности. Существуют 
+альтернативные системы обозначений, например~\cite{debruijn-terms}, в которых
+связанные переменные не имеют имён. В таких системах традиционное понятие 
+тождества совпадает с~$\equiv_{\alpha}$.
+%
+%For many purposes, $\alpha$-conversions are immaterial, and often
+%$\equiv_{\alpha}$ is used instead of strict identity. This is defined like
+%$\lambda$- equality, except that only $\alpha$-conversions are allowed. For
+%example, $(\lamb{x} x) y \equiv_{\alpha} (\lamb{y} y) y$. Many writers use this
+%as identity on $\lambda$- terms, i.e. consider equivalence classes of terms under
+%$\equiv_{\alpha}$. There are alternative formalizations of syntax where bound
+%variables are unnamed \cite{debruijn-terms}, and here syntactic identity
+%corresponds to our $\equiv_{\alpha}$.
+
+\subsection{Экстенсиональность}
+%\subsection{Extensionality}
+Мы уже упоминали ранее, что $\eta$-преобразование воплощает принцип
+{\em экстенсиональности}. В рамках общепринятых философских понятий два 
+свойства называются {\em экстенсионально эквивалентными} 
+(либо {\em коэкстенсивными}), если этими свойствами обладают в точности одни
+и те же объекты. В теории множеств принята аксиома экстенсиональности, согласно
+которой два множества совпадают, если они состоят из одних и тех же элементов.
+Аналогично, будем говорить, что две функции эквивалентны, если области их
+определения совпадают, а значения функций для всевозможных аргументов также
+одинаковы.
+%
+%We have said that $\eta$-conversion embodies a principle of {\em
+%extensionality}. In general philosophical terms, two properties are said to be
+%{\em extensionally} equivalent (or {\em coextensive}) when they are satisfied
+%by exactly the same objects. In mathematics, we usually take an extensional
+%view of sets, i.e. say that two sets are equal precisely if they have the same
+%elements. Similarly, we normally say that two functions are equal precisely if
+%they have the same domain and give the same result on all arguments in that
+%domain.
+
+Введение $\eta$-преобразования делает наше понятие $\lambda$-эквивалентности
+экстенсиональным. В самом деле, пусть~$f\;x$ и~$g\;x$ равны для произвольного
+значения~$x$; в частности, $f\;y = g\;y$, где переменная~$y$ выбирается так,
+чтобы она не была свободной как в~$f$, так и в~$g$. Согласно последнему из
+приведённых выше правил эквивалентности, $\lamb{y} f\;y = \lamb{y} g\;y$.
+Применив дважды $\eta$-преобразование, получаем, что~$f = g$. С другой стороны,
+из экстенсиональности следует, что всевозможные $\eta$-преобразования не 
+нарушают эквивалентности, поскольку согласно правилу $\beta$-редукции
+$(\lamb{x} t\;x)\;y = t\;y$ для произвольного~$y$, если переменная~$x$
+не является свободной в терме~$t$. На этом мы завершаем обсуждение сущности
+$\eta$-преобразования и его влияния на теорию в целом, чтобы уделить больше
+внимания более перспективному с точки зрения вычислимости 
+$\beta$-преобразованию.
+%
+%As a consequence of $\eta$-conversion, our notion of $\lambda$- equality is
+%extensional. Indeed, if $f\;x$ and $g\;x$ are equal for any $x$, then in
+%particular $f\;y = g\;y$ where $y$ is chosen not to be free in either $f$ or
+%$g$. Therefore by the last rule above, $\lamb{y} f\;y = \lamb{y} g\;y$. Now by
+%$\eta$-converting a couple of times at depth, we see that $f = g$. Conversely,
+%extensionality implies that all instances of $\eta$-conversion do indeed give a
+%valid equation, since by $\beta$-reduction, $(\lamb{x} t\;x)\;y = t\;y$ for any
+%$y$ when $x$ is not free in $t$. This is the import of $\eta$-conversion, and
+%having discussed that, we will largely ignore it in favour of the more
+%computationally significant $\beta$-conversion.
+
+\subsection[Лямбда-редукция]{$\lambda$-редукция}
+Отношение $\lambda$-эквивалентности, как и следовало ожидать, является 
+симметричным. Оно достаточно хорошо соответствует интуитивному понятию 
+эквивалентности $\lambda$-термов, но с алгоритмической точки зрения более
+интересен его несимметричный аналог. Определим отношение 
+{\em редукции}~$\goesto$ следующим образом:
+% 
+%$\lambda$- equality, unsurprisingly, is a symmetric relation. Though it captures
+%the notion of equivalence of $\lambda$- terms well, it is more interesting from a
+%computational point of view to consider an asymmetric version. We will define a
+%`reduction' relation $\goesto$ as follows:
+%
+$$ \frac{s \alphas t \mbox{ или } s \betas t \mbox{ или } s \etas t}
+        {s \goesto t} $$
+%
+$$ \frac{}{t \goesto t} $$
+%
+$$ \frac{s \goesto t \mbox{ и } t \goesto u}{s \goesto u} $$
+%
+$$ \frac{s \goesto t}{s\; u \goesto t\; u} $$
+%
+$$ \frac{s \goesto t}{u\; s \goesto u\; t} $$
+%
+$$ \frac{s \goesto t}{\lamb{x} s \goesto \lamb{x} t}$$
+
+В действительности слово <<редукция>> (в частности, термин $\beta$-редукция,
+которым иногда называют $\beta$-преобразования) не отражает точно сути 
+происходящего, поскольку в процессе редукции терм может увеличиваться, 
+например:
+%
+%Actually the name `reduction' (and one also hears $\beta$-conversion called
+%$\beta$-reduction) is a slight misnomer, since it can cause the size of a term
+%to grow, e.g.
+%
+\begin{eqnarray*}
+(\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)
+& \goesto & (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
+(\lamb{x} x\; x\; x) \\
+& \goesto & (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\;
+x)\; (\lamb{x} x\; x\; x) \\ & \goesto & \ldots
+\end{eqnarray*}
+%
+Однако, несмотря на это редукция имеет прямое отношение к процедуре вычисления
+терма, в ходе которой последовательно вычисляются комбинации вида~$f(x)$,
+где $f$~--- $\lambda$-абстракция. Если на некотором этапе оказывается, что
+не могут быть применены никакие правила редукции, кроме 
+$\alpha$-преобразований, то говорят, что терм имеет {\em нормальную форму}.
+%
+%However reduction does correspond to a systematic attempt to evaluate a
+%term by repeatedly evaluating combinations $f(x)$ where $f$ is a $\lambda$-
+%abstraction. When no more reductions except for $\alpha$ conversions are
+%possible we say that the term is in {\em normal form}.
+
+\subsection{Стратегии редукции}
+%\subsection{Reduction strategies}
+Отложив на время наши теоретические рассуждения, напомним их взаимосвязь с
+практикой функционального программирования. Программа на функциональном языке
+представляет собой {\em выражение}, а её выполнение~--- вычисление этого 
+выражения. То есть, в терминах, изложенных выше, мы собираемся начать процесс 
+вычислений с соответствующего терма и применять к нему правила редукции до
+тех пор, пока это возможно. Возникает вопрос: какое из имеющихся правил
+следует применять на каждом этапе? Отношение редукции~--- недетерминированное,
+то есть, для некоторых термов~$t$ найдётся множество термов~$t_i$ таких, 
+что~$t \goesto t_i$. Выбор того или иного варианта оказывается иногда 
+принципиально важным, поскольку может привести как к конечной, так и к 
+бесконечной последовательности редукций (выполнение соответствующей программы 
+при этом либо завершается, либо зацикливается). Например, подвергая редукции
+наиболее глубокий {\em редекс}%
+\footnote{англ.\ {\em redex} (reducible expression)~--- 
+<<редуцируемое выражение>>} 
+в выражении, приведённом ниже, мы получаем бесконечную последовательность 
+редукций:
+%
+%Let us recall, in the middle of these theoretical considerations, the relevance
+%of all this to functional programming. A functional program is an {\em
+%expression} and executing it means evaluating the expression. In terms of the
+%concepts discussed here, we are proposing to start with the relevant term and
+%keep on applying reductions until there is nothing more to be evaluated. But
+%how are we to choose which reduction to apply at each stage? The reduction
+%relation is not deterministic, i.e. for some terms $t$ there are several $t_i$
+%such that $t \goesto t_i$. Sometimes this can make the difference between a
+%finite and infinite reduction sequence, i.e. between a program terminating and
+%failing to terminate. For example, by reducing the innermost {\em redex}
+%(reducible expression) in the following, we have an infinite reduction
+%sequence:
+%
+\begin{eqnarray*}
+& & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)) \\
+& \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
+                            (\lamb{x} x\; x\; x))               \\
+& \goesto & (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x)\;
+                            (\lamb{x} x\; x\; x)\; (\lamb{x} x\; x\; x))  \\
+& \goesto & \cdots
+\end{eqnarray*}
+В то же время, редукция самого внешнего редекса
+%\noindent and so ad infinitum. However the alternative of reducing the
+%outermost redex first gives:
+%
+$$ (\lamb{x} y)\; ((\lamb{x} x\; x\; x)\;(\lamb{x} x\; x\; x)) \goesto y $$
+%
+немедленно ведёт нас к желаемому результату.
+%\noindent immediately, and there are no more reductions to apply.
+
+Значение выбора стратегии редукции окончательно проясняется следующими 
+теоремами, которые мы рассмотрим без доказательств, поскольку они слишком 
+велики для данного учебника. Первая теорема утверждает, что ситуация, 
+с которой мы столкнулись в последнем примере, и её решение достаточно 
+общие, т.~е.\ стратегия редукции самого левого редекса является наилучшей 
+с точки зрения завершимости.
+%
+%The situation is clarified by the following theorems, whose proofs are too long
+%to be given here. The first one says that the situation we have noted above is
+%true in a more general sense, i.e. that reducing the leftmost outermost redex
+%is the best strategy for ensuring termination.
+
+\begin{theorem}
+Если справедливо~$s \goesto t$, где терм~$t$ имеет нормальную форму, то
+последовательность редукций, которая начинается с терма~$s$ и состоит в
+применении правил редукции к самому левому редексу, всегда завершается
+и приводит к терму в нормальной форме.
+%If $s \goesto t$ with $t$ in normal form, then the reduction sequence that
+%arises from $s$ by always reducing the leftmost outermost redex is guaranteed
+%to terminate in normal form.
+\end{theorem}
+
+% LH: В оригинале leftmost outermost, но у Барендрегта просто "самый левый"
+% очень вероятно, что это уже устоявшийся термин.
+%
+Применение этой теоремы требует формального определения понятия 
+{\em самого левого редекса}: для терма~$(\lamb{x} s)\;t$ это он сам,
+для произвольного другого терма вида~$s\;t$ самым левым является самый
+левый редекс~$s$, наконец, для абстракции~$\lamb{x} s$ это тоже самый левый
+редекс~$s$. В рамках принятых в данном пособии обозначений мы будем всегда
+выбирать такой редекс, чтобы соответствующий ему символ~$\lambda$ был 
+расположен левее прочих.
+%
+%Formally, we define the `leftmost outermost' redex recursively: for a term
+%$(\lamb{x} s)\;t$ it is the term itself; for any other term $s\;t$ it is the
+%leftmost outermost redex of $s$, and for an abstraction $\lamb{x} s$ it is the
+%leftmost outermost redex of $s$. In terms of concrete syntax, we always reduce
+%the redex whose $\lambda$ is the furthest to the left.
+
+\subsection{Теорема Чёрча-Россера}
+%\subsection{The Church-Rosser theorem}
+Следующее утверждение, которое мы рассмотрим, широко известно как теорема
+Чёрча-Россера. Оно гласит, что для двух конечных последовательностей редукций,
+начатых с терма~$t$, всегда найдутся две другие последовательности, сводящие
+результаты предыдущих к одному и тому же терму (который, впрочем, может и не
+быть в нормальной форме).
+%
+%The next assertion, the famous Church-Rosser theorem, states that if we start
+%from a term $t$ and perform any two finite reduction sequences, there are
+%always two more reduction sequences that bring the two back to the same term
+%(though of course this might not be in normal form).
+
+\begin{theorem}
+Если~$t \goesto s_1$ и~$t \goesto s_2$, то существует терм~$u$ такой, 
+что~$s_1 \goesto u$ и~$s_2 \goesto u$.
+%
+%If $t \goesto s_1$ and $t \goesto s_2$, then there is a term $u$ such that $s_1
+%\goesto u$ and $s_2 \goesto u$.
+\end{theorem}
+
+Важные следствия данного утверждения:
+%\noindent This has at least the following important consequences:
+
+\begin{corollary}
+Если~$t_1 = t_2$ то найдётся терм~$u$ такой, что~$t_1 \goesto u$ 
+и~$t_2 \goesto u$.
+%
+%If $t_1 = t_2$ then there is a term $u$ with $t_1 \goesto u$ and $t_2 \goesto
+%u$.
+
+\proof 
+Легко показать (при помощи структурной индукции), что отношение 
+$\lambda$-равенства~$=$ представляет собой симметричное транзитивное замыкание
+отношения редукции. Дальнейшее следует по индукции согласно свойствам 
+симметричного транзитивного замыкания. Приведённая ниже диаграмма может
+показаться читателям, не склонным к формальным построениям, более доходчивой:
+%
+%It is easy to see (by structural induction) that the equality relation
+%$=$ is in fact the symmetric transitive closure of the reduction relation. Now
+%we can proceed by induction over the construction of the symmetric transitive
+%closure. However less formally minded readers will probably find the following
+%diagram more convincing:
+
+\begin{picture}(140,140)(-100,-20)
+
+\put(-10,100){$t_1$}
+\put(162,100){$t_2$}
+\put(0,100){\vector(1,-1){20}}
+\put(40,100){\vector(-1,-1){20}}
+\put(40,100){\vector(1,-1){20}}
+\put(80,100){\vector(-1,-1){20}}
+\put(80,100){\vector(1,-1){20}}
+\put(120,100){\vector(-1,-1){20}}
+\put(120,100){\vector(1,-1){20}}
+\put(160,100){\vector(-1,-1){20}}
+\put(20,80){\vector(1,-1){20}}
+\put(60,80){\vector(-1,-1){20}}
+\put(60,80){\vector(1,-1){20}}
+\put(100,80){\vector(-1,-1){20}}
+\put(100,80){\vector(1,-1){20}}
+\put(140,80){\vector(-1,-1){20}}
+\put(40,60){\vector(1,-1){20}}
+\put(80,60){\vector(-1,-1){20}}
+\put(80,60){\vector(1,-1){20}}
+\put(120,60){\vector(-1,-1){20}}
+\put(60,40){\vector(1,-1){20}}
+\put(100,40){\vector(-1,-1){20}}
+\put(76,10){$u$}
+\end{picture}
+
+Мы полагаем, что~$t_1 = t_2$, т.~е.\ существует некоторая последовательность
+редукций в обеих направлениях (зигзагообразная линия в верхней части рисунка),
+которая их объединяет. Теорема Чёрча-Россера позволяет нам заполнить 
+недостающие участки на краях диаграммы, после чего требуемый результат 
+достигается композицией этих редукций.
+%
+%We assume $t_1 = t_2$, so there is some sequence of reductions in both directions
+%(i.e. the zigzag at the top) that connects them. Now the Church-Rosser theorem
+%allows us to fill in the remainder of the sides in the above diagram, and hence
+%reach the result by composing these reductions. \qed
+
+\end{corollary}
+
+\begin{corollary}
+Если~$t = t_1$ и~$t = t_2$, причём~$t_1$ и~$t_2$ имеют нормальную форму,
+то~$t_1\equiv_{\alpha} t_2$, т.~е.\ $t_1$ и~$t_2$ равны с точностью
+до~$\alpha$-преобразований.
+%
+%If $t = t_1$ and $t = t_2$ with $t_1$ and $t_2$ in normal form, then $t_1
+%\equiv_{\alpha} t_2$, i.e. $t_1$ and $t_2$ are equal apart from $\alpha$
+%conversions.
+
+\proof 
+Согласно изложенному выше, найдётся некоторый терм~$u$ такой, 
+что~$t_1 \goesto u$ и~$t_2\goesto u$. Но так как~$t_1$ и~$t_2$ уже имеют
+нормальную форму, последовательность редукций, приводящая к терму~$u$, может
+состоять лишь из $\alpha$-преобразований.
+%
+%By the first corollary, we have some $u$ with $t_1 \goesto u$ and $t_2
+%\goesto u$. But since $t_1$ and $t_2$ are already in normal form, these
+%reduction sequences to $u$ can only consist of alpha conversions. 
+\qed
+\end{corollary}
+
+Таким образом, нормальные формы, если они существуют, являются единственными
+с точностью до $\alpha$-преобразования. Это даёт нам первое обоснование того,
+что отношение $\lambda$-эквивалентности нетривиально, т.~е.\ что существуют
+неэквивалентные термы. Например, поскольку $\lamb{x\; y} x$ 
+и~$\lamb{x\; y} y$ несводимы друг к другу исключительно при помощи 
+$\alpha$-преобразований, они не эквивалентны.
+%
+%Hence normal forms, when they do exist, are unique up to alpha conversion. This
+%gives us the first proof we have available that the relation of $\lambda$- equality
+%isn't completely trivial, i.e. that there are any unequal terms. For example,
+%since $\lamb{x\; y} x$ and $\lamb{x\; y} y$ are not interconvertible by alpha
+%conversions alone, they cannot be equal.
+
+Подытожим важность полученных результатов в свете теории вычислимости. Стратегия
+редукции, в которой на каждом шаге выбирается самый левый редекс,
+считается, в известном смысле, наилучшей, поскольку
+она применима всегда, когда применима любая другая стратегия. Такая стратегия
+получила название {\em нормального порядка редукции}. С другой стороны, 
+{\em любая} другая конечная последовательность редукций будет всегда давать
+тот же самый результат; более того, всегда остаётся возможность прекратить
+применение этой стратегии, перейдя при необходимости к нормальному порядку.
+Мы увидим практическое применение этого принципа далее.
+%
+%Let us sum up the computational significance of all these assertions. In some
+%sense, reducing the leftmost outermost redex is the best strategy, since it
+%will work if any strategy will. This is known as {\em normal order reduction}.
+%On the other hand {\em any} terminating reduction sequence will always give the
+%same result, and moreover it is never too late to abandon a given strategy and
+%start using normal order reduction. We will see later how this translates into
+%practical terms.
+
+\section{Комбинаторы}
+%\section{Combinators}
+Впервые понятие комбинатора и основанная на нём теория были сформулированы
+М.И.~Шейнфинкелем ещё до появления $\lambda$-исчисления~\cite{schonfinkel}. 
+Вскоре после этого аналогичные результаты были получены 
+Карри, независимо от Шейнфинкеля и Чёрча. (Когда Карри ознакомился с 
+работами Шейнфинкеля, он предпринял попытку с ним связаться, но к этому
+времени Шейнфинкель оказался в психиатрической лечебнице.) В данной работе
+мы позволим себе не соблюдать историческую достоверность, изложив теорию 
+комбинаторов как один из аспектов $\lambda$-исчисления.
+%
+%Combinators were actually developed as an independent theory by
+%\citeN{schonfinkel} before $\lambda$- notation came along. Moreover Curry
+%rediscovered the theory soon afterwards, independently of Sch\"onfinkel and of
+%Church. (When he found out about Sch\"onfinkel's work, Curry attempted to
+%contact him, but by that time, Sch\"onfinkel had been committed to a lunatic
+%asylum.) We will distort the historical development by presenting the theory of
+%combinators as an aspect of $\lambda$- calculus.
+
+Будем называть {\em комбинатором} терм $\lambda$-исчисления без свободных 
+переменных. Такие термы также принято называть {\em замкнутыми}, поскольку их
+значение не зависит от значений каких-либо переменных. В дальнейшем в курсе
+функционального программирования мы встретимся с большим количеством полезных
+комбинаторов, но краеугольным камнем теории комбинаторов служит тот факт, что
+на самом деле достаточно лишь немногих из них. Оказывается, что 
+произвольный терм может быть выражен при помощи определённого множества 
+комбинаторов и всевозможных переменных, операция $\lambda$-абстракции 
+становится ненужной. В частности, замкнутый терм может быть представлен 
+исключительно через эти комбинаторы. Дадим их определения:
+%
+%We will define a {\em combinator} simply to be a $\lambda$- term with no free
+%variables. Such a term is also said to be {\em closed}; it has a fixed meaning
+%independent of the values of any variables. Now we will later, in the course of
+%functional programming, come across many useful combinators. But the
+%cornerstone of the theory of combinators is that one can get away with just a
+%few combinators, and express in terms of those and variables {\em any} term at
+%all: the operation of $\lambda$- abstraction is unnecessary. In particular, a
+%closed term can be expressed purely in terms of these few combinators. We start
+%by defining:
+
+\begin{eqnarray*}
+I & = & \lamb{x} x                              \\
+K & = & \lamb{x\; y} x                          \\
+S & = & \lamb{f\; g\; x} (f\; x)(g\; x)
+\end{eqnarray*}
+
+Чтобы легче их запомнить, можно воспользоваться простыми мнемоническими
+правилами.%
+\footnote{Мы не утверждаем, что эти правила имеют под собой историческую основу.}
+Комбинатор~$I$ представляет собой тождественную функцию (<<идентичность>>), 
+комбинатор~$K$ порождает семейство константных%
+\footnote{Шейнфинкель использовал обозначение~$C$, но мы предлагаем своё,
+основанное на нем.\ Konstant, в честь его немецкого происхождения (автор 
+ошибается, М.~И.~Шейнфинкель работал в Германии, но родился в России~--- 
+\textsl{Прим.\ перев.})}
+функций: после применения к аргументу~$a$ он даёт функцию~$\lamb{y} a$.
+Наконец, $S$~--- комбинатор <<совместного применения>>, который принимает
+в качестве аргументов две функции, применяемые к общему аргументу. Докажем
+следующее утверждение:
+%
+%We can motivate the names as follows.\footnote{We are not claiming these are
+%the historical reasons for them.} $I$ is the identity function. $K$ produces
+%constant functions:\footnote{Konstant --- Sch\"onfinkel was German, though in
+%fact he originally used $C$.} when applied to an argument $a$ it gives the
+%function $\lamb{y} a$. Finally $S$ is a `sharing' combinator, which takes two
+%functions and an argument and shares out the argument among the functions. Now
+%we prove the following:
+
+\begin{lemma}\label{lemma-2-6}
+Для произвольного $\lambda$-терма~$t$, не содержащего $\lambda$-абстракций,
+найдётся терм~$u$, который также не содержит $\lambda$-абстракций и 
+представляет собой композицию $S$, $K$, $I$ и переменных, 
+причём~$FV(u) = FV(t) - \{x\}$ и~$u = \lamb{x} t$, т.~е.\ терм~$u$ 
+$\lambda$-равен~$\lamb{x} t$.
+%For any $\lambda$- term $t$ not involving $\lambda$- abstraction, there is a term $u$
+%also not containing $\lambda$- abstractions, built up from $S$, $K$, $I$ and
+%variables, with $FV(u) = FV(t) - \{x\}$ and $u = \lamb{x} t$, i.e. $u$ is
+%$\lambda$--equal to $\lamb{x} t$.
+
+\proof 
+Применим к терму~$t$ структурную индукцию. Согласно условию, он не может
+быть абстракцией, поэтому нам требуется рассмотреть лишь три случая.
+%By structural induction on the term $t$. By hypothesis, it cannot
+%be an abstraction, so there are just three cases to consider.
+
+\begin{itemize}
+
+\item 
+Если $t$~представляет собой переменную, возможны два случая, из которых
+непосредственно следует требуемый вывод: при~$t = x$ мы получаем 
+$\lamb{x} x = I$, иначе, например, при~$t = y$, $\lamb{x} y = K\; y$.
+%
+%If $t$ is a variable, then there are two possibilities. If it is equal to
+%$x$, then $\lamb{x} x = I$, so we are finished. If not, say $t = y$, then
+%$\lamb{x} y = K\; y$.
+
+\item 
+Если~$t$~--- константа~$c$, то~$\lamb{x} c = K\; c$.
+%If $t$ is a constant $c$, then $\lamb{x} c = K\; c$.
+
+\item 
+Если $t$~представляет собой комбинацию термов, например, $s\; u$, то
+согласно индуктивному предположению найдутся термы~$s'$ и~$u'$, которые не
+содержат $\lambda$-абстракций и для которых справедливы 
+равенства~$s' = \lamb{x} s$ и~$u' = \lamb{x} u$. Из этого можно сделать вывод, 
+что $S\;s'\;u'$~является искомым выражением. В самом деле,
+%
+%If $t$ is a combination, say $s\; u$, then by the inductive hypothesis,
+%there are $\lambda$--free terms $s'$ and $u'$ with $s' = \lamb{x} s$ and $u' =
+%\lamb{x} u$. Now we claim $S\;s'\;u'$ suffices. Indeed:
+%
+\begin{eqnarray*}
+S\;s'\;u'\;x & = & S\;(\lamb{x} s)\; (\lamb{x} u)\; x     \\
+             & = & ((\lamb{x} s)\; x) ((\lamb{x} u)\; x)  \\
+             & = & s\; u                                  \\
+             & = & t
+\end{eqnarray*}
+
+Таким образом, применив $\eta$-преобразование, мы получаем
+$S\;s'\;u' = \lamb{x} S\;s'\;u'\; x = \lamb{x} t$, поскольку согласно 
+индуктивному предположению переменная~$x$ не является свободной в термах~$s'$ 
+либо~$u'$.
+%
+%Therefore, by $\eta$-conversion, we have $S\;s'\;u' = \lamb{x} S\;s'\;u'\; x =
+%\lamb{x} t$, since by the inductive hypothesis $x$ is not free in $s'$ or $u'$.
+%
+\end{itemize}
+\qed
+\end{lemma}
+
+\begin{theorem}
+Для произвольного $\lambda$-терма~$t$ существует не содержащий 
+$\lambda$-абстракций терм~$t'$, полученный композицией~$K$, $I$ и переменных,
+такой, что~$FV(t') = FV(t)$ и~$t' = t$.
+%For any $\lambda$- term $t$, there is a $\lambda$--free term $t'$ built up from $S$,
+%$K$, $I$ and variables, with $FV(t') = FV(t)$ and $t' = t$.
+
+\proof 
+Применим структурную индукцию к терму~$t$ и воспользуемся 
+леммой~\ref{lemma-2-6}. Например, если терм~$t$ имеет вид~$\lamb{x} s$, то мы
+сначала можем получить, согласно индуктивному предположению, терм~$s'$~---
+свободный от $\lambda$-абстракций эквивалент~$s$. Далее применим лемму 
+к~$\lamb{x} s'$. Прочие случаи очевидны.
+%By structural induction on $t$, using the lemma. For example, if $t$ is
+%$\lamb{x} s$, we first find, by the inductive hypothesis, a $\lambda$--free
+%equivalent $s'$ of $s$. Now the lemma can be applied to $\lamb{x} s'$. The
+%other cases are straightforward. 
+\qed
+
+\end{theorem}
+
+Это примечательное утверждение может быть даже усилено, поскольку 
+комбинатор~$I$ выражается через~$S$ и~$K$. Отметим, что для произвольного~$A$
+%This remarkable fact can be strengthened, since $I$ is definable in terms of
+%$S$ and $K$. Note that for any $A$:
+%
+\begin{eqnarray*}
+S\;K\;A\;x & = & (K\; x) (A\; x)                \\
+           & = & (\lamb{y} x) (A\; x)           \\
+           & = & x
+\end{eqnarray*}
+Отсюда, применив $\eta$-преобразование, получаем, что~$I = S\;K\;A$ для 
+любых~$A$. Однако, по причинам, которые станут яснее после знакомства
+с понятием типа, наиболее удобно положить~$A = K$. Таким образом, $I = S\;K\;K$,
+что даёт нам возможность устранить все вхождения~$I$ в комбинаторные выражения.
+%So again by $\eta$-converting, we see that $I = S\;K\;A$ for any $A$. It is
+%customary, for reasons that will become clear when we look at types, to use $A
+%= K$. So $I = S\;K\;K$, and we can avoid the use of $I$ in our combinatory
+%expression.
+
+Заметим, что приведённые выше доказательства имеют конструктивный характер,
+поскольку предлагают конкретные процедуры получения по заданному терму 
+эквивалентного комбинаторного выражения. Процесс его построения идёт в 
+направлении снизу вверх, и для каждой $\lambda$-абстракции, которая по 
+построению имеет тело, свободное от $\lambda$-абстракций, применяются
+сверху вниз преобразования, изложенные в лемме. 
+%Note that the proofs above are constructive, in the sense that they guide one
+%in a definite procedure that, given a $\lambda$- term, produces a combinator
+%equivalent. One proceeds bottom-up, and at each $\lambda$- abstraction, which by
+%construction has a $\lambda$--free body, applies the top-down transformations given
+%in the lemma.
+
+Несмотря на то, что мы рассматриваем комбинаторы как некоторые термы 
+$\lambda$-исчисления, на их основе можно сформулировать независимую теорию. Её
+построение начинается с определения формальных правил конструирования выражений,
+в которые не входит $\lambda$-абстракция, но входят комбинаторы. Далее
+вместо $\alpha$, $\beta$ и~$\eta$-преобразований вводятся правила 
+преобразования для выражений, включающих комбинаторы, например, 
+$K\; x\; y \goesto x$. Такая теория будет иметь множество аналогий в 
+традиционном $\lambda$-исчислении, например, теорема Чёрча-Россера оказывается
+справедливой и для приведённого выше определения редукции. Кроме того, 
+полностью устраняются сложности со связыванием переменных.
+% ISSUE:  в оригинале "bound variables", но возможно, имеется в виду variable capture?
+Тем не менее, мы считаем полученный формализм не слишком интуитивным,
+поскольку комбинаторные выражения нередко бывают весьма неясными.
+%
+%Although we have presented combinators as certain $\lambda$- terms, they can also
+%be developed as a theory in their own right. That is, one starts with a formal
+%syntax excluding $\lambda$- abstractions but including combinators. Instead of
+%$\alpha$, $\beta$ and $\eta$ conversions, one posits {\em conversion rules} for
+%expressions involving combinators, e.g. $K\; x\; y \goesto x$. As an
+%independent theory, this has many analogies with $\lambda$- calculus, e.g. the
+%Church-Rosser theorem holds for this notion of reduction too. Moreover, the
+%ugly difficulties connected with bound variables are avoided completely.
+%However the resulting system is, we feel, less intuitive, since combinatory
+%expressions can get rather obscure.
+
+Помимо важной роли, которую комбинаторы играют в логике, они также имеют
+и определённый практический потенциал. Как мы уже кратко упоминали (подробное
+изложение ожидается в следующих разделах), $\lambda$-исчисление может считаться
+простым функциональным языком, основой для более развитых и практически 
+применимых языков, наподобие~ML. Теорема о комбинаторной полноте даёт основание
+говорить, что выражения $\lambda$-исчисления могут быть <<скомпилированы>>
+в <<машинный код>> комбинаторов. Эта терминология из теории языковых 
+процессоров оказывается на самом деле вполне уместной. Комбинаторы применялись
+как средство реализации функциональных языков, в том числе и на уровне
+аппаратного обеспечения, предназначенного для вычисления комбинаторных 
+выражений.
+%
+%Apart from their purely logical interest, combinators have a certain practical
+%potential. As we have already hinted, and as will become much clearer in the
+%later chapters, $\lambda$- calculus can be seen as a simple functional language,
+%forming the core of real practical languages like ML. We might say that the
+%theorem of combinatory completeness shows that $\lambda$- calculus can be `compiled
+%down' to a `machine code' of combinators. This computing terminology is not as
+%fanciful as it appears. Combinators have been used as an implementation
+%technique for functional languages, and real hardware has been built to
+%evaluate combinatory expressions.
+
+% \section{Proof of the Church-Rosser theorem*}
+%
+% \section{The semantics of untyped $\lambda$- calculus*}
+%
+% Should discuss stuff in general, and perhaps give $\powerset(\omega)$ or even
+% $D_\infty$.
+%
+% Term model is possible and by CRT nontrivial, but there's little point; such a
+% model is not so likely to give new insight.
+
+\section*{Дополнительная литература}
+Работа Барендрегта по теории $\lambda$-исчисления~\cite{barendregt} отличается
+одновременно энциклопедичностью и доступностью. Другой популярный учебник
+принадлежит перу Р.~Хиндли и Дж.~Селдина~\cite{hindley-seldin}. Обе эти книги 
+содержат доказательства результатов, которые мы приводим без обоснования. 
+М.~Гордон~\cite[часть 2]{gordon-plt} даёт упрощённое изложение предмета,
+ориентированное на его применение в прикладной математике. Существенная часть
+% "computer science" = "prikladnaia matematika" (c) D.E.Knuth
+данного курса базируется на последней работе.
+%
+%An encyclopedic but clear book on $\lambda$- calculus is \citeN{barendregt}.
+%Another popular textbook is \citeN{hindley-seldin}. Both these contain proofs
+%of the results that we have merely asserted. A more elementary treatment
+%focused towards computer science is Part II of \citeN{gordon-plt}. Much of our
+%presentation here and later is based on this last book.
+
+\section*{Упражнения}
+
+\begin{enumerate}
+
+\item 
+Найдите нормальную форму терма~$(\lamb{x\; x\; x} x)\; a\; b\; c$.
+%
+%Find a normal form for $(\lamb{x\; x\; x} x)\; a\; b\; c$.
+
+\item 
+Пусть~$twice = \lamb{f\; x} f(f x)$. Каков интуитивный смысл~$twice$?
+Найдите нормальную форму~$twice\; twice\; twice\; f\; x$. (Напомним, что
+операция применения функции левоассоциативна.)
+%
+%Define $twice = \lamb{f\; x} f(f x)$. What is the intuitive meaning of
+%$twice$? Find a normal form for $twice\; twice\; twice\; f\; x$. (Remember that
+%function application associates to the left.)
+
+\item 
+Найдите терм~$t$ такой, что~$t \betas t$. Можно ли утверждать, что терм
+имеет нормальную форму тогда и только тогда, когда из $t \goesto t'$
+следует~$t \equiv_{\alpha}t'$?
+%
+%Find a term $t$ such that $t \betas t$. Is it true to say that a term is
+%in normal form if and only if whenever $t \goesto t'$ then $t \equiv_{\alpha}
+%t'$?
+
+\item 
+В каком случае справедливо~$s [t/x] [u/y] \equiv_{\alpha} s [u/y] [t/x]$?
+%
+%What are the circumstances under which $s [t/x] [u/y] \equiv_{\alpha} s
+%[u/y] [t/x]$?
+
+\item 
+Постройте выражение, равносильное~$\lamb{f\; x} f(x\; x)$, используя лишь 
+комбинаторы~$I$, $K$ и~$S$.
+%
+%Find an equivalent in terms of the $S$, $K$ and $I$ combinators alone for
+%$\lamb{f\; x} f(x\; x)$.
+
+\item 
+Найдите {\em единственный} комбинатор~$X$ такой, что все $\lambda$-термы
+эквивалентны термам, построенным композицией~$X$ и переменных. Указание:
+положите~$A = \lamb{p} p\; K\; S\; K$, а затем рассмотрите~$A\; A\; A$ 
+и~$A\;(A\; A)$.
+%
+%Find a {\em single} combinator $X$ such that all $\lambda$-terms are
+%equal to a term built from $X$ and variables. You may find it helpful to
+%consider $A = \lamb{p} p\; K\; S\; K$ and then think about $A\; A\; A$ and $A\;
+%(A\; A)$.
+
+\item 
+Докажите, что терм~$X$ является комбинатором неподвижной точки тогда и только
+тогда, когда он представляет собой неподвижную точку комбинатора~$G$ такого, 
+что~$G = \lamb{y\; m} m(y\; m)$.
+%
+%Prove that any $X$ is a fixed point combinator if and only if it is
+%itself a fixed point of $G$, where $G = \lamb{y\; m} m(y\; m)$.
+
+\end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
+
+% LocalWords:  Рассела

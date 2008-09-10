@@ -1,0 +1,864 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+\defverbatim[colored]\ExampleItlist{
+  \begin{lstlisting}[frame=single]
+  #let rec itlist f =
+     fun [] b -> b
+       | (h::t) b -> f h (itlist f t b);;
+  itlist : ('a -> 'b -> 'b) ->
+           'a list -> 'b -> 'b = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistO{
+  \begin{lstlisting}[frame=single]
+  #let sum l =
+     itlist (fun x sum -> x + sum) l 0;;
+  sum : int list -> int = <fun>
+  #sum [1;2;3;4;5];;
+  - : int = 15
+  #sum [];;
+  - : int = 0
+  #sum [1;1;1;1];;
+  - : int = 4
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOO{
+  \begin{lstlisting}[frame=single]
+  #let sum l = itlist (prefix +) l 0;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOOO{
+  \begin{lstlisting}[frame=single]
+  #let sum l = itlist (prefix *) l 1;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOOOO{
+  \begin{lstlisting}[frame=single]
+  #let filter p l =
+     itlist (fun x s -> if p x then x::s
+                        else s) l [];;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOOOOO{
+  \begin{lstlisting}[frame=single]
+  #let forall p l =
+     itlist (fun h a -> p(h) & a) l true;;
+  #let exists p l =
+     itlist (fun h a -> p(h) or a) l false;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOOOOOO{
+  \begin{lstlisting}[frame=single]
+  #let length l =
+     itlist (fun x s -> s + 1) l 0;;
+  #let append l m =
+     itlist (fun h t -> h::t) l m;;
+  #let map f l =
+     itlist (fun x s -> (f x)::s) l [];;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleItlistOOOOOOO{
+  \begin{lstlisting}[frame=single]
+  #let mem x l =
+     exists (fun y -> y = x) l;;
+  #let insert x l =
+    if mem x l then l else x::l;;
+  #let union l1 l2 =
+     itlist insert l1 l2;;
+  #let setify l =
+     union l [];;
+  #let Union l =
+     itlist union l [];;
+  #let intersect l1 l2 =
+     filter (fun x -> mem x l2) l1;;
+  #let subtract l1 l2 =
+     filter (fun x -> not mem x l2) l1;;
+  #let subset l1 l2 =
+     forall (fun t -> mem t l2) l1;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleOldFact{
+  \begin{lstlisting}[frame=single]
+  #let rec fact n = if n = 0 then 1
+                    else n * fact(n - 1);;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleNewFact{
+  \begin{lstlisting}[frame=single]
+  #let rec tfact x n =
+     if n = 0 then x
+     else tfact (x * n) (n - 1);;
+  tfact : int -> int -> int = <fun>
+  #let fact n = tfact 1 n;;
+  fact : int -> int = <fun>
+  #fact 6;;
+  - : int = 720
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFEFact{
+  \begin{lstlisting}[frame=single]
+  #let fact n =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1 n;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleFEFactO{
+  \begin{lstlisting}[frame=single]
+  #let fact =
+     let rec tfact x n =
+       if n = 0 then x
+       else tfact (x * n) (n - 1) in
+     tfact 1;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleGCCons{
+  \begin{lstlisting}[frame=single]
+  let l = 1::[] in tl l;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleAppendOpt{
+  \begin{lstlisting}[frame=single]
+  #let rec append l1 l2 =
+     match l1 with
+       [] -> l2
+     | (h::t) -> h::(append t l2);;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRevOpt{
+  \begin{lstlisting}[frame=single]
+  #let rec rev =
+     fun [] -> []
+       | (h::t) -> append (rev t) [h];;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRevOptO{
+  \begin{lstlisting}[frame=single]
+  #let rev =
+     let rec reverse acc =
+       fun [] -> acc
+         | (h::t) -> reverse (h::acc) t in
+     reverse [];;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePMOpt{
+  \begin{lstlisting}[frame=single]
+  fun [] -> []
+    | (h::t) -> if h < 0 then t else h::t;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePMOptO{
+  \begin{lstlisting}[frame=single]
+  fun [] -> []
+    | (h::t as l) -> if h < 0 then t else l;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleDivZ{
+  \begin{lstlisting}[frame=single]
+  #1 / 0;;
+  Uncaught exception: Division_by_zero
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleExnDecl{
+  \begin{lstlisting}[frame=single]
+  #exception Died;;
+  Exception Died defined.
+  #exception Failed of string;;
+  Exception Failed defined.
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleExnO{
+  \begin{lstlisting}[frame=single]
+  #raise (Failed "I don't know why");;
+  Uncaught exception:
+    Failed "I don't know why"
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleExnOO{
+  \begin{lstlisting}[frame=single]
+  #exception Head_of_empty;;
+  Exception Head_of_empty defined.
+  #let hd = fun [] -> raise Head_of_empty
+              | (h::t) -> h;;
+  hd : 'a list -> 'a = <fun>
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleExnOOO{
+  \begin{lstlisting}[frame=single]
+  #let headstring sl =
+     try hd sl
+     with Head_of_empty -> ""
+        | Failed s -> "Failure because "^s;;
+  headstring : string list -> string = <fun>
+  #headstring ["hi"; "there"];;
+  - : string = "hi"
+  #headstring [];;
+  - : string = ""
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefO{
+  \begin{lstlisting}[frame=single]
+  #let x = ref 1;;
+  x : int ref = ref 1
+  #!x;;
+  - : int = 1
+  #x := 2;;
+  - : unit = ()
+  #!x;;
+  - : int = 2
+  #x := !x + !x;;
+  - : unit = ()
+  #x;;
+  - : int ref = ref 4
+  #!x;;
+  - : int = 4
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefOO{
+  \begin{lstlisting}[frame=single]
+  #make_vect n x;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefOOO{
+  \begin{lstlisting}[frame=single]
+  #vect_item v m;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefOOOO{
+  \begin{lstlisting}[frame=single]
+  #vect_assign v m y;;
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefOOOOO{
+  \begin{lstlisting}[frame=single]
+  #let v = make_vect 5 0;;
+  v : int vect = [|0; 0; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 0
+  #vect_assign v 1 10;;
+  - : unit = ()
+  #v;;
+  - : int vect = [|0; 10; 0; 0; 0|]
+  #vect_item v 1;;
+  - : int = 10
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExampleRefOOOOOO{
+  \begin{lstlisting}[frame=single]
+  #vect_item v 5;;
+  Uncaught exception:
+    Invalid_argument "vect_item"
+  \end{lstlisting}}
+
+\defverbatim[colored]\ExamplePolyTypes{
+  \begin{lstlisting}[frame=single]
+  #let l = ref [];;
+  l : '_a list ref = ref []
+  #l := [1];;
+  #hd(!l) = true;;
+  \end{lstlisting}}
+
+\frame{\titlepage}
+
+\section*{Лекция 8. Эффективный ML}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+
+  \item Использование стандартных комбинаторов
+    % \item Using standard combinators
+    \maybepause
+
+  \item Хвостовая рекурсия и аккумуляторы
+    % \item Tail recursion and accumulators
+    \maybepause
+
+  \item Принудительное вычисление
+    % \item Forcing evaluation
+    \maybepause
+
+  \item Минимизация операций cons
+    % \item Minimizing consing
+    \maybepause
+
+  \item Исключения
+    % \item Exceptions
+    \maybepause
+
+  \item Ссылки и массивы
+    % \item References and arrays
+    \maybepause
+
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Использование стандартных комбинаторов}
+  % \heading{Using standard combinators}
+
+  Часто получается, что {\em комбинаторы} оказываются очень полезными:
+  используя их, мы можем реализовать практически всё что угодно.
+  % It often turns out that a few {\em combinators} are very useful: we
+  % can implement practically anything by plugging them together.
+
+  Это правда, потому что у нас есть функции высшего порядка.
+  % This is particularly true because we can have higher order functions.
+
+  Например, функцию {\tt itlist}:
+  % For example, the {\tt itlist} function:
+  \alert{$$ \BA \mbox{itlist}\; f\; [x_1;\; x_2;\; \ldots \;; x_n]\; b\\ =
+    f\; x_1\; (f\; x_2\; (f\; x_3\; ( \cdots (f\; x_n\; b)))) \EA$$}
+  можно часто использовать чтобы избежать явно рекурсивных определений
+  функций над списками.  Мы определяем её как:
+  % can often be used to avoid explicit recursive definitions over lists. We define
+  % it as:
+
+  \ExampleItlist
+}
+
+\frame{
+  \frametitle{Примеры Itlist (1)}
+  % \heading{Itlist examples (1)}
+
+  Например, вот функция для суммирования всех элементов списка:
+  % For example, here is a function to add up all the elements of a list:
+
+  \ExampleItlistO
+
+  По другому можно записать просто:
+  % An alternative coding is simply:
+
+  \ExampleItlistOO
+
+  Если же мы хотим перемножить элементы, то мы поменяем определение на:
+  % If we want to multiply the elements instead, we change it to:
+
+  \ExampleItlistOOO
+}
+
+\frame{
+  \frametitle{Примеры Itlist (2)}
+  % \heading{Itlist examples (2)}
+
+  Вот функция по отбору элементов:
+  % Here is a filtering function:
+
+  \ExampleItlistOOOO
+
+  а вот логические операции над списками:
+  % and here are some logical operations over lists:
+
+  \ExampleItlistOOOOO
+
+  и несколько альтернативных определений уже знакомых функций:
+  % and some old favourites:
+
+  \ExampleItlistOOOOOO
+}
+
+\frame{
+  \frametitle{Примеры Itlist (3)}
+  % \heading{Itlist examples (3)}
+
+  Мы можем реализовать операции над множествами, используя эти
+  комбинаторы как строительные блоки.
+  % We can implement set operations quite directly using these combinators as
+  % building blocks.
+
+  \ExampleItlistOOOOOOO
+}
+
+\frame{
+  \frametitle{Сохранение локальных переменных}
+  % \heading{Storing local variables}
+
+  Вспомним наше определение факториала:
+  % Recall our definition of the factorial:
+
+  \ExampleOldFact
+
+  Вызов {\tt fact 6} порождает другой вызов {\tt fact 5} (и так
+  далее), но вычислителю нужно сохранять старое значение {\tt 6},
+  чтобы в дальнейшем произвести умножение.
+  % A call to {\tt fact 6} causes another call to {\tt fact 5} (and
+  % beyond), but the computer needs to save the old value {\tt 6} in order
+  % to do the final multiplication.
+
+  Поэтому, локальные переменные функции, в нашем случае {\tt n},
+  не могут храниться в фиксированном месте, потому что при каждом вызове
+  функции нужны выделенные копии переменных.
+  % Therefore, the local variables of a function, in this case {\tt n},
+  % cannot be stored in a fixed place, because each instance of the function needs
+  % its own copy.
+
+  Вместо этого, при каждом вызове функции выделяется место в {\em стеке}.
+  % Instead each instance of the function is allocated a frame on a {\em stack}.
+
+  Этот способ в ML схож с другими языками, которые поддерживают
+  рекурсию, включая C.
+  % This technique is similar in ML to most other languages that support recursion,
+  % including C.
+
+}
+
+\frame{
+  \frametitle{Стек}
+  % \heading{The stack}
+
+  Вот воображаемый снимок стека во время вычисления последнего вызова
+  {\tt fact}, т.е. во время вычисления {\tt fact 0}:
+  % Here is an imaginary snapshot of the stack during the evaluation of the
+  % innermost call of {\tt fact}:
+
+  \bigskip
+  {\color{Green}
+    \begin{picture}(140,140)(50,0)
+      \put(140,0){\line(0,1){150}}
+      \put(220,0){\line(0,1){150}}
+      \put(140,0){\line(1,0){80}}
+      \put(60,0){\tt SP}
+      \put(80,4){\vector(1,0){60}}
+      \put(165,6){$n = 0$}
+      \put(140,20){\line(1,0){80}}
+      \put(165,26){$n = 1$}
+      \put(140,40){\line(1,0){80}}
+      \put(165,46){$n = 2$}
+      \put(140,60){\line(1,0){80}}
+      \put(165,66){$n = 3$}
+      \put(140,80){\line(1,0){80}}
+      \put(165,86){$n = 4$}
+      \put(140,100){\line(1,0){80}}
+      \put(165,106){$n = 5$}
+      \put(140,120){\line(1,0){80}}
+      \put(165,126){$n = 6$}
+      \put(140,140){\line(1,0){80}}
+    \end{picture}
+  }
+
+  Заметим, что используется порядка \alert{$n$} фреймов стека, когда у
+  нас \alert{$n$} вложенных рекурсивных вызовов.  Во многих ситуациях это
+  очень расточительно.
+  % Note that we use about \alert{$n$} words of storage when there are \alert{$n$}
+  % nested recursive calls. In many situations this is very wasteful.
+
+}
+
+\frame{
+  \frametitle{Хвостовая рекурсия}
+  % \heading{A tail recursive version}
+
+  Теперь, в противопоставление старому определению, рассмотрим следующее
+  определение функции факториала:
+  % Now, by contrast, consider the following implementation of the factorial
+  % function:
+
+  \ExampleNewFact
+
+  Рекурсивный вызов~-- итоговое выражение, после него никаких вычислений
+  не происходит; оно не является подвыражением, частью другого
+  выражения.
+
+  Подобные вызовы называются {\em хвостовыми вызовами}, потому что самые
+  последние в теле функции.
+
+  А функция, в которой все рекурсивные вызовы суть хвостовые, называется
+  функцией с {\em хвостовой рекурсией}.
+
+  % The recursive call is the whole expression; it does not occur as a proper
+  % subexpression of some other expression involving values of variables.
+
+  % Such a call is said to be a {\em tail call} because it is the very last thing
+  % the calling function does.
+
+  % A function where all recursive calls are tail calls is said to be {\em tail
+  %   recursive}.
+}
+
+\frame{
+  \frametitle{Зачем нужна хвостовая рекурсия?}
+  % \heading{Why tail recursion?}
+
+  Компилятор достаточно умён, чтобы понять, что для функций с хвостовой
+  рекурсией можно использовать одно и тоже место в памяти для хранения
+  локальных переменных при рекурсивных вызовах.
+  % If a function is tail recursive, the compiler is clever enough to realize that
+  % the same area of storage can be used for the local variables of each instance.
+
+  Мы избежим переполнения стека.
+  % We avoid using all that stack.
+
+  Дополнительный аргумент {\tt x} функции {\tt tfact} называется {\em
+    аккумулятором}, потому что он накапливает промежуточные результаты по
+  ходу рекурсивных вызовов и, в конце концов, возвращается как значение
+  функции.
+  % The additional argument {\tt x} of the {\tt tfact} function is
+  % called an {\em accumulator}, because it accumulates the result as the recursive
+  % calls stack up, and is then returned at the end.
+
+  Определение функций таким образом, является общепринятым способом
+  написания функций с хвостовой рекурсией.
+  % Working in this way, rather than modifying the return value on the way back up,
+  % is a common way of making functions tail recursive.
+
+  В этом смысле, реализация функции с хвостовой рекурсией, использующая
+  аккумуляторы соответствует итеративной версии с использованием
+  присваиваний и while-циклов.
+  % In a sense, a tail recursive implementation using accumulators corresponds to
+  % an iterative version using assignments and while-loops.
+
+  Единственная разница это то что мы явно передаём состояние.
+  % The only difference is that we pass the state around explicitly.
+}
+
+\frame{
+  \frametitle{Принудительное вычисление (1)}
+  % \heading{Forcing evaluation (1)}
+
+  Вспомним что ML не вычисляет выражения под $\lambda$-абстракциями.
+  Поэтому иногда выгодно вывести выражения за пределы
+  $\lambda$-абстракции, когда они не зависят от значения связанной
+  переменной.
+  % Recall that ML does not evaluate inside lambdas. Therefore it sometimes pays to
+  % pull expressions outside a lambda when they do not depend on the value of the
+  % bound variable.
+
+  Например, мы можем написать эффективную функцию для вычисления
+  факториала, сделав {\tt tfact} локальной.
+  % For example, we might code the efficient factorial by making {\tt tfact}
+  % local:
+
+  \ExampleFEFact
+
+  Однако, let-выражение рекурсивной функции {\tt tfact} не
+  вычисляется пока {\tt fact} не получит свои аргументы.
+  % However the binding of the recursive function to {\tt tfact} does not
+  % get evaluated until {\tt fact} sees its arguments.
+
+  Более того, оно вычисляется каждый раз даже если не зависит от {\tt
+    n}.
+  % Moreover, it gets reevaluated each time even though it doesn't depend on
+  % {\tt n}.
+}
+
+\frame{
+  \frametitle{Принудительное вычисление (2)}
+  % \heading{Forcing evaluation (2)}
+
+  Лучше написать следующим образом:
+  % A better coding is as follows:
+
+  \ExampleFEFactO
+
+  При заданном аргументе {\tt 6}, этот код примерно на $20 \%$
+  быстрее.  В случаях же когда подвыражения приводят к б'{о}льшим
+  вычислениям, то разница может быть впечатляющей.
+  % This is about $20 \%$ faster when called on the argument {\tt 6}. In
+  % cases where the subexpression involves much more evaluation, the difference can
+  % be spectacular.
+
+  Большинство компиляторов автоматически не оптимизируют код таким
+  образом.
+  % Most compilers do not do such optimizations automatically.
+
+  Эта проблема подпадает под основное направление большой научной
+  области~--- {\em частичных вычислений}.
+  % However it falls under the general heading of {\em partial evaluation}, a big
+  % research field.
+}
+
+\frame{
+  \frametitle{Минимизация операций cons (1)}
+  % \heading{Minimizing consing (1)}
+
+  Память, используемая конструкторами типа (<<cons-ячейки>>), не
+  выделяется и не освобождается таким же простым способом как и на
+  стеке.
+  % The space used by type constructors (<<cons cells>>) is not allocated and
+  % deallocated in such as straightforward way as stack space.
+
+  В общем случае достаточно сложно понять когда определённая cons-ячейка
+  занята и когда её можно использовать повторно.  Например:
+  % In general, it is difficult to work out when a certain cons cell is in use, and
+  % when it is available for recycling. For example in:
+
+  \ExampleGCCons
+
+  \noindent cons-ячейку можно сразу же освобождать.  Однако если {\tt
+    l} был передан различным функциям, то во время компиляции
+  невозможно определить когда эта cons-ячейка больше не нужна.
+  % \noindent the cons cell can be reused immediately. However if {\tt l} is
+  % passed to other functions, it is impossible to decide at compile-time when the
+  % cons cell is no longer needed.
+
+  Поэтому, в функциональных языках необходимо время от времени проверять
+  какая часть памяти больше не используется и освобождать её для
+  дальнейших вычислений.  Такой процесс называется {\em сборка мусора}.
+  % Therefore, space in functional languages has to be reclaimed by analyzing
+  % memory periodically and deciding which bits are needed. The remainder is then
+  % reclaimed. This process is known as {\em garbage collection}.
+
+}
+
+\frame{
+  \frametitle{Минимизация операций cons (2)}
+  % \heading{Minimizing consing (2)}
+
+  Часто мы можем сделать программы более эффективными по времени
+  выполнения и по использованию ресурсов уменьшив операции cons.  Один
+  простой приём заключается в уменьшении использования {\tt
+    append}.  Посмотрев на определение функции:
+  % We can often make programs more space and time efficient by reducing consing.
+  % One simple trick is to reduce the usage of {\tt append}. By looking at
+  % the definition:
+
+  \ExampleAppendOpt
+
+  можно увидеть что она порождает \alert{$n$} cons-ячеек, где \alert{$n$}
+  длина первого аргумента.  Например, наше определение реверсирования:
+  % we can see that it generates \alert{$n$} cons cells where \alert{$n$} is the
+  % length of the first argument. For example, our implementation of reversal:
+
+  \ExampleRevOpt
+
+  очень не эффективно, оно порождает порядка \alert{$n^2 / 2$}
+  cons-ячеек, где \alert{$n$} это длина списка.
+  % is very inefficient, generating about \alert{$n^2 / 2$} cons cells, where \alert{
+  %   $n$} is the length of the list.
+}
+
+\frame{
+  \frametitle{Минимизация операций cons (3)}
+  % \heading{Minimizing consing (3)}
+
+  Лучше реализовать так:
+  % A far better version is:
+
+  \ExampleRevOptO
+
+  Это определение порождает только \alert{$n$} cons-ячеек и имеет
+  дополнительное преимущество~-- за счёт хвостовой рекурсии сохраняет
+  стековую память.
+  % This only generates \alert{$n$} cons cells, and has the additional merit of
+  % being tail recursive, so we save stack space.
+
+  Также, используя {\tt as}, можно избежать операций cons при
+  сопоставлении с образцом, например вместо:
+  % One can also avoid consing in pattern-matching by using {\tt as}, e.g.
+  % instead of rebuilding a cons cell:
+
+  \ExamplePMOpt
+
+  написав
+  % using
+
+  \ExamplePMOptO
+}
+
+\frame{
+  \frametitle{Исключения (1)}
+  % \heading{Exceptions (1)}
+
+  Все ошибки ML, например неудавшиеся сопоставления или деление на ноль,
+  сигнализируются посредством распространяющихся {\em исключений}:
+  % ML's errors, e.g. matching failures and division by zero, are all signalled by
+  % propagating {\em exceptions}:
+
+  \ExampleDivZ
+
+  Во всех этих случаях компилятор сообщает о <<необработанном
+  исключении>>.  Название предполагает, что исключения можно
+  <<обрабатывать>>.
+  % In all these cases the compiler complains about an <<uncaught exception>>. As the
+  % error message suggests, it is possible to <<catch>> them.
+
+  Для {\em исключений} есть тип {\tt exn}, который фактически
+  является рекурсивным типом.  В отличии от обычных типов, для типа
+  {\tt exn} допустимо вводить конструкторы в любом месте
+  программы, используя объявления исключений, например:
+  % There is a type {\tt exn} of {\em exceptions}, which is effectively a
+  % recursive type. Unlike with ordinary types, one can add new constructors for
+  % the type {\tt exn} at any point in the program via an exception
+  % declaration, e.g.
+
+  \ExampleExnDecl
+}
+
+\frame{
+  \frametitle{Исключения (2)}
+  % \heading{Exceptions (2)}
+
+  Можно явно вызывать исключения используя конструктор {\tt
+    raise}, например:
+  % One can explicitly generate an exception using the {\tt raise}
+  % construct, e.g.
+
+  \ExampleExnO
+
+  Мы можем создать своё собственное исключение на случай попытки взять
+  первый элемент в пустом списке:
+  % For example, we might invent our own exception to cover the case of taking the
+  % head of an empty list:
+
+  \ExampleExnOO
+}
+
+\frame{
+  \frametitle{Исключения (3)}
+  % \heading{Exceptions (3)}
+
+  Можно {\em перехватывать} и обрабатывать исключения с помощью
+  конструкции {\tt try \ldots with}, сопровождаемой вариантами
+  исключений, например:
+  % One can {\em catch} exceptions using {\tt try \ldots with} followed by a
+  % series of patterns to match exceptions, e.g.
+
+  \ExampleExnOOO
+
+  Есть мнение, что исключения не совсем императивная возможность.  Мы
+  можем представить себе, что тип исключений скрыто добавляется к типам
+  возвращаемых значений каждой функции.
+  % On one view, exceptions are not really imperative features. We can imagine a
+  % hidden type of exceptions tacked onto the return type of each function.
+
+  В любом случае, часто исключения весьма полезны!
+  % Anyway, they are often quite useful!
+}
+
+\frame{
+  \frametitle{Ссылки (1)}
+  % \heading{References (1)}
+
+  В ML есть настоящие переменные, к которым можно присваивать, и
+  выражения могут в качестве побочного эффекта изменять значения этих
+  переменных.
+  % ML does have real assignable variables, and expressions can, as a side-effect,
+  % modify the values of these variables.
+
+  Доступ к переменным осуществляется с помощью {\em ссылок} (указателей,
+  говоря языком C), и ссылки в свою очередь рассматриваются в ML как
+  обычные значения.
+  % They are explicitly accessed via {\em references} (pointers in C parlance) and
+  % the pointers themselves behave more like ordinary ML values.
+
+  Чтобы создать новую ячейку памяти и инициализировать её значением
+  {\tt x} нужно записать {\tt ref x}.  Это выражение
+  возвращает соответствующую ссылку, т.е. указатель на вновь созданную
+  ячейку.
+  % One sets up a new assignable memory cell with the initial contents {\tt
+  %   x} by writing {\tt ref x}. This expression returns the corresponding
+  % reference, i.e. a pointer to it.
+
+  Изменяют содержимое ячейки через указатель.
+  % One manipulates the contents via the pointer.
+
+  Этот подход довольно похож на использование указателей в C: например
+  когда требуется использовать <<изменяемые параметры>>~-- параметры,
+  для которых допустимо изменение значений после вычисления функции,
+  используется передача параметров по указателю.
+  % This is quite similar to C: here one often simulates <<variable parameters>> and
+  % passes back composite objects from functions via explicit use of pointers.
+
+  Содержимое ссылки извлекается с помощью оператора разыменования {\tt
+    !}.  А чтобы изменить значение, используется {\tt :=}.
+  % To get at the contents of a {\tt ref}, use the dereferencing
+  % (indirection) operator {\tt !}. To modify its value, use {\tt
+  %   :=}.
+}
+
+\frame{
+  \frametitle{Ссылки (2)}
+  % \heading{References (2)}
+
+  Вот пример создания и использования ссылки:
+  % Here is an example of how we can create and play with a reference
+  % cell:
+
+  \ExampleRefO
+
+  Во многих отношениях {\tt ref} ведёт себя подобно конструктору типа, а
+  значит, может использоваться в сопоставлении с образцом.
+  % In most respects {\tt ref} behaves like a type constructor, so
+  % one can pattern-match against it.
+}
+
+\frame{
+  \frametitle{Массивы (1)}
+  % \heading{Arrays (1)}
+
+  Кроме отдельных ячеек, в ML можно использовать массивы, в CAML они
+  называются {\tt векторами}.
+  % As well as individual reference cells, one can use arrays, or {\em vectors} in
+  % the usual CAML parlance.
+
+  Массив размера {\tt n}, где каждый элемент проинициализирован
+  значением {\tt x} создаётся следующим вызовом:
+  % An array of  size {\tt n}, with each element initialized to {\tt
+  %   x} is created using the following call
+
+  \ExampleRefOO
+
+  \noindent Можно прочесть элемент {\tt m} вектора {\tt v} с помощью:
+  % \noindent One can then read element {\tt m} of a vector
+  % {\tt v} using:
+
+  \ExampleRefOOO
+
+  \noindent а записать значение {\tt y} в {\tt m}-й элемент  {\tt v}:
+  % \noindent and write value {\tt y} to element {\tt m}
+  % of {\tt v} using:
+
+  \ExampleRefOOOO
+
+  \noindent Элементы массива нумеруются с нуля.  То есть элементы
+  вектора размера \alert{$n$} нумеруются \alert{$0,\ldots,n-1$}.
+  % \noindent The elements are numbered from zero. Thus the elements of a
+  % vector of size \alert{$n$} are \alert{$0,\ldots,n-1$}.
+}
+
+\frame{
+  \frametitle{Массивы (2)}
+  % \heading{Arrays (2)}
+
+  Вот простой пример:
+  % Here is a simple example:
+
+  \ExampleRefOOOOO
+
+  Все операции чтения и записи элементов сопровождаются контролем
+  границ, например:
+  % All reading and writing is constrained by bounds checking, e.g.
+
+  \ExampleRefOOOOOO
+}
+
+\frame{
+  \frametitle{Императивные возможности и типы}
+  % \heading{Imperative features and types}
+
+  Есть печальная нестыковка между ссылками и let-полиморфизмом.
+  % There are unfortunate interactions between references and let
+  % polymorphism.
+
+  Например, согласно обычным правилам let-полиморфизма, следующее
+  выражение должно быть правильным, даже если оно записывает нечто как
+  объект типа {\tt int}, а затем читает как объект типа {\tt bool}.
+  % For example, according to the usual rules, the following should be
+  % valid, even though it writes something as an integer and reads it as
+  % a boolean:
+
+  \ExamplePolyTypes
+
+  ML накладывает ограничения на полиморфный тип выражений, которые
+  содержат ссылки.  Подчёркивание перед типом переменной обозначает что
+  {\tt l} не полиморфна в привычном смысле; скорее она имеет один
+  фиксированный тип, хотя тип этот всё ещё неопределён.
+  % ML places restrictions on the polymorphic type of expressions involving
+  % references to avoid these problems. The type is not universal in the usual
+  % sense, merely as yet undetermined. The first use fixes the type.
+}
+
+\end{document}

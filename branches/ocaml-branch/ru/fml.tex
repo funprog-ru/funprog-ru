@@ -1,0 +1,1520 @@
+\chapter{Более подробно о ML}
+
+В этой главе мы закрепим предыдущие примеры, уточним
+синтаксис и основные возможности ML, а затем рассмотрим
+некоторые дополнительные возможности, такие как рекурсивные типы.
+Удачным началом обсуждения может стать вопрос взаимодействия с системой.
+%%In this chapter, we consolidate the previous examples by specifying the basic
+%%facilities of ML and the syntax of phrases more precisely, and then go on to
+%%treat some additional features such as recursive types. We might start by
+%%saying more about interaction with the system.
+
+До сих пор мы вводили команды в интерпретатор одну за другой, получая от него
+поочередно результат каждой из них. Однако, это не лучший способ писать 
+нетривиальные программы. Общепринятой практикой является размещение всех 
+выражений и объявлений в файле. Чтобы тестировать их по мере ввода, можно 
+воспользоваться операцией <<вырезать и вставить>>, которая доступна в 
+X Window System и её аналогах, или в редакторе типа Emacs.
+Такой подход, однако, с ростом объема программ становится всё утомительнее 
+и неэффективнее. Вместо этого возможно использовать функцию 
+{\tt include} для непосредственного чтения из файла.  Например, если файл
+{\tt myprog.ml} содержит:
+
+%%So far, we have just been typing phrases into ML's toplevel read-eval-print
+%%loop and observing the result. However this is not a good method for writing
+%%nontrivial programs. Typically, you should write the expressions and
+%%declarations in a file. To try things out as you go, they can be inserted in
+%%the ML window using `cut and paste'. This operation can be performed using
+%%X-windows and similar systems, or in an editor like Emacs with multiple
+%%buffers. However, this becomes laborious and time-consuming for large programs.
+%%Instead, you can use ML's {\tt include} function to read in the file directly.
+%%For example, if the file {\tt myprog.ml} contains:
+
+\begin{boxed}
+\begin{lstlisting}
+  let pythag x y z =
+    x * x + y * y = z * z;;
+
+  pythag 3 4 5;;
+
+  pythag 5 12 13;;
+
+  pythag 1 2 3;;
+\end{lstlisting}
+\end{boxed}
+
+\noindent то введя в интерпретатор {\tt include "myprog.ml";;} получаем:
+
+\begin{boxed}
+\begin{verbatim}
+  #include "myprog.ml";;
+  pythag : int -> int -> int -> bool = <fun>
+  - : bool = true
+  - : bool = true
+  - : bool = false
+  - : unit = ()
+\end{verbatim}
+\end{boxed}
+
+Как видим, реакция ML-системы была точно такой же, как если бы мы ввели
+содержимое файла с консоли. Последняя строка вывода~-- это результат 
+вычисления самого выражения {\tt include}.
+% BUG# вместо 'линия вывода' может лучше 'строка вывода'? ?lg FIXED
+
+%%That is, the ML system responds just as if the phrases had been entered at the
+%%top level. The final line is the result of evaluating the {\tt include}
+%%expression itself.
+
+Большие программы часто полезно снабжать комментариями. В ML они
+ограничиваются символами {\tt (*} и {\tt *)}, например:
+%%In large programs, it is often helpful to include comments. In ML, these are
+%%written between the symbols {\tt (*} and {\tt *)}, e.g.
+
+\begin{boxed}
+\begin{lstlisting}
+  (* ------------------------------------------------------ *)
+  (* This function tests if (x,y,z) is a Pythagorean triple *)
+  (* ------------------------------------------------------ *)
+
+  let pythag x y z =
+      x * x + y * y = z * z;;
+
+  (*comments*) pythag (*can*) 3 (*go*) 4 (*almost*) 5 (*anywhere*)
+  (* and (* can (* be (* nested *) quite *) arbitrarily *) *);;
+\end{lstlisting}
+\end{boxed}
+
+\section{Основные типы данных и операции}
+
+ML представляет несколько встроенных примитивных типов. Из них, с
+помощью конструкторов типов, могут быть построены составные типы. Пока
+мы будем использовать только конструктор функциональных типов
+{\verb+->+} и конструктор декартова произведения типов {\verb+*+}.
+Впоследствии мы рассмотрим и другие конструкторы, а также узнаем как
+определять новые типы и конструкторы типов. Примитивные типы, которые
+нас интересуют:
+
+%%ML features several built-in primitive types. From these, composite types may
+%%be built using various type constructors. For the moment, we will only use the
+%%function space constructor {\verb+->+} and the Cartesian product constructor
+%%{\verb+*+}, but we will see in due course which others are provided, and how to
+%%define new types and type constructors. The primitive types that concern us now
+%%are:
+
+\begin{itemize}
+
+\item Тип {\tt unit}, который также можно называть процедурным. Множество
+  допустимых значений этого типа содержит единственный элемент, который обозначается
+  {\tt ()}.  Очевидно, использование типа {\tt unit} не передаёт
+  какой-либо информации, так что он часто используется как
+  возвращаемый тип императивных <<функций>>, таких как {\tt include}, 
+  результат которых~--- не вычисленное значение, а какой-либо побочный эффект.
+  Он также может использоваться
+  как тип функции, используемой для приостановки вычислений.
+
+  %% BUG# It is also a convenient argument where the only use of a
+  %% function type is to delay evaluation. ? трудности перевода ?
+  %% dimiii .. lg FIX#: мы знаем что ML не вычисляет под
+  %% lambda-абстракциями, но какой тип дать функции, которая нужна
+  %% лишь для lambda-абстракции? конечно unit
+
+%%\item The type {\tt unit}. This is a 1-element type, whose only element is
+%%written {\tt ()}. Obviously, something of type {\tt unit} conveys no
+%%information, so it is commonly used as the return type of imperatively written
+%%`functions' that perform a side-effect, such as {\tt include} above. It is also
+%%a convenient argument where the only use of a function type is to delay
+%%evaluation.
+
+\item Тип {\tt bool}. Двухэлементный тип булевых значений (значений
+  истинности). Элементы этого типа: {\tt true} и {\tt false}.
+
+%%\item The type {\tt bool}. This is a 2-element type of booleans (truth-values)
+%%whose elements are written {\tt true} and {\tt false}.
+
+\item Тип {\tt int}. Содержит конечное подмножество отрицательных и
+ неотрицательных чисел. Обычно значения варьируются от $-2^{30}$
+ ($-1073741824$) до $2^{30}-1$ ($1073741823$). \footnote{На самом
+ деле, в машинной арифметике значения ещё более ограничены,
+ поскольку один бит используется сборщиком мусора (см.
+ определения). Далее мы увидим, как использовать альтернативный
+ тип целых с неограниченной разрядностью.} Элементы записываются
+ обычным способом, например: {\tt 0}, {\tt 32}, {\tt -25}.
+
+%%\item The type {\tt int}. This contains some finite subset of the positive and
+%%negative integers. Typically the permitted range is from $-2^{30}$
+%%($-1073741824$) up to $2^{30}-1$ ($1073741823$).\footnote{This is even more
+%%limited than expected for machine arithmetic because a bit is stolen for the
+%%garbage collector. We will see later how to use an alternative type of integers
+%%with unlimited precision.} The numerals are written in the usual way,
+%%optionally with a negation sign, e.g. {\tt 0}, {\tt 32}, {\tt -25}.
+
+\item Тип {\tt string} содержит строки (т.е. конечные
+ последовательности) символов. Они записываются и печатаются в
+ двойных кавычках, вот так: {\verb+"hello"+}. Для записи
+ специальных символов используется экранирование в стиле языка С.
+ Например, {\verb+\"+} --- двойная кавычка,
+ {\verb+\n+} --- символ перевода строки.
+
+%%\item The type {\tt string} contains strings (i.e. finite sequences) of
+%%characters. They are written and printed between double quotes,
+%%e.g. \lstinline!"hello"!. In order to encode include special characters in strings, C-like
+%%escape sequences are used. For example, \lstinline!"! is the double quote itself,
+%%and {\verb+\n+} is the newline character.
+
+\end{itemize}
+
+Значения, такие как {\tt ()}, {\tt false}, {\tt 7} и
+ {\verb+"caml"+},  с точки зрения лямбда-исчисления считаются 
+ константами. Другие константы соответствуют {\em операциям} над
+ основными типами. Некоторые из них традиционно записываются
+ в инфиксной форме. Для операций определено понятие
+ приоритета, поэтому выражения группируются ожидаемым образом.
+ Например, мы пишем {\tt x + y} вместо {\tt + x y} и
+ {\tt x < 2 * y + z} вместо {\tt < x (+ (* 2 y) z)}. Логический
+ оператор {\tt not} отличается особым правилом разбора,
+ в силу чего не обладает обычным свойством левой ассоциативности:
+ {\tt not not p} означает {\tt not (not p)}. Функцию, определённую
+ пользователем, можно задать как инфиксную с помощью директивы
+ {\tt \#infix}.  Например, вот определение функции, выполняющей
+ композицию функций:
+
+%%The above values like {\tt ()}, {\tt false}, {\tt 7} and \lstinline!"caml"! are all
+%%to be regarded as constants in the lambda calculus sense. There are other
+%%constants corresponding to {\em operations} on the basic types. Some of these
+%%may be written as infix operators, for the sake of familiarity. These have a
+%%notion of precedence so that expressions are grouped together as one would
+%%expect. For example, we write {\tt x + y} rather than {\tt + x y} and {\tt x <
+%%2 * y + z} rather than {\tt < x (+ (* 2 y) z)}. The logical operator {\tt not}
+%%also has a special parsing status, in that the usual left-associativity rule is
+%%reversed for it: {\tt not not p} means {\tt not (not p)}. User-defined
+%%functions may be granted infix status via the {\tt \#infix} directive. For
+%%example, here is a definition of a function performing composition of
+%%functions:
+
+\begin{boxed}
+\begin{lstlisting}
+  #let successor x = x + 1;;
+  successor : int -> int = <fun>
+  #let o f g = fun x -> f(g x);;
+  o : ('a -> 'b) -> ('c -> 'a) -> 'c -> 'b = <fun>
+  #let add3 = o successor (o successor successor);;
+  add3 : int -> int = <fun>
+  #add3 0;;
+  - : int = 3
+  ##infix "o";;
+  #let add3' = successor o successor o successor;;
+  add3' : int -> int = <fun>
+  #add3' 0;;
+  - : int = 3
+\end{lstlisting}
+\end{boxed}
+
+В ML отсутствует возможность задавать приоритеты пользовательских инфиксных 
+операций, а также менять порядок применения обычных пользовательских функций
+на правоассоциативный. Отметим, что неявная
+ операция <<применение функции>> имеет приоритет
+ выше, чем у любой другой бинарной операции, так что {\tt successor 1 * 2}
+ разбирается как {\tt (successor 1) * 2}. Если хотите использовать
+ функцию с особым статусом как обычную константу, вам потребуется предварить
+ её имя словом~{\tt prefix}:
+ %% BUG# что ещё за статус??? Проверить. --dimiii .. lg FIX#: функции
+ %% для которых вводится специфичный разбор, типа + или not
+
+ %% OCAML# в Ocaml вместо `prefix'  просто заключают функцию в круглые
+ %% скобки.
+
+%%It is not possible to specify the precedence of user-defined infixes, nor to
+%%make user-defined non-infix functions right-associative. Note that the implicit
+%%operation of `function application' has a higher precedence than any binary
+%%operator, so {\tt successor 1 * 2} parses as {\tt (successor 1) * 2}. If it is
+%%desired to use a function with special status as an ordinary constant, simply
+%%precede it by {\tt prefix}. For example:
+
+\begin{boxed}
+\begin{verbatim}
+  #o successor successor;;
+  Toplevel input:
+  >o successor successor;;
+  >^
+  Syntax error.
+  #prefix o successor successor;;
+  - : int -> int = <fun>
+  #(prefix o) successor successor;;
+  - : int -> int = <fun>
+\end{verbatim}
+\end{boxed}
+
+Разобравшись с этими деталями синтаксиса, рассмотрим список операций
+над основными типами. Унарные операции:
+
+%%With these questions of concrete syntax out of the way, let us present a
+%%systematic list of the operators on the basic types above. The unary operators
+%%are:
+
+\bigskip
+\begin{tabular}{|l|l|l|}
+\hline
+Оператор   & Тип                             & Значение               \\
+\hline
+{\tt -}       & {\tt int -> int}    & Смена знака числа                \\
+{\tt not}     & {\tt bool -> bool}  & Логическое отрицание             \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent и бинарные операции, в порядке убывания приоритета:
+
+%\noindent and the binary operators, in approximately decreasing order of
+%%precedence, are:
+
+\bigskip
+\begin{tabular}{|l|l|l|}
+\hline
+Оператор   & Тип                             & Значение               \\
+\hline
+{\tt mod}  & {\tt int -> int -> int}          & Остаток от деления   \\
+{\tt *}    & {\tt int -> int -> int}          & Произведение        \\
+{\tt /}    & {\tt int -> int -> int}          & Целочисленное деление  \\
+{\tt +}    & {\tt int -> int -> int}          & Сложение              \\
+{\tt -}    & {\tt int -> int -> int}          & Вычитание           \\
+{\verb+^+} & {\tt string -> string -> string} & Конкатенация строк  \\
+{\tt =}    & {\tt 'a -> 'a -> bool}           & Равенство              \\
+{\tt <>}   & {\tt 'a -> 'a -> bool}           & Неравенство            \\
+{\tt <}    & {\tt 'a -> 'a -> bool}           & Меньше чем             \\
+{\tt <=}   & {\tt 'a -> 'a -> bool}           & Меньше или равно    \\
+{\tt >}    & {\tt 'a -> 'a -> bool}           & Больше чем          \\
+{\tt >=}   & {\tt 'a -> 'a -> bool}           & Больше или равно \\
+{\tt \&}   & {\tt bool -> bool -> bool}       & Логическое <<и>>         \\
+{\tt or}   & {\tt bool -> bool -> bool}       & Логическое <<или>>          \\
+\hline
+\end{tabular}
+\bigskip
+
+Например, {\tt x > 0 \& x < 1} соответствует {\tt \& (> x 0) (< x 1)}.
+Заметим, что не только равенство, но и все прочие отношения полиморфны. Они 
+упорядочивают должным образом не только числа и строки, но также и 
+остальные примитивные и составные типы. Однако, они в общем случае 
+не применимы к функциям.
+
+%%For example, {\tt x > 0 \& x < 1} is parsed as {\tt \& (> x 0) (< x 1)}. Note
+%%that all the comparisons, not just the equality relation, are polymorphic. They
+%%not only order integers in the expected way, and strings alphabetically, but
+%%all other primitive types and composite types in a fairly natural way. Once
+%%again, however, they are not in general allowed to be used on functions.
+
+Две логические операции, {\tt \&} и {\tt or}, имеют особую стратегию
+ вычисления. В сущности, их можно рассматривать как синонимы условных выражений:
+
+%%The two boolean operations {\tt \&} and {\tt or} have their own special
+%%evaluation strategy, like the conditional expression. In fact, they can be
+%%regarded as synonyms for conditional expressions:
+
+\begin{eqnarray*}
+p \mbox{ \& } q & \defeq & \mbox{if } p \mbox{ then } q \mbox{ else false}  \\
+p \mbox{ or } q & \defeq & \mbox{if } p \mbox{ then true else } q
+\end{eqnarray*}
+
+Следовательно, операция <<and>> вычисляет первый аргумент, и только если его
+ значение true, вычисляет следующий. Напротив, <<or>> вычисляет первый аргумент,
+ и только если это false, вычисляет второй.
+
+%%Thus, the `and' operation evaluates its first argument, and only if it is true,
+%%evaluates its second. Conversely, the `or' operation evaluates its first
+%%argument, and only if it is false evaluates its second.
+
+%%\section{Синтаксис ML}
+
+Выражения в ML строятся из констант и переменных; любой идентификатор, не 
+связанный в данном месте программы, рассматривается как 
+переменная. Объявления связывают значения выражений с именами, при этом
+в состав выражений могут входить другие объявления. Следовательно,
+синтаксические классы выражений и объявлений взаимно рекурсивны. Мы можем 
+выразить это следующей БНФ - грамматикой.\footnote{Мы не включили в неё многие 
+конструкции, которые не будут использоваться в данном пособии. Подробное
+определение языка приводится в руководстве по CAML.}
+
+%%Expressions in ML can be built up from constants and variables; any identifier
+%%that is not currently bound is treated as a variable. Declarations bind names
+%%to values of expressions, and declarations can occur locally inside
+%%expressions. Thus, the syntax classes of expressions and declarations are
+%%mutually recursive. We can represent this by the following BNF
+%%grammar.\footnote{We neglect many constructs that we won't be concerned with. A
+%%few will be introduced later. See the CAML manual for full details.}
+
+\begin{eqnarray*}
+expression    & ::= & variable       \\
+              & |   & constant                                                  \\
+              & |   & expression \; expression                                  \\
+              & |   & expression \; infix \; expression                         \\
+              & |   & \mbox{not} \; expression                                  \\
+              & |   & \mbox{if} \; expression \; \mbox{then} \; expression \; \mbox{else} \; expression  \\
+              & |   & \mbox{fun} \; pattern \;  \rightarrow \; expression \\
+              & |   & ( expression )                                            \\
+              & |   & declaration \; \mbox{in} \; expression                    \\
+declaration   & ::= & \mbox{let} \; let\_bindings \;                            \\
+              & |   & \mbox{let rec} \; let\_bindings \;                        \\
+let\_bindings & ::= & let\_binding                                              \\
+              & |   & let\_binding \; \mbox{and} \; let\_bindings               \\
+let\_binding  & ::= & pattern \; \mbox{=} \; expression                         \\
+pattern       & ::= & variables                                                 \\
+variables     & ::= & variable                                                  \\
+              & |   & variable \; variables
+\end{eqnarray*}
+
+
+Позднее мы уточним определение и подробнее обсудим синтаксический 
+класс~$pattern$, а на данный момент нам будет достаточно лишь конструкций
+вида~$variable$ или $variable \; variable \cdots variable$. 
+В первом случае мы просто связываем выражение с именем, тогда как во втором
+для объявления функций используется специальный синтаксический сахар. 
+Аргументы функции записываются вслед за её именем, слева от знака равенства.
+Например, объявление функции~{\tt add4}, которая  может использоваться 
+для прибавления 4 к своему аргументу, имеет вид:
+
+%%The syntax class $pattern$ will be expanded and explained more thoroughly later
+%%on. For the moment, all the cases we are concerned with are either just
+%%$variable$ or $variable \; variable \cdots variable$. In the first case we
+%%simply bind an expression to a name, while the second uses the special
+%%syntactic sugar for function declarations, where the arguments are written
+%%after the function name to the left of the equals sign. For example, the
+%%following is a valid declaration of a function {\tt add4}, which can be used to
+%%add 4 to its argument:
+
+\begin{boxed}
+\begin{verbatim}
+  #let add4 x =
+    let y = successor x in
+    let z = let w = successor y in
+            successor w in
+    successor z;;
+  add4 : int -> int = <fun>
+  #add4 1;;
+  - : int = 5
+\end{verbatim}
+\end{boxed}
+
+Полезно будет в качестве упражнения провести разбор этого объявления
+в соответствии с приведённой выше грамматикой, к которой для определённости
+требуется добавить начальное правило (аксиому). Будем считать, что 
+последовательность символов, завершающаяся двойной точкой с запятой, может
+быть как выражением, так и объявлением.
+%
+%%It is instructive to unravel this declaration according to the above grammar. A
+%%toplevel phrase, terminated by two successive semicolons, may be either an
+%%expression or a declaration.
+
+\section{Дальнейшие примеры}
+
+
+Несложно задать рекурсивную функцию, принимающую в качестве аргументов целое число~$n$
+и функцию~$f$, а возвращающую~$f^n$, т.е. $f \circ \cdots \circ f$ ($n$~раз):
+
+%%It is easy to define by recursion a function that takes a positive integer $n$
+%%and a function $f$ and returns $f^n$, i.e. $f \circ \cdots \circ f$ ($n$
+%%times):
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec funpow n f x =
+     if n = 0 then x
+     else funpow (n - 1) f (f x);;
+  funpow : int -> ('a -> 'a) -> 'a -> 'a = <fun>
+\end{verbatim}
+\end{boxed}
+
+Нетрудно убедиться в том, что функция~{\tt funpow} принимает машинное целое~$n$ 
+и возвращает нумерал (число) Чёрча, который его представляет. 
+Поскольку функции не выводятся на печать, мы не сможем увидеть, как на самом 
+деле выглядят лямбда-выражения, соответствующие числам Чёрча:
+
+%%In fact, a little thought will show that the function {\tt funpow} takes a
+%%machine integer $n$ and returns the Church numeral corresponding to $n$. Since
+%%functions aren't printed, we can't actually look at the lambda expression
+%%representing a Church numeral:
+
+\begin{boxed}
+\begin{verbatim}
+  #funpow 6;;
+  - : ('_a -> '_a) -> '_a -> '_a = <fun>
+\end{verbatim}
+\end{boxed}
+
+Так же просто задаётся функция, обратная к {\tt funpow}, которая принимает число
+Чёрча и возвращает машинное целое:
+
+\begin{boxed}
+\begin{verbatim}
+  #let defrock n = n (fun x -> x + 1) 0;;
+  defrock : ((int -> int) -> int -> 'a) -> 'a = <fun>
+  #defrock(funpow 32);;
+  - : int = 32
+\end{verbatim}
+\end{boxed}
+
+\noindent Проверим некоторые из арифметических операций на числах Чёрча:
+%\noindent We can try out some of the arithmetic operations on Church numerals:
+
+\begin{boxed}
+\begin{verbatim}
+  #let add m n f x = m f (n f x);;
+  add : ('a -> 'b -> 'c) -> ('a -> 'd -> 'b) -> 'a -> 'd -> 'c = <fun>
+  #let mul m n f x = m (n f) x;;
+  mul : ('a -> 'b -> 'c) -> ('d -> 'a) -> 'd -> 'b -> 'c = <fun>
+  #let exp m n f x = n m f x;;
+  exp : 'a -> ('a -> 'b -> 'c -> 'd) -> 'b -> 'c -> 'd = <fun>
+  #let test bop x y = defrock (bop (funpow x) (funpow y));;
+  test :
+   ((('a -> 'a) -> 'a -> 'a) ->
+    (('b -> 'b) -> 'b -> 'b) -> (int -> int) -> int -> 'c) ->
+    int -> int -> 'c = <fun>
+  #test add 2 10;;
+  - : int = 12
+  #test mul 2 10;;
+  - : int = 20
+  #test exp 2 10;;
+  - : int = 1024
+\end{verbatim}
+\end{boxed}
+
+Подобная реализация арифметики, очевидно, не отличается эффективностью. 
+Рассмотрим в качестве очередного примера операцию возведения в степень.
+Она отсутствует в ML по умолчанию, но её просто определить рекурсивно:
+%
+%%The above is not a very efficient way of performing arithmetic operations. ML
+%%does not have a function for exponentiation, but it is easy to define one by
+%%recursion:
+%
+\begin{boxed}
+\begin{verbatim}
+   #let rec exp x n =
+     if n = 0 then 1
+     else x * exp x (n - 1);;
+   exp : int -> int -> int = <fun>
+\end{verbatim}
+\end{boxed}
+
+Эта реализация требует для вычисления~$x^n$ выполнения $n$~операций умножения. 
+Более эффективный алгоритм использует тот факт, 
+что~$x^{2 n} = (x^n)^2$ и $x^{2 n + 1} = x (x^n)^2$:
+%
+%%However this performs $n$ multiplications to calculate $x^n$. A more efficient
+%%way is to exploit the facts that $x^{2 n} = (x^n)^2$ and $x^{2 n + 1} = x
+%%(x^n)^2$ as follows:
+%
+\begin{boxed}
+\begin{verbatim}
+  #let square x = x * x;;
+  square : int -> int = <fun>
+  #let rec exp x n =
+    if n = 0 then 1
+    else if n mod 2 = 0 then square(exp x (n / 2))
+    else x * square(exp x (n / 2));;
+  exp : int -> int -> int = <fun>
+  #infix "exp";;
+  #2 exp 10;;
+  - : int = 1024
+  #2 exp 20;;
+  - : int = 1048576
+\end{verbatim}
+\end{boxed}
+
+Другая классическая операция над натуральными числами~--- поиск
+наибольшего  общего делителя при помощи алгоритма Евклида:
+
+%%Another classic operation on natural numbers is to find their greatest common
+%%divisor (highest common factor) using Euclid's algorithm:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec gcd x y =
+       if y = 0 then x else gcd y (x mod y);;
+  gcd : int -> int -> int = <fun>
+  #gcd 100 52;;
+  - : int = 4
+  #gcd 7 159;;
+  - : int = 1
+  #gcd 24 60;;
+  - : int = 12
+\end{verbatim}
+\end{boxed}
+
+Мы применяли воображаемый оператор рекурсии {\tt Rec} при объяснении 
+рекурсивных определений. Его можно реализовать и на практике:
+%
+%%We have used a notional recursion operator {\tt Rec} to explain recursive
+%%definitions. We can actually define such a thing, and use it:
+%
+\begin{boxed}
+\begin{verbatim}
+  #let rec Rec f = f(fun x -> Rec f x);;
+  Rec : (('a -> 'b) -> 'a -> 'b) -> 'a -> 'b = <fun>
+  #let fact = Rec (fun f n -> if n = 0 then 1 else n * f(n - 1));;
+  fact : int -> int = <fun>
+  #fact 3;;
+  it : int = 6
+\end{verbatim}
+\end{boxed}
+
+Обратите внимание на необходимость анонимной функции, в противном случае выражение
+{\tt Rec f} уходит в бесконечную последовательность рекурсивных вызовов, прежде
+чем функция будет применена к своему аргументу:
+
+%%Note, however, that the lambda was essential, otherwise the expression {\tt Rec
+%%f} goes into an infinite recursion before it is even applied to its argument:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec Rec f = f(Rec f);;
+  Rec : ('a -> 'a) -> 'a = <fun>
+  #let fact = Rec (fun f n -> if n = 0 then 1 else n * f(n - 1));;
+  Uncaught exception: Out_of_memory
+\end{verbatim}
+\end{boxed}
+
+\section{Определения типов}
+
+Мы уже говорили о том, что ML имеет возможность объявления новых
+конструкторов типов, так что составные типы могут быть построены
+на базе существующих.  В действительности, ML позволяет еще больше: 
+определение составного типа может также включать сам этот тип.
+Подобные типы называются {\em рекурсивными}.  Они объявляются с помощью
+ключевого слова {\tt type}, за которым следует выражение, определяющее тип
+на основе уже заданных типов, включая его самого.
+Продемонстрируем применение этой конструкции на нескольких
+примерах.  Первым из них будет определение типа {\em sum}, которые
+должен соответствовать несвязному объединению ($\sqcup$) двух существующих
+типов.
+
+% We have promised that ML has facilities for declaring new type constructors, so
+% that composite types can be built up out of existing ones. In fact, ML goes
+% further and allows a composite type to be built up not only out of preexisting
+% types but also from the composite type itself. Such types, naturally enough,
+% are said to be {\em recursive}. They are declared using the {\tt type} keyword
+% followed by an equation indicating how the new type is built up from existing
+% ones and itself. We will illustrate this by a few examples. The first one is
+% the definition of a {\em sum} type, intended to correspond to the disjoint
+% union of two existing types.
+
+\begin{boxed}
+\begin{verbatim}
+  #type ('a,'b)sum = inl of 'a | inr of 'b;;
+  Type sum defined.
+\end{verbatim}
+\end{boxed}
+
+Грубо говоря, объект типа {\verb+('a,'b)sum+} является {\em либо}
+чем-то типа {\verb+'a+}, {\em либо} чем-то типа {\verb+'b+}.  Однако,
+говоря более формально, все эти объекты имеют разные типы.
+Объявление типа также определяет так называемые {\em конструкторы}
+{\verb+inl+} и {\verb+inr+}.  Это функции, реализующие инъективные отображения 
+множеств значений типов компонентов во множество значений нового типа. 
+В этом нетрудно убедиться на практике, рассмотрев тип этих функций, выведенный
+ML-системой, и результаты их применения к различным объектам: 
+%
+% Roughly, an object of type {\verb+('a,'b)sum+} is {\em either} something of
+% type {\verb+'a+} {\em or} something of type {\verb+'b+}. More formally,
+% however, all these things have different types. The type declaration also
+% declares the so-called {\em constructors} {\verb+inl+} and {\verb+inr+}. These
+% are functions that take objects of the component types and inject them into the
+% new type. Indeed, we can see their types in the ML system and apply them to
+% objects:
+%
+\begin{boxed}
+\begin{verbatim}
+  #inl;;
+  - : 'a -> ('a, 'b) sum = <fun>
+  #inr;;
+  - : 'a -> ('b, 'a) sum = <fun>
+  #inl 5;;
+  - : (int, 'a) sum = inl 5
+  #inr false;;
+  - : ('a, bool) sum = inr false
+\end{verbatim}
+\end{boxed}
+
+Мы можем продемонстрировать данную ситуацию с помощью следующей диаграммы. 
+Тип~$(\alpha,\beta)sum$ создаётся на основе существующих типов $\alpha$ 
+и~$\beta$, а принадлежащие этому типу значения представляют собой ни что
+иное, как пару значений типа~$\alpha$ и~$\beta$ соответственно. Конструкторы 
+типа~$sum$ отображают в него значения исходных типов, помещая их в нужный
+элемент пары.
+%
+% We can visualize the situation via the following diagram. Given two existing
+% types $\alpha$ and $\beta$, the type $(\alpha,\beta)sum$ is composed precisely
+% of separate copies of $\alpha$ and $\beta$, and the two constructors map onto
+% the respective copies:
+
+\bigskip
+{\thicklines
+\begin{picture}(140,140)(0,0)
+\put(10,90){\framebox(100,50){$\alpha$}}
+\put(10,0){\framebox(100,50){$\beta$}}
+\put(250,70){\thinlines \line(1,0){100}}
+\put(250,20){\framebox(100,100){}}
+\put(280,125){$(\alpha,\beta)sum$}
+\put(115,25){\vector(4,1){130}}
+\put(180,105){\tt inl}
+\put(180,30){\tt inr}
+\put(115,115){\vector(4,-1){130}}
+\end{picture}
+}
+\bigskip
+
+Этот тип данных аналогичен конструкции~{\tt union} языка~C, но в ML компоненты
+различных типов хранятся отдельно, причём всегда можно точно установить, какой
+именно из них определяет тип конкретного экземпляра объединения.
+В противоположность этому, в языке~C элементы объединения перекрываются 
+в памяти, а обеспечение корректной работы с ними возлагается всецело на 
+программиста.
+%
+% This is similar to a {\tt union} in C, but in ML the copies of the component
+% types are kept apart and one always knows which of these an element of the
+% union belongs to. By contrast, in C the component types are overlapped, and the
+% programmer is responsible for this book-keeping.
+
+\subsection{Сопоставление с образцом}
+
+Приведённое определение конструкторов наделяет их тремя очень важными 
+качествами:
+%
+% The constructors in such a definition have three very important properties:
+
+\begin{itemize}
+
+\item 
+Множество конструкторов является исчерпывающим, т.е.\ каждый элемент 
+нового типа может быть получен либо из некоторого~{\tt x} при помощи 
+конструктора~{\tt inl x}, либо из некоторого~{\tt y} при помощи~{\tt inr y}.
+Таким образом, экземпляр нового типа не содержит ничего, кроме экземпляров 
+типов компонент.
+
+% \item They are exhaustive, i.e. every element of the new type is obtainable
+% either by  {\tt inl x} for some {\tt x} or {\tt inr y} for some {\tt y}. That
+% is, the new type contains nothing besides copies of the component types.
+
+\item Они являются инъективными, т.е. равенство {\tt inl x = inl y} справедливо
+  если, и только если {\tt x = y} (то же свойство имеет место и для {\tt inr}). 
+  Таким образом, экземпляр нового типа содержит точные копии экземпляров типа 
+  каждого компонента, не нарушая определённого для них понятия эквивалентности.
+
+% \item They are injective, i.e. an equality test {\tt inl x = inl y} is true if
+% and only if {\tt x = y}, and similarly for {\tt inr}. That is, the new type
+% contains a faithful copy of each component type without identifying any
+% elements.
+
+\item Они индивидуальны, т.е. их диапазоны несвязны.  Это означает, что в 
+  предыдущем примере равенство {\tt inl x = inr y} будет ложным независимо от 
+  того, чем являются {\tt x} и~{\tt y}. Таким образом, компоненты различных 
+  типов в составе нового типа существуют отдельно друг от друга.
+
+% \item They are distinct, i.e. their ranges are disjoint. More concretely this
+% means in the above example that {\tt inl x = inr y} is false whatever {\tt x}
+% and {\tt y} might be. That is, the copy of each component type is kept apart in
+% the new type.
+
+\end{itemize}
+
+Второе и третье свойство конструкторов лежат в основе техники 
+{\em сопоставления с образцом}. Аргументы $\lambda$-выражений при этом имеют
+более сложный вид, соответствующий их структуре, например:
+%%ISSUE:  varstruct
+%
+% The second and third properties of constructors justify our using {\em pattern
+% matching}. This is done by using more general {\em varstructs} as the arguments
+% in a lambda, e.g.
+
+\begin{boxed}
+\begin{verbatim}
+  #fun (inl n) -> n > 6
+     | (inr b) -> b;;
+  - : (int, bool) sum -> bool = <fun>
+\end{verbatim}
+\end{boxed}
+
+\noindent Эта функция имеет вполне ожидаемое свойство: когда она применяется к
+{\tt inl n} она возвращает {\verb+n > 6+}, а когда она применяется к {\tt inr b}, то она
+возвращает {\tt b}. Именно благодаря второму и третьему свойствам конструкторов
+такое определение функции будет корректным. Поскольку конструкторы являются
+инъективными, мы можем точно восстановить {\tt n} из {\tt inl n} и {\tt b} из {\tt inr b},
+а их индивидуальность обеспечивает непротиворечивость выбора из двух альтернатив,
+поскольку никакое значение не может соответствовать обоим образцам одновременно.
+
+% \noindent This function has the property, naturally enough, that when applied
+% to {\tt inl n} it returns {\verb+n > 6+} and when applied to {\tt inr b} it
+% returns {\tt b}. It is precisely because of the second and third properties of
+% the constructors that we know this does give a welldefined function. Because
+% the constructors are injective, we can uniquely recover {\tt n} from {\tt inl
+% n} and {\tt b} from {\tt inr b}. Because the constructors are distinct, we know
+% that the two clauses cannot be mutually inconsistent, since no value can
+% correspond to both patterns.
+
+Наконец, исчерпывающее множество конструкторов гарантирует, что каждое значение
+аргумента соответствует одному из образцов, а функция будет всюду определённой.
+На практике разрешается ослабить это свойство, опустив некоторые образцы, 
+но при этом ML-система выдаст предупреждение:
+
+% In addition, because the constructors are exhaustive, we know that each value
+% will fall under one pattern or the other, so the function is defined
+% everywhere. Actually, it is permissible to relax this last property by omitting
+% certain patterns, though the ML system then issues a warning:
+
+\begin{boxed}
+\begin{verbatim}
+  #fun (inr b) -> b;;
+  Toplevel input:
+  >fun (inr b) -> b;;
+  >^^^^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  - : ('a, 'b) sum -> 'b = <fun>
+\end{verbatim}
+\end{boxed}
+
+Если эта функция применяется к значению вида {\tt inl x}, то она не будет работать:
+
+% If this function is applied to something of the form {\tt inl x}, then it will
+% not work:
+
+\begin{boxed}
+\begin{verbatim}
+  #let f = fun (inr b) -> b;;
+  Toplevel input:
+  >let f = fun (inr b) -> b;;
+  >        ^^^^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  f : ('a, 'b) sum -> 'b = <fun>
+  #f (inl 3);;
+  Uncaught exception: Match_failure ("", 452, 468)
+\end{verbatim}
+\end{boxed}
+
+Хотя логический тип уже доступен в ML по умолчанию, его можно с тем же успехом 
+определить при помощи достаточно простого рекурсивного типа, часто называемого 
+{\em перечислимым типом}, конструкторы которого не имеют аргументов:
+
+% Though booleans are built into ML, they are effectively defined by a rather
+% trivial instance of a recursive type, often called an {\em enumerated type},
+% where the constructors take no arguments:
+
+\begin{boxed}
+\begin{verbatim}
+  #type bool = false | true;;
+\end{verbatim}
+\end{boxed}
+
+В самом деле, вполне допустимо использовать в образцах логические значения.
+Следующие два выражения полностью эквивалентны:
+
+% Indeed, it is perfectly permissible to define things by matching over the truth
+% values. The following two phrases are completely equivalent:
+
+\begin{boxed}
+\begin{verbatim}
+  #if 4 < 3 then 1 else 0;;
+  - : int = 0
+  #(fun true -> 1 | false -> 0) (4 < 3);;
+  - : int = 0
+\end{verbatim}
+\end{boxed}
+
+Однако, сопоставление с образцом, которое оказывается очень удобным средством 
+определения действий над вариантами рекурсивных типов, этим не ограничивается.
+Например, мы можем задать функцию, которая сообщает нам, является ли число 
+нулём, следующим образом:
+
+% Pattern matching is, however, not limited to casewise definitions over elements
+% of recursive types, though it is particularly convenient there. For example, we
+% can define a function that tells us whether an integer is zero as follows:
+
+\begin{boxed}
+\begin{verbatim}
+  #fun 0 -> true | n -> false;;
+  - : int -> bool = <fun>
+  #(fun 0 -> true | n -> false) 0;;
+  - : bool = true
+  #(fun 0 -> true | n -> false) 1;;
+  - : bool = false
+\end{verbatim}
+\end{boxed}
+
+В этом случае мы не имеем взаимной исключительности образцов, поскольку {\tt 0}
+соответствует им обоим. Образцы проверяются по порядку, один за другим, и
+используется первый подходящий.  Заметим, что пока соответствие не является взаимно
+исключающим, нет гарантии, что каждое выражение содержит математическое уравнение.
+Так, в предыдущем примере функция не возвращает {\tt false} для любого {\tt n},
+поэтому второе выражение не всюду корректно.
+
+% In this case we no longer have mutual exclusivity of patterns, since {\tt 0}
+% matches either pattern. The patterns are examined in order, one by one, and the
+% first matching one is used. Note carefully that unless the matches are mutually
+% exclusive, there is no guarantee that each clause holds as a mathematical
+% equation. For example in the above, the function does not return {\tt false}
+% for any {\tt n}, so the second clause is not universally valid.
+
+Отметим, что только {\em конструкторы} могут использоваться в приведённых выше выражениях
+как компоненты образцов.  Обычные константы будут рассматриваться как новые переменные,
+связанные внутри образца.  Например, рассмотрим следующий код:
+
+% Note that only {\em constructors} may be used in the above special way as
+% components of patterns. Ordinary constants will be treated as new variables
+% bound inside the pattern. For example, consider the following:
+
+\begin{boxed}
+\begin{verbatim}
+  #let true_1 = true;;
+  true_1 : bool = true
+  #let false_1 = false;;
+  false_1 : bool = false
+  #(fun true_1 -> 1 | false_1 -> 0) (4 < 3);;
+  Toplevel input:
+  >(fun true_1 -> 1 | false_1 -> 0) (4 < 3);;
+  >                   ^^^^^^^
+  Warning: this matching case is unused.
+  - : int = 1
+\end{verbatim}
+\end{boxed}
+
+В общем, элемент типа~{\tt unit} {\tt ()}, логические значения, целые числа, строковые
+константы и операция образования пар (infix comma) имеют статус конструкторов, также как и
+другие конструкторы из предопределённых рекурсивных типов.  Когда они встречаются в
+образце, сопоставляемое значение должно иметь соответствующий тип.  Все другие
+идентификаторы соответствуют любому выражению и становятся связанными в процессе
+обработки.
+
+% In general, the unit element {\tt ()}, the truth values, the integer numerals,
+% the string constants and the pairing operation (infix comma) have constructor
+% status, as well as other constructors from predefined recursive types. When
+% they occur in a pattern the target value must correspond. All other identifiers
+% match any expression and in the process become bound.
+
+Помимо указания образцов в $\lambda$-выражениях, существуют другие способы выполнения
+сопоставления с ними.  Вместо определения функции, включающего сопоставление, и
+применения её к выражению, мы можем выполнять сопоставление с образцом напрямую, используя
+следующую конструкцию:
+
+% As well as the varstructs in lambda expressions, there are other ways of
+% performing pattern matching. Instead of creating a function via pattern
+% matching and applying it to an expression, one can perform pattern-matching
+% over the expression directly using the following construction:
+
+$$ \mbox{match}\; expression\; \mbox{with}\;
+   pattern_1 \mbox{\lstinline!->!} E_1 \mid \cdots \mid
+   pattern_n \mbox{\lstinline!->!} E_n $$
+
+\noindent В простейшем случае достаточно ограничиться
+
+$$ \mbox{let}\; pattern \mbox{ = } expression $$
+
+\noindent но в этом случае разрешено использование лишь одного образца.
+
+\subsection{Рекурсивные типы}
+
+Предыдущие примеры рекурсивных типов не слишком оправдывали своё название, поскольку
+их определения не ссылались на себя. В качестве более интересного примера рассмотрим тип
+списков  \footnote{конечных упорядоченных последовательностей} элементов типа {\tt 'a}.
+
+%%The previous examples have all been recursive only vacuously, in that we have
+%%not defined a type in terms of itself. For a more interesting example, we will
+%%declare a type of lists (finite ordered sequences) of elements of type {\tt
+%%'a}.
+
+\begin{boxed}
+\begin{verbatim}
+  #type ('a)list = Nil | Cons of 'a * ('a)list;;
+  Type list defined.
+\end{verbatim}
+\end{boxed}
+
+\noindent Проверим типы конструкторов:
+%\noindent Let us examine the types of the constructors:
+
+\begin{boxed}
+\begin{verbatim}
+  #Nil;;
+  - : 'a list = Nil
+  #Cons;;
+  - : 'a * 'a list -> 'a list = <fun>
+\end{verbatim}
+\end{boxed}
+
+Конструктор {\tt Nil}, не принимающий никаких аргументов, просто создаёт некоторый
+объект типа {\verb+('a)list+}, который рассматривается как пустой список. Другой
+конструктор, {\tt Cons}, принимает аргументы типа {\tt 'a} и {\tt ('a)list}, а 
+возвращает новый список, который образован из предыдущего добавлением в начало
+первого элемента. Например:
+
+%%The constructor {\tt Nil}, which takes no arguments, simply creates some object
+%%of type {\verb+('a)list+} which is to be thought of as the empty list. The
+%%other constructor {\tt Cons} takes an element of type {\tt 'a} and an element
+%%of the new type {\tt ('a)list} and gives another, which we think of as arising
+%%from the old list by adding one element to the front of it. For example, we can
+%%consider the following:
+
+\begin{boxed}
+\begin{verbatim}
+  #Nil;;
+  - : 'a list = Nil
+  #Cons(1,Nil);;
+  - : int list = Cons (1, Nil)
+  #Cons(1,Cons(2,Nil));;
+  - : int list = Cons (1, Cons (2, Nil))
+  #Cons(1,Cons(2,Cons(3,Nil)));;
+  - : int list = Cons (1, Cons (2, Cons (3, Nil)))
+\end{verbatim}
+\end{boxed}
+
+Поскольку конструкторы по определению инъективны и индивидуальны, легко понять, что 
+все значения, которые мы рассматривали как списки $[]$, $[1]$, $[1;2]$ и $[1;2;3]$,
+различны. Также из этих свойств конструкторов следует, что списки произвольной 
+длины могут быть представлены значениями нашего типа. Фактически, ML уже имеет 
+тип {\tt list}, точно такой, как только что был определён. 
+Единственная разница в синтаксисе: пустой список обозначается {\verb+[]+}, 
+а рекурсивный конструктор {\verb+::+}~-- инфиксный.
+Следовательно, все упомянутые списки в действительности записываются:
+
+%%Because the constructors are distinct and injective, it is easy to see that all
+%%these values, which we think of as lists $[]$, $[1]$, $[1;2]$ and $[1;2;3]$,
+%%are distinct. Indeed, purely from these properties of the constructors, it
+%%follows that arbitrarily long lists of elements may be encoded in the new type.
+%%Actually, ML already has a type {\tt list} just like this one defined. The only
+%%difference is syntactic: the empty list is written {\verb+[]+} and the
+%%recursive constructor {\verb+::+}, has infix status. Thus, the above lists are
+%%actually written:
+
+\begin{boxed}
+\begin{verbatim}
+  #[];;
+  - : 'a list = []
+  #1::[];;
+  - : int list = [1]
+  #1::2::[];;
+  - : int list = [1; 2]
+  #1::2::3::[];;
+  - : int list = [1; 2; 3]
+\end{verbatim}
+\end{boxed}
+
+Списки выводятся в удобном виде, это же справедливо и для ввода. Тем не менее,
+следует помнить, что это синтаксический сахар, а списки можно выражать и явно,
+в терминах конструкторов. Например, мы можем, используя сопоставление с образцом, 
+определить функции, вычисляющие голову и хвост списка:
+
+%%The lists are printed in an even more natural notation, and this is also
+%%allowed for input. Nevertheless, when the exact expression in terms of
+%%constructors is needed, it must be remembered that this is only a surface
+%%syntax. For example, we can define functions to take the head and tail of a
+%%list, using pattern matching.
+
+\begin{boxed}
+\begin{verbatim}
+  #let hd (h::t) = h;;
+  Toplevel input:
+  >let hd (h::t) = h;;
+  >    ^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  hd : 'a list -> 'a = <fun>
+  #let tl (h::t) = t;;
+  Toplevel input:
+  >let tl (h::t) = t;;
+  >    ^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  tl : 'a list -> 'a list = <fun>
+\end{verbatim}
+\end{boxed}
+
+Компилятор предупреждает нас, что применение этих функций к пустым спискам
+приведёт к ошибкам. Посмотрим на них в действии:
+
+%%The compiler warns us that these both fail when applied to the empty list,
+%%since there is no pattern to cover it (remember that the constructors are
+%%distinct). Let us see them in action:
+
+\begin{boxed}
+\begin{verbatim}
+  #hd [1;2;3];;
+  - : int = 1
+  #tl [1;2;3];;
+  - : int list = [2; 3]
+  #hd [];;
+  Uncaught exception: Match_failure
+\end{verbatim}
+\end{boxed}
+
+Обратите внимание, следующее определение {\tt hd} не является корректным.
+В действительности, функция принимает в качестве аргумента список ровно из
+двух аргументов, а на списках иной длины не определена:
+
+%%Note that the following is not a correct definition of {\tt hd}. In fact, it
+%%constrains the input list to have exactly two elements for matching to succeed,
+%%as can be seen by thinking of the version in terms of the constructors:
+
+\begin{boxed}
+\begin{verbatim}
+  #let hd [x;y] = x;;
+  Toplevel input:
+  >let hd [x;y] = x;;
+  >    ^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  hd : 'a list -> 'a = <fun>
+  #hd [5;6];;
+  - : int = 5
+  #hd [5;6;7];;
+  Uncaught exception: Match_failure
+\end{verbatim}
+\end{boxed}
+
+Сопоставление с образцом может комбинироваться с рекурсией. Например, функция,
+возвращающая длину списка, выглядит так:
+
+%%Pattern matching can be combined with recursion. For example, here is a
+%%function to return the length of a list:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec length =
+     fun [] -> 0
+       | (h::t) -> 1 + length t;;
+  length : 'a list -> int = <fun>
+  #length [];;
+  - : int = 0
+  #length [5;3;1];;
+  - : int = 3
+\end{verbatim}
+\end{boxed}
+
+В качестве альтернативы можно задать её с помощью функций {\tt hd} и {\tt tl}:
+
+%%Alternatively, this can be written in terms of our earlier `destructor'
+%%functions {\tt hd} and {\tt tl}:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec length l =
+     if l = [] then 0
+     else 1 + length(tl l);;
+\end{verbatim}
+\end{boxed}
+
+Последний стиль определения функции весьма распространён во многих языках, особенно
+в LISP, но применение сопоставления с образцом часто бывает более элегантно.
+
+%%This latter style of function definition is more usual in many languages,
+%%notably LISP, but the direct use of pattern matching is often more elegant.
+
+\subsection{Древовидные структуры}
+
+Нередко полезно наглядное представление значений рекурсивных типов в виде деревьев 
+с узлами, образованными применением рекурсивных конструкторов, и с листьями, в
+которых хранятся значения других типов. Рекурсия в данном случае отображает
+принцип построения дерева: агрегацией поддеревьев.
+В случае списков <<деревья>> оказываются весьма глубокими и односторонними. 
+Так, список {\tt [1;2;3;4]} представляется в следующем виде:
+
+%%It is often helpful to visualize the elements of recursive types as tree
+%%structures, with the recursive constructors at the branch nodes and the other
+%%datatypes at the leaves. The recursiveness merely says that plugging subtrees
+%%together gives another tree. In the case of lists the `trees' are all rather
+%%spindly and one-sided, with the list {\tt [1;2;3;4]} being represented as:
+
+\bigskip
+\begin{picture}(140,140)(0,0)
+\put(130,140){\line(-1,-1){30}}
+\put(130,140){\line(1,-1){30}}
+\put(160,110){\line(1,-1){30}}
+\put(160,110){\line(-1,-1){30}}
+\put(190,80){\line(1,-1){30}}
+\put(190,80){\line(-1,-1){30}}
+\put(220,50){\line(1,-1){30}}
+\put(220,50){\line(-1,-1){30}}
+\put(95,100){\tt 1}
+\put(125,70){\tt 2}
+\put(155,40){\tt 3}
+\put(185,10){\tt 4}
+\put(245,10){\tt []}
+\end{picture}
+\bigskip
+
+Рекурсивные типы, допускающие построение более сбалансированных 
+деревьев, задаются также просто, например:
+
+%%It is not difficult to define recursive types which allow more balanced trees,
+%%e.g.
+
+\begin{boxed}
+\begin{verbatim}
+  #type ('a)btree = Leaf of 'a
+                  | Branch of ('a)btree * ('a)btree;;
+\end{verbatim}
+\end{boxed}
+
+В общем, может быть доступно несколько различных рекурсивных конструкторов с
+различным числом потомков. Это даёт очень простой способ представления
+{\em синтаксических деревьев} языков программирования (и других
+формальных языков). Например, следующий тип представляет арифметические
+выражения, построенные из целых чисел при помощи операций сложения и умножения.
+
+%%In general, there can be several different recursive constructors, each with a
+%%different number of descendants. This gives a very natural way of representing
+%%the {\em syntax trees} of programming (and other formal) languages. For
+%%example, here is a type to represent arithmetical expressions built up from
+%%integers by addition and multiplication:
+
+\begin{boxed}
+\begin{verbatim}
+  #type expression = Integer of int
+                   | Sum of expression * expression
+                   | Product of expression * expression;;
+\end{verbatim}
+\end{boxed}
+
+\noindent А рекурсивная функция вычисления значения таких выражений имеет вид:
+%\noindent and here is a recursive function to evaluate such expressions:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec eval =
+     fun (Integer i) -> i
+       | (Sum(e1,e2)) -> eval e1 + eval e2
+       | (Product(e1,e2)) -> eval e1 * eval e2;;
+  eval : expression -> int = <fun>
+  #eval (Product(Sum(Integer 1,Integer 2),Integer 5));;
+  - : int = 15
+\end{verbatim}
+\end{boxed}
+
+Подобные абстрактные синтаксические деревья могут быть весьма удобным 
+представлением данных, допускающим всевозможные манипуляции над ними. 
+Так, часто первое действие компиляторов заключается в переводе, согласно 
+правилам синтаксического разбора, текста на входе в <<абстрактное 
+синтаксическое дерево>>. Обратим внимание, что после этого условности, вроде 
+приоритета или использования скобок, уже не требуются. Как только мы 
+достигаем уровня абстрактного синтаксиса, всё выражается явно за счёт 
+структуры дерева. Мы будем использовать подобную технику при написании 
+ML-версий формальных правил лямбда-исчисления. Начнём с типа, используемого 
+для представления лямбда-термов.
+
+%%Such abstract syntax trees are a useful representation which allows all sorts
+%%of manipulations. Often the first step programming language compilers and
+%%related tools take is to translate the input text into an `abstract syntax
+%%tree' according to the parsing rules. Note that conventions such as precedences
+%%and bracketings are not needed once we have reached the level of abstract
+%%syntax; the tree structure makes these explicit. We will use such techniques to
+%%write ML versions of the formal rules of lambda calculus that we were
+%%considering earlier. First, the following type is used to represent lambda
+%%terms:
+
+\begin{boxed}
+\begin{verbatim}
+  #type term = Var of string
+             | Const of string
+             | Comb of term * term
+             | Abs of string * term;;
+  Type term defined.
+\end{verbatim}
+\end{boxed}
+
+Отметим, что вместо двух термов {\tt Abs} принимает имя переменной и терм.
+Это сделано для запрета некорректных термов. В качестве примера представим 
+терм $\lamb{x\; y} y\; (x\; x\; y)$ с в виде:
+
+%%Note that we make {\tt Abs} take a variable name and a term rather than two
+%%terms in order to prohibit the formation of terms that aren't valid. For
+%%example, we represent the term $\lamb{x\; y} y\; (x\; x\; y)$ by:
+
+\begin{boxed}
+\begin{verbatim}
+  Abs("x",Abs("y",Comb(Var "y",Comb(Comb(Var "x",Var "x"),Var "y"))))
+\end{verbatim}
+\end{boxed}
+
+Рекурсивная функция~{\tt free\_in}, определяющая, является ли
+переменная в терме свободной, имеет вид:
+
+%%Here is the recursive definition of a function {\tt free\_in} to decide whether
+%%a variable is free in a term:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec free_in x =
+      fun (Var v) -> x = v
+        | (Const c) -> false
+        | (Comb(s,t)) -> free_in x s or free_in x t
+        | (Abs(v,t)) -> not x = v & free_in x t;;
+  free_in : string -> term -> bool = <fun>
+  #free_in "x" (Comb(Var "f",Var "x"));;
+  - : bool = true
+  #free_in "x" (Abs("x",Comb(Var "x",Var "y")));;
+  - : bool = false
+\end{verbatim}
+\end{boxed}
+
+Точно так же мы можем рекурсивно определить подстановку. Сначала, во избежание 
+конфликта имён, нам потребуется функция для переименования переменных. Мы хотим
+преобразовывать существующие имена переменных в новые, не свободные в 
+заданном выражении. Переименование производится путём добавления 
+апострофа~(\texttt{'}) в конец имени.
+
+%%Similarly, we can define substitution by recursion. First, though, we need a
+%%function to rename variables to avoid name clashes. We want the ability to
+%%convert an existing variable name to a new one that is not free in some given
+%%expression. The renaming is done by adding prime characters.
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec variant x t =
+     if free_in x t then variant (x^"'") t
+     else x;;
+  variant : string -> term -> string = <fun>
+  #variant "x" (Comb(Var "f",Var "x"));;
+  - : string = "x'"
+  #variant "x" (Abs("x",Comb(Var "x",Var "y")));;
+  - : string = "x"
+  #variant "x" (Comb(Var "f",Comb(Var "x",Var "x'")));;
+  - : string = "x''"
+\end{verbatim}
+\end{boxed}
+
+\noindent Теперь мы можем определить подстановку так, как мы это сделали
+для абстрактных термов:
+
+%% \noindent Now we can define substitution just as we did in abstract terms:
+
+\begin{boxed}
+\begin{verbatim}
+  #let rec subst u (t,x) =
+    match u with
+      Var y -> if x = y then t else Var y
+    | Const c -> Const c
+    | Comb(s1,s2) -> Comb(subst s1 (t,x),subst s2 (t,x))
+    | Abs(y,s) -> if x = y then Abs(y,s)
+                  else if free_in x s & free_in y t then
+                    let z = variant y (Comb(s,t)) in
+                    Abs(z,subst (subst s (Var y,z)) (t,x))
+                  else Abs(y,subst s (t,x));;
+  subst : term -> term * string -> term = <fun>
+\end{verbatim}
+\end{boxed}
+
+
+Обратим внимание на очень близкие параллели между стандартным 
+математическим представлением лямбда-исчисления, которое обсуждалось
+ранее, и ML-версией. Всё что нам действительно надо для завершения
+аналогии, это  вместо явного вызова конструкторов читать и записывать
+термы в более удобной форме. Мы вернёмся к этой проблеме позже и обсудим, 
+как можно добавить такие возможности.
+
+%%Note the very close parallels between the standard mathematical presentation of
+%%lambda calculus, as we presented earlier, and the ML version here. All we
+%%really need to make the analogy complete is a means of reading and writing the
+%%terms in some more readable form, rather than by explicitly invoking the
+%%constructors. We will return to this issue later, and see how to add these
+%%features.
+
+\subsection{Тонкости рекурсивных типов}
+
+Рекурсивный тип может содержать вложенные конструкторы других типов,
+включая конструктор типа функций. Например, рассмотрим следующее определение:
+
+%%A recursive type may contain nested instances of other type constructors,
+%%including the function space constructor. For example, consider the following:
+
+\begin{boxed}
+\begin{verbatim}
+  #type ('a)embedding = K of ('a)embedding->'a;;
+  Type embedding defined.
+\end{verbatim}
+\end{boxed}
+
+Если мы задумаемся о его семантике, то столкнёмся с определёнными сложностями.
+Рассмотрим, к примеру, специальный случай, когда {\verb+'a+} является 
+{\verb+bool+}. Конструктор {\verb+K:((bool)embedding->bool)->(bool)embedding+} 
+по определению считается инъективной функцией.
+Это прямо противоречит теореме Кантора о том, что множество всех подмножеств 
+множества~$X$ не может  быть инъективно ему.\footnote{Доказательство: 
+рассмотрим $C = \{ i(s) \mid s \in \powerset(X) \mbox{ и } i(s) \not\in s \}$. 
+Если $i:\powerset(X) \to X$ инъективно, то справедливо $i(C) \in C
+\Iff i(C) \not\in C$, получили противоречие. Эта конструкция напоминает парадокс Рассела,
+и, возможно, в действительности вдохновлена им. Аналогия будет ещё более близкой,
+если мы рассмотрим равнозначное утверждение о невозможности сюръективного отображения $j:X \to \powerset(X)$, 
+и докажем его, рассматривая $\{s \mid s \not\in j(s)\}$.} Следовательно,  
+рассуждая о семантике типов, нам следует быть осторожнее. В действительности,
+$\alpha \to \beta$  не может рассматриваться как полное функциональное 
+пространство, иначе конструкции рекурсивных типов, подобные приведённой выше, будут противоречивыми.
+Поскольку все функции, которые мы можем задать, в действительности являются
+вычислимыми, есть смысл ограничиться только ими. С таким ограничением возможно
+построение непротиворечивой, хотя и сложной, семантики.
+
+%%If we stop to think about the underlying semantics, this looks disquieting.
+%%Consider for example the special case when {\verb+'a+} is {\verb+bool+}. We
+%%then have an injective function
+%%{\verb+K:((bool)embedding->bool)->(bool)embedding+}. This directly contradicts
+%%Cantor's theorem that the set of all subsets of $X$ cannot be injected into
+%%$X$.\footnote{Proof: consider $C = \{ i(s) \mid s \in \powerset(X) \mbox{ and }
+%%i(s) \not\in s \}$. If $i:\powerset(X) \to X$ is injective, we have $i(C) \in C
+%%\Iff i(C) \not\in C$, a contradiction. This is similar to the Russell paradox,
+%%and in fact probably inspired it. The analogy is even closer if we consider the
+%%equivalent form that there is no surjection $j:X \to \powerset(X)$, and prove
+%%it by considering $\{s \mid s \not\in j(s)\}$.} Hence we need to be more
+%%careful with the semantics of types. In fact $\alpha \to \beta$ cannot be
+%%interpreted as the full function space, or recursive type constructions like
+%%the above are inconsistent. However, since all functions we can actually create
+%%are computable, it is reasonable to restrict ourselves to computable functions
+%%only. With that restriction, a consistent semantics is possible, although the
+%%details are complicated.
+
+Рассмотренное определение также имеет интересные последствия для системы типов.
+Например, мы можем теперь определить $Y$~комбинатор, используя~$K$ для 
+приведения типа. Отметим, что удалив все вхождения~$K$, мы получим, в сущности, обычное
+определение $Y$~комбинатора в нетипизированном лямбда-исчислении. Конструкция~{\tt let}
+ используется исключительно для эффективности, но мы  {\em нуждаемся} 
+в $\eta$-редексе, включающем {\tt z}, чтобы предупредить зацикливание, имеющее
+место в стратегии вычислений, принятой в ML.
+
+%%The above definition also has interesting consequences for the type system. For
+%%example, we can now define the $Y$ combinator, by using $K$ as a kind of type
+%%cast. Note that if the $K$s are deleted, this is essentially the usual
+%%definition of the $Y$ combinator in untyped lambda calculus. The use of {\tt
+%%let} is only used for the sake of efficiency, but we {\em do} need the
+%%$\eta$-redex involving {\tt z} in order to prevent looping under ML's
+%%evaluation strategy.
+
+\begin{boxed}
+\begin{verbatim}
+  #let Y h =
+    let g (K x) z = h (x (K x)) z in
+    g (K g);;
+  Y : (('a -> 'b) -> 'a -> 'b) -> 'a -> 'b = <fun>
+  #let fact = Y (fun f n -> if n = 0 then 1 else n * f(n - 1));;
+  fact : int -> int = <fun>
+  #fact 6;;
+  - : int = 720
+\end{verbatim}
+
+\end{boxed}
+
+Таким образом, рекурсивные типы представляют собой значительный вклад в 
+язык и позволяют обойтись без введения в него оператора рекурсии как отдельной
+примитивной конструкции.
+
+%%Thus, recursive types are a powerful addition to the language, and allow us to
+%%back off the change of making the recursion operator a primitive.
+
+\section*{Упражнения}
+
+\begin{enumerate}
+
+\item Что будет неверно в нашем определении {\tt subst}, если мы заменим
+%\item What goes wrong in our definition of {\tt subst} if we replace
+{\verb+Var y -> if x = y then t else Var y+}
+сопоставлением с двумя образцами:
+%\noindent by these separate patterns?
+{\verb+Var x -> t | Var y -> Var y+}?
+
+\item 
+Натуральные числа возможно представить (хотя и неэффективно) при помощи
+такого рекурсивного типа:
+%%\item It would be possible, though inefficient, to define natural numbers using
+%%the following recursive type:
+\begin{boxed}
+\begin{verbatim}
+  #type num = Zero | Suc of num;;
+\end{verbatim}
+\end{boxed}
+
+Определите функции, выполняющие арифметические действия над числами в 
+этой форме.
+
+\item Пользуясь представлением синтаксиса лямбда-термов, 
+данным выше, напишите функцию, конвертирующую произвольный лямбда-терм
+в эквивалентный, записанный с помощью $S$, $K$ и $I$~комбинаторов, при помощи
+техники, рассмотренной нами ранее.
+В качестве представления комбинаторов используйте {\verb+Const "S"+} 
+и т.п.
+
+
+\item Расширьте синтаксис лямбда-термов, включив типизацию в стиле Чёрча.
+Реализуйте функции, выполняющие проверку правил типизации в ходе построения
+термов и представление последних в виде композиции примитивных 
+конструкторов.
+
+\item Рассмотрим тип бинарных деревьев со строками в узлах:
+%
+%Define functions to perform arithmetic on natural numbers in this form.
+%
+%%\item Use the type definition for the syntax of lambda terms that we gave
+%%above. Write a function to convert an arbitrary lambda term into an equivalent
+%%in terms of the $S$, $K$ and $I$ combinators, based on the technique we gave
+%%earlier. Represent the combinators by \lstinline!Const "S"! etc.
+%
+%%\item Extend the syntax of lambda terms to a incorporate Church-style typing.
+%%Write functions that check the typing conditions before allowing terms to be
+%%formed, but otherwise map down to the primitive constructors.
+%
+%\item Consider a type of binary trees with strings at the nodes defined by:
+%
+\begin{boxed}
+\begin{verbatim}
+  #type stree = Leaf | Branch of stree * string * stree;;
+\end{verbatim}
+\end{boxed}
+
+Напишите функцию {\tt strings}, возвращающую список строк, полученный при обходе дерева 
+в порядке слева направо, т.е.\ такую, которая для каждого узла дерева добавляет
+в конец списка, полученного при обходе левого поддерева, одноэлементный список
+со строкой, расположенной в данном узле, а затем --- список строк, полученный
+при обходе правого поддерева, сохраняя их порядок. 
+Напишите функцию, которая принимает строку и дерево, для 
+которого соответствующий список отсортирован в алфавитном порядке, а возвращает
+другое дерево, в которое данная строка вставлена с сохранением упорядоченности. 
+
+\item (*) Улучшите эти функции так, чтобы на каждом шагу дерево оставалось почти 
+сбалансированным, т.е. для каждого узла максимальная  глубина левого и правого 
+поддерева отличалась бы не более чем на единицу.\footnote{Подробнее об 
+этих АВЛ-деревьях и похожих методах построения сбалансированных деревьев 
+см.\ работу~\cite{avl} либо другие книги по алгоритмам.}
+
+\item (*) Можете ли вы описать типы выражений, которые могут быть представлены
+в типизированном лямбда-исчислении без применения оператора рекурсии?%
+\footnote{Ответ на этот вопрос содержится в так называемом
+<<гомоморфизме Карри-Говарда>>~--- подробнее см.~\cite{girard-prat}.} 
+Каков тип следующей рекурсивной функции?
+
+%%Write a function {\tt strings} to return a list of the strings occurring in the
+%%tree in left-to-right order, i.e. at each node it appends the list resulting
+%%from the left branch, the singleton list at the current node, and the list
+%%occurring at the right branch, in that order. Write a function that takes a
+%%tree where the corresponding list is alphabetically sorted and a new string,
+%%and returns a tree with the new string inserted in the appropriate place.
+
+%%\item (*) Refine the above functions so that the tree remains almost balanced
+%%at each stage, i.e. the maximum depths occurring at the left and right branches
+%%differ by at most one.\footnote{See \citeN{avl} and various algorithm books for
+%%more details of these `AVL trees' and similar methods for balanced trees.}
+
+%%\item (*) Can you characterize the types of expressions that can be written
+%%down in simply typed lambda calculus, without a recursion
+%%operator?\footnote{The answer lies in the `Curry-Howard isomorphism' --- see
+%%\citeN{girard-prat} for example.} What is the type of the following recursive
+%function?
+
+\begin{boxed}
+\begin{lstlisting}
+  let rec f i = (i o f) (i o i);;
+\end{lstlisting}
+\end{boxed}
+
+% ISSUE Смысл перевода ускользает. Думать.
+Покажите, как это может использоваться для записи ML выражений с полностью 
+полиморфным типом $\alpha$. Можете ли вы написать завершённое выражение
+с таким свойством? Как насчёт произвольной функции типа $\alpha \to \beta$?
+
+%%Show how it can be used to write down ML expressions with completely
+%%polymorphic type $\alpha$. Can you write a terminating expression with this
+%%property? What about an arbitrary function type $\alpha \to \beta$?
+
+\end{enumerate}
+
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
+

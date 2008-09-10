@@ -1,0 +1,903 @@
+\documentclass{fp-slides}
+
+\begin{document}
+
+\defverbatim[colored]\PrologTerm{
+  \begin{lstlisting}[frame=single]
+  type term = Var of string
+            | Fn of string * (term list);;
+\end{lstlisting}}
+
+\defverbatim[colored]\Token{
+  \begin{lstlisting}[frame=single]
+  type token = Variable of string
+             | Constant of string
+             | Punctuation of string;;
+\end{lstlisting}}
+
+\defverbatim[colored]\Lex{
+  \begin{lstlisting}[frame=single]
+let lex =
+  let several p = many (some p) in
+  let collect(h,t) = h^(itlist (prefix ^) t "") in
+  let upper_alpha s = "A" <= s & s <= "Z" or s = "_"
+  and lower_alpha s = "a" <= s & s <= "z" or
+                      "0" <= s & s <= "9"
+  and punct s = s = "(" or s = ")" or s = "[" or
+                s = "]" or s = "," or s = "."
+  and space s = s = " " or s = "\n" or s = "\t" in
+  let alnum s = upper_alpha s or lower_alpha s in
+  let symbolic s = not space s & not alnum s &
+                   not punct s in
+  let rawvariable = some upper_alpha ++ several alnum
+        >> (Variable o collect)
+  and rawconstant = (some lower_alpha ++ several alnum
+     || some symbolic ++ several symbolic)
+        >> (Constant o collect)
+  and rawpunct = some punct >>  Punct in
+  let token = (rawvariable || rawconstant || rawpunct)
+              ++ several space >> fst in
+  let tokens = (several space ++ many token) >> snd in
+  let alltokens = (tokens ++ finished) >> fst in
+  fst o alltokens o explode;;
+\end{lstlisting}}
+
+\defverbatim[colored]\Unify{
+  \begin{lstlisting}[frame=single]
+let rec unify tm1 tm2 insts =
+  match tm1 with
+    Var(x) ->
+      (try let tm1' = assoc x insts in
+           unify tm1' tm2 insts
+       with Not_found ->
+           augment (x,tm2) insts)
+  | Fn(f1,args1) ->
+      match tm2 with
+        Var(y) ->
+          (try let tm2' = assoc y insts in
+               unify tm1 tm2' insts
+           with Not_found ->
+               augment (y,tm1) insts)
+      | Fn(f2,args2) ->
+          if f1 = f2
+          then itlist2 unify args1 args2 insts
+          else raise (error "functions do not match");;
+\end{lstlisting}}
+
+\defverbatim[colored]\OccursIn{
+  \begin{lstlisting}[frame=single]
+let rec occurs_in x =
+  fun (Var y) -> x = y
+    | (Fn(_,args)) -> exists (occurs_in x) args;;
+
+let rec subst insts = fun
+   (Var y) -> (try assoc y insts with Not_found -> tm)
+ | (Fn(f,args)) -> Fn(f,map (subst insts) args);;
+
+let raw_augment =
+  let augment1 theta (x,s) =
+    let s' = subst theta s in
+    if occurs_in x s & not(s = Var(x))
+    then raise (error "Occurs check")
+    else (x,s') in
+  fun p insts -> p::(map (augment1 [p]) insts);;
+
+let augment (v,t) insts =
+  let t' = subst insts t in match t' with
+    Var(w) -> if w <= v then
+                if w = v then insts
+                else raw_augment (v,t') insts
+              else raw_augment (w,Var(v)) insts
+  | _ -> if occurs_in v t'
+         then raise (error "Occurs check")
+         else raw_augment (v,t') insts;;
+\end{lstlisting}}
+
+\defverbatim[colored]\BackTracking{
+  \begin{lstlisting}[frame=single]
+let rec first f =
+  fun [] -> raise (error "No rules applicable")
+    | (h::t) -> try f h with error _ -> first f t;;
+
+let rec expand n rules insts goals =
+  first (fun rule ->
+    if goals = [] then insts else
+    let conc,asms =
+      rename_rule (string_of_int n) rule in
+    let insts' = unify conc (hd goals) insts in
+    let local,global = partition
+      (fun (v,_) -> occurs_in v conc or
+              exists (occurs_in v) asms) insts' in
+    let goals' = (map (subst local) asms) @
+                 (tl goals) in
+    expand (n + 1) rules global goals') rules;;
+\end{lstlisting}}
+
+\defverbatim[colored]\OdO{
+  \begin{lstlisting}[frame=single]
+let rec rename s =
+  fun (Var v) -> Var("~"^v^s)
+    | (Fn(f,args)) -> Fn(f,map (rename s) args);;
+let rename_rule s (conc,asms) =
+  (rename s conc,map (rename s) asms);;
+\end{lstlisting}}
+
+\defverbatim[colored]\OdOO{
+  \begin{lstlisting}[frame=single]
+type outcome = No | Yes of (string * term) list;;
+
+let prolog rules goal =
+  try let insts = expand 0 rules [] [goal] in
+      Yes(filter (fun (v,_) -> occurs_in v goal)
+                 insts)
+  with error _ -> No;;
+\end{lstlisting}}
+
+\defverbatim[colored]\PrologExamplesO{
+  \begin{lstlisting}[frame=single]
+#let rules = parse_rules
+  "male(albert).
+   male(edward).
+   female(alice).
+   female(victoria).
+   parents(edward,victoria,albert).
+   parents(alice,victoria,albert).
+   sister_of(X,Y) :-
+     female(X),
+     parents(X,M,F),
+     parents(Y,M,F).";;
+rules : (term * term list) list =
+ [`male(albert)`, []; `male(edward)`, [];
+  `female(alice)`, []; `female(victoria)`, [];
+  `parents(edward,victoria,albert)`, [];
+  `parents(alice,victoria,albert)`, [];
+  `sister_of(X,Y)`,
+    [`female(X)`; `parents(X,M,F)`; `parents(Y,M,F)`]]
+#prolog rules ("sister_of(alice,edward)");;
+- : outcome = Yes []
+#prolog rules (parse_term "sister_of(alice,X)");;
+- : outcome = Yes ["X", `edward`]
+#prolog rules (parse_term "sister_of(X,Y)");;
+- : outcome = Yes ["Y", `edward`; "X", `alice`]
+\end{lstlisting}}
+
+\defverbatim[colored]\PrologExamplesOO{
+  \begin{lstlisting}[frame=single]
+#let r = parse_rules
+  "append([],L,L).
+   append([H|T],L,[H|A]) :- append(T,L,A).";;
+r : (term * term list) list =
+ [`append([],L,L)`, [];
+  `append(H . T,L,H . A)`, [`append(T,L,A)`]]
+#prolog r (parse_term "append([1,2],[3],[1,2,3])");;
+- : outcome = Yes []
+#prolog r (parse_term "append([1,2],[3,4],X)");;
+- : outcome = Yes ["X", `1 . (2 . (3 . (4 . [])))`]
+#prolog r (parse_term "append([3,4],X,X)");;
+- : outcome = No
+#prolog r (parse_term "append([1,2],X,Y)");;
+- : outcome = Yes ["Y", `1 . (2 . X)`]
+\end{lstlisting}}
+
+\defverbatim[colored]\PrologExamplesOOO{
+  \begin{lstlisting}[frame=single]
+#prolog r (parse_term "append(X,[3,4],X)");;
+\end{lstlisting}}
+
+\defverbatim[colored]\ProcForm{
+  \begin{lstlisting}[frame=single]
+let rec proc tm =
+  match tm with
+    Fn("~",[t]) -> Fn("~",[proc t])
+  | Fn("&",[t1; t2]) -> Fn("&",[proc t1; proc t2])
+  | Fn("|",[t1; t2]) -> Fn("|",[proc t1; proc t2])
+  | Fn("-->",[t1; t2]) ->
+        proc (Fn("|",[Fn("~",[t1]); t2]))
+  | Fn("<->",[t1; t2]) ->
+        proc (Fn("&",[Fn("-->",[t1; t2]);
+                      Fn("-->",[t2; t1])]))
+  | Fn("forall",[x; t]) -> Fn("forall",[x; proc t])
+  | Fn("exists",[x; t]) -> Fn("exists",[x; proc t])
+  | t -> t;;
+\end{lstlisting}}
+
+\defverbatim[colored]\NnfCode{
+  \begin{lstlisting}[frame=single]
+let rec nnf_p tm =
+  match tm with
+    Fn("~",[t]) -> nnf_n t
+  | Fn("&",[t1; t2]) -> Fn("&",[nnf_p t1; nnf_p t2])
+  | Fn("|",[t1; t2]) -> Fn("|",[nnf_p t1; nnf_p t2])
+  | Fn("forall",[x; t]) -> Fn("forall",[x; nnf_p t])
+  | Fn("exists",[x; t]) -> Fn("exists",[x; nnf_p t])
+  | t -> t
+
+and nnf_n tm =
+  match tm with
+    Fn("~",[t]) -> nnf_p t
+  | Fn("&",[t1; t2]) -> Fn("|",[nnf_n t1; nnf_n t2])
+  | Fn("|",[t1; t2]) -> Fn("&",[nnf_n t1; nnf_n t2])
+  | Fn("forall",[x; t]) -> Fn("exists",[x; nnf_n t])
+  | Fn("exists",[x; t]) -> Fn("forall",[x; nnf_n t])
+  | t -> Fn("~",[t]);;
+\end{lstlisting}}
+
+\defverbatim[colored]\Prover{
+  \begin{lstlisting}[frame=single]
+let rec prove fm unexp pl nl n cont i =
+  if n < 0 then raise (error "No proof") else
+  match fm with
+    Fn("&",[p;q]) ->
+        prove p (q::unexp) pl nl n cont i
+  | Fn("|",[p;q]) ->
+        prove p unexp pl nl n
+        (prove q unexp pl nl n cont) i
+  | Fn("forall",[Var x; p]) ->
+        let v = mkvar() in
+        prove (subst [x,Var v] p) (unexp@[fm])
+              pl nl (n - 1) cont i
+  | Fn("exists",[Var x; p]) ->
+        let v = mkvar() in prove(subst [x,Fn(v,[])] p)
+                           unexp pl nl (n - 1) cont i
+  | Fn("~",[t]) ->
+        (try first (fun t' -> let i' = unify t t' i in
+                              cont i') pl
+         with error _ -> prove (hd unexp) (tl unexp)
+                               pl (t::nl) n cont i)
+  | t ->
+        (try first (fun t' -> let i' = unify t t' i in
+                              cont i') nl
+         with error _ -> prove (hd unexp) (tl unexp)
+                               (t::pl) nl n cont i);;
+\end{lstlisting}}
+
+\defverbatim[colored]\ProverExampleO{
+  \begin{lstlisting}[frame=single]
+let prover =
+  let rec prove_iter n t =
+    try let insts = prove t [] [] [] n I [] in
+        let globinsts = filter
+          (fun (v,_) -> occurs_in v t) insts in
+        n,globinsts
+    with error _ -> prove_iter (n + 1) t in
+  fun t -> prove_iter 0 (nnf_n(proc(parse_term t)));;
+\end{lstlisting}}
+
+\defverbatim[colored]\ProverExampleOO{
+  \begin{lstlisting}[frame=single]
+#let P1 = prover "p --> q <-> ~(q) --> ~(p)";;
+P1 : int * (string * term) list = 0, []
+#let P13 = prover "p | q & r <-> (p | q) & (p | r)";;
+P13 : int * (string * term) list = 0, []
+#let P16 = prover "(p --> q) | (q --> p)";;
+P16 : int * (string * term) list = 0, []
+#let P18 = prover "exists(Y,forall(X,p(Y)-->p(X)))";;
+P18 : int * (string * term) list = 2, []
+#let P19 = prover "exists(X,forall(Y,forall(Z,
+                (p(Y)-->q(Z))-->p(X)-->q(X))))";;
+P19 : int * (string * term) list = 6, []
+\end{lstlisting}}
+
+\defverbatim[colored]\ProverExampleOOO{
+  \begin{lstlisting}[frame=single]
+#let P55 = prover
+  "lives(agatha) & lives(butler) & lives(charles) &
+   (killed(agatha,agatha) | killed(butler,agatha) |
+    killed(charles,agatha)) &
+   (forall(X,forall(Y,
+     killed(X,Y) --> hates(X,Y) & ~(richer(X,Y))))) &
+   (forall(X,hates(agatha,X)
+             --> ~(hates(charles,X)))) &
+   (hates(agatha,agatha) & hates(agatha,charles)) &
+   (forall(X,lives(X) & ~(richer(X,agatha))
+             --> hates(butler,X))) &
+   (forall(X,hates(agatha,X) --> hates(butler,X))) &
+   (forall(X,~(hates(X,agatha)) | ~(hates(X,butler))
+             | ~(hates(X,charles))))
+   --> killed(agatha,agatha)";;
+P55 : int * (string * term) list = 6, []
+\end{lstlisting}}
+
+\defverbatim[colored]\ProverExampleOOOO{
+  \begin{lstlisting}[frame=single]
+#let P55' = prover
+  "......
+   --> killed(X,agatha)";;
+P55' : int * (string * term) list = 6, ["X", `agatha`]
+\end{lstlisting}}
+
+
+\section*{Лекция 12. Примеры на ML IV: Пролог и Доказательство Теорем}
+
+\frame{
+  \frametitle{Темы}
+  \begin{itemize}
+   \item Выражения в Прологе: анализ и печать
+%  \item Prolog terms: parsing and printing
+    \maybepause
+
+  \item Унификация и поиск с возвратом в прологе
+%  \item Unification and Prolog backtracking
+    \maybepause
+
+  \item Примеры на Прологе
+%  \item Prolog examples
+    \maybepause
+
+   \item Простое средство доказательства теорем
+%  \item A simple theorem prover
+    \maybepause
+
+  \item Примеры доказательства теорем
+%  \item Theorem proving examples
+
+  \end{itemize}
+}
+
+
+
+\frame{
+  \frametitle{Обзор}
+%  \frametitle{Overview}
+
+  Пролог это <<декларативный>> язык программирования популярный
+  в области исследований по Искусственному Интеллекту.
+%  Prolog is another <<declarative>> language, popular in Artificial Intelligence
+%  research.
+
+%  You will learn more about it in the lecture course <<Prolog for Artificial
+%  Intelligence>>.
+
+  Это логический язык программирования, и говорится, что он
+  <<реляционный>>, а не функциональный.
+%  It is a logic programming language, and is said to be <<relational>> rather than
+%  functional.
+
+  Его стратегия поиска, обратный (логический) вывод с унификацией и
+  поиском с возвратом, являются полезными для широкого круга
+  приложений, таких как: базы данных, экспертные системы и средства
+  доказательства теорем.
+%  Its standard search strategy, backward chaining with unification and
+%  backtracking, is useful for a wide range of applications including databases,
+%  expert systems and theorem provers.
+
+  Мы покажем, как на ML сделать урезанный вариант интерпретатора
+  Пролог.
+%  We will show how to implement a cut-down Prolog interpreter in ML.
+
+  После этого, используя те же средства и методы мы создадим простое
+  средство доказательства теорем.
+%  We will then use the same tools and techniques to build a simple theorem
+%  prover.
+}
+
+
+\frame{
+  \frametitle{Выражения в Прологе}
+%  \frametitle{Prolog terms}
+
+  Данные и код в Прологе представляются с помощью единой системы
+  термов первого порядка.
+%  Prolog code and data is represented using a uniform system of first order
+%  terms.
+
+  Мы будем представлять их в виде рекурсивного типа схожего с тем,
+  который мы использовали для математических выражений.
+%  We will represent this using a recursive type similar to the one used for
+%  mathematical expressions.
+
+  \PrologTerm
+
+  Заметьте, что мы рассматриваем константы как функции без аргументов.
+%  Note that we treat constants as nullary functions, i.e. functions that take an
+%  empty list of arguments.
+
+  Там, где раньше использовался {\tt Const s}, теперь будет {\tt Fn(s,[])}.
+%  Where we would formerly have used {\tt Const s}, we will now use
+%  {\tt Fn(s,[])}.
+
+  Заметим также, что мы будем рассматривать функции разной арности
+  (разного числа принимаемых аргументов) как различные, даже если
+  у них одинаковые имена.
+%  Note that we will treat functions of different arities (different numbers of
+%  arguments) as distinct, even if they have the same name.
+}
+
+
+
+\frame{
+   \frametitle{Лексический анализ (1)}
+%  \frametitle{Lexical analysis (1)}
+
+   В Прологе идентификаторы, которые начинаются с заглавной буквы или
+   подчёркивания, рассматриваются как переменные, а другие
+   символьно-цифровые идентификаторы наряду с числами, рассматриваются
+   как константы.
+%  In Prolog, identifiers that begin with an {\em upper case} letter or an
+%  underscore are treated as variables, while other alphanumeric identifiers,
+%  along with numerals, are treated as constants.
+
+   Например {\tt X} и {\tt Answer}~-- это переменные, тогда как {\tt
+     x} и {\tt john}~-- константы.
+%  For example {\tt X} and {\tt Answer} are variables while {\tt x} and
+%  {\tt john} are constants.
+
+   Символьные идентификаторы, также как константы не различаются, в
+   отличии от символов пунктуации: левой и правой скобок, запятой и
+   точки с запятой - их различать будем.
+%  We will lump all symbolic identifiers together as constants too, but we will
+%  distinguish the punctuation symbols: left and right brackets, commas and
+%  semicolons.
+
+   Непунктуационные символы собираются вместе до строки наибольшей
+   возможной длины.  Таким образом не требуется, чтобы символьный
+   идентификатор состоял только из одного символа.
+%  Non-punctuation symbols are collected together into the longest strings
+%  possible, so symbolic identifiers need not consist only of one character.
+
+  \Token
+}
+
+
+
+\frame[shrink=10]{
+   \frametitle{Лексический анализ (2)}
+%  \frametitle{Lexical analysis (2)}
+
+  \Lex
+}
+
+
+\frame{
+  \frametitle{Синтаксический анализ и печать}
+%  \frametitle{Parsing and printing}
+
+  Система печати остаётся в точности такой же какой была раньше.
+%  The printer is exactly the same as before.
+
+  Синтаксический анализатор почти такой как раньше; повторим что мы
+  допускаем запись некоторых операторов, таких как сложение, в
+  инфиксной форме.  Мы также допускаем специальную запись для списков.
+%  The parser is almost the same as before; again we allow some operators like
+%  addition to be written infix. We also allow a special syntax for lists.
+
+  Мы рассматриваем {\tt [x1,x2,\ldots,xn]} как короткую запись для
+  {\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
+%  We regard {\tt [x1,x2,\ldots,xn]} as shorthand for
+%  {\tt cons(x1,cons(x2,\ldots,cons(xn,nil)))}
+
+  где {\tt cons}~-- это функция для создания списков, подобно {\tt ::}
+  в ML.  Печатается она как инфиксная точка.  Также допустимо
+  использовать {\tt [H|T]} вместо {\tt cons(H,T)}.
+%  where {\tt cons} is the function corresponding to a list constructor,
+%  just like {\tt ::} in ML. The printer writes it as an infix dot.
+%  Also, {\tt [H|T]} is allowed instead of {\tt cons(H,T)}.
+
+  {\em Правило} в Прологе это одна из следующих форм:
+%  A Prolog {\em rule} is of one of these forms:
+  \begin{eqnarray*}
+    term\mbox{.}    & &                                             \\
+    term            & \mbox{ :- } & term,\ldots,term\mbox{.}
+  \end{eqnarray*}
+  \noindent Для них у нас есть синтаксический анализатор, который
+  возвращает {\tt term * term list}.
+%  \noindent We have a parser for these, returning a {\tt term * term list}.
+}
+
+
+
+\frame{
+  \frametitle{Унификация}
+%  \frametitle{Unification}
+
+  Пролог использует набор правил для разрешения текущей {\em цели},
+  пытаясь сопоставить одно из правил с целью.
+%  Prolog uses a set of rules to solve a current {\em goal} by trying to match one
+%  of the rules against the goal.
+
+  Правило, состоящие из единственного терма, можно сразу разрешить цель.
+%  A rule consisting of a single term can solve a goal immediately.
+
+  В случае правила вида \alert{$term \mbox{ :- }
+    term_1,\ldots,term_n\mbox{.}$}, то чтобы разрешить цель,
+  сопоставимую с термом \alert{$term$}, Прологу необходимо разрешить
+  каждый терм \alert{$term_i$} как подцель.
+%  In the case of a rule \alert{$term \mbox{ :- } term_1,\ldots,term_n\mbox{.}$},
+%  if the goal matches \alert{$term$}, then Prolog needs to solve each \alert{
+%    $term_i$} as a subgoal in order to finish the original goal.
+
+  Однако, цели и правила могут не совпадать в точности.  В состав цели
+  и сопоставляемого правила могут входить переменные, и при сравнении
+  цели с правилом переменные могут присваивать (правильно было бы
+  говорить связывать) соответствующие значения. Такое сравнение со
+  связыванием называется {\em унификацией}.
+%  However, goals and rules do not have to be exactly the same. Instead, Prolog
+%  assigns variables in both to make them match up. This process is called {\em
+%    unification}.
+
+  Это означает, что в конечном счёте мы можем получить частный случай
+  изначальной цели, например получить \alert{$P(f(X))$} вместо
+  \alert{$P(Y)$}.
+%  This means that we can end up proving a special case of the original goal, e.g.
+%  \alert{$P(f(X))$} instead of \alert{$P(Y)$}.
+}
+
+
+
+\frame{
+  \frametitle{Унификация: примеры и алгоритм}
+
+  Чтобы унифицировать выражения \alert{$f(g(X),Y)$} и
+  \alert{$f(g(a),X)$} необходимо связать \alert{$X = a$} и \alert{$Y =
+    a$}.  Тогда оба терма будут иметь вид \alert{$f(g(a),a)$}.
+%  To unify \alert{$f(g(X),Y)$} and \alert{$f(g(a),X)$} we need to set
+%\alert{$X = a$} and \alert{$Y = a$}. Then both terms are
+%\alert{$f(g(a),a)$}.
+
+  Для унификации \alert{$f(a,X,Y)$} и \alert{$f(X,a,Z)$} необходимо
+  связать \alert{$X = a$} и \alert{$Y = Z$}, тогда оба терма будут
+  равны \alert{$f(a,a,Z)$}.
+%  To unify \alert{$f(a,X,Y)$} and \alert{$f(X,a,Z)$} we need to set
+%\alert{$X = a$} and \alert{$Y = Z$}, and then both terms are
+%\alert{$f(a,a,Z)$}.
+
+  Невозможно унифицировать \alert{$f(X)$} и \alert{$X$}.
+%  It is impossible to unify \alert{$f(X)$} and \alert{$X$}.
+
+  Есть общий способ отыскания {\em наиболее общей} унификации.
+%  There is a systematic procedure for finding a {\em most general}
+%unifier.
+
+  Грубо говоря, одновременно анализируем оба терма методом
+  рекурсивного спуска и, найдя переменную в одном из термов, связать
+  её с соответствующим подтермом другого терма.
+
+%  Roughly, one descends the two terms recursively in parallel, and on
+%finding a variable on either side, assigns it to whatever the term on
+%the other side is.
+
+  Необходимо проверять, что переменная не была связана с другим
+  значением и что она не используется в терме, с которым она связана.
+%  One needs to check that the variable hasn't already been assigned to
+%something else, and that it doesn't occur in the term being assigned
+%to it (as in the last example above).
+}
+
+
+
+\frame[shrink=10]{
+  \frametitle{Унификация: код}
+
+  Мы проверяем каждую переменную была ли она связана, согласно набору
+  уже связанных переменных.
+%   We have a set of existing instantiations, and we
+%  look each variable up to see if it is already assigned before
+%  proceeding.
+
+  \Unify
+
+  Мы используем набор уже связанных переменных как аккумулятор.
+%  We use the existing instantiations as an accumulator.
+}
+
+
+\frame[shrink=10]{
+  \frametitle{Пополняем набор заданных переменных}
+%  \frametitle{Augmenting instantiations}
+  \OccursIn
+}
+
+
+
+\frame[shrink=10]{
+  \frametitle{Поиск с возвратом}
+
+  Пролог выполняет поиск в глубину, но он может использовать возврат:
+  допустим правило успешно унифицирует цель, но последующие цели не
+  могут быть разрешены при текущих связываниях. Тогда выполняется
+  возврат, связывание переменных освобождается, и с текущей целью
+  сверяется другое правило.
+  % Prolog proceeds by depth-first search, but it may backtrack: even
+  % if a rule unifies successfully, if all the remaining goals cannot
+  % be solved under the resulting instantiations, then another initial
+  % rule is tried. Thus we consider the whole list of goals rather
+  % than one at a time:
+
+  \BackTracking
+}
+
+
+
+\frame[shrink=10]{
+  \frametitle{Дополнительные моменты}
+
+  Заметим, что для каждого правила, мы создаём новый набор переменных.
+%  Note that we produce fresh variables for the rules each time:
+
+  \OdO
+
+  Наконец, собираем всё воедино:
+%  Finally, we package everything up:
+
+  \OdOO
+
+  Результат функции~~- сообщение о том, что цель или не может быть
+  разрешена, или разрешается с заданными связываниями. В последнем
+  случае мы возврашаем только один ответ (один набор связанных
+  переменных), но можно изменить код так, чтобы выводились все
+  возможные решения.
+%  This says either that the goal cannot be solved, or that it can be
+%  solved with the given instantiations. Note that we only return one
+%  answer in this case, but this is easy to fix.
+
+}
+
+\frame[shrink=10]{
+  \frametitle{Примеры на Прологе (1)}
+
+  \PrologExamplesO
+}
+
+\frame{
+  \frametitle{Примеры на Прологе (2)}
+
+  \PrologExamplesOO
+
+  Пролог менее <<управляемый>> чем ML, поэтому у него есть свои
+  ограничения, например, следующий код зацикливается.
+%  Prolog is less `directional' than ML. However it has its
+%  limitations, e.g.  the following will loop indefinitely:
+
+  \PrologExamplesOOO
+}
+
+
+
+
+\frame{
+  \frametitle{Доказательство теорем в стиле Пролог}
+%  \frametitle{Prolog-style theorem proving}
+
+  Метод, используемый в поиске Пролога, можно приспособить для
+  создания средств доказательства теорем, внеся в него небольшие
+  изменения.  Примеры таких стредств доказательства включают PTTP
+  (Стикель, 1988) и \mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$}
+  (Beckert and Possega 1994).
+
+% #ISSUE: Возможно необходимо разместить ссылку на
+%         http://www.ai.sri.com/~stickel/pttp.html
+
+%  With a few minor changes, Prolog-style search can be used for
+%  general theorem proving. Examples of such provers include PTTP
+%  (Stickel, 1988) and \mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$}
+%  (Beckert and Possega 1994).
+
+  Унификация является эффективным методом для отыскания оптимального
+  способа использования переменных, снабжённых квантором общности
+  (Правиц, Робинсон 1960).
+% #ISSUE: надо проверить и уточнить семантику этого предложения --lg
+
+%  Unification is an efficient method for deciding how to specialize
+%  universally quantified variables (Prawitz, Robinson 1960).
+
+  Например, имея правила \alert{$\all{X} p(X) \Imp q(X)$ и $p(f(a))$},
+  можно унифицировать оба выражения, включающие \alert{$p$} и тем
+  самым связать \alert{$X$} с \alert{$f(a)$}. Напротив, самые ранние
+  системы доказательства теорем пытались строить всевозможные термы из
+  доступных констант и функций.
+
+%  For example, given the facts that \alert{$\all{X} p(X) \Imp q(X)$}
+%  and \alert{ $p(f(a))$}, we can unify the two expressions involving
+%  \alert{$p$} and thus discover that we need to set \alert{$X$} to
+%  \alert{$f(a)$}. By contrast, the very earliest theorem provers tried
+%  all possible terms!
+
+  Обычно, поиск в глубину зацикливается, поэтому нам необходимо
+  немного изменить стратегию поиска Пролог.  Мы будем использовать
+  {\em поиск вглубь с итеративным погружением}.
+
+%  Usually, depth-first search would go into an infinite loop, so we
+%  need to modify the Prolog strategy slightly. We will use {\em depth
+%    first iterative deepening}.
+}
+
+
+\frame{
+  \frametitle{Работа с формулами}
+%  \frametitle{Manipulating formulas}
+
+  Для обозначения формул будем использовать термы первого порядка.
+  Добавим также новые константы для логических операторов, некоторые
+  из которых - инфиксные.
+
+%  We will simply use our terms to denote formulas, introducing new
+%  constants for the logical operators. Many of these are written
+%  infix.
+
+  \begin{center}
+  \begin{tabular}{|l|l|}
+  \hline
+  Оператор   & Значение                            \\
+  \hline
+  {\tt \~{}}(p)    & не p                         \\
+  p {\tt \&} q     & p и q                       \\
+  p {\tt |} q      & p или q                        \\
+  p {\tt -->} q    & p влечёт q (импликация)                  \\
+  p {\tt <->} q    & p только и если только q (эквивалентность)            \\
+  forall(X,p)      & для всех X, p  (квантор общности)                \\
+  exists(X,p)      & существует X такой что p (квантор существования)\\
+  \hline
+  \end{tabular}
+  \end{center}
+
+  Альтернативный подход заключается в добавлении отдельного типа для
+  формул, но тогда потребуется добавить код и для синтаксического
+  разбора, и печати.  Из соображений простоты ограничимся первым
+  решением.
+%  An alternative would be to introduce a separate type of formulas, but this
+%  would require separate parsing and printing support. We will avoid this, for
+%  the sake of simplicity.
+}
+
+\frame[shrink=10]{
+  \frametitle{Предварительная обработка формул}
+%  \frametitle{Preprocessing formulas}
+
+  Очевидно, программа упростится, если основная часть средства
+  доказательства не будет работать с импликациями и эквивалентностями.
+  Следовательно, сначала определим функцию, заменяющую их комбинацией
+  других операторов.
+
+%  It's convenient if the main part of the prover need not cope with
+%  implications and `if and only if's. Therefore we first define a
+%  function that eliminates these in favour of the other connectives.
+
+  \ProcForm
+
+  Приведём формулу в так называемую <<отрицательную нормальную
+  форму>>~~- формулу из элементарных термов и их отрицаний, связанных
+  с помощью операторов <<И>>, <<ИЛИ>> и кванторов.
+
+%  The next step is to push the negations down the formula, putting it
+%  into so-called `negation normal form' (NNF).
+}
+
+\frame[shrink=10]{
+  \frametitle{ОНФ код}
+%  \frametitle{NNF code}
+
+  Мы определим две взаимно рекурсивные функции, которые создают ОНФ
+  для формулы и для её отрицания.
+%  We define two mutually recursive functions that create NNF for a
+%  formula, and its negation.
+
+  \NnfCode
+
+  Мы преобразуем отрицание заданной формулы в отрицательную нормальую
+  форму, а основное средство доказательства попробует получить из
+  этого противоречие.
+%  We will convert the negation of the input formula into negation
+%  normal form, and the main prover will then try to derive a
+%  contradiction from it.
+}
+
+
+\frame{
+  \frametitle{Основное средство доказательства}
+%  \frametitle{The main prover}
+
+  На каждом этапе доказыватель имеет текущую формулу, список формул,
+  которые ещё предстоит рассмотреть и список литералов. Он пытается
+  получить противоречие.
+%  At each stage, the prover has a current formula, a list of formulas yet to be
+%  considered, and a list of literals. It is trying to reach a contradiction.
+
+  Если текущая формула~-- {\tt p \& q}, то {\tt p} и {\tt q}
+  рассматриваются по отдельности, т.е {\tt p} делается текущей
+  формулой, а {\tt q} добавляется к формулам <<на рассмотрение>>.
+
+%  If the current formula is {\tt p \& q}, then consider {\tt p} and
+%  {\tt q} separately, i.e. make {\tt p} the current formula and add
+%  {\tt q} to the formulas to be considered.
+
+  Если текущая формула имеет вид {\tt p | q}, то делается попытка
+  получить противоречие сначала с {\tt p}, а затем с {\tt q}.
+%  If the current formula is {\tt p | q}, then try to get a
+%  contradiction from {\tt p} and then from {\tt q}.
+
+  Если текущая формула~~- {\tt forall(X, p)}, для замещения {\tt X}
+  вводится новая переменная, правильное значение может быть получено
+  позже, при унификации.
+%  If the current formula is {\tt forall(X,p)}, invent a new variable to
+%  replace {\tt X}: the right value can be discovered later by unification.
+
+  Если текущая формула~~- {\tt exists(X,p)}, для замещения {\tt X}
+  вводится новая константа.
+%  If the current formula is {\tt exists(X,p)}, invent a new constant to
+%  replace {\tt X}.
+
+  В противном случае, формула должна быть литералом, так что делается
+  попытка унифицировать его противоречивым литералом.
+%  Otherwise, the formula must be a literal, so try to unify it with a
+%  contradictory literal.
+
+  Если унификация не удалась, литерал добавляется в список литералов,
+  а средство доказательства переходит к обработке следующей формулы.
+%  If this fails, add it to the list of literals, and proceed with the next
+%  formula.
+}
+
+
+
+\frame{
+  \frametitle{Продолжения}
+%  \frametitle{Continuations}
+
+  Нам необходима стратегия возврата, похожая на прологовскую: только
+  если текущие связывания позволяют разрешить все оставшиеся цели, мы
+  допускаем их.
+%  We desire a similar backtracking strategy to Prolog: only if the current
+%  instantiations allow all remaining goals to be solved do we accept it.
+
+  Можно было бы снова использовать списки, но давайте попробуем {\em
+    продолжения}({\em continuations}).  Продолжение~~- это функция,
+  передающаяся другой функции, которая может вызываться из последней
+  <<для выполнения остаточных вычислений>>.
+%  We could use lists again, but instead we use {\em continuations}. A
+%  continuation is a function that is passed to another function and can be called
+%  from within it to <<perform the rest of the computation>>.
+
+  В нашем случае она принимает список с переменными и пытается
+  разрешить оставшиеся цели при заданных связываниях.
+%  In our case, it takes a list of instantiations and tries to solve the remaining
+%  goals under these instantiations.
+
+  Следовательно вместо попыток явно разрешить оставшиеся цели, мы
+  просто вызываем функцию-продолжение.
+%  Thus, rather than explicitly trying to solve all remaining goals, we simply try
+%  calling the continuation.
+}
+
+
+\frame[shrink=10]{
+  \frametitle{Средство доказательства: код}
+%  \frametitle{Prover code}
+
+  \Prover
+}
+
+\frame[shrink=10]{
+  \frametitle{Средство доказательства: примеры (1)}
+%  \frametitle{Prover examples (1)}
+
+  И, наконец, средство доказательства:
+%  We set up the final prover as follows:
+
+  \ProverExampleO
+
+  Средство доказательства пытается найти доказательство с наименее
+  общими связываниями переменных; если это удаётся, он возвращает их
+  число и сами значения переменных.
+%  It tries to find the proof with the fewest universal instantiations.
+%  It returns the number required and any toplevel instantiations.
+
+  \ProverExampleOO
+}
+
+
+\frame[shrink=10]{
+  \frametitle{Средство доказательства: примеры (2)}
+%  \frametitle{Prover examples (2)}
+
+  Пример побольше:
+%  A bigger example is the following:
+
+  \ProverExampleOOO
+
+  Фактически средство доказательства может работать детективом:
+% In fact, the prover can work out `whodunit':
+
+  \ProverExampleOOOO
+}
+
+\end{document}

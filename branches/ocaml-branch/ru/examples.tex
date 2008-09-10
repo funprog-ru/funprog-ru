@@ -1,0 +1,3565 @@
+\chapter{Примеры}
+
+Как уже было сказано ранее, ML изначально был спроектирован как метаязык системы автоматизированного 
+доказательства теорем. Однако, он пригоден и для многих других приложений, взятых преимущественно
+из области <<символьных вычислений>>. В этой главе мы дадим несколько характерных 
+примеров использования ML. От читателя не требуется понимания всех деталей,
+например, анализа свойств приближённого представления вещественных чисел, 
+который приводится ниже. Однако, всё же стоит опробовать эти программы на 
+практике (в том числе и для решения других схожих задач), а также выполнить 
+упражнения, поскольку нет лучшего способа получить представление о практическом
+применении ML.
+
+%%As we have said, ML was originally designed as a metalanguage for a computer
+%%theorem prover. However it is suitable for plenty of other applications, mostly
+%%from the same general field of `symbolic computation'. In this chapter we will
+%%give some examples of characteristic uses of ML. It is not necessary that the
+%%reader should understand every detail of the particular examples, e.g. the
+%%analyses of real number approximations given below. However it is worth trying
+%%out these programs and similar examples for yourself, and doing some of the
+%%exercises. There is no better way of getting a feel for how ML is actually
+%%used.
+
+\section{Символьное дифференцирование}
+
+%%\section{Symbolic differentiation}
+
+Термин <<символьные вычисления>> не отличается особой строгостью;
+в первом приближении он охватывает приложения, в которых манипуляции с
+математическими {\em выражениями}, в общем случае содержащими переменные,
+преобладают над традиционными расчётами. Получили распространение различные
+успешные <<системы компьютерной алгебры>>, такие как 
+Axiom, Maple и Mathematica. Они могут выполнять полезные
+математические операции, например, разложение полиномов на множители, 
+интегрирование и дифференцирование выражений, а также пригодны и для
+обычных вычислений. Мы покажем, как аналогичные задачи могут быть решены с помощью ML.
+
+%%The phrase `symbolic computation' is a bit vague, but roughly speaking it
+%%covers applications where manipulation of mathematical {\em expressions}, in
+%%general containing variables, is emphasized at the expense of actual numerical
+%%calculation. There are several successful `computer algebra systems' such as
+%%Axiom, Maple and Mathematica, which can do certain symbolic operations that are
+%%useful in mathematics, e.g. factorizing polynomials and differentiating and
+%%integrating expressions. (They are also capable of purely numerical work.) We
+%%will illustrate how this sort of application can be tackled using ML.
+
+Символьное дифференцирование было выбрано в качестве примера потому, что алгоритм
+решения этой задачи прост и хорошо известен. Читатель, возможно, знаком
+с  производными основных функций, например ${d \over dx} \sin(x) =
+\cos(x)$, а также с правилами дифференцирования произведения и композиции 
+функций. Каждый может систематически применить эти правила для получения 
+производных вручную, аналогичные действия возможно реализовать и на ML в виде 
+очевидного алгоритма. 
+
+%%We use symbolic differentiation as our example, because there is an algorithm
+%%to do it which is fairly simple and well known. The reader is probably familiar
+%%with certain derivatives of basic operations, e.g ${d \over dx} sin(x) =
+%%cos(x)$, as well as results such as the Chain Rule and Product Rule for
+%%calculating the derivatives of composite expressions in terms of the
+%%derivatives of the components. Just as one can use these systematically in
+%%order to find derivatives, it is possible to program a fairly straightforward
+%%algorithm to do it in ML.
+
+
+\subsection{Термы первого порядка}
+% BUG#  First order terms - Термы первого порядка ?
+%%\subsection{First order terms}
+
+Рассмотрим математические выражения достаточно общего вида, построенные из
+переменных и констант, связанных операциями. Операции, в свою очередь,
+могут быть унарными, бинарными, тернарными, или, в общем случае, арности~$n$.
+Для представления таких выражений определим следующий рекурсивный тип данных:
+
+%%We will allow mathematical expressions in a fairly general form. They may be
+%%built up from variables and constants by the application of operators. These
+%%operators may be unary, binary, ternary, or in general $n$-ary. We represent
+%%this using the following recursive datatype:
+
+\begin{boxed}\begin{verbatim}
+  #type term = Var of string
+             | Const of string
+             | Fn of string * (term list);;
+  Type term defined.
+\end{verbatim}\end{boxed}
+
+\noindent Например, выражение:
+%\noindent For example, the expression:
+
+$$ \sin(x + y) / \cos(x - \exp(y)) - \ln(1 + x) $$
+
+\noindent представляется:
+%%\noindent is represented by:
+
+\begin{boxed}\begin{verbatim}
+  Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
+                  Fn("cos",[Fn("-",[Var "x"; Fn("exp",[Var "y"])])])]);
+          Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
+\end{verbatim}\end{boxed}
+
+\subsection{Печать}
+%% ISSUE: "вывод" или "отображение" звучит более точно, так как вывод
+%% результатов происходит не только на принтер, но конфликтует с терминами
+%% "вывод типа" или "отображение" = функция  -- LH
+Непосредственное чтение и запись выражений в виде композиции конструкторов
+довольно неудобны. Подобная проблема характерна для всех систем символьных 
+вычислений, так что их интерфейс обычно содержит
+{\em синтаксический анализатор (парсер)} и {\em систему структурной печати},%
+\footnote{Традиционный термин <<печать>> не совсем точно отражает процесс
+представления информации на всём многообразии современных интерфейсных 
+устройств, но он будет нами применяться с тем, чтобы избежать неоднозначности,
+например, с понятиями <<вывода типа>> или <<отображения>> как синонима
+<<функции>>.--- \textsl{Прим. перев.}}
+позволяющие вводить и выводить данные в удобной для восприятия форме. 
+Отложим пока подробное обсуждение синтаксического разбора, поскольку эта, сама 
+по себе важная тема, будет рассматриваться далее, и ограничимся тем, что 
+реализуем простую систему печати для наших выражений, которая позволит нам,
+по крайней мере, видеть происходящее. Мы хотим, чтобы эта система
+поддерживала традиционные соглашения о записи формул:
+
+%%Reading and writing expressions in their raw form is rather unpleasant. This is
+%%a general problem in all symbolic computation systems, and typically the
+%%system's interface contains a {\em parser} and {\em prettyprinter} to allow
+%%respectively input and output in a readable form. A detailed discussion of
+%%parsing is postponed, since it is worth a section of its own, but we will now
+%%write a very simple printer for expressions, so that at least we can see what's
+%%going on. We want the printer to support ordinary human conventions, i.e.
+
+\begin{itemize}
+
+\item Переменные и константы представляются своими именами.
+%%\item Variables and constants are just written as their names.
+
+\item Обычные $n$-арные функции отображаются в виде 
+$f(x_1,\ldots,x_n)$, т.~е.\ печатается имя функции, за которым в скобках
+следует список аргументов.
+
+%%\item Ordinary $n$-ary functions applied to arguments are written by
+%%juxtaposing the function and a bracketed list of arguments, e.g.
+%%$f(x_1,\ldots,x_n)$.
+
+\item Имена инфиксных бинарных функций, таких как $+$, размещаются между
+своими аргументами.
+
+%%\item Infix binary functions like $+$ are written in between their
+%%arguments.
+
+\item Скобки используются по необходимости.
+
+%%\item Brackets are used where necessary for disambiguation.
+
+\item Чтобы уменьшить количество скобок, для инфиксных операций  
+определены приоритеты.  
+  
+%%\item Infix operators have a notion of precedence to reduce the need for
+%%brackets.
+
+\end{itemize}
+
+Сначала мы объявим список инфиксных операций~--- список пар из имени операции
+и её приоритета.
+
+%%First we declare a list of infixes, which is a list of pairs: each operator
+%%name together with its precedence.
+
+\begin{boxed}\begin{verbatim}
+  #let infixes = ["+",10; "-",10; "*",20; "/",20];;
+\end{verbatim}\end{boxed}
+
+Использование списков для представления конечных частичных функций является 
+стандартной практикой. Такие списки обычно называются {\em ассоциативными} 
+и весьма распространены в функциональном программировании.\footnote{Для более
+тяжеловесных приложений лучше подойдут альтернативы, такие как хеш-таблицы,
+но для простых приложений, в которых списки не слишком длинны, решение в виде линейного 
+списка является простым и адекватным.} Для того, чтобы конвертировать список в
+частичную функцию, мы воспользуемся {\tt assoc}:
+
+%%It is common to use lists in this way to represent finite partial functions,
+%%since it allows more flexibility. They are commonly called {\em association
+%%lists}, and are very common in functional programming.\footnote{For more
+%%heavyweight applications, some alternative such as hash tables is much better,
+%%but for simple applications where the lists don't get too long, this kind of
+%%linear list is simple and adequate.} In order to convert the list into a
+%%partial function we use {\tt assoc}:
+
+\begin{boxed}\begin{verbatim}
+  #let rec assoc a ((x,y)::rest) = if a = x then y else assoc a rest;;
+  Toplevel input:
+  >let rec assoc a ((x,y)::rest) = if a = x then y else assoc a rest;;
+  >        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Warning: this matching is not exhaustive.
+  assoc : 'a -> ('a * 'b) list -> 'b = <fun>
+\end{verbatim}\end{boxed}
+
+Компилятор предупреждает нас~--- вычисление функции может прерваться, если подходящие 
+данные не будут найдены в списке. Теперь мы можем определить функцию, возвращающую 
+приоритет операции:
+
+%%The compiler warns us that if the appropriate data is not found in the list,
+%%the function will fail. Now we can define a function to get the infix
+%%precedence of a function:
+
+\begin{boxed}\begin{verbatim}
+  #let get_precedence s = assoc s infixes;;
+  get_precedence : string -> int = <fun>
+  #get_precedence "+";;
+  - : int = 10
+  #get_precedence "/";;
+  - : int = 20
+  #get_precedence "%";;
+  Uncaught exception: Match_failure ("", 6544, 6601)
+\end{verbatim}\end{boxed}
+
+Обратите внимание, что если мы когда-либо изменим этот список операций, 
+потребуется также переопределить все функции, которые его используют 
+(такие, как {\tt get\_precedence}).
+Это является основной причиной, по которой многие программисты на языке LISP
+предпочитают динамическое связывание. Множество инфиксных операций можно сделать  
+произвольно расширяемым, используя ссылки:
+
+%%Note that if we ever change this list of infixes, then any functions such as
+%%{\tt get\_precedence} that use it need to be redeclared. This is the main
+%%reason why many LISP programmers prefer dynamic binding. However we can make
+%%the set of infixes arbitrarily extensible by making it into a reference and
+%%dereferencing it on each application:
+
+
+\begin{boxed}\begin{verbatim}
+  #let infixes = ref ["+",10; "-",10; "*",20; "/",20];;
+  infixes : (string * int) list ref =
+    ref ["+", 10; "-", 10; "*", 20; "/", 20]
+  #let get_precedence s = assoc s (!infixes);;
+  get_precedence : string -> int = <fun>
+  #get_precedence "^";;
+  Uncaught exception: Match_failure ("", 6544, 6601)
+  #infixes := ("^",30)::(!infixes);;
+  - : unit = ()
+  #get_precedence "^";;
+  - : int = 30
+\end{verbatim}\end{boxed}
+
+Отметим, что по правилам вычисления ML разыменование указателя применяется
+только после того, как {\tt get\_precedence} получает свои аргументы, и, 
+следовательно, её результат будет зависеть от содержимого множества операций
+на момент вычисления. Мы также можем задать функцию, определяющую,
+является ли некоторая функция инфиксной операцией. Одним из простых способов её 
+реализации будет вычисление {\tt get\_precedence} с проверкой его успешного 
+завершения:
+
+%%Note that by the ML evaluation rules, the dereferencing is only applied after
+%%the function {\tt get\_precedence} receives its argument, and hence results in
+%%the set of infixes at that time. We can also define a function to decide
+%%whether a function has any data associated with it. One way is simply to try
+%%the function {\tt get\_precedence} and see if it works:
+
+\begin{boxed}\begin{verbatim}
+  #let is_infix s =
+     try get_precedence s; true
+     with _ -> false;;
+\end{verbatim}\end{boxed}
+
+Аналогичного эффекта можно добиться при помощи универсальной функции {\tt can}, 
+которая проверяет успешность вычисления другой функции:
+
+%%An alternative is to use a general function {\tt can} that finds out whether
+%%another function succeeds:
+
+\begin{boxed}\begin{verbatim}
+  #let can f x = try f x; true with _ -> false;;
+  can : ('a -> 'b) -> 'a -> bool = <fun>
+  #let is_infix = can get_precedence;;
+  is_infix : string -> bool = <fun>
+\end{verbatim}\end{boxed}
+
+\noindent
+Воспользуемся некоторыми функциями, которые были рассмотрены ранее:
+
+%\noindent We will use the following functions that we have already considered:
+
+\begin{boxed}\begin{verbatim}
+  #let hd(h::t) = h;;
+  #let tl(h::t) = t;;
+  #let rec length l = if l = [] then 0 else 1 + length(tl l);;
+\end{verbatim}\end{boxed}
+
+\noindent
+и перейдём непосредственно к определению функции, преобразующей терм в строку:
+%%\noindent Without further ado, here is a function to convert a term into a
+%%string.
+
+\begin{boxed}\begin{verbatim}
+  #let rec string_of_term prec =
+     fun (Var s) -> s
+       | (Const c) -> c
+       | (Fn(f,args)) ->
+           if length args = 2 & is_infix f then
+             let prec' = get_precedence f in
+             let s1 = string_of_term prec' (hd args)
+             and s2 = string_of_term prec' (hd(tl args)) in
+             let ss = s1^" "^f^" "^s2 in
+             if prec' <= prec then "("^ss^")" else ss
+           else
+             f^"("^(string_of_terms args)^")"
+
+   and string_of_terms t =
+     match t with
+         [] -> ""
+       | [t] -> string_of_term 0 t
+       | (h::t) -> (string_of_term 0 h)^","^(string_of_terms t);;
+\end{verbatim}\end{boxed}
+
+Значением первого аргумента {\tt prec} является уровень приоритета операции, для которой
+текущее рассматриваемое выражение является непосредственным подтермом. 
+Если это выражение представляет собой инфиксную операцию, то 
+скобки необходимы, если её приоритет ниже {\tt prec}, например,
+как это происходит для правого подвыражения в выражении $x * (y + z)$. На самом 
+деле, мы используем скобки для более наглядной группировки даже тогда, когда 
+{\tt prec} и приоритет текущей операции равны. 
+В случае ассоциативных операций, вроде $+$, это не важно, но мы должны различать 
+$x - (y - z)$ и $(x - y) - z$. (Более изощрённая реализация могла бы учитывать 
+ассоциативность каждого оператора.) Вторая, взаимно рекурсивная, функция
+{\tt string\_of\_terms} используется для печати списка термов, разделённых запятыми, 
+как это требуется для представления аргументов неинфиксных функций 
+вида~$f(t_1,\ldots,t_n)$. Продемонстрируем применение наших функций печати: 
+
+%%The first argument {\tt prec} indicates the precedence level of the operator of
+%%which the currently considered expression is an immediate subterm. Now if the
+%%current expression has an infix binary operator at the top level, parentheses
+%%are needed if the precedence of this operator is lower, e.g. if we are
+%%considering the right hand subexpression of $x * (y + z)$. Actually we use
+%%parentheses even when they are equal, in order to make groupings clear. In the
+%%case of associative operators like $+$ this doesn't matter, but we must
+%%distinguish $x - (y - z)$ and $(x - y) - z$. (A more sophisticated scheme would
+%%give each operator an associativity.) The second, mutually recursive, function
+%%{\tt string\_of\_terms} is used to print a comma-separated list of terms, as
+%they occur for non-infix function applications of the form $f(t_1,\ldots,t_n)$.
+%%Let us see this in action:
+
+\begin{boxed}\begin{verbatim}
+  #let t =
+    Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
+                    Fn("cos",[Fn("-",[Var "x";
+                                      Fn("exp",[Var "y"])])])]);
+            Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
+  t : term =
+   Fn
+    ("-",
+     [Fn
+       ("/",
+        [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
+         Fn ("cos", [Fn ("-", [Var "x"; Fn ("exp", [Var "y"])])])]);
+      Fn ("ln", [Fn ("+", [Const "1"; Var "x"])])])
+  #string_of_term 0 t;;
+  - : string = "sin(x + y) / cos(x - exp(y)) - ln(1 + x)"
+\end{verbatim}\end{boxed}
+
+На  самом деле, от нас даже не требуется самостоятельно конвертировать терм в строку. 
+CAML Light позволяет использовать нашу собственную процедуру для 
+автоматической печати произвольных значений типа~{\tt term} в ходе диалога. 
+Для корректного взаимодействия такой процедуры с контекстом её вызова потребуется
+несколько специальных команд:
+
+%%In fact, we don't need to convert a term to a string ourselves. CAML Light
+%%allows us to set up our own printer so that it is used to print anything of
+%%type {\tt term} in the standard read-eval-print loop. This needs a few special
+%%commands to ensure that we interact properly with the toplevel
+%%loop:
+
+\begin{boxed}\begin{verbatim}
+  ##open "format";;
+  #let print_term s =
+     open_hvbox 0;
+     print_string("`"^(string_of_term 0 s)^"`");
+     close_box();;
+  print_term : term -> unit = <fun>
+  #install_printer "print_term";;
+  - : unit = ()
+\end{verbatim}\end{boxed}
+
+%\noindent Now compare the effect:
+
+\noindent Почувствуйте разницу:
+
+\begin{boxed}\begin{verbatim}
+  #let t =
+      Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
+                      Fn("cos",[Fn("-",[Var "x";
+                                        Fn("exp",[Var "y"])])])]);
+              Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
+  t : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
+  #let x = t
+  x : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
+\end{verbatim}\end{boxed}
+
+После того, как новая процедура печати установлена, она будет использоваться всякий раз
+при печати значения типа {\tt term}, даже если оно входит в элемент составного
+типа данных, например, кортежа:
+
+%%Once the new printer is installed, it is used whenever CAML wants to print
+%%something of type {\tt term}, even if it is a composite datastructure
+%%such as a pair:
+
+\begin{boxed}\begin{verbatim}
+  #(x,t);;
+  - : term * term =
+   `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`,
+   `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
+\end{verbatim}\end{boxed}
+
+\noindent или списка:
+
+\begin{boxed}\begin{verbatim}
+  #[x; t; x];;
+  - : term list =
+   [`sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;
+    `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`;
+    `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`]
+\end{verbatim}\end{boxed}
+
+Однако, она всё же несовершенна, поскольку не в состоянии разбивать большие 
+выражения на несколько строк. Библиотека {\tt format}, которой мы воспользовались 
+ранее, предлагает лучшее решение. Вместо преобразования терма в строку, которая
+будет напечатана целиком, мы можем выполнить то же самое для каждой из его 
+составляющих, указывая при этом системе печати возможные точки разбиения на 
+строки при помощи вызова специальных функций.
+Многие из принципов, использующиеся в этой и подобных системах форматированной
+печати, обсуждаются в работе~\cite{oppen-pretty}. Мы не будем рассматривать их 
+в данном пособии, желающие могут обратиться к документации по CAML.
+\footnote{Также этот вопрос рассматривается в руководстве Pierre Weis,
+доступном по адресу {\tt http://caml.inria.fr/resources/doc/guides/format.en.html}}
+
+%%This printer is rather crude in that it will not break up large expressions
+%%intelligently across lines. The CAML library {\tt format}, from which we used a
+%%few functions above, provides for a better approach. Instead of converting the
+%%term into a string then printing it in one piece, we can make separate printing
+%%calls for different parts of it, and intersperse these with some special
+%%function calls that help the printing mechanism to understand where to break
+%%the lines. Many of the principles used in this and similar `prettyprinting
+%%engines' are due to \citeN{oppen-pretty}. We will not consider this in detail
+%%here --- see the CAML manual for details.\footnote{There is also a tutorial,
+%%written by Pierre Weis, unavailable online as part of the CAML page: `{\tt
+%%http://pauillac.inria.fr/caml/FAQ/format-eng.html}'.}
+
+\subsection{Дифференцирование}
+
+Перейдём теперь к довольно простой задаче поиска производной функции. 
+Сначала давайте вспомним, чему нас обучали в школе:
+
+%%Now it is a fairly simple matter to define the derivative function. First let
+%%us recall the systematic method we are taught in school:
+
+\begin{itemize}
+
+  \item Если выражение представляет собой применение одной из элементарных 
+  функций, аргумент которого~--- переменная дифференцирования, 
+  например, $\sin(x)$, то результат дифференцирования~--- известная производная 
+  этой функции.
+
+  %\item If the expression is one of the standard functions applied to an
+  %argument, e.g. \alert{$sin(x)$}, return the known derivative.
+
+  \item Если выражение является суммой вида~$f(x) + g(x)$, то по правилу её
+  дифференцирования результатом будет~$f'(x) + g'(x)$. 
+  Аналогично для разности.
+
+  %\item If the expression is of the form \alert{$f(x) + g(x)$} then apply 
+  %the rule for sums, returning \alert{$f'(x) + g'(x)$}. Likewise for 
+  %subtraction etc.
+
+  \item Если выражение задано в форме~$f(x) * g(x)$, применяется {\em правило
+  Лейбница}, т.е. возвращается~$f'(x) * g(x) + f(x) * g'(x)$.
+
+  %\item If the expression is of the form \alert{$f(x) * g(x)$} then apply the
+  %product rule, i.e. return \alert{$f'(x) * g(x) + f(x) * g'(x)$}.
+
+  \item Если выражение имеет вид~$f(g(x))$, т.~е.\ является применением одной 
+   из стандартных функций~$f$ к некоторому подвыражению~$g(x)$, то применяется 
+   <<цепное правило>> дифференцирования, результат которого: $g'(x) * f'(g(x))$.
+
+  %\item If the expression is one of the standard functions applied to a 
+  %composite argument, say \alert{$f(g(x))$} then apply the Chain Rule and so  
+  %give \alert{$g'(x) * f'(g(x))$}.
+
+\end{itemize}
+
+Таким образом, эти правила представляют собой рекурсивный алгоритм, хотя такая 
+терминология редко используется в школах. Мы можем выразить его в терминах~ML
+практически дословно:
+
+%%This is nothing but a recursive algorithm, though that terminology is seldom
+%%used in schools. We can program it in ML very directly:
+
+\begin{boxed}\begin{verbatim}
+  #let rec differentiate x tm = match tm with
+       Var y -> if y = x then Const "1" else Const "0"
+     | Const c -> Const "0"
+     | Fn("-",[t]) -> Fn("-",[differentiate x t])
+     | Fn("+",[t1;t2]) -> Fn("+",[differentiate x t1;
+                                   differentiate x t2])
+     | Fn("-",[t1;t2]) -> Fn("-",[differentiate x t1;
+                                   differentiate x t2])
+     | Fn("*",[t1;t2]) ->
+        Fn("+",[Fn("*",[differentiate x t1; t2]);
+                Fn("*",[t1; differentiate x t2])])
+     | Fn("inv",[t]) -> chain x t
+        (Fn("-",[Fn("inv",[Fn("^",[t;Const "2"])])]))
+     | Fn("^",[t;n]) -> chain x t
+       (Fn("*",[n; Fn("^",[t; Fn("-",[n; Const "1"])])]))
+     | Fn("exp",[t]) -> chain x t tm
+     | Fn("ln",[t]) -> chain x t (Fn("inv",[t]))
+     | Fn("sin",[t]) -> chain x t (Fn("cos",[t]))
+     | Fn("cos",[t]) -> chain x t
+        (Fn("-",[Fn("sin",[t])]))
+     | Fn("/",[t1;t2]) -> differentiate x
+        (Fn("*",[t1; Fn("inv",[t2])]))
+     | Fn("tan",[t]) -> differentiate x
+        (Fn("/",[Fn("sin",[t]); Fn("cos",[t])]))
+   and chain x t u =  Fn("*",[differentiate x t; u]);;
+\end{verbatim}\end{boxed}
+
+Вспомогательная функция~{\tt chain} была введена исключительно для того,
+чтобы избежать многократного повторения одних и тех же выражений, реализующих
+цепное правило, которое встречается во многих других определениях. Не считая 
+этого дополнения, мы просто систематически применяем правила для сумм,
+произведений, известные производные стандартных функций и т.~д. Конечно, мы
+могли бы, по желанию, добавить и другие функции, например, гиперболические 
+или обратные тригонометрические. В паре случаев (для операции деления 
+и функции~$\tan$) мы можем избежать громоздких выражений, применив правила 
+дифференцирования к альтернативным определениям этих функций.
+
+%%The {\tt chain} function just avoids repeating the chain rule construction for
+%%many operations. Apart from that, we just systematically apply rules for sums,
+%%products etc. and the known derivatives of standard functions. Of course, we
+%%could add other functions such as the hyperbolic functions and inverse
+%%trigonometric functions if desired. A couple of cases, namely division and
+%%$tan$, avoid a complicated definition by applying the differentiator to an
+%%alternative formulation.
+
+\subsection{Упрощение}
+
+Если мы опробуем функцию~{\tt differentiate} на нашем текущем примере, она будет 
+работать довольно хорошо:
+
+%%If we try the differentiator out on our running example, then it works quite
+%%well:
+
+\begin{boxed}\begin{verbatim}
+  #t;;
+  - : term = `sin(x + y) / cos(x - exp(y)) - ln(1 + x)`
+  #differentiate "x" t;;
+  - : term =
+   `(((1 + 0) * cos(x + y)) * inv(cos(x - exp(y))) +
+    sin(x + y) * (((1 - 0 * exp(y)) * -(sin(x - exp(y)))) *
+    -(inv(cos(x - exp(y)) ^ 2)))) - (0 + 1) * inv(1 + x)`
+  #differentiate "y" t;;
+  - : term =
+   `(((0 + 1) * cos(x + y)) * inv(cos(x - exp(y))) +
+    sin(x + y) * (((0 - 1 * exp(y)) * -(sin(x - exp(y)))) *
+    -(inv(cos(x - exp(y)) ^ 2)))) - (0 + 0) * inv(1 + x)`
+  #differentiate "z" t;;
+  - : term =
+   `(((0 + 0) * cos(x + y)) * inv(cos(x - exp(y))) +
+    sin(x + y) * (((0 - 0 * exp(y)) * -(sin(x - exp(y)))) *
+    -(inv(cos(x - exp(y)) ^ 2)))) - (0 + 0) * inv(1 + x)`
+\end{verbatim}\end{boxed}
+
+В то же время, она не выполняет различные очевидные упрощения, такие как $0 * x = 0$
+и $x + 0 = x$. Некоторые из этих избыточных выражений являются следствием нашей прямолинейной 
+стратегии дифференцирования, которая, например, применяет цепное правило 
+к~$f(t)$ даже тогда, когда $t$~--- сама переменная дифференцирования. 
+Вместо дальнейшего усложнения функции дифференцирования, реализуем алгоритм 
+упрощения отдельно от неё:
+
+%%However, it fails to make various obvious simplifications such as $0 * x = 0$
+%%and $x + 0 = x$. Some of these redundant expressions are created by the rather
+%%unsubtle differentiation strategy which, for instance, applies the chain rule
+%%to $f(t)$ even where $t$ is just the variable of differentiation. However, some
+%%would be hard to avoid without making the differentiator much more complicated.
+%%Accordingly, let us define a separate simplification function that gets rid of
+%%some of these unnecessary expressions.
+
+\begin{boxed}\begin{verbatim}
+  #let simp =
+     fun (Fn("+",[Const "0"; t])) -> t
+       | (Fn("+",[t; Const "0"])) -> t
+       | (Fn("-",[t; Const "0"])) -> t
+       | (Fn("-",[Const "0"; t])) -> Fn("-",[t])
+       | (Fn("+",[t1; Fn("-",[t2])])) -> Fn("-",[t1; t2])
+       | (Fn("*",[Const "0"; t])) -> Const "0"
+       | (Fn("*",[t; Const "0"])) -> Const "0"
+       | (Fn("*",[Const "1"; t])) -> t
+       | (Fn("*",[t; Const "1"])) -> t
+       | (Fn("*",[Fn("-",[t1]); Fn("-",[t2])])) -> Fn("*",[t1; t2])
+       | (Fn("*",[Fn("-",[t1]); t2])) -> Fn("-",[Fn("*",[t1; t2])])
+       | (Fn("*",[t1; Fn("-",[t2])])) -> Fn("-",[Fn("*",[t1; t2])])
+       | (Fn("-",[Fn("-",[t])])) -> t
+       | t -> t;;
+\end{verbatim}\end{boxed}
+
+Эта функция упрощает корневой терм выражения, а чтобы обработать его целиком,
+нам придется выполнить обход дерева в направлении от вершин к корню. 
+Кроме упомянутых выше правил, касающихся констант~$0$ и~$1$, 
+мы также выносим операцию смены знака из произведений (выполняем 
+преобразование~$(-x)*y = -(x*y)$ и т.~п.).
+В некоторых случаях упрощение было бы более эффективным при обходе дерева 
+сверху-вниз, например, для $0 * t$ и сложного выражения $t$, но это потребует 
+повторного анализа подвыражений в случае термов, подобных~$(0 + 0) * 2$. Решение,
+какую из этих двух стратегий применить, напоминает выбор  
+между нормальным и аппликативным порядком редукции в лямбда-исчислении.
+
+
+%%This just applies the simplification at the top level of the term. We need to
+%%execute it in a bottom-up sweep. This will also bring negations upwards through
+%%products. In some cases it would be more efficient to simplify in a top-down
+%%sweep, e.g. $0 * t$ for a complicated expression $t$, but this would need
+%%repeating for terms like $(0 + 0) * 2$. The choice is rather like that between
+%%normal and applicative order reduction in lambda calculus.
+
+\begin{boxed}\begin{verbatim}
+  #let rec dsimp =
+     fun (Fn(fn,args)) -> simp(Fn(fn,map dsimp args))
+       | t -> simp t;;
+\end{verbatim}\end{boxed}
+
+
+\noindent Упрощение результата дифференцирования существенно его улучшает:
+
+\begin{boxed}\begin{verbatim}
+  #dsimp(differentiate "x" t);;
+  - : term =
+   `(cos(x + y) * inv(cos(x - exp(y))) +
+    sin(x + y) * (sin(x - exp(y)) *
+    inv(cos(x - exp(y)) ^ 2))) - inv(1 + x)`
+  #dsimp(differentiate "y" t);;
+  - : term =
+   `cos(x + y) * inv(cos(x - exp(y))) -
+    sin(x + y) * ((exp(y) * sin(x - exp(y))) *
+    inv(cos(x - exp(y)) ^ 2))`
+  #dsimp(differentiate "z" t);;
+  - : term = `0`
+\end{verbatim}\end{boxed}
+
+Вообще говоря, всегда можно добавить более изощрённые правила упрощения. 
+Например, рассмотрим:
+
+%%In general, one can always add more and more sophisticated simplification. For
+%%example, consider:
+
+\begin{boxed}\begin{verbatim}
+  #let t2 = Fn("tan",[Var "x"]);;
+  t2 : term = `tan(x)`
+  #differentiate "x" t2;;
+  - : term =
+   `(1 * cos(x)) * inv(cos(x)) +
+    sin(x) * ((1 * -(sin(x))) * -(inv(cos(x) ^ 2)))`
+  #dsimp(differentiate "x" t2);;
+  - : term = `cos(x) * inv(cos(x)) +
+              sin(x) * (sin(x) * inv(cos(x) ^ 2))`
+\end{verbatim}\end{boxed}
+
+Мы могли бы упростить {\tt cos(x) * inv(cos(x))} до {\tt 1},
+пренебрегая, как это делает большинство коммерческих систем компьютерной
+алгебры, возможностью обращения {\tt cos(x)} в нуль. Чтобы добиться этого, 
+добавим очевидные правила. Аналогично, также возможно было бы  
+сгруппировать множители во втором слагаемом. Однако, в этом случае мы сталкиваемся
+с необходимостью учитывать человеческий фактор. Какой из возможных вариантов 
+упрощения предпочтительней? Автоматическое принятие решения может оказаться 
+затруднительным. В нашем случае, упростив второе слагаемое, получаем:
+
+%%We would like to simplify {\tt cos(x) * inv(cos(x))} simply to {\tt 1},
+%%ignoring, as most commercial computer algebra systems do, the possibility that
+%%{\tt cos(x)} might be zero. We can certainly add new clauses to the simplifier
+%%for that. Similarly, we might like to collect up terms in the second summand.
+%%However here we start to see that human psychology plays a role. Which of the
+%%following is preferable? It is hard for the machine to decide unaided.
+
+\begin{boxed}\begin{verbatim}
+  sin(x) * (sin(x) * inv(cos(x) ^ 2))
+
+  sin(x) ^ 2 * inv(cos(x) ^ 2)
+
+  sin(x) ^ 2 / cos(x) ^ 2
+
+  (sin(x) / cos(x)) ^ 2
+
+  tan(x) ^ 2
+\end{verbatim}\end{boxed}
+
+Выражение в целом примет вид:
+\begin{boxed}\begin{verbatim}
+  1 + tan(x) ^ 2
+\end{verbatim}\end{boxed}
+
+Следует ли оставить его как есть, либо продолжить преобразования, заменив на
+%%And having chosen the last one, should it then convert
+
+\begin{boxed}\begin{verbatim}
+  sec(x) ^ 2
+\end{verbatim}\end{boxed}
+
+Такая запись и короче, и привычнее. Тем не менее, такое решение 
+основывается на том, что мы знаем определения  довольно редко используемых 
+тригонометрических функций, вроде {\tt sec}. Какое бы решение ни было
+принято машиной, вероятнее всего найдётся пользователь, которого оно не устроит.
+
+%%Certainly, it is shorter and more conventional. However it relies on the fact
+%%that we know the definitions of these fairly obscure trig functions like {\tt
+%%sec}. Whatever the machine decides to do, it is likely that some user will find
+%%it upsetting.
+
+\section{Синтаксический анализ}
+%\section{Parsing}
+Недостатком предыдущего примера является необходимость задавать входные данные
+в виде композиции конструкторов типов. В этом разделе мы рассмотрим задачу
+построения формального языка описания выражений и разработки его синтаксического 
+анализатора. Изложенный подход будет при этом достаточно общим, чтобы 
+впоследствие легко применяться к аналогичным языкам.
+
+Сформулируем задачу синтаксического анализа в общем виде. 
+Формальный язык определяется своей {\em грамматикой}, которая задаёт множество 
+{\em продукций (правил вывода)} для каждой синтаксической категории. Для языка
+термов, включающих лишь две инфиксные операции, {\tt +} и~{\tt *}, а также
+числовые константы ($0$, $1$, \dots) и переменные с алфавитно-цифровыми именами,
+грамматика может выглядеть так:
+%A defect of our previous example was that the input had to be written
+%explicitly in terms of type constructors. Here we will show how to write a
+%parser for this situation, and make our code sufficiently general that it can
+%easily be applied to similar formal languages. Generally speaking, the problem
+%of parsing is as follows. A formal language is defined by a {\em grammar},
+%which is a set of {\em production rules} for each syntactic category. For a
+%language of terms with two infix operators {\tt +} and {\tt *} and only
+%alphanumeric variables and numeral ($0$, $1$ etc.) constants, it might look
+%like this:
+%
+\begin{eqnarray*}
+term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & {\verb!(!} term {\verb!)!}                 \\
+         & |       & numeral                                    \\
+         & |       & {\verb!-!} term                            \\
+         & |       & term {\verb! + !} term                     \\
+         & |       & term {\verb! * !} term                     \\
+termlist & \goesto & term {\verb!,!} termlist                   \\
+         & |       & term
+\end{eqnarray*}
+%
+На данный момент будем предполагать, что нам заранее известны множества 
+допустимых имён и числовых констант, но мы могли бы также определить их
+при помощи аналогичных правил на основе символов входного алфавита. Заданное
+множество продукций предоставляет нам способ порождения конкретного линейного
+представления всевозможных термов. Отметим, что имена вида $name$, $numeral$, 
+$term$ и~$termlist$ обозначают синтаксические {\em метапеременные},
+а набранные полужирным шрифтом символы <<{\verb!+!}>>, <<{\verb!(!}>> и так 
+далее~--- принадлежат входному языку. Рассмотрим пример применения правил 
+вывода:
+%
+%We will assume for the moment that we know what names and numerals are, but we
+%could have similar rules defining them in terms of single characters. Now this
+%set of production rules gives us a way of generating the concrete, linear
+%representation for all terms. Note that $name$, $numeral$, $term$ and
+%$termlist$ are meant to be variables in the above, whereas elements like
+%`{\verb!+!}' and `{\verb!(!}' written in bold type are actual characters. For
+%example we have:
+%
+\begin{eqnarray*}
+term     & \goesto & term {\verb! * !} term                             \\
+         & \goesto & term {\verb! * !} {\verb!(!} term {\verb!)!}       \\
+         & \goesto & term {\verb! * !} {\verb!(!}
+                                term {\verb! + !} term {\verb!)!}       \\
+         & \goesto & term {\verb! * !} {\verb!(!}
+                     term {\verb! + !} term {\verb! * !} term {\verb!)!}\\
+         & \goesto & numeral {\verb! * !} {\verb!(!}
+                     name {\verb! + !} name {\verb! * !} name {\verb!)!}
+\end{eqnarray*}
+%
+откуда, подставив вместо $name$ и~$numeral$ некоторые значения из 
+соответствующих множеств, мы можем породить такую строку:
+%\noindent so, following similar rules for $name$ and $numeral$, we can
+%generate for example:
+%
+$$ 
+ {\verb!10 * (x + y * z)!} 
+$$
+
+Задача {\em синтаксического анализа (разбора)} преследует прямо противоположную
+цель~--- восстановить последовательность применения правил вывода, то есть по 
+заданной строке определить, каким образом она могла быть порождена. 
+Как правило, результатом анализа является {\em дерево разбора,} наглядно
+демонстрирующее порядок выбора продукций. 
+%The task of {\em parsing} is to reverse this process of applying production
+%rules, i.e. to take a string and discover how it could have been generated by
+%the production rules for a syntactic category. Typically, the output is a {\em
+%parse tree}, i.e. a tree structure that shows clearly the sequence of
+%applications of the rules.
+
+Одной из проблем, возникающей в ходе синтаксического анализа, является
+{\em неоднозначность} грамматики, т.~е.\ возможность порождения заданной строки
+несколькими различными способами. В рассмотренном выше примере та же самая 
+строка могла быть порождена иным путём:
+%One problem with parsing is that the grammar may be {\em ambiguous}, i.e. a
+%given string can often be generated in several different ways. This is the case
+%in our example above, for the string could also have been generated by:
+%
+\begin{eqnarray*}
+term     & \goesto & term {\verb! * !} term                             \\
+         & \goesto & term {\verb! * !} {\verb!(!} term {\verb!)!}       \\
+         & \goesto & term {\verb! * !} {\verb!(!} term {\verb! * !}
+                     term {\verb!)!}                                    \\
+         & \goesto & term {\verb! * !} {\verb!(!}
+                     term {\verb! + !} term {\verb! * !} term {\verb!)!}\\
+         & \goesto & numeral {\verb! * !} {\verb!(!}
+                     name {\verb! + !} name {\verb! * !} name {\verb!)!}
+\end{eqnarray*}
+
+Очевидная возможность устранения неоднозначности~--- назначение инфиксным
+операциям приоритетов и ассоциативности. Кроме того, мы можем добиться такого
+же эффекта без привлечения дополнительных механизмов за счёт добавления 
+новых синтаксических категорий:
+%The obvious way to fix this is to specify rules of precedence and associativity
+%for infix operators. However, we can make the grammar unambiguous without
+%introducing additional mechanisms at the cost of adding new syntactic
+%categories:
+%
+\begin{eqnarray*}
+atom     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & numeral                                    \\
+         & |       & {\verb!(!} term {\verb!)!}                 \\
+         & |       & {\verb!-!} atom                            \\
+mulexp   & \goesto & atom {\verb! * !} mulexp                   \\
+         & |       & atom                                       \\
+term     & \goesto & mulexp {\verb! + !} term                   \\
+         & |       & mulexp                                     \\
+termlist & \goesto & term {\verb!, !} termlist                   \\
+         & |       & term
+\end{eqnarray*}
+
+Отметим, что такая модификация грамматики делает обе инфиксные операции 
+правоассоциативными. Более сложным примером использования этого приёма служит
+формальное определение понятия <<выражение>> в стандарте~ANSI~C.
+%Note that this makes both infix operators right associative. For a more
+%complicated example of this technique in action, look at the formal definition
+%of expressions in the ANSI C Standard.
+
+\subsection{Метод рекурсивного спуска}
+%\subsection{Recursive descent parsing}
+Строение правил вывода подсказывает очень простой алгоритм синтаксического
+анализа при помощи множества взаимно рекурсивных функций. Его суть в том, что
+для каждой синтаксической категории вводится своя функция, причём структура 
+рекурсивных вызовов соответствует зависимости одних продукций от других. 
+Например, процедура анализа термов~{\verb!term!} при получении из входной
+последовательности символа~{\verb!-!} будет рекурсивно вызывать саму себя для анализа 
+аргумента операции, а при встрече имени, за которым следует открывающая скобка,
+обратится к процедуре~{\verb!termlist!}. Последняя, в свою очередь, 
+вызовет~{\verb!term!} не менее одного раза, и так далее. Такой подход 
+естественно выражается на языке, подобном~ML, для которого рекурсия служит
+одной из основных управляющих конструкций.
+%The production rules suggest a very simple way of going about parsing using a
+%series of mutually recursive functions. The idea is to have a function for each
+%syntactic category, and a recursive structure that reflects exactly the mutual
+%recursion found in the grammar itself. For example, the procedure for parsing
+%terms, say {\verb!term!} will, on encountering a {\verb!-!} symbol, make a
+%recursive call to itself to parse the subterm, and on encountering a name
+%followed by an opening parenthesis, will make a recursive call to
+%{\verb!termlist!}. This in itself will make at least one recursive call to
+%{\verb!term!}, and so on. Such a style of programming is particularly natural
+%in a language like ML where recursion is the principal control mechanism.
+
+Предположим, что наш синтаксический анализатор, реализованный средствами~ML,
+получает в качестве входной последовательности список объектов некоторого
+типа~$\alpha$. Возможно, чтобы входная последовательность состояла из
+простых символов, но на практике обычно вводится дополнительный уровень
+{\em лексического анализа,} в ходе которого символы группируются 
+в~{\em лексемы (токены),} например, <<{\verb!x12!}>>, <<{\verb!:=!}>> 
+и~<<{\verb!96!}>>, так что входная последовательность состоит уже из лексем, о типе которых
+мы не будем делать предположений. Аналогично, будем считать, что анализатор
+производит результат типа~$\beta$. Этот результат может быть, например, деревом
+разбора, представленным рекурсивным типом данных, либо просто числом, если
+анализатор предназначен для разбора выражения и его вычисления одновременно.
+В общем случае, анализатор может не обработать входную последовательность полностью, так что
+нам потребуется вернуть в дополнение к результату разбора ещё и список 
+необработанных лексем. Таким образом, тип анализатора: 
+%In our ML implementation, we suppose that we have some input list of objects of
+%arbitrary type $\alpha$ for the parser to consume. These might simply be
+%characters, but in fact there is usually a separate level of {\em lexical
+%analysis} which collects characters together into {\em tokens} such as
+%`{\verb!x12!}', `{\verb!:=!}' and `{\verb!96!}', so by the time we reach this
+%level the input is a list of tokens. We avoid committing ourselves to any
+%particular type. Similarly, we will allow the parser to construct objects of
+%arbitrary type $\beta$ from its input. These might for example be parse trees
+%as members of a recursive datatype, or might simply be numbers if the parser is
+%to take an expression and evaluate it. Now in general, a parser might not
+%consume all its input, so we also make it output the remaining tokens.
+%Therefore, a parser will have type
+%
+$$ 
+ (\alpha)list \to \beta \times (\alpha)list 
+$$
+
+Например, для входной последовательности~{\verb!(x + y) * z!} 
+функция~{\verb!atom!} должна обработать~{\verb!(x + y)!} и вернуть~{\verb!* z!}.
+Результирующее дерево разбора принятой части входа может быть представлено
+значением рекурсивного типа, введённого ранее. Отсюда мы имеем
+%For example, when given the input characters {\verb!(x + y) * z!} the
+%function {\verb!atom!} should process the characters {\verb!(x + y)!} and leave
+%the remaining characters {\verb!* z!}. It might return a parse tree for the
+%processed expression using our earlier recursive type, and hence we would have:
+%
+\begin{boxed}\begin{lstlisting}
+  atom "(x + y) * z" = Fn("+",[Var "x"; Var "y"]),"* z"
+\end{lstlisting}\end{boxed}
+
+Поскольку любое обращение к функции~{\verb+atom+} должно происходить из 
+функции~{\verb!mulexp!}, то последняя будет использовать результат, полученный
+вычислением~{\verb!atom!}, а также обрабатывать оставшиеся лексемы, вызывая
+повторно~{\verb!atom!} для анализа подвыражения~{\verb!z!}.
+%Since any call of the function {\verb+atom+} must be from within the function
+%{\verb!mulexp!}, this second function will use the result of {\verb!atom!} and
+%deal with the input that remains, making a second call to {\verb!atom!} to
+%process the expression `{\verb!z!}'.
+
+\subsection{Комбинаторы синтаксического анализа}
+%\subsection{Parser combinators}
+Ещё одна причина, по которой предложенный метод разбора особенно хорошо 
+подходит для реализации на языке~ML, это возможность определения некоторых
+полезных комбинаторов, при помощи которых новые анализаторы легко
+создаются на базе уже существующих. Определив эти комбинаторы как инфиксные 
+операции, мы в состоянии придать программе синтаксического анализатора вид, 
+очень схожий со структурой исходной грамматики.
+%Another reason why this technique works particularly well in ML is that we can
+%define some useful combinators for plugging parsers together. In fact, by
+%giving them infix status, we can make the ML parser program look quite similar
+%in structure to the original grammar defining the language.
+
+Для начала введём исключение, сигнализирующее об ошибках анализа. Далее
+определим инфиксную операцию~{\verb!++!}, которая применяет два анализатора
+последовательно, объединяя их результаты, а также инфиксную 
+операцию~{\verb!||!}, которая вначале делает попытку применить один из 
+анализаторов, а затем~--- второй. Операция~{\verb!many!} представляет собой
+свёртку относительно~{\verb!++!}, т.~е.\ применяет заданный анализатор 
+максимально возможное количество раз, выдавая список результатов. Наконец,
+инфиксная операция~{\verb!>>!} применяется для завершающей обработки 
+результатов анализа заданной функцией.
+%First we declare an exception to be used where parsing fails. Then we define an
+%infix {\verb!++!} that applies two parsers in sequence, pairing up their
+%results, and and infix {\verb!||!} which tries first one parser, then the
+%other. We then define a many-fold version of {\verb!++!} that repeats a parser
+%as far as possible, putting the results into a list. Finally, the infix
+%{\verb!>>!} is used to modify the results of a parser according to a function.
+
+Согласно синтаксису~CAML, идентификаторы наподобие~{\verb!++!} автоматически
+считаются инфиксными операциями, поэтому определение операций включает
+временную блокировку этой возможности при помощи ключевого слова~{\tt prefix}.
+Приоритеты также задаются автоматически по первым символам идентификаторов
+и полагаются равными приоритетам арифметических операций, обозначенных этими 
+символами. Таким образом, приоритет~{\verb!++!} наивысший, 
+{\verb!>>!}~--- средний, {\verb!||!}~--- низший, что нам и требуется.
+%%% ISSUE: уточнить насчёт приоритетов, что такое etc. в оригинале 
+%The CAML rules for symbolic identifiers such as {\verb!++!} make them infix
+%automatically, so we suppress this during the definition using the {\tt prefix}
+%keyword. Their precedences are also automatic, following from the usual
+%precedence of their first characters as arithmetic operations etc. That is,
+%{\verb!++!} is the strongest, {\verb!>>!} falls in the middle, and {\verb!||!}
+%is the weakest; this is exactly what we want.
+
+\begin{boxed}\begin{lstlisting}
+  exception Noparse;;
+
+  let prefix || parser1 parser2 input =
+    try parser1 input
+    with Noparse -> parser2 input;;
+
+  let prefix ++ parser1 parser2 input =
+    let result1,rest1 = parser1 input in
+    let result2,rest2 = parser2 rest1 in
+    (result1,result2),rest2;;
+
+  let rec many parser input =
+    try let result,next = parser input in
+        let results,rest = many parser next in
+        (result::results),rest
+    with Noparse -> [],input;;
+
+  let prefix >> parser treatment input =
+    let result,rest = parser input in
+    treatment(result),rest;;
+\end{lstlisting}\end{boxed}
+
+Введём следующие универсальные функции, которые нам понадобятся в дальнейшем.
+Большая часть из них уже обсуждалась ранее, за исключением 
+функции~{\tt explode}, преобразующей строку в список односимвольных строк. Её
+реализация использует встроенные функции {\verb!sub_string!} 
+и~{\verb!string_length!}, которые не рассматривались, но их назначение легко
+понять из примера.
+%We will, in what follows, use the following other functions. Most of these
+%have been defined above, the main exception being {\tt explode} which converts
+%a string into a list of 1-elements strings. It uses the inbuilt functions
+%{\verb!sub_string!} and {\verb!string_length!}; we do not describe them in
+%detail but their function should be easy to grasp from the example.
+%
+\begin{boxed}\begin{verbatim}
+  let rec itlist f =
+       fun [] b -> b
+         | (h::t) b -> f h (itlist f t b);;
+
+  let uncurry f(x,y) = f x y;;
+
+  let K x y = x;;
+
+  let C f x y = f y x;;
+
+  let o f g x = f(g x);;
+  #infix "o";;
+
+  let explode s =
+    let rec exap n l =
+        if n < 0 then l else
+        exap (n - 1) ((sub_string s n 1)::l) in
+    exap (string_length s - 1) [];;
+\end{verbatim}\end{boxed}
+
+Для начала, определим некоторые <<атомарные>> анализаторы. Функция~{\tt some}
+принимает любой входной символ, удовлетворяющий заданному предикату, и
+возвращает его. Функция~{\tt a} выполняет схожее действие, с той разницей,
+что она проверяет входной символ на равенство заданному. Наконец, 
+{\tt finished} предназначена для проверки того, что вся входная 
+последовательность была обработана.
+%In order to get started, we define a few `atomic' parsers. The function {\tt
+%some} accepts any item satisfying a predicate and returns it. The function {\tt
+%a} is similar, but demands a particular item, and finally {\tt finished} just
+%makes sure there are no items left to be parsed.
+%
+\begin{boxed}\begin{lstlisting}
+  let some p =
+    fun [] -> raise Noparse
+      | (h::t) -> if p h then (h,t) else raise Noparse;;
+
+  let a tok = some (fun item -> item = tok);;
+
+  let finished input =
+    if input = [] then 0,input else raise Noparse;;
+\end{lstlisting}\end{boxed}
+
+\subsection{Лексический анализ}
+%\subsection{Lexical analysis}
+Комбинаторы синтаксического анализа в сочетании с несколькими простыми 
+функциями классификации символов хорошо подходят для построения лексического
+анализатора нашего языка термов. Прежде всего, определим тип, представляющий
+{\em лексемы (токены)}, после чего реализуем лексический анализатор, 
+преобразующий входную последовательность в список лексем. Лексической
+категории Other соответствуют обозначения операций и т.~п., причём в нашем
+случае все они весьма просты и состоят лишь из одного символа (в отличие от
+составных обозначений, таких как~{\verb!:=!}).
+%Our parsing combinators can easily be used, in conjunction with a few simple
+%character discrimination functions, to construct a lexical analyzer for our
+%language of terms. We define a type of {\em tokens} (or lexemes), and the lexer
+%translates the input string into a list of tokens. The `other' cases cover
+%symbolic identifiers; they are all straightforward as they consist of just a
+%single character, rather than composite ones like `{\verb!:=!}'.
+%
+\begin{boxed}\begin{lstlisting}
+  type token = Name of string | Num of string | Other of string;;
+
+  let lex =
+    let several p = many (some p) in
+    let lowercase_letter s = "a" <= s & s <= "z" in
+    let uppercase_letter s = "A" <= s & s <= "Z" in
+    let letter s = lowercase_letter s or uppercase_letter s in
+    let alpha s = letter s or s = "_" or s = "'" in
+    let digit s = "0" <= s & s <= "9" in
+    let alphanum s = alpha s or digit s in
+    let space s = s = " " or s = "\n" or s = "\t" in
+    let collect(h,t) = h^(itlist (prefix ^) t "") in
+    let rawname =
+       some alpha ++ several alphanum >> (Name o collect) in
+    let rawnumeral =
+       some digit ++ several digit >> (Num o collect) in
+    let rawother = some (K true) >> Other in
+    let token =
+      (rawname || rawnumeral || rawother) ++ several space >> fst in
+    let tokens = (several space ++ many token) >> snd in
+    let alltokens = (tokens ++ finished) >> fst in
+    fst o alltokens o explode;;
+\end{lstlisting}\end{boxed}
+%
+Например,
+%\noindent For example:
+%
+\begin{boxed}\begin{verbatim}
+  #lex "sin(x + y) * cos(2 * x + y)";;
+   - : token list =
+   [Name "sin"; Other "("; Name "x"; Other "+"; Name "y"; Other ")";
+    Other "*"; Name "cos"; Other "("; Num "2"; Other "*"; Name "x";
+    Other "+"; Name "y"; Other ")"]
+\end{verbatim}\end{boxed}
+
+\subsection{Анализатор термов}
+%\subsection{Parsing terms}
+Для завершения перехода от анализа отдельных символов к анализу лексем, 
+введём базовые анализаторы, принимающие лексемы заданной категории:
+%Since we are now working at the level of tokens, we define trivial parsers to
+%accept tokens of (only) a certain kind:
+%
+\begin{boxed}\begin{lstlisting}
+  let name =
+    fun (Name s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let numeral =
+    fun (Num s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let other =
+    fun (Other s::rest) -> s,rest
+      | _ -> raise Noparse;;
+\end{lstlisting}\end{boxed}
+%
+С помощью этих функций мы можем определить анализатор термов в виде, очень
+схожем с исходной грамматикой. Основное различие состоит в том, что каждой
+продукции сопоставлено некоторое действие, результат которого возвращается
+как результат анализа.
+%\noindent Now we can define a parser for terms, in a form very similar to the
+%original grammar. The main difference is that each production rule has
+%associated with it some sort of special action to take as a result of parsing.
+
+\begin{boxed}\begin{lstlisting}
+  let rec atom input
+         = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
+                >> (fun (((name,_),args),_) -> Fn(name,args))
+         || name
+                >> (fun s -> Var s)
+         || numeral
+                >> (fun s -> Const s)
+         || a (Other "(") ++ term ++ a (Other ")")
+                >> (snd o fst)
+         || a (Other "-") ++ atom
+                >> snd) input
+    and mulexp input
+         = (atom ++ a(Other "*") ++ mulexp
+                >> (fun ((a,_),m) -> Fn("*",[a;m]))
+         || atom) input
+    and term input
+         = (mulexp ++ a(Other "+") ++ term
+                >> (fun ((a,_),m) -> Fn("+",[a;m]))
+         || mulexp) input
+    and termlist input
+         = (term ++ a (Other ",") ++ termlist
+                >> (fun ((h,_),t) -> h::t)
+         || term
+                >> (fun h -> [h])) input;;
+\end{lstlisting}\end{boxed}
+
+Объединим определённые ранее примитивы в единую функцию: 
+%\noindent Let us package everything up as a single parsing function:
+%
+\begin{boxed}\begin{lstlisting}
+  let parser = fst o (term ++ finished >> fst) o lex;;
+\end{lstlisting}\end{boxed}
+%
+Наглядной иллюстрацией работы этой функции является её вызов до и после
+установки специализированной функции вывода (см.\ выше):
+%\noindent To see it in action, we try with and without the printer (see above)
+%installed:
+%
+\begin{boxed}\begin{verbatim}
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term =
+   Fn
+    ("*",
+     [Fn ("sin", [Fn ("+", [Var "x"; Var "y"])]);
+      Fn ("cos", [Fn ("+", [Fn ("*", [Const "2"; Var "x"]);
+                            Var "y"])])])
+  #install_printer "print_term";;
+  - : unit = ()
+  #parser "sin(x + y) * cos(2 * x + y)";;
+  - : term = `sin(x + y) * cos(2 * x + y)`
+\end{verbatim}\end{boxed}
+
+\subsection{Автоматический учёт приоритетов}
+%\subsection{Automatic precedence parsing}
+Синтаксический анализатор, рассмотренный выше, реализует разбор двух инфиксных 
+операций в явном виде. Однако, для большего удобства и согласованности с нашим
+подходом к выводу выражений, следует учесть введённую ранее информацию о 
+множестве доступных инфиксных операций. Более того, наличие даже двух различных
+бинарных операций заставляет прибегать к искусственным приёмам при построении
+грамматики и программы разбора~--- нетрудно представить себе, во что 
+превратится работа, например, с дюжиной таких операций. Таким образом, 
+несомненна полезность автоматического порождения иерархии анализаторов для каждой
+доступной операции, упорядоченных согласно их приоритетам. Решение этой задачи
+достаточно просто. Прежде всего, зададим обобщённую функцию, которая принимает
+в качестве аргумента анализатор синтаксической категории, которая на данном
+уровне приоритета считается атомарным выражением, и возвращает новый 
+анализатор, предназначенный для разбора последовательности таких атомарных
+выражений, объединённых заданной операцией. Заметим, что того же эффекта
+мы можем добиться при помощи нашего набора комбинаторов, но функция, 
+приведённая ниже, проще и эффективнее.
+%In the above parser, we `hardwired' a parser for the two infix operators.
+%However it would be nicer, and consistent with our approach to printing, if
+%changes to the set of infixes could propagate to the parser. Moreover, even
+%with just two different binary operators, our production rules and consequent
+%parser were already starting to look artificial; imagine if we had a dozen or
+%so. What we would like is to automate the production of a layer of parsers, one
+%for each operator, in order of precedence. This can easily be done. First, we
+%define a general function that takes a parser for what, at this level, are
+%regarded as atomic expressions, and produces a new parser for such expressions
+%separated by a given operator. Note that this could also be defined using
+%parsing combinators, but the function below is simple and more efficient.
+
+\begin{boxed}\begin{lstlisting}
+  let rec binop op parser input =
+    let atom1,rest1 as result = parser input in
+    if not rest1 = [] & hd rest1 = Other op then
+      let atom2,rest2 = binop op parser (tl rest1) in
+      Fn(op,[atom1; atom2]),rest2
+    else result;;
+\end{lstlisting}\end{boxed}
+
+Далее определим функции, которые извлекают из нашего ассоциативного списка
+очередную операцию с наименьшим (равным предыдущему) приоритетом. Если список
+был заранее сортирован по приоритетам, мы можем просто выбирать очередной 
+элемент по порядку следования.
+%Now we define functions that pick out the infix operator in our association
+%list with (equal) lowest precedence, and delete it from the list. If we
+%maintained the list already sorted in precedence order, we could simply take
+%the head and tail of the list.
+%
+\begin{boxed}\begin{lstlisting}
+  let findmin l = itlist
+    (fun (_,pr1 as p1) (_,pr2 as p2) -> if pr1 <= pr2 then p1 else p2)
+    (tl l) (hd l);;
+
+  let rec delete x (h::t) = if h = x then t else h::(delete x t);;
+\end{lstlisting}\end{boxed}
+%
+Обобщённый анализатор множества бинарных операций с приоритетами:
+%\noindent Now we can define the generic precedence parser:
+%
+\begin{boxed}\begin{lstlisting}
+  let rec precedence ilist parser input =
+    if ilist = [] then parser input else
+    let opp = findmin ilist in
+    let ilist' = delete opp ilist in
+    binop (fst opp) (precedence ilist' parser) input;;
+\end{lstlisting}\end{boxed}
+%
+Использование этого вспомогательного анализатора позволяет упростить основной
+и сделать его более общим:
+%\noindent and hence can modify the main parser to be both simpler and more
+%general:
+%
+\begin{boxed}\begin{lstlisting}
+  let rec atom input
+         = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
+                >> (fun (((name,_),args),_) -> Fn(name,args))
+         || name
+                >> (fun s -> Var s)
+         || numeral
+                >> (fun s -> Const s)
+         || a (Other "(") ++ term ++ a (Other ")")
+                >> (snd o fst)
+         || a (Other "-") ++ atom
+                >> snd) input
+    and term input = precedence (!infixes) atom input
+    and termlist input
+         = (term ++ a (Other ",") ++ termlist
+                >> (fun ((h,_),t) -> h::t)
+         || term
+                >> (fun h -> [h])) input;;
+
+  let parser = fst o (term ++ finished >> fst) o lex;;
+\end{lstlisting}\end{boxed}
+
+Пример разбора выражения:
+%\noindent for example:
+%
+\begin{boxed}\begin{verbatim}
+  #parser "2 * sin(x)^2 + 2 * sin(y)^2 - 2";;
+  - : term =
+   Fn
+    ("+",
+     [Fn ("*", [Const "2"; Fn ("^", [Fn ("sin", [Var "x"]);
+                                     Const "2"])]);
+      Fn
+       ("-",
+        [Fn ("*", [Const "2"; Fn ("^", [Fn ("sin", [Var "y"]);
+                                        Const "2"])]);
+         Const "2"])])
+  #install_printer "print_term";;
+  - : unit = ()
+  #parser "2 * sin(x)^2 + 2 * sin(y)^2 - 2";;
+  - : term = `2 * sin(x) ^ 2 + (2 * sin(y) ^ 2 - 2)`
+\end{verbatim}\end{boxed}
+
+\subsection{Недостатки метода}
+%\subsection{Defects of our approach}
+Наш подход к лексическому и синтаксическому анализу не отличается особой
+эффективностью. Действительно, CAML и некоторые другие реализации языка~ML
+включают генератор синтаксических анализаторов для LR-грамматик, аналогичный
+популярной в Unix-среде системе YACC (Yet Another Compiler Compiler) для 
+языка~C. Эти генераторы не только охватывают более широкий класс грамматик,
+но и производят более эффективные анализаторы. Однако, мы считаем, что 
+предложенный метод достаточно прозрачен, приемлем в большинстве случаев
+и является хорошим введением в программирование с использованием функций
+высших порядков.
+%Our approach to lexing and parsing is not particularly efficient. In fact,
+%CAML and some other ML implementations include a generator for LR parsers
+%similar to YACC (Yet Another Compiler Compiler) which is often used to generate
+%parsers in C under Unix. Not only are these more general in the grammars that
+%they can handle, but the resulting parsers are more efficient. However we
+%believe the present approach is rather clear, adequate for most purposes, and a
+%good introduction to programming with higher order functions.
+
+Небольшая доработка некоторых особенно ресурсоёмких фрагментов анализатора 
+может заметно улучшить его общую эффективность. Так, при наличии в одной
+синтаксической категории нескольких продукций с общим префиксом, следует 
+избегать его многократного анализа, который может оказаться нетривиальным. 
+Примером подобной ситуации служат правила вывода для термов:
+%The inefficiency of our approach can be reduced by avoiding a few particularly
+%wasteful features. Note that if two different productions for the same
+%syntactic category have a common prefix, then we should avoid parsing it more
+%than once, unless it is guaranteed to be trivial. Our production rules for
+%$term$ have this property:
+%
+\begin{eqnarray*}
+term     & \goesto & name{\verb!(!} termlist {\verb!)!}         \\
+         & |       & name                                       \\
+         & |       & \cdots
+\end{eqnarray*}
+
+Мы намеренно поместили в ходе реализации более длинное правило первым, так как 
+в противном случае успешное чтение имени приведёт в дальнейшем к отказу при 
+попытке разбора списка аргументов. Однако, возникающее при этом повторное
+сканирование избыточно. В данном случае цена избыточности невелика, поскольку
+повторному анализу подвергается лишь одна лексема, но потенциальные накладные 
+расходы при разборе~$termlist$ могут оказаться более существенными:
+%We carefully put the longer production first in our actual implementation,
+%otherwise success in reading a name would cause the abandonment of attempts to
+%read a parenthesized list of arguments. Nevertheless, because of the
+%redundancy we have mentioned, this way of constructing the parser is wasteful.
+%In this case it doesn't matter much, because the duplicated call only analyzes
+%one token. However the case for $termlist$ is more significant:
+%
+\begin{boxed}\begin{lstlisting}
+    let ...
+    and termlist input
+         = (term ++ a (Other ",") ++ termlist
+                >> (fun ((h,_),t) -> h::t)
+         || term
+                >> (fun h -> [h])) input;;
+\end{lstlisting}\end{boxed}
+
+В отличие от предыдущего примера, здесь повторному сканированию в случае возврата
+подвергается целый терм, который может быть сколь угодно сложным. Существуют 
+различные способы избежать этого. Например, мы можем преобразовать правила 
+вывода так, чтобы выбор одного из них происходил уже после того, как прочитан 
+начальный терм. Комбинатор~{\tt many} позволяет легко устранить явную рекурсию:
+%Here we could reparse a whole term, which might be arbitrarily large. We can
+%avoid this in several ways. One is to move the {\verb!||!} alternation to after
+%the initial term has been read. A convenient way to code it is to eschew
+%explicit recursion in favour of {\tt many}:
+%
+\begin{boxed}\begin{lstlisting}
+    let ...
+    and termlist input
+        = term ++ many (a (Other ",") ++ term >> snd)
+                >> (fun (h,t) -> h::t) input;;
+\end{lstlisting}\end{boxed}
+%
+Таким образом, итоговая реализация анализатора имеет вид:
+%\noindent Therefore the final version of the parser is:
+%
+\begin{boxed}\begin{lstlisting}
+  let rec atom input
+         = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
+                >> (fun (((name,_),args),_) -> Fn(name,args))
+         || name
+                >> (fun s -> Var s)
+         || numeral
+                >> (fun s -> Const s)
+         || a (Other "(") ++ term ++ a (Other ")")
+                >> (snd o fst)
+         || a (Other "-") ++ atom
+                >> snd) input
+    and term input = precedence (!infixes) atom input
+    and termlist input
+          = (term ++ many (a (Other ",") ++ term >> snd)
+                >> (fun (h,t) -> h::t)) input;;
+\end{lstlisting}\end{boxed}
+
+Общим недостатком нашего подхода и метода рекурсивного спуска в целом являются
+проблемы с разбором {\em леворекурсивных} грамматик. Правило вывода некоторой
+синтаксической категории называется леворекурсивным, если его правая часть 
+начинается с этой же категории. Например, если бы мы попытались определить
+в нашей грамматике левоассоциативную операцию сложения, это можно было бы
+выразить так:
+%A general defect of our approach, and recursive descent parsing generally, is
+%that so-called {\em left recursion} in productions causes problems. This is
+%where a given category expands to a sequence including the category itself as
+%the first item. For example, if we had wanted to make the addition operator
+%left-associative in our earlier grammar, we could have used:
+%
+\begin{eqnarray*}
+term     & \goesto & term {\verb! + !} mulexp                   \\
+         & |       & mulexp
+\end{eqnarray*}
+
+Прямое отображение этих правил вывода на язык~ML приведёт к зацикливанию,
+поскольку функция~{\tt term} будет вызываться для одного и того же подвыражения
+снова и снова. Существуют различные, причём не слишком универсальные, способы 
+решения проблемы. Например, мы можем реализовать в явном виде цикл вместо
+рекурсии, применение которой в данном контексте не имеет под собой особых
+оснований. Для этого воспользуемся стандартными комбинаторами 
+наподобие~{\tt many}, чтобы получить список деревьев разбора подвыражений 
+вида~$mulexp$, после чего построим по этому списку результирующее 
+левоассоциативное дерево.
+%
+%The naive transcription into ML would loop indefinitely, calling {\tt term} on
+%the same subterm over and over. There are various slightly ad hoc ways of
+%dealing with this problem. For example, one can convert this use of recursion,
+%which in some ways is rather gratuitous, into the explicit use of repetition.
+%We can do this using standard combinators like {\tt many} to return a list of
+%`$mulexp$'s and then run over the list building the tree left-associated.
+
+В заключение отметим, что наша обработка ошибок разбора не отличается особой
+элегантностью. При возникновении любого затруднения мы порождаем 
+исключение~{\tt Noparse}, обработка которого представляет собой возврат.
+Такое поведение, однако, не всегда подходит для типичных грамматик. В лучшем
+случае, оно приведёт к интенсивному повторному сканированию, но может вызвать
+и последовательность возвратов вплоть до корня дерева разбора. Например, 
+встретив в ходе анализа подвыражение~{\tt 5 +} мы ожидаем, что вслед за 
+символом~{\tt +} следует очередной терм. Если он не был найден, следует выдать
+пользователю внятное сообщение об ошибке вместо простой генерации~{\tt Noparse}
+и, возможно, последующих безуспешных попыток разобрать выражение другим путём.
+%A final problem is that we do not handle errors very gracefully. We always
+%raise the exception {\tt Noparse}, and this, when caught, initiates
+%backtracking. However this is not always appropriate for typical grammars. At
+%best, it can cause expensive reparsing, and can lead to baffling error
+%indications at the top level. For example, on encountering {\tt 5 +}, we expect
+%a term following the {\tt +}, and if we don't find one, we should generate a
+%comprehensible exception for the user, rather than raise {\tt Noparse} and
+%perhaps initiate several other pointless attempts to parse the expression in a
+%different way.
+
+\section{Точная арифметика вещественных чисел}
+%\section{Exact real arithmetic}
+
+Машинная реализация вещественной арифметики обычно использует приближённое
+представление чисел в формате с плавающей точкой. В общем случае, мы можем 
+оперировать вещественными числами (либо вручную, либо при помощи компьютера) 
+лишь в том случае, когда они имеют то или иное конечное представление.
+Возникает вопрос, уместно ли говорить о `существовании' чисел, которые
+% ISSUE #4 -- quotation marks           ^^^^^^^^^^^^^^^
+не представимы в конечной форме. Например, Кронекер признавал целые и 
+рациональные числа, поскольку их можно задать точно, а также 
+{\em алгебраические} числа%
+\footnote{Вещественное число называется алгебраическим, если оно является 
+корнем полинома с целыми коэффициентами (например, $\sqrt{2}$), 
+в противном случае это число~--- трансцендентное.}, 
+представимые многочленами, корнями которых они являются. Однако, он отвергал 
+трансцендентные числа, как не имеющие конечного представления. Говорят, что 
+когда Кронекеру попалось на глаза известное доказательство трансцендентности 
+числа~$\pi$~\cite{lindemann-pi}, он якобы отозвался о нём так: <<интересно,
+если не принимать во внимание того, что числа~$\pi$ не существует>>.
+
+%Real arithmetic on computers is normally done via floating point
+%approximations. In general, we can only manipulate a real number, either
+%ourselves or inside a computer, via some sort of finite representation. Some
+%question how numbers can be said to `exist' if they have no finite
+%representation. For example, Kronecker accepted integers and rationals because
+%they can be written down explicitly, and even {\em algebraic}
+%numbers\footnote{Algebraic numbers are those that are roots of polynomials with
+%integer coefficients, e.g. $\sqrt{2}$, and transcendental numbers are ones that
+%aren't.} because they can be represented using the polynomials of which they
+%are solutions. However he rejected transcendental numbers because apparently
+%they could not be represented finitely. Allegedly he he greeted the famous
+%proof by \citeN{lindemann-pi} that $\pi$ is transcendental with the remark that
+%this was `interesting, except that $\pi$ does not exist'.
+
+Учитывая современные достижения, мы можем сказать, что конечное представление
+в принципе возможно для гораздо большего количества чисел, чем те, 
+существование которых признавалось Кронекером. Этим представлением являются 
+программы (или, вообще говоря, {\em правила}) вычисления требуемых чисел с
+произвольной заданной разрядностью. Например, мы можем написать программу, 
+вычисляющую для заданного~$n$ первые $n$~знаков числа~$\pi$ или же 
+рациональное число~$r$ такое, что~$|\pi - r| < 2^{-n}$. Независимо от того, 
+какой из подходов был выбран для последовательного уточнения вещественного 
+числа, важнейшим его свойством является конечность программы-представления.
+
+%However, given our modern perspective, we can say that after all many more
+%numbers than Kronecker would have accepted {\em do} have a finite
+%representation, namely the program, or in some more abstract sense the {\em
+%rule}, used to calculate them to greater and greater precision. For example, we
+%can write a program that will produce for any argument $n$ the first $n$ digits
+%of $\pi$. Alternatively it can produce a rational number $r$ such that $|\pi -
+%r| < 2^{-n}$. Whatever approach is taken to the successive approximation of a
+%real number, the key point is that its representation, the program itself, is
+%finite.
+
+Такой подход особенно хорошо реализуется на языках, подобных~ML, при помощи
+функций высших порядков. То, что мы называли выше <<программой>>, в 
+ML-реализации становится просто функцией. Арифметические операции при этом
+представимы функциями высших порядков, которые по заданным 
+аппроксимациям~$x$ и~$y$ конструируют аппроксимации для~$x + y$, $x y$, 
+$\sin(x)$ и~т.д. В более традиционных языках программирования нам пришлось
+бы задать конкретное представление программ, например, гёделеву нумерацию,
+и реализовать для него интерпретатор.%
+\footnote{Effectively, we are
+manipulating functions `in extension' rather than `in intension', i.e. not
+concerning ourselves with their representation.}
+
+%This works particularly nicely in a language like ML where higher order
+%functions are available. What we have called a `program' above will just be an
+%ML function. We can actually represent the arithmetic operations on numbers as
+%higher order functions that, given functions for approximating $x$ and $y$,
+%will produce new ones for approximating $x + y$, $x y$, $sin(x)$ and so on, for
+%a wide range of functions. In an ordinary programming language, we would need
+%to define a concrete representation for programs, e.g. `G\"odel numbering', and
+%write an interpreter for this representation.\footnote{Effectively, we are
+%manipulating functions `in extension' rather than `in intension', i.e. not
+%concerning ourselves with their representation.}
+
+\subsection{Выбор представления вещественных чисел}
+%\subsection{Representation of real numbers}
+
+Каждому вещественному числу~$x$ поставим в соответствие 
+функцию~$f_x:\nat \to \num$, которая для произвольного~$n \in \nat$
+возвращает масштабированное приближённое значение~$x$ с точностью~$2^{-n}$:
+$$ 
+ |f_x(n) - 2^n x| < 1.
+$$
+В свою очередь, данное выражение 
+эквивалентно~$|{f_x(n) \over 2^n} - x| < {1 \over 2^n}$. Также возможно
+непосредственное вычисление рационального приближённого значения, но для
+удобства вычислений важно, чтобы знаменатели всех вычисляемых величин
+были представимы в виде степеней некоторого числа. Подобное ограничение 
+позволит избежать лавинообразного роста общего знаменателя при суммировании.
+Явное масштабирование упрощает реализацию операций, позволяя ограничиться
+лишь целочисленной арифметикой. Выбор~$2$ в качестве основания произволен.
+Малые основания предпочтительнее тем, что позволяют подбирать подходящую
+точность более гибко. Например, выбор основания~$10$ ведёт к тому, что даже
+при необходимости небольшого увеличения точности представления мы вынуждены
+увеличивать её в 10~раз.
+%Our approach is to represent a real $x$ by a function $f_x:\nat \to \num$ that
+%for each $n \in \nat$ returns an approximation of $x$ to within $2^{-n}$,
+%appropriately scaled. In fact, we have:
+%
+%$$ |f_x(n) - 2^n x| < 1 $$
+%
+%This is of course equivalent to $|{f_x(n) \over 2^n} - x| < {1 \over 2^n}$. We
+%could return a rational approximation directly, but it would still be
+%convenient for the rationals to have denominators that are all powers of some
+%number, so that common denominators arising during addition don't get too big.
+%Performing the scaling directly seems simpler, requiring only integer
+%arithmetic. Our choice of the base $2$ is largely arbitrary. A lower base is
+%normally advantageous because it minimizes the {\em granularity} of the
+%achievable accuracies. For example, if we used base 10, then even if we only
+%need to increase the accuracy of an approximation slightly, we have to step up
+%the requested accuracy by a factor of 10.
+
+\subsection{Целые числа произвольной разрядности}
+%\subsection{Arbitrary-precision integers}
+
+Стандартный целочисленный тип ({\tt int}) в CAML имет довольно ограниченный 
+диапазон представимых значений, поэтому нам прежде всего потребуется 
+возможность оперировать целыми числами неограниченной разрядности.
+Программная реализация подобной арифметики не слишком сложна, но несколько
+утомительна. К счастью, версия CAML Light, установленная на Thor, уже включает 
+в себя библиотеку быстрых алгоритмов целочисленной (на самом деле, рациональной) 
+арифметики. Предположим, что конфигурация системы задаёт следующие пути поиска
+исполнимых файлов:
+%
+\begin{boxed}\begin{lstlisting}[language=sh]
+  PATH="$PATH:/home/jrh13/caml/bin"
+  export PATH
+\end{lstlisting}\end{boxed}
+%
+В этом случае CAML-система с поддержкой <<длинной>> арифметики запускается 
+командой:
+\begin{boxed}\begin{verbatim}
+  $ camllight my_little_caml
+\end{verbatim}\end{boxed}
+
+%CAML's standard integers (type {\tt int}) have a severely limited range, so
+%first of all we need to set up a type of unlimited-precision integers. This is
+%not so difficult to program, but is slightly tedious. Fortunately, the CAML
+%release includes a library that gives a fast implementation of arbitrary
+%precision integer (and in fact rational) arithmetic. A version of CAML Light
+%with this library pre-loaded is installed on Thor. Assuming you have used the
+%following path setting:
+%
+%\begin{boxed}\begin{lstlisting}[language=sh]
+%  PATH="$PATH:/home/jrh13/caml/bin"
+%  export PATH
+%\end{lstlisting}\end{boxed}
+%
+%\noindent then the augmented version of CAML Light can be fired up using:
+%
+%\begin{boxed}\begin{verbatim}
+%  $ camllight my_little_caml
+%\end{verbatim}\end{boxed}
+
+После запуска системы используйте директиву~{\verb+#open+} для получения 
+доступа ко всем функциям библиотеки:
+%
+\begin{boxed}\begin{verbatim}
+  ##open "num";;
+\end{verbatim}\end{boxed}
+
+%When the system returns its prompt, use the {\verb+#open+} directive to make
+%the library functions available:
+%
+%\begin{boxed}\begin{verbatim}
+%  ##open "num";;
+%\end{verbatim}\end{boxed}
+
+В библиотеке определяется новый тип данных {\tt num}, представляющий
+рациональные числа произвольной разрядности, среди которых нам понадобится 
+лишь подмножество целых чисел. Язык CAML не предоставляет возможности 
+перегрузки операций, поэтому для обозначения арифметических действий 
+над~{\tt num} приходится использовать другие символы.
+
+%This library sets up a new type {\tt num} of arbitrary precision rational
+%numbers; we will just use the integer subset. CAML does not provide
+%overloading, so it is necessary to use different symbols for the usual
+%arithmetic operations over {\tt num}.
+
+Отметим, что числа-константы типа~{\tt num} должны задаваться как~{\tt Int k}, 
+а не просто~{\tt k}. Фактически, {\tt Int}~является конструктором 
+типа~{\tt num} и применяется в случае, когда число имеет прямое машинное 
+представление. Большие числа конструируются~{\tt Big\_int}.
+
+%Note that small constants of type {\tt num} must be written as {\tt Int k}
+%rather than simply {\tt k}. In fact {\tt Int} is a type constructor for {\tt
+%num} used in the case when the number is a machine-representable integer.
+%Larger ones use {\tt Big\_int}.
+
+Унарная операция смены знака величины типа~{\tt num} 
+обозначается~{\tt minus\_num}. Ещё одна полезная унарная операция~--- 
+{\tt abs\_num}, которая вычисляет абсолютную величину аргумента, т.~е.\ %
+по заданному~$x$ возвращает~$|x|$.
+
+%The unary negation on type {\tt num} is written {\tt minus\_num}. Another handy
+%unary operator is {\tt abs\_num}, which finds absolute values, i.e. given $x$
+%returns $|x|$.
+
+Помимо унарных, в наше распоряжение предоставлен стандартный набор бинарных
+операций. Операции целочисленного деления и вычисления остатка, 
+обозначенные~{\tt quo\_num} и~{\tt mod\_num}, не являются инфиксными. 
+В то же время, большинство прочих бинарных операций определены как инфиксные 
+с именами, полученными добавлением символа~``{\verb!/!}'' к именам аналогичных 
+операций над типом~{\tt int}. Важно помнить, что в общем случае требуется
+использовать~{\tt =/} для сравнения чисел. Причина этого в том, что 
+конструкторы типа~{\tt num}, как всегда, различны по определению, но могут
+пересекаться по интерпретации представляемых значений. Например, в ходе 
+вычисления частного~$2^{30}$ и~$2$ при помощи двух доступных операций деления
+мы можем получить результаты, численно равные, но различные с точки зрения
+языка, поскольку в одном случае будет использован конструктор~{\tt Int}, а
+в другом~--- {\tt Ratio}.
+
+%The usual binary operations are also available. The (truncating) division and
+%modulus function, called {\tt quo\_num} and {\tt mod\_num}, do not have infix
+%status. However most of the other binary operators are infixes, and the names
+%are derived from the usual ones by adding a slash `{\verb!/!}'. It is important
+%to realize that in general, one must use {\tt =/} to compare numbers for
+%equality. This is because the constructors of the type {\tt num} are, as
+%always, distinct by definition, yet in terms of the underlying meaning they may
+%overlap. For example we get different result from using truncating division and
+%true division on $2^{30}$ and $2$, even though they are numerically the same.
+%One uses type constructor {\tt Int} and the other {\tt Ratio}.
+
+\begin{boxed}\begin{verbatim}
+  #(Int 2 **/ Int 30) // Int 2 = quo_num (Int 2 **/ Int 30) (Int 2);;
+  it : bool = false
+  #(Int 2 **/ Int 30) // Int 2 =/ quo_num (Int 2 **/ Int 30) (Int 2);;
+  it : bool = true
+\end{verbatim}\end{boxed}
+
+Полный список инфиксных операций:
+%\noindent Here is a full list of the main infix binary operators:
+
+\bigskip
+\begin{tabular}{|l|l|l|}
+\hline
+%Operator   & Type                             & Meaning               \\
+Оператор   & Тип                              & Значение            \\
+\hline
+{\tt **/}  & {\tt num -> num -> num}          & Вычисление степени  \\
+{\tt */}   & {\tt num -> num -> num}          & Умножение           \\
+{\tt +/}   & {\tt num -> num -> num}          & Сложение            \\
+{\tt -/}   & {\tt num -> num -> num}          & Вычитание           \\
+{\tt =/}   & {\tt num -> num -> bool}         & Равенство           \\
+{\tt <>/}  & {\tt num -> num -> bool}         & Неравенство         \\
+{\tt </}   & {\tt num -> num -> bool}         & Меньше, чем         \\
+{\tt <=/}  & {\tt num -> num -> bool}         & Меньше либо равно   \\
+{\tt >/}   & {\tt num -> num -> bool}         & Больше, чем         \\
+{\tt >=/}  & {\tt num -> num -> bool}         & Больше либо равно   \\
+%{\tt **/}  & {\tt num -> num -> num}          & Exponentiation        \\
+%{\tt */}   & {\tt num -> num -> num}          & Multiplication        \\
+%{\tt +/}   & {\tt num -> num -> num}          & Addition              \\
+%{\tt -/}   & {\tt num -> num -> num}          & Subtraction           \\
+%{\tt =/}   & {\tt num -> num -> bool}         & Equality              \\
+%{\tt <>/}  & {\tt num -> num -> bool}         & Inequality            \\
+%{\tt </}   & {\tt num -> num -> bool}         & Less than             \\
+%{\tt <=/}  & {\tt num -> num -> bool}         & Less than or equal    \\
+%{\tt >/}   & {\tt num -> num -> bool}         & Greater than          \\
+%{\tt >=/}  & {\tt num -> num -> bool}         & Greater than or equal \\
+\hline
+\end{tabular}
+\bigskip
+
+Пример использования операций:
+%\noindent Let us see some further examples:
+%
+\begin{boxed}\begin{verbatim}
+  #Int 5 */ Int 14;;
+  it : num = Int 70
+  #Int 2 **/ Int 30;;
+  it : num = Big_int <abstr>
+  #(Int 2 **/ Int 30) // Int 2;;
+  it : num = Ratio <abstr>
+  #quo_num (Int 2 **/ Int 30) (Int 2);;
+  it : num = Int 536870912
+\end{verbatim}\end{boxed}
+
+Отметим, что числа типа~{\tt num} по умолчанию не выводятся. Однако, мы
+всегда можем преобразовать их в строки при помощи функции~{\tt string\_of\_num}.
+%Note that large numbers are not printed. However we can always convert one to a
+%string using {\tt string\_of\_num}:
+%
+\begin{boxed}\begin{verbatim}
+  #string_of_num(Int 2 ** Int 150);;
+  - : string = "1427247692705959881058285969449495136382746624"
+\end{verbatim}\end{boxed}
+%
+Аналогично делается и обратное преобразование, реализуемое функцией с вполне
+естественным именем~{\tt num\_of\_string}.
+%\noindent This also has an inverse, called naturally enough {\tt
+%num\_of\_string}.
+
+\subsection{Основные операции}
+%\subsection{Basic operations}
+
+Напомним, что для вещественных чисел нами было выбрано представление в виде
+функций~$\num \to \num$. Реализация на языке~ML в действительности будет 
+% ISSUE: Z -> Z should be probably N -> Z ???
+использовать~{\tt int -> num}, поскольку диапазона значений встроенного 
+целочисленного типа вполне достаточно для задания требуемой разрядности.
+Определим некоторые базовые операции над вещественными числами. Наиболее
+фундаментальная операция, с которой мы начнём, ставит в соответствие заданному
+целому вещественное число. Её реализация проста:
+%
+%Recall that our real numbers are supposed to be (represented by) functions
+%$\num \to \num$. In ML we will actually use {\tt int -> num}, since the inbuilt
+%type of integers is more than adequate for indexing the level of accuracy. Now
+%we can define some operations on reals. The most basic operation, which gets us
+%started, is to produce the real number corresponding to an integer. This is
+%easy:
+%
+\begin{boxed}\begin{verbatim}
+  #let real_of_int k n = (Int 2 **/ Int n) */ Int k;;
+  real_of_int : int -> int -> num = <fun>
+  #real_of_int 23;;
+  - : int -> num = <fun>
+\end{verbatim}\end{boxed}
+%
+Очевидно, что для произвольного~$k$ справедлив критерий аппроксимации:
+%\noindent It is obvious that for any $k$ this obeys the desired approximation
+%criterion:
+%
+$$ 
+ |f_k(n) - 2^n k| = |2^n k - 2^n k| = 0 < 1 
+$$
+%
+Определим первую нетривиальную операцию~--- смену знака.
+%\noindent Now we can define the first nontrivial operation, that of unary
+%negation:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_neg f n = minus_num(f n);;
+\end{lstlisting}\end{boxed}
+
+Компилятор для этой функции выводит более общий тип, чем требуется, но это
+не создаст трудностей. Достаточно легко убедиться, что критерий аппроксимации
+не нарушается. Если нам известно, что для любого~$n$ выполняется
+$$ 
+ |f_x(n) - 2^n x| < 1,
+$$
+то из этого следует
+%
+%The compiler generalizes the type more than intended, but this will not trouble
+%us. It is almost as easy to see that the approximation criterion is preserved.
+%If we know that for each $n$:
+%
+%$$ |f_x(n) - 2^n x| < 1 $$
+%
+%\noindent then we have for any $n$:
+%
+\begin{eqnarray*}
+|f_{-x}(n) - 2^n (-x)| & = & |-f_x(n) - 2^n (-x)|       \\
+                       & = & |-(f_x(n) - 2^n x)|        \\
+                       & = & |f_x(n) - 2^n x|           \\
+                       & < & 1
+\end{eqnarray*}
+
+Аналогично, мы можем определить вычисление абсолютной величины вещественных 
+чисел, используя функцию~{\tt abs\_num}:
+%
+%Similarly, we can define an `absolute value' function on real numbers, using
+%the corresponding function {\tt abs\_num} on numbers:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_abs f n = abs_num (f n);;
+\end{lstlisting}\end{boxed}
+%
+Доказательство корректности этого определения также не представляет трудности,
+принимая во внимание, что~$||x| - |y|| \leq |x - y|$. 
+
+Перейдём к следующей задаче~--- сложению двух вещественных чисел. Предположим,
+что~$x$ и~$y$ представлены как~$f_x$ и~$f_y$ соответственно. Определим сложение
+так:
+%The correctness of this is again straightforward, using the fact that $||x| -
+%|y|| \leq |x - y|$. Now consider the problem of adding two real numbers.
+%Suppose $x$ and $y$ are represented by $f_x$ and $f_y$ respectively. We could
+%define:
+%
+$$ 
+ f_{x + y}(n) = f_x(n) + f_y(n).
+$$
+%
+Однако, такое определение не гарантирует соблюденния критерия аппроксимации:
+%However this gives no guarantee that the approximation criterion is maintained;
+%we would have:
+%
+\begin{eqnarray*}
+|f_{x + y}(n) - 2^n (x + y)| & = & |f_x(n) + f_y(n) - 2^n (x + y)|      \\
+                             & \leq & |f_x(n) - 2^n x| + |f_y(n) - 2^n y|
+\end{eqnarray*}
+%
+Можно утверждать, что сумма в правой части неравенства не превышает~$2$, 
+в то время, как критерий ограничивает нас~$1$. Следовательно, в данном 
+случае нам требуется вычислить~$x$ и~$y$ с {\em большей} 
+разрядностью, чем требуется от результата операции. Предположим, что
+%
+%We can guarantee that the sum on the right is less than $2$, but not that it is
+%less than $1$ as required. Therefore, we need in this case to evaluate $x$ and
+%$y$ to {\em greater} accuracy than required in the answer. Suppose we define:
+%
+$$ 
+  f_{x + y}(n) = (f_x(n + 1) + f_y(n + 1)) / 2.
+$$
+%
+Это, в свою очередь, даёт
+%\noindent Now we have:
+%
+\begin{eqnarray*}
+|f_{x + y}(n) - 2^n (x + y)|
+& = & |(f_x(n + 1) + f_y(n + 1)) / 2 - 2^n (x + y)|             \\
+& \leq & |f_x(n + 1) / 2 - 2^n x| + |f_y(n + 1) / 2 - 2^n y|    \\
+& = & {1 \over 2} |f_x(n + 1) - 2^{n + 1} x| +
+      {1 \over 2} |f_y(n + 1) - 2^{n + 1} y|                    \\
+& < & {1 \over 2} 1 + {1 \over 2} 1 = 1
+\end{eqnarray*}
+
+Очевидно, что такое определение достигает желаемой точности. Однако, в нём
+неявно используется операция деления вещественных чисел. Поскольку функция
+должна возвращать целочисленный результат, частное требуется округлить.
+Если мы вычислим частное при помощи~{\tt quo\_num}, ошибка округления
+составит почти~$1$ и не позволит достичь требуемой точности независимо от 
+точности вычисления аргументов. В то же время, затратив чуть больше усилий,
+мы можем определить функцию деления, которая всегда будет возвращать целое 
+число, ближайшее к~точному результату (или одно из двух ближайших, если 
+расстояние до них оказывается одинаковым), так что ошибка округления никогда 
+не превысит~$1 \over 2$. Такая функция может быть реализована в целочисленной
+арифметике, но будет проще всего воспользоваться операцией деления рациональных
+чисел с последующим округлением частного к ближайшему целому, поскольку для
+этих действий уже определены встроенные функции:
+%
+%Apparently this just gives the accuracy required. However we have implicitly
+%used real mathematical division above. Since the function is supposed to yield
+%an integer, we are obliged to round the quotient to an integer. If we just use
+%{\tt quo\_num}, the error from rounding this might be almost $1$, after which
+%we could never guarantee the bound we want, however accurately we evaluate the
+%arguments. However with a bit more care we can define a division function that
+%always returns the integer closest to the true result (or one of them in the
+%case of two equally close ones), so that the rounding error never exceeds $1
+%\over 2$. This could be done directly in integer arithmetic, but the most
+%straightforward coding is to use rational division followed by rounding to the
+%nearest integer, as there are built-in functions for both these operations:
+%
+\begin{boxed}\begin{verbatim}
+  #let ndiv x y = round_num(x // y);;
+  ndiv : num -> num -> num = <fun>
+  ##infix "ndiv";;
+  #(Int 23) ndiv (Int 5);;
+  - : num = Int 5
+  #(Int 22) ndiv (Int 5);;
+  - : num = Int 4
+  #(Int(-11)) ndiv (Int 4);;
+  - : num = Int -3
+  #(Int(-9)) ndiv (Int 4);;
+  - : num = Int -2
+\end{verbatim}\end{boxed}
+
+Если мы определим операцию сложения с учётом сказанного выше,
+%\noindent Now if we define:
+%
+$$ 
+ f_{x + y}(n) = (f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4, 
+$$
+%
+всё будет работать, как требуется:
+%\noindent everything works:
+%
+\begin{eqnarray*}
+|f_{x + y}(n) - 2^n (x + y)|
+& =    & |((f_x(n + 2) + f_y(n + 2)) \mbox{ ndiv } 4) - 2^n (x + y)|    \\
+& \leq & {1 \over 2} + |(f_x(n + 2) + f_y(n + 2)) / 4 - 2^n (x + y)|     \\
+& =    & {1 \over 2} + {1 \over 4} |(f_x(n + 2) + f_y(n + 2)) -
+                                     2^{n + 2}(x + y)|                  \\
+& \leq & {1 \over 2} + {1 \over 4} |f_x(n + 2) - 2^{n + 2} x| +
+                       {1 \over 4} |f_y(n + 2) - 2^{n + 2} y|           \\
+& <    & {1 \over 2} + {1 \over 4} 1 + {1 \over 4} 1                    \\
+&=     & 1
+\end{eqnarray*}
+%
+Программная реализация выглядит так:
+%\noindent Accordingly we make our definition:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_add f g n =
+    (f(n + 2) +/ g(n + 2)) ndiv (Int 4);;
+\end{lstlisting}\end{boxed}
+
+Аналогичные рассуждения могут быть использованы для определения операции
+вычитания, но проще всего построить её на основе уже введённых функций:
+%We can define subtraction similarly, but the simplest approach is to build it
+%out of the functions that we already have:
+%
+\begin{boxed}\begin{verbatim}
+  #let real_sub f g = real_add f (real_neg g);;
+  real_sub : (num -> num) -> (num -> num) -> num -> num = <fun>
+\end{verbatim}\end{boxed}
+
+Реализация умножения, вычисления обратных чисел и деления потребует 
+в общем случае несколько больших усилий. Однако, частные случаи умножения и
+деления на целое число существенно легче и при этом достаточно часты. По 
+соображениям эффективности они заслуживают отдельного рассмотрения. Пусть
+%It is a bit trickier to define multiplication, inverses and division. However
+%the cases where we multiply or divide by an integer are much easier and quite
+%common. It is worthwhile implementing these separately as they can be made more
+%efficient. We define:
+%
+$$ 
+  f_{m x}(n) = (m f_x(n+p+1)) \mbox{ ndiv } 2^{p+1},
+$$
+%
+где $p$~выбирается так, чтобы~$2^p \geq |m|$. Доказать корректность этого 
+определения легко:
+%\noindent where $p$ is chosen so that $2^p \geq |m|$. For correctness, we have:
+%
+\begin{eqnarray*}
+|f_{m x}(n) - 2^n (m x)|
+& \leq & {1 \over 2} + |{m f_x(n+p+1) \over 2^{p+1}} - 2^n (m x)|       \\
+& =    & {1 \over 2} + {|m| \over 2^{p+1}} |f_x(n+p+1) - 2^{n+p+1} x|   \\
+& <    & {1 \over 2} + {|m| \over 2^{p+1}}                              \\
+& \leq & {1 \over 2} + {1 \over 2} {|m| \over 2^p}                      \\
+& \leq & {1 \over 2} + {1 \over 2} = 1.
+\end{eqnarray*}
+
+Для реализации такого подхода нам потребуется функция вычисления 
+соответствующего~$p$. Не слишком изощрённое, но вполне подходящее 
+определение может выглядеть так: 
+%In order to implement this, we need a function to find the appropriate $p$. The
+%following is crude but adequate:
+%
+\begin{boxed}\begin{lstlisting}
+  let log2 =
+    let rec log2 x y =
+      if x </ Int 1 then y
+      else log2 (quo_num x (Int 2)) (y + 1) in
+    fun x -> log2 (x -/ Int 1) 0;;
+\end{lstlisting}\end{boxed}
+%
+%\noindent The implementation is simply:
+С учётом сказанного выше, операция умножения на целое число принимает вид:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_intmul m x n =
+     let p = log2 (abs_num m) in
+     let p1 = p + 1 in
+     (m */ x(n + p1)) ndiv (Int 2 **/ Int p1);;
+\end{lstlisting}\end{boxed}
+%
+Деление на целое число вводится следующим образом:
+%\noindent For division by an integer, we define:
+%
+$$ f_{x / m}(n) = f_x(n) \mbox{ ndiv } m $$
+
+Для упрощения доказательства корректности этого определения будем считать,
+что случай~$m = 0$ никогда не может возникнуть, а при $m = \pm 1$ результат
+операции не изменяет погрешности. В остальных случаях из~$|f_x(n) - 2^n x| < 1$ 
+следует, что~$|f_x(n) / m - 2^n x / m| < {1 \over |m|} \leq {1 \over 2}$, откуда,
+в свою очередь, с учётом $|f_x(n) \mbox{ ndiv } m - f_x(n) / m| \leq {1 \over 2}$
+получаем требуемое. В итоге, программная реализация деления такова:
+%For correctness, we can ignore the trivial cases when  $m = 0$, which should
+%never be used, and when $m = \pm 1$, since then the result is exact. Otherwise,
+%we assume $|f_x(n) - 2^n x| < 1$, so $|f_x(n) / m - 2^n x / m| < {1 \over |m|}
+%\leq {1 \over 2}$, which, together with the fact that $|f_x(n) \mbox{ ndiv } m
+%- f_x(n) / m| \leq {1 \over 2}$, yields the result. So we have:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_intdiv m x n =
+     x(n) ndiv (Int m);;
+\end{lstlisting}\end{boxed}
+
+\subsection{Умножение: общий случай}
+%\subsection{General multiplication}
+
+Определить умножение в общем случае труднее, поскольку погрешность 
+аппроксимации одного из сомножителей умножается на порядок второго. 
+Следовательно, нам потребуется предварительно оценить порядки сомножителей.
+Поступим следующим образом. Предположим, что нам требуется вычислить 
+выражение~$x + y$ до $n\hbox{-го}$~разряда. Для этого выберем~$r$ и~$s$ такие,
+что~$|r - s| \leq 1$ и~$r + s = n + 2$. Таким образом, обе эти величины
+несколько больше, чем половина требуемой разрядности. Далее вычислим~$f_x(r)$
+и~$f_y(s)$, после чего определим~$p$ и~$q$~--- соответствующие 
+<<двоичные логарифмы>>, для которых справедливо~$|f_x(r)| \leq 2^p$ and $|f_y(s)| \leq 2^q$.
+Если как~$p$, так и~$q$ равны нулю, то легко убедиться, что результатом
+вычислений также будет~$0$. В противном случае отметим, что либо~$p > 0$,
+либо~$q > 0$~--- этот факт нам понадобится в дальнейшем.
+%General multiplication is harder because the error in approximation for one
+%number is multiplied by the magnitude of the second number. Therefore, before
+%the final accuracies are calculated, a preliminary evaluation of the arguments
+%is required to determine their approximate magnitude. We proceed as follows.
+%Suppose that we want to evaluate $x + y$ to precision $n$. First we choose $r$
+%and $s$ so that $|r - s| \leq 1$ and $r + s = n + 2$. That is, both $r$ and $s$
+%are slightly more than half the required precision. We now evaluate $f_x(r)$
+%and $f_y(s)$, and select natural numbers $p$ and $q$ that are the corresponding
+%`binary logarithms', i.e. $|f_x(r)| \leq 2^p$ and $|f_y(s)| \leq 2^q$. If both
+%$p$ and $q$ are zero, then it is easy to see that we may return just $0$.
+%Otherwise, remember that either $p > 0$ or $q > 0$ as we will need this later.
+%Now set:
+
+Пусть
+%
+\begin{eqnarray*}
+k &= &n + q - s + 3 =  q + r + 1           \\
+l &= &n + p - r + 3 =  p + s + 1           \\
+m &= &(k + l) - n =  p + q + 4.
+\end{eqnarray*}
+%
+Покажем, что погрешность выражения~$f_{x y}(n) = (f_x(k) f_y(l)) \mbox{ ndiv } 2^m$
+удовлетворяет критерию аппроксимации, т.~е.\ $|f_{x y}(n) - 2^n (x y)| < 1$.
+Если ввести обозначения
+%We claim that $f_{x y}(n) = (f_x(k) f_y(l)) \mbox{ ndiv } 2^m$ has the right
+%error behaviour, i.e. $|f_{x y}(n) - 2^n (x y)| < 1$. If we write:
+%
+\begin{eqnarray*}
+2^k x &= &f_x(k) + \delta,        \\
+2^l y &= &f_y(l) + \epsilon,
+\end{eqnarray*}
+%
+где~$|\delta| < 1$ и~$|\epsilon| < 1$, то мы получим:
+%\noindent with $|\delta| < 1$ and $|\epsilon| < 1$, we have:
+%
+\begin{eqnarray*}
+|f_{x y}(n) - 2^n (x y)|
+ &\leq &{1 \over 2} + |{f_x(k) f_y(l) \over 2^m} -  2^n (x y)|                \\
+ &= &{1 \over 2} + 2^{-m} |f_x(k) f_y(l) - 2^{k+l} x y|                       \\
+ &= &{1 \over 2} + 2^{-m} |f_x(k) f_y(l) - (f_x(k) + \delta) (f_y(l) + \epsilon)|   \\
+ &= &{1 \over 2} + 2^{-m} |\delta f_y(l) + \epsilon f_x(k) + \delta \epsilon| \\
+ &\leq &{1 \over 2} + 2^{-m} (|\delta f_y(l)| + |\epsilon f_x(k)|
+                                             + |\delta \epsilon|)         \\
+ &\leq &{1 \over 2} + 2^{-m} (|f_y(l)| + |f_x(k)|  + |\delta \epsilon|)      \\
+ &< &{1 \over 2} + 2^{-m} (|f_y(l)| + |f_x(k)| + 1)
+\end{eqnarray*}
+%
+Отсюда имеем~$|f_x(r)| \leq 2^p$, так что~$|2^r x| < 2^p + 1$. Следовательно,
+$|2^k x| < 2^{q+1} (2^p + 1)$, откуда~$|f_x(k)| < 2^{q+1} (2^p + 1) + 1$,
+т.~е.~$|f_x(k)| \leq 2^{q+1} (2^p + 1)$. Аналогично доказывается 
+справедливость~$|f_y(l)| \leq 2^{p+1} (2^q + 1)$. Таким образом,
+%Now we have $|f_x(r)| \leq 2^p$, so $|2^r x| < 2^p + 1$. Thus $|2^k x| < 2^{q+1} (
+%2^p + 1)$, so $|f_x(k)| < 2^{q+1} (2^p + 1) + 1$, i.e. $|f_x(k)| \leq 2^{q+1} (2^p +
+%1)$. Similarly $|f_y(l)| \leq 2^{p+1} (2^q + 1)$. Consequently:
+%
+\begin{eqnarray*}
+|f_y(l)| + |f_x(k)| + 1
+&\leq &2^{p+1} (2^q + 1) + 2^{q+1} (2^p + 1) + 1                      \\
+&= &2^{p+q+1} + 2^{p+1} + 2^{p+q+1} + 2^{q+1} + 1                     \\
+&= &2^{p+q+2} + 2^{p+1} + 2^{q+1} + 1.
+\end{eqnarray*}
+
+Для получения требуемой максимальной погрешности введём 
+ограничение~$|f_y(l)| + |f_x(k)| + 1 \leq 2^{m-1}$, либо, разделив на~$2$
+и учитывая дискретность множества целых чисел,
+%Now for our error bound we require $|f_y(l)| + |f_x(k)| + 1 \leq 2^{m-1}$, or
+%dividing by $2$ and using the discreteness of the integers:
+%
+$$ 
+  2^{p+q+1} + 2^{p} + 2^{q} < 2^{p + q + 2}. 
+$$
+%
+В свою очередь, данное отношение может быть записано 
+как~$(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} + 2^{p + q + 1}$.
+Его справедливость следует из упомянутого ранее факта, что либо~$p > 0$,
+либо~$q > 0$. Таким образом, мы обосновали следующее определение:
+%We can write this as $(2^{p+q} + 2^p) + (2^{p+q} + 2^q) < 2^{p + q + 1} +
+%2^{p + q + 1}$, which is true because we have either $p > 0$ or $q > 0$. So at
+%last we are justified in defining:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_mul x y n =
+    let n2 = n + 2 in
+    let r = n2 / 2 in
+    let s = n2 - r in
+    let xr = x(r)
+    and ys = y(s) in
+    let p = log2 xr
+    and q = log2 ys in
+    if p = 0 & q = 0 then Int 0 else
+    let k = q + r + 1
+    and l = p + s + 1
+    and m = p + q + 4 in
+    (x(k) */ y(l)) ndiv (Int 2 **/ Int m);;
+\end{lstlisting}\end{boxed}
+
+\subsection{Обратные числа}
+%\subsection{Multiplicative inverse}
+
+Нашим следующим шагом будет реализация вычисления обратных чисел. Чтобы 
+получить любую верхнюю оценку обратного числа, не говоря уж о хорошем его 
+приближении, потребуется оценить аргумент {\em снизу}. В общем случае для 
+этого не существует лучшего способа, чем вычисление аргумента с возрастающей
+точностью, пока we can bound it away from zero. Следующая лемма служит
+обоснованием этой процедуры.
+
+%Next we will define the multiplicative inverse function. In order to get any
+%sort of upper bound on this, let alone a good approximation, we need to get a
+%{\em lower} bound for the argument. In general, there is no better way than to
+%keep evaluating the argument with greater and greater accuracy until we can
+%bound it away from zero. We will use the following lemma to justify the
+%correctness of our procedure:
+
+\begin{lemma}
+Пусть~$2 e \geq n + k + 1$, $|f_x(k)| \geq 2^e$ и~$|f_x(k) - 2^k x| < 1$, где
+$f_x(k)$~--- целое, а $e$, $n$ и~$k$~--- натуральные числа. Если мы определим
+%
+%If $2 e \geq n + k + 1$, $|f_x(k)| \geq 2^e$ and $|f_x(k) - 2^k x| < 1$, where
+%$f_x(k)$ is an integer and $e$, $n$ and $k$ are natural numbers, then if we
+%define
+%
+$$ 
+  f_y(n) = 2^{n+k} \mbox{ ndiv } f_x(k),
+$$
+%
+то получим~$|f_y(n) - 2^n x^{-1}| < 1$, т.~е.\ требуемую верхнюю оценку
+погрешности.
+%\noindent we have $|f_y(n) - 2^n x^{-1}| < 1$, i.e. the required bound.
+
+\proof Доказательство этой леммы достаточно утомительно и будет приведено здесь
+не полностью, а лишь в виде основных соображений. Если~$|f_x(k)| > 2^e$, то 
+результат очевидно следует из простых рассуждений. Округление в результате
+выполнения операции~{\tt ndiv} даёт погрешность, не превышающую~$1 \over 2$,
+итоговая погрешность меньше~$1 \over 2$. Если~$|f_x(k)| = 2^e$, но при 
+этом~$n + k \geq e$, то можно пренебречь тем, что второй компонент погрешности
+может быть вдвое большим, т.~е.\ меньшим~$1$~--- в этом случае ошибка округления
+будет отсутствовать потому, что~$f_x(k) = \pm 2^e$ делится на~$2^{n+k}$ нацело.
+(Воспользуемся фактом, что~$2^e - 1 \leq 2^{e-1}$, поскольку 
+при~$2 e \geq n + k + 1$ значение~$e$ не может равняться нулю.) Наконец,
+при~$|f_x(k)| = 2^e$ и~$n + k < e$, мы имеем~$|f_y(n) - 2^n {1 \over x}| < 1$,
+поскольку~$|f_y(n)| \leq 1$ и~$0 < |2^n {1 \over x}| < 1$, а знаки этих
+величин совпадают. \qed
+%\proof The proof is rather tedious and will not be given in full. We just
+%sketch the necessary case splits. If $|f_x(k)| > 2^e$ then a straightforward
+%analysis gives the result; the rounding in {\tt ndiv} gives an error of at most
+%$1 \over 2$, and the remaining error is $< {1 \over 2}$. If $|f_x(k)| = 2^e$ but
+%$n + k \geq e$, then although the second component of the error may now be
+%twice as much, i.e. $< 1$, there is no rounding error because $f_x(k) = \pm 2^e$
+%divides into $2^{n+k}$ exactly. (We use here the fact that $2^e - 1 \leq
+%2^{e-1}$, because since $2 e \geq n + k + 1$, $e$ cannot be zero.) Finally, if
+%$|f_x(k)| = 2^e$ and $n + k < e$, we have $|f_y(n) - 2^n {1 \over x}| < 1$ because
+%both $|f_y(n)| \leq 1$ and $0 < |2^n {1 \over x}| < 1$, and both these numbers
+%have the same sign. \qed
+
+\end{lemma}
+
+Предположим, что нам требуется найти число, обратное~$x$, с точностью~$n$.
+Прежде всего, вычислим~$f_x(0)$. Нам потребуется рассмотреть два случая:
+%Now suppose we wish to find the inverse of $x$ to accuracy $n$. First we
+%evaluate $f_x(0)$. There are two cases to distinguish:
+%
+\begin{enumerate}
+
+\item Если~$|f_x(0)| > 2^r$ для некоторого натурального числа~$r$, то выберем
+наименьшее натуральное число~$k$ (которое может быть и равным нулю) такое,
+что~$2 r + k \geq n + 1$, и положим~$e = r + k$. Результатом вычислений в этом
+случае будет~$2^{n+k} \mbox{ ndiv } f_x(k)$. Легко убедиться, что условия,
+требуемые леммой, выполняются. Поскольку~$|f_x(0)| \geq 2^r + 1$, мы 
+имеем~$|x| > 2^r$, так что~$|2^k x| > 2^{r + k}$. Это значит, 
+что~$|f_x(k)| > 2^{r+k} - 1$, а отсюда (учитывая целочисленность~$f_x(k)$) 
+получаем требуемое соотношение~$|f_x(k)| \geq 2^{r + k} = 2^e$.
+Условие~$2 e \geq n = k + 1$ легко проверить. Отметим, что из~$r \geq n$ 
+непосредственно следует корректность аппроксимации~$f_y(n) = 0$.
+%\item If $|f_x(0)| > 2^r$ for some natural number $r$, then choose the least
+%natural number $k$ (which may well be zero) such that $2 r + k \geq n + 1$, and
+%set $e = r + k$. We now return $2^{n+k} \mbox{ ndiv } f_x(k)$. It is easy to
+%see that the conditions of the lemma are satisfied. Since $|f_x(0)| \geq 2^r +
+%1$ we have $|x| > 2^r$, and so $|2^k x| > 2^{r + k}$. This means $|f_x(k)| >
+%2^{r+k} - 1$, and as $f_x(k)$ is an integer, $|f_x(k)| \geq 2^{r + k} = 2^e$ as
+%required. The condition that $2 e \geq n = k + 1$ is easy to check. Note that
+%if $r \geq n$ we can immediately deduce that $f_y(n) = 0$ is a valid
+%approximation.
+
+\item При~$|f_x(0)| \leq 1$ воспользуемся функцией~`{\tt msd}', возвращающей
+наименьшее~$p$  такое, что~$|f_x(p)| > 1$. Отметим, что при~$x = 0$ произойдёт 
+зацикливание. Положив~$e = n + p + 1$ и~$k = e + p$, определим результат 
+операции как~$2^{n+k} \mbox{ ndiv } f_x(k)$. В этом случае также справедливы
+условия, требуемые леммой. Так как~$|f_x(p)| \geq 2$, мы имеем~$|2^p x| > 1$,
+т.~е.~$|x| > {1 \over {2^p}}$. Следовательно~$|2^k x| > 2^{k-p} = 2^e$, 
+откуда~$|f_x(k)| > 2^e - 1$, т.~е.~$|f_x(k)| \geq 2^e$.
+%\item If $|f_x(0)| \leq 1$, then we call the function `{\tt msd}' that returns
+%the least $p$ such that $|f_x(p)| > 1$. Note that this may in general fail to
+%terminate if $x = 0$. Now we set $e = n + p + 1$ and $k = e + p$, and return
+%$2^{n+k} \mbox{ ndiv } f_x(k)$. Once again the conditions for the lemma are
+%satisfied. Since $|f_x(p)| \geq 2$, we have $|2^p x| > 1$, i.e. $|x| > {1 \over
+%{2^p}}$. Hence $|2^k x| > 2^{k-p} = 2^e$, and so $|f_x(k)| > 2^e - 1$, i.e.
+%$|f_x(k)| \geq 2^e$.
+\end{enumerate}
+%
+Реализацию начнём с функции~{\tt msd}:
+%\noindent To implement this, we first define the {\tt msd} function:
+%
+\begin{boxed}\begin{lstlisting}
+  let msd =
+    let rec msd n x =
+      if abs_num(x(n)) >/ Int 1 then n else msd (n + 1) x in
+    msd 0;;
+\end{lstlisting}\end{boxed}
+%
+после чего воплотим изложенные выше теоретические рассуждения в виде
+простой программы:
+%\noindent and then translate the above mathematics into a simple program:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_inv x n =
+    let x0 = x(0) in
+    let k =
+      if x0 >/ Int 1 then
+        let r = log2 x0 - 1 in
+        let k0 = n + 1 - 2 * r in
+        if k0 < 0 then 0 else k0
+      else
+        let p = msd x in
+        n + 2 * p + 1 in
+    (Int 2 **/ Int (n + k)) ndiv (x(k));;
+\end{lstlisting}\end{boxed}
+%
+В итоге определение операции деления становится тривиальным:
+%\noindent Now, of course, it is straightforward to define division:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_div x y = real_mul x (real_inv y);;
+\end{lstlisting}\end{boxed}
+
+\subsection{Отношения порядка}
+%\subsection{Ordering relations}
+Примечательным свойством отношений порядка является то, что их вычисление 
+в общем случае алгоритмически неразрешимо. В основе такого вывода лежит 
+невозможность установить в общем случае равенство данного числа нулю. Если
+последовательное вычисление с увеличением требуемой точности продолжает 
+выдавать~$0$, это ещё не служит гарантией того, что в дальнейшем мы не получим
+ненулевой результат.%
+\footnote{Доказательство алгоритмической неразрешимости этой задачи сводится
+к проблеме завершимости: пусть~$f(n) = 1$, если некоторая машина Тьюринга
+завершает работу не более чем за $n$~итераций, и $f(n) = 0$ в противном случае.} 
+Если значение~$x$ не равно нулю, поиск первого ненулевого разряда числа 
+когда-либо завершится, но в случае~$x=0$ он будет длиться вечно.
+%The interesting things about all these functions is that they are in fact
+%uncomputable in general. The essential point is that it is impossible to decide
+%whether a given number is zero. We can keep approximating it to greater and
+%greater accuracy, but if the approximations always return $0$, we cannot tell
+%whether it is going to do so indefinitely or whether the next step will give a
+%nonzero answer.\footnote{For a proof that it is uncomputable, simply wrap up
+%the halting problem, by defining $f(n) = 1$ if a certain Turing machine has
+%halted after no more than $n$ iterations, and $f(n) = 0$ otherwise.} If $x$ is
+%not zero, then the search will eventually terminate, but if $x$ is zero, it
+%will run forever.
+
+Принимая во внимание сказанное выше, несложно реализовать отношения порядка.
+Для определения взаимного порядка чисел~$x$ и~$y$ достаточно найти~$n$ такое,
+что~$|x_n - y_n| \geq 2$. Например, для~$x_n \geq y_n + 2$ мы имеем
+$$ 
+  2^n x > x_n - 1 \geq y_n + 1 > 2^n y.
+$$
+откуда делаем вывод, что~$x > y$. Прежде всего, приведём общую процедуру 
+вычисления~$n$, после чего все отношения порядка могут быть выражены с её
+использованием. Отметим, что единственным способом реализации рефлексивных 
+отношений будет положить их тождественными соответствующим нерефлексивным 
+отношениям!
+%Accepting this, it is not difficult to define the relational operators. To
+%decide the ordering relation of $x$ and $y$ it suffices to find an $n$ such
+%that $|x_n - y_n| \geq 2$. For example, if $x_n \geq y_n + 2$ we have
+%
+%$$ 2^n x > x_n - 1 \geq y_n + 1 > 2^n y $$
+%
+%\noindent and so $x > y$. We first write a general procedure to perform this
+%search, and then define all the orderings in terms of it. Note that the only
+%way to arrive at the reflexive orderings is to justify the irreflexive version!
+\begin{boxed}\begin{lstlisting}
+  let separate = 
+    let rec separate n x y =
+      let d = x(n) -/ y(n) in
+      if abs_num(d) >/ Int 1 then d
+      else separate (n + 1) x y in
+  separate 0;;
+
+  let real_gt x y = separate x y >/ Int 0;;
+  let real_ge x y = real_gt x y;;
+  let real_lt x y = separate x y </ Int 0;;
+  let real_le x y = real_lt x y;;
+\end{lstlisting}\end{boxed}
+
+\subsection{Кэширование}
+%\subsection{Caching}
+Чтобы протестировать определённые нами функции, потребуется возможность вывода
+некоторого приближённого значения вещественного числа в десятеричной системе
+счисления. Возможности стандартной библиотеки CAML делают эту задачу несложной.
+Если нам требуется вывести $d$~десятичных знаков числа, положим точность 
+вычислений~$n$ такой, чтобы~$2^n > 10^d$, т.~е.\ точность вычислений была бы
+не меньшей, чем количество выводимых цифр.
+%In order to try out all the above functions, we would like to be able to print
+%out a decimal representation of some approximation to a real. This is not hard,
+%using some more standard facilities in the CAML library. If $d$ decimal places
+%are desired, then we make $n$ such that $2^n > 10^d$ and hence the accuracy
+%corresponds at least to the number of digits printed.
+
+\begin{boxed}\begin{lstlisting}
+  let view x d =
+    let n = 4 * d in
+    let out = x(n) // (Int 2 **/ Int n) in
+    approx_num_fix d out;;
+\end{lstlisting}\end{boxed}
+
+Начнём с простых примеров, которые работают, как ожидается:
+%Now we can test out some simple examples, which seem to work:
+%
+\begin{boxed}\begin{verbatim}
+  #let x = real_of_int 3;;
+  x : int -> num = <fun>
+  #let xi = real_inv x;;
+  xi : int -> num = <fun>
+  #let wun = real_mul x xi;;
+  wun : int -> num = <fun>
+  #view x 20;;
+  it : string = "3.00000000000000000000"
+  #view xi 20;;
+  it : string = ".33333333333333333333"
+  #view wun 20;;
+  it : string = "1.00000000000000000000"
+\end{verbatim}\end{boxed}
+
+Однако, дальнейшее тестирование обнаруживает в нашей реализации серьёзную
+трудноуловимую проблему, которая проявляется с ростом сложности задач.
+Эта проблема~--- многократное вычисление одних и тех же значений. Помимо
+очевидного случая~--- явного наличия общих подвыражений, многократное 
+вычисление одних и тех же выражений с различной точностью требуется в 
+алгоритмах умножения и, в особенности, вычисления обратного числа. Количество
+обращений к одному и тому же подвыражению зависит от глубины его вложенности
+в исходное выражение и может расти экспоненциально:
+%However there is a subtle and serious bug in our implementation, which shows
+%itself if we try larger expressions. The problem is that subexpressions can be
+%evaluated many times. Most obviously, this happens if they occur several times
+%in the input expression. But even if they don't, the multiplication, and even
+%more so, the inverse, require trial evaluations at differing accuracies. As the
+%evaluation propagates down to the bottom level, there is often an exponential
+%buildup of reevaluations. For example, the following is slow --- it takes
+%several seconds.
+%
+\begin{boxed}\begin{verbatim}
+  #let x1 = real_of_int 1 in
+   let x2 = real_mul x1 x1 in
+   let x3 = real_mul x2 x2 in
+   let x4 = real_mul x3 x3 in
+   let x5 = real_mul x4 x4 in
+   let x6 = real_mul x5 x5 in
+   let x7 = real_mul x6 x6 in
+   view x7 10;;
+   - : string = "+1.0000000000"
+\end{verbatim}\end{boxed}
+%
+Вычисление этого примера может занять несколько секунд.
+
+Для решения проблемы воспользуемся идеей {\em кэширования} или
+{\em функций с памятью}~\cite{michie-memo}. Каждой функции поставим в 
+соответствие ячейку памяти, (???ref. cell) в которой будем хранить её значение, 
+вычисленное с наибольшей на данный момент точностью. При очередном обращении 
+к функции с той же самой требуемой точностью это значение может быть 
+возвращено немедленно, без каких-либо повторных вычислений. Кроме того, менее 
+точная аппроксимация (например, порядка~$n$) всегда может быть получена из 
+более точной ($n + k$, где~$k \geq 1$). Если нам известно, 
+что~$|f_x(n + k) - 2^{n + k} x| < 1$, из этого следует:
+%We can fix this problem using the idea of {\em caching} or {\em memo
+%functions} \cite{michie-memo}. We give each function a reference cell to
+%remember the most accurate version already calculated. If there is a second
+%request for the same accuracy, it can be returned immediately without further
+%evaluation. What's more, we can always construct a lower-level approximation,
+%say $n$, from a higher one, say $n + k$ with $k \geq 1$. If we know that
+%$|f_x(n + k) - 2^{n + k} x| < 1$ then we have:
+%
+\begin{eqnarray*}
+|f_x(n + k) \mbox{ ndiv } 2^ k - 2^n x|
+& \leq & {1 \over 2} + |{f_x(n + k) \over 2^k} - 2^n x|                 \\
+& =    & {1 \over 2} + {1 \over 2^k} |f_x(n + k) - 2^{n + k} x|         \\
+& <    & {1 \over 2} + {1 \over 2^k}                                    \\
+& \leq & 1.
+\end{eqnarray*}
+%
+Таким образом, использование~$f_x(n + k) \mbox{ ndiv } 2^k$ в качестве
+аппроксимации порядка~$n$ обосновано.
+
+Для реализации функций с памятью воспользуемся обобщённой функцией~{\tt memo},
+которую требуется добавить во все определённые ранее операции над вещественными 
+числами:
+%Hence we are always safe in returning $f_x(n + k) \mbox{ ndiv } 2^k$. We can
+%implement this memo technique via a generic function {\tt memo} to be inserted
+%in each of the previous functions:
+%
+\begin{boxed}\begin{lstlisting}
+  let real_of_int k = memo (fun n -> (Int 2 **/ Int n) */ Int k);;
+
+  let real_neg f = memo (fun n -> minus_num(f n));;
+
+  let real_abs f = memo (fun n -> abs_num (f n));;
+
+  let real_add f g = memo (fun n ->
+     (f(n + 2) +/ g(n + 2)) ndiv (Int 4));;
+
+  let real_sub f g = real_add f (real_neg g);;
+
+  let real_intmul m x = memo (fun n ->
+     let p = log2 (abs_num m) in
+     let p1 = p + 1 in
+     (m */ x(n + p1)) ndiv (Int 2 **/ Int p1));;
+
+  let real_intdiv m x = memo (fun n ->
+     x(n) ndiv (Int m));;
+
+  let real_mul x y = memo (fun n ->
+    let n2 = n + 2 in
+    let r = n2 / 2 in
+    let s = n2 - r in
+    let xr = x(r)
+    and ys = y(s) in
+    let p = log2 xr
+    and q = log2 ys in
+    if p = 0 & q = 0 then Int 0 else
+    let k = q + r + 1
+    and l = p + s + 1
+    and m = p + q + 4 in
+    (x(k) */ y(l)) ndiv (Int 2 **/ Int m));;
+
+  let real_inv x = memo (fun n ->
+    let x0 = x(0) in
+    let k =
+      if x0 >/ Int 1 then
+        let r = log2 x0 - 1 in
+        let k0 = n + 1 - 2 * r in
+        if k0 < 0 then 0 else k0
+      else
+        let p = msd x in
+        n + 2 * p + 1 in
+    (Int 2 **/ Int (n + k)) ndiv (x(k)));;
+
+  let real_div x y = real_mul x (real_inv y);;
+\end{lstlisting}\end{boxed}
+%
+где
+%\noindent where
+%
+\begin{boxed}\begin{lstlisting}
+  let memo f =
+    let mem = ref (-1,Int 0) in
+    fun n -> let (m,res) = !mem in
+             if n <= m then
+               if m = n then res
+               else res ndiv (Int 2 **/ Int(m - n))
+             else
+               let res = f n in
+               mem := (n,res); res;;
+\end{lstlisting}\end{boxed}
+
+Проведённая оптимизация делает вычисление упомянутого выше произведения 
+практически мгновенным. Рассмотрим ещё несколько примеров:
+%Now the above sequence of multiplications is instantaneous. Here are a few more
+%examples:
+%
+\begin{boxed}\begin{verbatim}
+  #let pi1 = real_div (real_of_int 22) (real_of_int 7);;
+  pi1 : int -> num = <fun>
+  #view pi1 10;;
+  it : string = "+3.1428571429"
+  #let pi2 = real_div (real_of_int 355) (real_of_int 113);;
+  pi2 : int -> num = <fun>
+  #view pi2 10;;
+  it : string = "+3.1415929204"
+  #let pidiff = real_sub pi1 pi2;;
+  pidiff : int -> num = <fun>
+  #view pidiff 20;;
+  it : string = "+0.00126422250316055626"
+  #let ipidiff = real_inv pidiff;;
+  ipidiff : int -> num = <fun>
+  #view ipidiff 20;;
+  it : string = "+791.00000000000000000000"
+\end{verbatim}\end{boxed}
+
+В заключение отметим, что все расчёты, приведённые в данном разделе, можно,
+безусловно, проделать и в рациональной арифметике. Но на деле может оказаться, 
+что наш подход более эффективен в некоторых ситуациях, так как он  
+избавляет от свойственного вычислениям в рациональных числах лавинообразного 
+роста числителей и знаменателей, который абсолютно избыточен, когда нам
+нужно лишь приближённое значение результата. Однако, предложенный метод 
+раскрывает в полной мере свои достоинства лишь тогда, когда нам потребуется
+ввести трансцендентные функции наподобие~$\exp$, $\sin$ и~т.~д. Этот вопрос
+здесь рассматриваться не будет ввиду ограничений на объём курса, но может
+оказаться интересным в качестве упражнения. Одним из подходов является 
+применение частичных сумм соответствующих рядов Тейлора. Отметим, что конечные
+суммы могут быть вычислены напрямую вместо итеративного применения функции
+сложения~--- это существенно улучшает их точность.
+%Of course, everything we have done to date could be done with rational
+%arithmetic. Actually, it may happen that our approach is more efficient in
+%certain situations since we avoid calculating numbers that might have immense
+%numerators and denominators when we just need an approximation. Nevertheless,
+%the present approach really comes into its own when we want to define
+%transcendental functions like $exp$, $sin$ etc. We will not cover this in
+%detail for lack of space, but it makes an interesting exercise. One approach is
+%to use truncated Taylor series. Note that finite summations can be evaluated
+%directly rather than by iterating the addition function; this leads to much
+%better error behaviour.
+
+\section{Пролог и доказательство теорем}
+Язык Пролог популярен в исследованиях в области искусственного интеллекта
+и применяется в различных практических приложениях, таких как интеллектуальные 
+базы данных и экспертные системы. В этом разделе рассматривается 
+реализация средствами~ML основного механизма Пролога~--- поиска в глубину по 
+базе знаний с унификацией и возвратом. Мы не претендуем на полную реализацию 
+Пролога, но изложенного будет достаточно, чтобы получить точное представление 
+об основных достоинствах языка и запустить несколько примеров.
+% The language Prolog is popular in Artificial Intelligence research, and is used
+% in various practical applications such as expert systems and intelligent
+% databases. Here we will show how the main mechanism of Prolog, namely
+% depth-first search through a database of rules using unification and
+% backtracking, can be implemented in ML. We do not pretend that this is a
+% full-blown implementation of Prolog, but it gives an accurate picture of the
+% general flavour of the language, and we will be able to run some simple
+% examples in our system.
+
+\subsection{Термы Пролога}
+
+Данные и код в Прологе представляются с помощью единой системы термов первого
+порядка. Ранее мы определили тип термов для математических выражений и 
+реализовали для них процедуры вывода и синтаксического анализа.
+Сейчас мы будем 
+использовать нечто похожее, но с некоторыми модификациями. Во-первых, 
+немного упростим код: будем рассматривать константы как нуль-арные функции, 
+т.е. как функции, принимающие пустой список аргументов. 
+Соответственно, определим:
+%%Prolog code and data is represented using a uniform system of first order
+%%terms. We have already defined a type of terms for our mathematical
+%%expressions, and associated parsers and printers. Here we will use something
+%%similar, but not quite the same. First of all, it simplifies some of the code
+%%if we treat constants as nullary functions, i.e. functions that take an empty
+%%list of arguments. Accordingly we define:
+
+\begin{boxed}\begin{lstlisting}
+  type term = Var of string
+            | Fn of string * (term list);;
+\end{lstlisting}\end{boxed}
+
+Там, где раньше использовался  {\verb+Const s+}, теперь будет
+{\verb+Fn(s,[])+}. Отметим, что функции различной арности
+(с разным числом аргументов)  рассматриваются как различные, даже если у них 
+одинаковое имя. Следовательно, можно не опасаться, что такое представление 
+констант войдет в конфликт с представлением функций.
+%%Where we would formerly have used {\verb+Const s+}, we will now use
+%%{\verb+Fn(s,[])+}. Note that we will treat functions of different arities
+%%(different numbers of arguments) as distinct, even if they have the same name.
+%%Thus there is no danger of our confusing constants with true functions.
+
+\subsection{Лексический анализ}
+
+Для более точного соблюдения соглашений Пролога, которые включают чувствительность к
+регистру, изменим должным образом функции лексического анализа. Не будем требовать
+точного совпадения во всём, но учтём самое главное: 
+алфавитно-цифровые идентификаторы, начинающиеся с буквы {\em в верхнем регистре}
+или знака подчёркивания, рассматриваются как переменные, а прочие 
+алфавитно-цифровые идентификаторы и числа~--- как константы. Например, 
+{\verb+X+} и {\verb+Answer+}~-- переменные,
+тогда как {\verb+x+} и {\verb+john+}~--- константы. Символьные идентификаторы
+также классифицируются как константы, причём последовательности символов
+объединяются в строки наибольшей возможной длины, так что символьные
+идентификаторы не обязаны состоять из единственного символа. Исключение 
+составляют символы пунктуации: левая и правая скобки, запятая и точка с запятой,
+которые выделены в специальный лексический класс.
+%% ISSUE: "символьный идентификатор" --- подозрительный термин, LH
+% In order to follow Prolog conventions, which include case sensitivity, we also
+% modify lexical analysis. We will not attempt to conform exactly to the full
+% details of Prolog, but one feature is very important: alphanumeric identifiers
+% that begin with an {\em upper case} letter or an underscore are treated as
+% variables, while other alphanumeric identifiers, along with numerals, are
+% treated as constants. For example {\verb+X+} and {\verb+Answer+} are variables
+% while {\verb+x+} and {\verb+john+} are constants. We will lump all symbolic
+% identifiers together as constants too, but we will distinguish the punctuation
+% symbols: left and right brackets, commas and semicolons. Non-punctuation
+% symbols are collected together into the longest strings possible, so symbolic
+% identifiers need not consist only of one character.
+
+\begin{boxed}\begin{lstlisting}
+  type token = Variable of string
+             | Constant of string
+             | Punct of string;;
+\end{lstlisting}\end{boxed}
+
+\noindent Лексический анализатор, следовательно, выглядит так:
+% \noindent The lexer therefore looks like this:
+
+\begin{boxed}\begin{lstlisting}
+  let lex =
+    let several p = many (some p) in
+    let collect(h,t) = h^(itlist (prefix ^) t "") in
+    let upper_alpha s = "A" <= s & s <= "Z" or s = "_"
+    and lower_alpha s = "a" <= s & s <= "z" or "0" <= s & s <= "9"
+    and punct s = s = "(" or s = ")" or s = "[" or s = "]"
+                  or s = "," or s = "."
+    and space s = s = " " or s = "\n" or s = "\t" in
+    let alphanumeric s = upper_alpha s or lower_alpha s in
+    let symbolic s = not space s & not alphanumeric s & not punct s in
+    let rawvariable =
+      some upper_alpha ++ several alphanumeric >> (Variable o collect)
+    and rawconstant =
+      (some lower_alpha ++ several alphanumeric ||
+       some symbolic ++ several symbolic) >> (Constant o collect)
+    and rawpunct = some punct >>  Punct in
+    let token =
+      (rawvariable || rawconstant || rawpunct) ++
+      several space >> fst in
+    let tokens = (several space ++ many token) >> snd in
+    let alltokens = (tokens ++ finished) >> fst in
+    fst o alltokens o explode;;
+\end{lstlisting}\end{boxed}
+
+\noindent Пример его использования:
+
+\begin{boxed}\begin{verbatim}
+  #lex "add(X,Y,Z) :- X is Y+Z.";;
+  - : token list =
+   [Constant "add"; Punct "("; Variable "X"; Punct ",";
+    Variable "Y"; Punct ","; Variable "Z"; Punct ")";
+    Constant ":-"; Variable "X"; Constant "is"; Variable "Y";
+    Constant "+"; Variable "Z"; Punct "."]
+\end{verbatim}\end{boxed}
+
+\subsection{Синтаксический анализ}
+
+Основной синтаксический анализатор остаётся в значительной степени таким же,
+каким был ранее, система печати не меняется. Единственная модификация~--- 
+прологовские списки записываются в более удобной нотации. 
+Конструкции Пролога <<.>> и <<nil>> соответствуют <<{\tt ::}>> и <<{\tt []}>> в ML,
+и мы модифицируем анализатор с тем, чтобы он распознавал выражения вида~<<{\tt [1,2,3]}>>. 
+Мы также допустим принятую в Прологе запись сопоставления с образцом <<{\verb+[H|T]+}>> 
+вместо <<{\verb+cons(H,T)+}>>. Определив базовые функции
+%% ISSUE: система печати "exactly the same" или все-таки "main modification to the printer"??? -- LH
+% The basic parser is pretty much the same as before; the printer is exactly the
+% same. The main modification to the printer is that we allow Prolog lists to be
+% written in a more convenient notation. Prolog has `.' and `nil' corresponding
+% to ML's `{\tt ::}' and `{\tt []}', and we set up the parser so that lists can
+% be written much as in ML, e.g. `{\tt [1,2,3]}'. We also allow the Prolog
+% notation `{\verb+[H|T]+}' instead of `{\verb+cons(H,T)+}', typically used for
+% pattern-matching. After the basic functions:
+
+\begin{boxed}\begin{lstlisting}
+  let variable =
+    fun (Variable s::rest) -> s,rest
+      | _ -> raise Noparse;;
+
+  let constant =
+    fun (Constant s::rest) -> s,rest
+      | _ -> raise Noparse;;
+\end{lstlisting}\end{boxed}
+
+\noindent мы получаем синтаксический анализатор для термов, а также правил
+Пролога, имеющих следующий вид: 
+% \noindent we have a parser for terms and also for Prolog rules, of these forms:
+
+\begin{eqnarray*}
+term\mbox{.}    & &                                             \\
+term            & \mbox{ :- } & term_1,\ldots,term_n\mbox{.}
+\end{eqnarray*}
+
+\noindent Реализация анализатора приводится ниже:
+% \noindent The parsers are as follows:
+
+\begin{boxed}\begin{lstlisting}
+  let rec atom input
+         = (constant ++ a (Punct "(") ++ termlist ++ a (Punct ")")
+                >> (fun (((name,_),args),_) -> Fn(name,args))
+         || constant
+                >> (fun s -> Fn(s,[]))
+         || variable
+                >> (fun s -> Var s)
+         || a (Punct "(") ++ term ++ a (Punct ")")
+                >> (snd o fst)
+         || a (Punct "[") ++ list
+                >> snd) input
+    and term input = precedence (!infixes) atom input
+    and termlist input
+         = (term ++ a (Punct ",") ++ termlist
+                >> (fun ((h,_),t) -> h::t)
+         || term
+                >> (fun h -> [h])) input
+    and list input
+         = (term ++ (a (Constant "|") ++ term ++ a (Punct "]")
+                          >> (snd o fst)
+                  || a (Punct ",") ++ list
+                           >> snd
+                  || a (Punct "]")
+                          >> (K (Fn("[]",[]))))
+                >> (fun (h,t) -> Fn(".",[h; t]))
+         || a (Punct "]")
+                >> (K (Fn("[]",[])))) input
+    and rule input
+        = (term ++ (a (Punct ".")
+                          >> (K [])
+                 || a (Constant ":-") ++ term ++
+                    many (a (Punct ",") ++ term >> snd) ++
+                    a (Punct ".")
+                          >> (fun (((_,h),t),_) -> h::t))) input;;
+
+  let parse_term = fst o (term ++ finished >> fst) o lex;;
+
+  let parse_rules = fst o (many rule ++ finished >> fst) o lex;;
+\end{lstlisting}\end{boxed}
+
+\subsection{Унификация}
+
+Пролог использует для достижения текущей {\em цели} набор правил, пытаясь 
+подобрать подходящее. Если найдётся правило, которое состоит из единственного терма 
+и совпадает с целью, она считается достигнутой. В случае правила вида $term \mbox{
+:- } term_1,\ldots,term_n\mbox{.}$ , если цель совпадает с $term$, то  
+для каждого терма~$term_i$ требуется, в свою очередь, установить достижимость. 
+Если это выполнено, исходная цель также достигнута.
+% Prolog uses a set of rules to solve a current {\em goal} by trying to match one
+% of the rules against the goal. A rule consisting of a single term can solve a
+% goal immediately. In the case of a rule $term \mbox{ :- }
+% term_1,\ldots,term_n\mbox{.}$, if the goal matches $term$, then Prolog needs to
+% solve each $term_i$ as a subgoal in order to finish the original goal.
+
+Однако, цели и правила не обязаны в точности совпадать. В их состав
+могут входить переменные, значения которых {\em конкретизируются}
+Пролог-системой так, чтобы добиться нужного совпадения~--- этот процесс получил
+название {\em унификация}. Это значит, что в итоге процесс доказательства
+может ограничиться специальным случаем исходной цели, например, $P(f(X))$
+вместо~$P(Y)$. Например:
+% However, goals and rules do not have to be exactly the same. Instead, Prolog
+% assigns variables in both the goal and the rule to make them match up, a
+% process known as {\em unification}. This means that we can end up proving a
+% special case of the original goal, e.g. $P(f(X))$ instead of
+% $P(Y)$. For example:
+
+\begin{itemize}
+
+\item Для унификации $f(g(X),Y)$ и $f(g(a),X)$ конкретизируем
+$X = a$ и $Y = a$, получив два одинаковых терма: $f(g(a),a)$.
+
+\item Для унификации $f(a,X,Y)$ и~$f(X,a,Z)$ конкретизируем 
+$X = a$ и~$Y = Z$, после чего оба терма примут вид~$f(a,a,Z)$.
+
+\item Невозможно унифицировать $f(X)$ и $X$.
+% \item To unify $f(g(X),Y)$ and $f(g(a),X)$ we can set
+% $X = a$ and $Y = a$. Then both terms are $f(g(a),a)$.
+% 
+% \item To unify $f(a,X,Y)$ and $f(X,a,Z)$ we can set $X
+% = a$ and $Y = Z$, and then both terms are $f(a,a,Z)$.
+% 
+% \item It is impossible to unify $f(X)$ and $X$.
+
+\end{itemize}
+
+В общем случае, унификация неоднозначна. Например, во втором примере
+можно выбрать конкретизацию~$Y = f(b)$ и~$Z = f(b)$. Однако, всегда 
+предпочтительнее {\em наиболее общая} унификация, из которой остальные 
+выводятся дальнейшей конкретизацией (сравните с наиболее общими типами в ML). 
+Для того, чтобы её найти, требуется рекурсивно (и синхронно) обходить 
+в глубину оба терма, связывая обнаруженные в одном терме переменные
+с соответствующими подтермами другого. При этом также требуется следить, 
+чтобы уже связанные переменные не конкретизировались повторно другими 
+термами, а также чтобы не возникало ситуаций, как в последнем примере, когда 
+переменная сама входит в свой терм-конкретизацию. Рассмотрим простую 
+реализацию этой идеи. Будем сохранять конкретизации переменных в ассоциативном
+списке {\tt insts}, предварительно проверяя, что они ещё не были 
+конкретизированы. Эта переменная выполняет роль аккумулятора:
+% In general, unifiers are not unique. For example, in the second example we
+% could choose to set $Y = f(b)$ and $Z = f(b)$. However one can always choose
+% one that is {\em most general}, i.e. any other unification can be reached from
+% it by further instantiation (compare most general types in ML). In order to
+% find it, roughly speaking, one need only descend the two terms recursively
+% in parallel, and on finding a variable on either side, assigns it to whatever
+% the term on the other side is. One also needs to check that the variable hasn't
+% already been assigned to something else, and that it doesn't occur in the term
+% being assigned to it (as in the last example above). A simple implementation of
+% this idea follows. We maintain an association list giving instantiations
+% already made, and we look each variable up to see if it is already assigned
+% before proceeding. We use the existing instantiations as an accumulator.
+%% ISSUE: принципы унификации (проверка на отсутствие конкретизации/occurs check)
+%% фактически приводятся два раза подряд --- возможно, имеет смысл убрать
+%% один из этих фрагментов? -- LH
+%%
+%% ISSUE: пояснения к коду лучше давать до него, чтобы они помогали при его
+%% чтении, но при текущих параметрах верстки эта страница получается плохо
+%% скомпонованной. Возможно, придется перенести пояснения за сам код -- LH
+
+\begin{boxed}\begin{lstlisting}
+  let rec unify tm1 tm2 insts =
+    match tm1 with
+      Var(x) ->
+        (try let tm1' = assoc x insts in
+             unify tm1' tm2 insts
+         with Not_found ->
+             augment (x,tm2) insts)
+    | Fn(f1,args1) ->
+        match tm2 with
+          Var(y) ->
+            (try let tm2' = assoc y insts in
+                 unify tm1 tm2' insts
+             with Not_found ->
+                 augment (y,tm1) insts)
+        | Fn(f2,args2) ->
+            if f1 = f2
+            then itlist2 unify args1 args2 insts
+            else raise (error "functions do not match");;
+\end{lstlisting}\end{boxed}
+
+\noindent 
+В ходе пополнения списка конкретизаций должна выполняться так называемая 
+<<проверка вхождения>>.%
+\footnote{См.\ {\tt http://en.wikipedia.org/wiki/Occurs\_check}.--- 
+\textsl{Прим. перев.}}
+А именно, мы должны запретить конкретизацию переменной~$X$ нетривиальным термом, 
+который сам включает~$X$, подобно третьему примеру выше. Большинство реализаций Пролога 
+игнорируют подобную проверку или по (заявленным) причинам эффективности, 
+или для поддержки циклических структур данных вместо простых
+термов первого порядка.  
+% \noindent where the instantiation lists need to be augmented with some care to
+% avoid the so-called `occurs check' problem. We must disallow instantiation of
+% $X$ to a nontrivial term involving $X$, as in the third example above. Most
+% real Prologs ignore this, either for (claimed) efficiency reasons or in order
+% to allow weird cyclic datastructures instead of simple first order terms.
+
+\begin{boxed}\begin{lstlisting}
+  let rec occurs_in x =
+    fun (Var y) -> x = y
+      | (Fn(_,args)) -> exists (occurs_in x) args;;
+
+  let rec subst insts = fun
+     (Var y) -> (try assoc y insts with Not_found -> tm)
+   | (Fn(f,args)) -> Fn(f,map (subst insts) args);;
+
+  let raw_augment =
+    let augment1 theta (x,s) =
+      let s' = subst theta s in
+      if occurs_in x s & not(s = Var(x))
+      then raise (error "Occurs check")
+      else (x,s') in
+    fun p insts -> p::(map (augment1 [p]) insts);;
+
+  let augment (v,t) insts =
+    let t' = subst insts t in match t' with
+      Var(w) -> if w <= v then
+                  if w = v then insts
+                  else raw_augment (v,t') insts
+                else raw_augment (w,Var(v)) insts
+    | _ -> if occurs_in v t'
+           then raise (error "Occurs check")
+           else raw_augment (v,t') insts;;
+\end{lstlisting}\end{boxed}
+
+\subsection{Поиск с возвратом}
+
+Пролог выполняет поиск в глубину; если при этом возникает ситуация, когда
+некоторое правило успешно унифицируется с целью, но последующие цели не могут 
+быть достигнуты при текущих конкретизациях, происходит {\em возврат}, 
+после чего будет опробовано другое начальное правило. Следовательно, мы 
+будем рассматривать цели не поочередно, а все сразу, чтобы реализовать
+требуемую стратегию:
+% Prolog proceeds by depth-first search, but it may backtrack: even if a rule
+% unifies successfully, if all the remaining goals cannot be solved under the
+% resulting instantiations, then another initial rule is tried. Thus we consider
+% the whole list of goals rather than one at a time, to give the right control
+% strategy.
+
+\begin{boxed}\begin{lstlisting}
+  let rec first f =
+    fun [] -> raise (error "No rules applicable")
+      | (h::t) -> try f h with error _ -> first f t;;
+
+  let rec expand n rules insts goals =
+    first (fun rule ->
+      if goals = [] then insts else
+      let conc,asms =
+        rename_rule (string_of_int n) rule in
+      let insts' = unify conc (hd goals) insts in
+      let local,global = partition
+        (fun (v,_) -> occurs_in v conc or
+                exists (occurs_in v) asms) insts' in
+      let goals' = (map (subst local) asms) @
+                   (tl goals) in
+      expand (n + 1) rules global goals') rules;;
+\end{lstlisting}\end{boxed}
+
+Для генерации новых имён переменных используется функция {\tt rename}:
+% Here we use a function `rename' to generate fresh variables for the rules each
+% time:
+
+\begin{boxed}\begin{verbatim}
+  let rec rename s =
+    fun (Var v) -> Var("~"^v^s)
+      | (Fn(f,args)) -> Fn(f,map (rename s) args);;
+
+  let rename_rule s (conc,asms) =
+    (rename s conc,map (rename s) asms);;
+\end{verbatim}\end{boxed}
+
+Наконец, соберём всё вместе, в одну функцию {\tt prolog}, которая
+пытается достичь требуемой цели на основе заданных правил: 
+% Finally, we can package everything together in a function {\tt prolog} that
+% tries to solve a given goal using the given rules:
+
+\begin{boxed}\begin{verbatim}
+  type outcome = No | Yes of (string * term) list;;
+
+  let prolog rules goal =
+    try let insts = expand 0 rules [] [goal] in
+        Yes(filter (fun (v,_) -> occurs_in v goal)
+                   insts)
+    with error _ -> No;;
+\end{verbatim}\end{boxed}
+
+Результат функции~--- сообщение о том, что цель или не может быть достигнута, 
+или может при некоторой конкретизации переменных. В последнем случае мы возвращаем 
+только один ответ (один набор конкретизаций), но можно изменить код 
+так, чтобы выводились все возможные решения. 
+
+% This says either that the goal cannot be solved, or that it can be solved with
+% the given instantiations. Note that we only return one answer in this latter
+% case, but this is easy to change if desired.
+
+\subsection{Примеры}
+
+Протестируем полученный интерпретатор на примерах из какой-нибудь книги 
+по Прологу. Например:
+% We can use the Prolog interpreter just written to try some simple examples from
+% Prolog textbooks. For example:
+
+\begin{boxed}\begin{verbatim}
+  #let rules = parse_rules
+    "male(albert).
+     male(edward).
+     female(alice).
+     female(victoria).
+     parents(edward,victoria,albert).
+     parents(alice,victoria,albert).
+     sister_of(X,Y) :-
+       female(X),
+       parents(X,M,F),
+       parents(Y,M,F).";;
+  rules : (term * term list) list =
+   [`male(albert)`, []; `male(edward)`, [];
+    `female(alice)`, []; `female(victoria)`, [];
+    `parents(edward,victoria,albert)`, [];
+    `parents(alice,victoria,albert)`, [];
+    `sister_of(X,Y)`,
+      [`female(X)`; `parents(X,M,F)`; `parents(Y,M,F)`]]
+  #prolog rules ("sister_of(alice,edward)");;
+  - : outcome = Yes []
+  #prolog rules (parse_term "sister_of(alice,X)");;
+  - : outcome = Yes ["X", `edward`]
+  #prolog rules (parse_term "sister_of(X,Y)");;
+  - : outcome = Yes ["Y", `edward`; "X", `alice`]
+\end{verbatim}\end{boxed}
+
+Введём набор правил, соответствующий некоторым элементарным действиям над
+списками, доступным в~ML.
+Поскольку Пролог является скорее реляционным, чем функциональным  языком, можно
+использовать запросы в более гибкой форме, например, чтобы выяснить, при каких
+аргументах можно получить заданный результат:
+% The following are similar to some elementary ML list operations. Since Prolog
+% is relational rather than functional, it is possible to use Prolog queries in a
+% more flexible way, e.g. ask what arguments would give a certain result, rather
+% than vice versa:
+
+\begin{boxed}\begin{verbatim}
+  #let r = parse_rules
+    "append([],L,L).
+     append([H|T],L,[H|A]) :- append(T,L,A).";;
+  r : (term * term list) list =
+   [`append([],L,L)`, [];
+    `append(H . T,L,H . A)`, [`append(T,L,A)`]]
+  #prolog r (parse_term "append([1,2],[3],[1,2,3])");;
+  - : outcome = Yes []
+  #prolog r (parse_term "append([1,2],[3,4],X)");;
+  - : outcome = Yes ["X", `1 . (2 . (3 . (4 . [])))`]
+  #prolog r (parse_term "append([3,4],X,X)");;
+  - : outcome = No
+  #prolog r (parse_term "append([1,2],X,Y)");;
+  - : outcome = Yes ["Y", `1 . (2 . X)`]
+\end{verbatim}\end{boxed}
+
+В таких случаях Пролог представляется в значительной степени интеллектуальным.
+Но за этоим фасадом скрывается простая стратегия поиска, которую достаточно
+просто сбить с толку. Например, следующий запрос зацикливается:
+
+% In such cases, Prolog seems to be showing an impressive degree of intelligence.
+% However under the surface it is just using a simple search strategy, and this
+% can easily be thwarted. For example, the following loops indefinitely:
+
+\begin{boxed}\begin{verbatim}
+  #prolog r (parse_term "append(X,[3,4],X)");;
+\end{verbatim}\end{boxed}
+
+\subsection{Доказательство теорем}
+
+Пролог действует как простая система доказательства теорем, использующая базу логических 
+фактов (правил) для доказательства цели. Однако, он весьма ограничен в 
+своих возможностях, отчасти из-за неполноты стратегии поиска в 
+глубину, частично же потому, что он может выполнять только логический вывод
+определённого вида. Вообще, можно реализовать более мощную пролог-подобную 
+систему наподобие описанной в работе~\cite{stickel-pttp}. Далее мы покажем, как в сущности на тех же 
+идеях (унификация и возврат) строится более функциональная система 
+доказательства.%
+\footnote{Будем также использовать термин <<система (логического) вывода>>.--- 
+\textsl{Прим.\ перев.}}
+% Prolog is acting as a simple theorem prover, using a database of logical facts
+% (the rules) in order to prove a goal. However it is rather limited in the facts
+% it can prove, partly because its depth-first search strategy is incomplete, and
+% partly because it can only make logical deductions in certain patterns. It is
+% possible to make Prolog-like systems that are more powerful, e.g. see
+% \citeN{stickel-pttp}. In what follows, we will just show how to build a more
+% capable theorem prover using essentially similar technology, including the
+% unification code and an identical backtracking strategy.
+
+Унификация является эффективным способом ограничения переменных, связанных 
+квантором всеобщности. Например, имея правила $\all{X} p(X) \Imp q(X)$ и 
+$p(f(a))$, можно унифицировать оба выражения, включающие $p$, и тем самым 
+конкретизировать~$X$ значением~$f(a)$. Напротив, самые ранние системы доказательства теорем 
+пытались строить всевозможные термы из доступных констант и функций 
+(<<Эрбрановского базиса>>). 
+% In particular, unification is an effective way of deciding how to specialize
+% universally quantified variables. For example, given the facts that
+% $\all{X} p(X) \Imp q(X)$ and $p(f(a))$, we can unify the two
+% expressions involving $p$ and thus discover that we need to set
+% $X$ to $f(a)$. By contrast, the very earliest theorem provers tried all
+% possible terms built up from the available constants and functions (the
+% `Herbrand base').
+
+Обычно поиск в глубину может привести к бесконечному зацикливанию, так что
+мы должны незначительно изменить его стратегию. Будем использовать
+{\em последовательное углубление}. Это значит, что для поиска в глубину
+задаётся фиксировнный предел, при достижении которого выполняется 
+возврат. Если доказательство не найдено при заданной глубине, её значение
+увеличивается, и делается ещё одна попытка. Таким образом, сначала ищутся
+доказательства глубины $1$, в случае неудачи~--- глубины $2$, $3$ и так далее.
+В качестве предельной глубины могут использоваться различные параметры, 
+например, высота или размер дерева поиска; мы будем использовать число 
+унифицируемых переменных.
+% Usually, depth-first search would go into an infinite loop, so we need to
+% modify the Prolog strategy slightly. We will use {\em depth first iterative
+% deepening}. This means that the search depth has a hard limit, and attempts to
+% exceed it cause backtracking. However, if no proof is found at a given depth,
+% the bound is increased and another attempt is made. Thus, first one searches
+% for proofs of depth $1$, and if that fails, searches for one of depth $2$, then
+% depth $3$ and so on. For `depth' one can use various parameters, e.g. the
+% height or overall size of the search tree; we will use the number of unifiable
+% variables introduced.
+
+\subsubsection*{Манипулирование формулами}
+
+Для определения формул будем использовать термы первого порядка, добавив к ним
+новые константы для логических операций, многие из которых будут инфиксными.
+% We will simply use our standard first order terms to denote formulas,
+% introducing new constants for the logical operators. Many of these are written
+% infix.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Оператор   & Значение                            \\
+\hline
+{\verb+~+}(p)    & не p                         \\
+p {\verb+&+} q   & p и q                       \\
+p {\verb+|+} q   & p или q                        \\
+p {\verb+-->+} q & p влечёт q (импликация)                  \\
+p {\verb+<->+} q & p только и если только q (эквивалентность)            \\
+forall(X,p)      & для всех X, p  (квантор всеобщности)                \\
+exists(X,p)      & существует X такой что p (квантор существования)\\
+\hline
+\end{tabular}
+\end{center}
+
+Альтернативный подход заключается в добавлении отдельного типа, представляющего 
+формулы, но тогда потребуется реализовать также и синтаксический разбор, и печать.
+Из соображений простоты ограничимся первым решением.
+% An alternative would be to introduce a separate type of formulas, but this
+% would require separate parsing and printing support. We will avoid this, for
+% the sake of simplicity.
+
+\subsubsection*{Предварительная обработка формул}
+
+Очевидно, программа упростится, если  основная часть системы вывода не будет 
+работать с импликацией и эквивалентностью. Следовательно, сначала определим 
+функцию, заменяющую их композицией других операций:
+% It's convenient if the main part of the prover need not cope with implications
+% and `if and only if's. Therefore we first define a function that eliminates
+% these in favour of the other connectives.
+
+\begin{boxed}\begin{lstlisting}
+  let rec proc tm =
+    match tm with
+      Fn("~",[t]) -> Fn("~",[proc t])
+    | Fn("&",[t1; t2]) -> Fn("&",[proc t1; proc t2])
+    | Fn("|",[t1; t2]) -> Fn("|",[proc t1; proc t2])
+    | Fn("-->",[t1; t2]) ->
+          proc (Fn("|",[Fn("~",[t1]); t2]))
+    | Fn("<->",[t1; t2]) ->
+          proc (Fn("&",[Fn("-->",[t1; t2]);
+                        Fn("-->",[t2; t1])]))
+    | Fn("forall",[x; t]) -> Fn("forall",[x; proc t])
+    | Fn("exists",[x; t]) -> Fn("exists",[x; proc t])
+    | t -> t;;
+\end{lstlisting}\end{boxed}
+
+Определим две взаимно рекурсивные функции, которые по формуле и её 
+отрицанию строят <<негативно нормальную форму>>~--- формулу из 
+элементарных термов и их отрицаний, связанных с помощью операций 
+<<И>>, <<ИЛИ>> и кванторов.
+%% ISSUE: <<негативно нормальную форму>> --- термин требует уточнения (LH)
+% The next step is to push the negations down the formula, putting it into
+% so-called `negation normal form' (NNF). We define two mutually recursive
+% functions that create NNF for a formula, and
+% its negation.
+
+\begin{boxed}\begin{lstlisting}
+  let rec nnf_p tm =
+    match tm with
+      Fn("~",[t]) -> nnf_n t
+    | Fn("&",[t1; t2]) -> Fn("&",[nnf_p t1; nnf_p t2])
+    | Fn("|",[t1; t2]) -> Fn("|",[nnf_p t1; nnf_p t2])
+    | Fn("forall",[x; t]) -> Fn("forall",[x; nnf_p t])
+    | Fn("exists",[x; t]) -> Fn("exists",[x; nnf_p t])
+    | t -> t
+
+  and nnf_n tm =
+    match tm with
+      Fn("~",[t]) -> nnf_p t
+    | Fn("&",[t1; t2]) -> Fn("|",[nnf_n t1; nnf_n t2])
+    | Fn("|",[t1; t2]) -> Fn("&",[nnf_n t1; nnf_n t2])
+    | Fn("forall",[x; t]) -> Fn("exists",[x; nnf_n t])
+    | Fn("exists",[x; t]) -> Fn("forall",[x; nnf_n t])
+    | t -> Fn("~",[t]);;
+\end{lstlisting}\end{boxed}
+
+Преобразуем отрицание исходной формулы в негативно
+нормальную форму, из которой система вывода попытается получить
+противоречие. Этого будет достаточно, чтобы доказать
+справедливость исходной формулы.
+% We will convert the negation of the input formula into negation normal form,
+% and the main prover will then try to derive a contradiction from it. This will
+% suffice to prove the original formula.
+
+\subsubsection*{Система вывода}
+
+На каждом этапе системе вывода доступны текущая формула, список формул, которые ещё 
+предстоит рассмотреть, и список литералов. Система вывода пытается получить на
+их основе противоречие, следуя такой стратегии: 
+% At each stage, the prover has a current formula, a list of formulas yet to be
+% considered, and a list of literals. It is trying to reach a contradiction. The
+% following strategy is employed:
+
+\begin{itemize}
+\item Если текущая формула~--- {\em p {\verb+&+} q}, то {\em p} и {\em q} 
+рассматриваются по отдельности, т.е {\em p} делается текущей формулой,
+а {\em q} добавляется к формулам <<на рассмотрение>>.
+
+\item Если текущая формула имеет вид {\em p {\verb+|+} q},
+то делается попытка получить противоречие сначала с {\em p}, а затем с {\em q}.
+
+\item Если текущая формула~--- {\em forall(X, p)}, для замещения  {\em X}
+вводится новая переменная, правильное значение может быть
+получено позже, при унификации.
+
+\item Если текущая формула~--- {\em exists(X,p)}, для замещения  {\em X}
+вводится новая константа.
+
+\item В противном случае, формула должна быть литералом, так что
+делается попытка унифицировать его с противоречивым литералом.
+
+\item Если унификация не удалась, литерал добавляется в список литералов, 
+а система вывода переходит к обработке следующей формулы.
+
+% \item If the current formula is `p {\verb+&+} q', then consider
+% `p' and `q' separately, i.e. make `p' the current formula and add
+% `q' to the formulas to be considered.
+% 
+% \item If the current formula is `p {\verb+|+} q', then try to get a
+% contradiction from `p' and then one from `q'.
+% 
+% \item If the current formula is `forall(X,p)', invent a new variable to
+% replace `X': the right value can be discovered later by unification.
+% 
+% \item If the current formula is `exists(X,p)', invent a new constant to
+% replace `X'.
+% 
+% \item Otherwise, the formula must be a literal, so try to unify it with a
+% contradictory literal.
+% 
+% \item If this fails, add it to the list of literals, and proceed with the next
+% formula.
+
+\end{itemize}
+
+Нам необходима стратегия возврата, похожая на прологовскую: текущий набор
+конкретизаций переменных принимается лишь тогда, когда он позволяет достичь
+всех оставшихся целей.
+Можно было бы снова использовать списки, но вместо них мы попробуем 
+воспользоваться {\em продолжениями}({\em continuations}).
+%% ISSUE: проверить термин "Продолжение"
+Продолжение~--- это функция, которая передаётся другой функции в качестве 
+параметра, и которая
+может вызываться из последней <<для выполнения дальнейших вычислений>>.
+В нашем случае она принимает список конкретизаций и пытается достичь
+оставшихся целей в данном контексте. То есть, вместо попыток явно сделать 
+эти действия, мы просто вызываем функцию-продолжение.  
+% We desire a similar backtracking strategy to Prolog: only if the current
+% instantiation allow all remaining goals to be solved do we accept it. We could
+% use lists again, but instead we use {\em continuations}. A continuation is a
+% function that is passed to another function and can be called from within it to
+% `perform the rest of the computation'. In our case, it takes a list of
+% instantiations and tries to solve the remaining goals under these
+% instantiations. Thus, rather than explicitly trying to solve all remaining
+% goals, we simply try calling the continuation.
+
+\begin{boxed}\begin{lstlisting}
+  let rec prove fm unexp pl nl n cont i =
+    if n < 0 then raise (error "No proof") else
+    match fm with
+      Fn("&",[p;q]) ->
+          prove p (q::unexp) pl nl n cont i
+    | Fn("|",[p;q]) ->
+          prove p unexp pl nl n
+          (prove q unexp pl nl n cont) i
+    | Fn("forall",[Var x; p]) ->
+          let v = mkvar() in
+          prove (subst [x,Var v] p) (unexp@[fm]) pl nl (n - 1) cont i
+    | Fn("exists",[Var x; p]) ->
+          let v = mkvar() in
+          prove (subst [x,Fn(v,[])] p) unexp pl nl (n - 1) cont i
+    | Fn("~",[t]) ->
+          (try first (fun t' -> let i' = unify t t' i in
+                                cont i') pl
+           with error _ ->
+              prove (hd unexp) (tl unexp) pl (t::nl) n cont i)
+    | t ->
+          (try first (fun t' -> let i' = unify t t' i in
+                                cont i') nl
+           with error _ ->
+              prove (hd unexp) (tl unexp) (t::pl) nl n cont i);;
+\end{lstlisting}\end{boxed}
+
+\noindent Приведём, наконец, главную функцию нашей системы 
+доказательства:
+% \noindent We set up the final prover as follows:
+
+\begin{boxed}\begin{lstlisting}
+  let prover =
+    let rec prove_iter n t =
+      try let insts = prove t [] [] [] n I [] in
+          let globinsts = filter
+            (fun (v,_) -> occurs_in v t) insts in
+          n,globinsts
+      with error _ -> prove_iter (n + 1) t in
+    fun t -> prove_iter 0 (nnf_n(proc(parse_term t)));;
+\end{lstlisting}\end{boxed}
+
+Эта функция реализует стратегию последовательного углубления. Система вывода пытается
+найти доказательство с наименее общими конкретизациями переменных; если это 
+%% ISSUE: "наименее общими конкретизациями" --- не вполне ясно, что имеется
+%% в виду? -- LH
+удаётся, он возвращает  их число и сами конкретизации, за исключением временных
+переменных, созданных в ходе доказательства. 
+
+% This implements the iterative deepening strategy. It tries to find the proof
+% with the fewest universal instantiations; if it succeeds, it returns the number
+% required and any toplevel instantiations, throwing away instantiations for
+% internally created variables.
+
+\subsubsection*{Примеры}
+
+Вот несколько простых примеров, взятых у Пеллетье~\cite{pelletier-problems}:
+% Here are some simple examples from \citeN{pelletier-problems}.
+
+\begin{boxed}\begin{verbatim}
+  #let P1 = prover "p --> q <-> ~(q) --> ~(p)";;
+  P1 : int * (string * term) list = 0, []
+  #let P13 = prover "p | q & r <-> (p | q) & (p | r)";;
+  P13 : int * (string * term) list = 0, []
+  #let P16 = prover "(p --> q) | (q --> p)";;
+  P16 : int * (string * term) list = 0, []
+  #let P18 = prover "exists(Y,forall(X,p(Y)-->p(X)))";;
+  P18 : int * (string * term) list = 2, []
+  #let P19 = prover "exists(X,forall(Y,forall(Z,
+                  (p(Y)-->q(Z))-->p(X)-->q(X))))";;
+  P19 : int * (string * term) list = 6, []
+\end{verbatim}\end{boxed}
+
+\noindent Пример побольше:
+% \noindent A bigger example is the following:
+
+\begin{boxed}\begin{verbatim}
+  #let P55 = prover
+    "lives(agatha) & lives(butler) & lives(charles) &
+     (killed(agatha,agatha) | killed(butler,agatha) |
+      killed(charles,agatha)) &
+     (forall(X,forall(Y,
+       killed(X,Y) --> hates(X,Y) & ~(richer(X,Y))))) &
+     (forall(X,hates(agatha,X)
+               --> ~(hates(charles,X)))) &
+     (hates(agatha,agatha) & hates(agatha,charles)) &
+     (forall(X,lives(X) & ~(richer(X,agatha))
+               --> hates(butler,X))) &
+     (forall(X,hates(agatha,X) --> hates(butler,X))) &
+     (forall(X,~(hates(X,agatha)) | ~(hates(X,butler))
+               | ~(hates(X,charles))))
+     --> killed(agatha,agatha)";;
+  P55 : int * (string * term) list = 6, []
+\end{verbatim}\end{boxed}
+
+\noindent Фактически, система доказательства теорем может 
+выполнять роль детектива:
+% \noindent In fact, the prover can work out `whodunit':
+
+\begin{boxed}\begin{verbatim}
+  #let P55' = prover
+    "lives(agatha) & lives(butler) & lives(charles) &
+     (killed(agatha,agatha) | killed(butler,agatha) |
+      killed(charles,agatha)) &
+     (forall(X,forall(Y,
+       killed(X,Y) --> hates(X,Y) & ~(richer(X,Y))))) &
+     (forall(X,hates(agatha,X)
+               --> ~(hates(charles,X)))) &
+     (hates(agatha,agatha) & hates(agatha,charles)) &
+     (forall(X,lives(X) & ~(richer(X,agatha))
+               --> hates(butler,X))) &
+     (forall(X,hates(agatha,X) --> hates(butler,X))) &
+     (forall(X,~(hates(X,agatha)) | ~(hates(X,butler))
+               | ~(hates(X,charles))))
+     --> killed(X,agatha)";;
+  P55' : int * (string * term) list = 6, ["X", `agatha`]
+\end{verbatim}\end{boxed}
+
+\section*{Дополнительная литература}
+
+Символьное дифференцирование~--- классическое приложение функциональных
+языков. Другие символьные операции на данный момент сами по себе остаются 
+предметом интенсивных исследований, и работа~\cite{davenport-ca} 
+содержит обзор возможностей систем компьютерной алгебры и их устройства.
+В работе~\cite{paulson-rewriting} обсуждается в более общем виде стратегия 
+упрощения, которой мы воспользовались.
+% Symbolic differentiation is a classic application of functional languages.
+% Other symbolic operations are major research issues in their own right ---
+% \citeN{davenport-ca} give a readable overview of what computer algebra systems
+% can do and how they work. \citeN{paulson-rewriting} discusses the kind of
+% simplification strategy we use here in a much more general setting.
+
+Синтаксический анализ с помощью функций высшего порядка~--- другой популярный
+пример. Похоже, он уже давно вошёл в фольклор функционального программирования;
+одной из первых работ по данной теме считается~\cite{burge-recursive}. Наши примеры 
+основаны на~\cite{paulson-ml} и~\cite{reade-efp}.
+% Parsing with higher order functions is another popular example. It seems to
+% have existed in the functional programming folklore for a long time; an early
+% treatment is given by \citeN{burge-recursive}. Our presentation has been
+% influenced by the treatments in \citeN{paulson-ml} and \citeN{reade-efp}.
+
+Первое определение <<вычислимого вещественного числа>> было дано Тьюрингом~\cite{turing}. 
+Его подход основывался на десятиричном разложении, но позже потребовалось его
+изменить~\cite{turing2} по причинам, рассматриваемым далее в упражнениях. 
+Наш подход к вещественной арифметике основан на работе~\cite{boehm-cartwright}. 
+Недавняя, более эффективная, реализация на CAML Light
+была описана в~\cite{menisse-thesis}. Эта диссертация (на французском)
+содержит подробное доказательство корректности всех алгоритмов для 
+элементарных трансцендентных функций. Также возможно альтернативное решение 
+данной задачи в терминах <<дробно-линейных преобразований>>~\cite{potts-thesis}.
+% The first definition of `computable real number' in our sense was in the
+% original paper of \citeN{turing}. His approach was based on decimal expansions,
+% but he needed to modify it \cite{turing2} for reasons explored in the exercises
+% below. The approach to real arithmetic given here follows the work of
+% \citeN{boehm-cartwright}. More recently a high-performance implementation in
+% CAML Light has been written by \citeN{menisse-thesis}, whose thesis (in French)
+% contains detailed proofs of correctness for all the algorithms for elementary
+% transcendental functions. For an alternative approach using `linear fractional
+% transformations', see \citeN{potts-thesis}.
+
+Наш подход к прологовскому поиску и возврату, основанный на использовании 
+списков и продолжений, достаточно стандартен. Прочие детали реализации
+Пролога приводятся, например, в~\cite{boizumault-prolog}, а с подробностями
+практического применения этого языка стоит ознакомиться по~\cite{clocksin-mellish}.
+Детальное обсуждение продолжений во многих их проявлениях даётся 
+в~\cite{reynolds-continuations}. Алгоритм унификации, рассмотренный в 
+курсе, прост и достаточно функционален, но не блещет эффективностью.
+Информация о более быстрых императивных алгоритмах содержится в работе~\cite{martelli-montanari}.
+Наша система доказательства теорем основывается на 
+\mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$}~\cite{beckert-posegga},
+а другой важный метод логического вывода, который для удобства реализации
+базируется на поиске в стиле Пролога, обсуждается в~\cite{stickel-pttp}.
+% Our approach to Prolog search and backtracking, either using lists or
+% continuations, is fairly standard. For more on implementing Prolog, see for
+% example \citeN{boizumault-prolog}, while for more on the actual use of the
+% language, the classic text by \citeN{clocksin-mellish} is recommended. A
+% detailed discussion of continuations in their many guises is given by
+% \citeN{reynolds-continuations}. The unification algorithm given here is simple
+% and purely functional, but rather inefficient. For faster imperative
+% algorithms, see \citeN{martelli-montanari}. Our theorem prover is based on
+% \mbox{{\sf lean}$T^{\!\!\textstyle A}\!\!P$} \cite{beckert-posegga}. For
+% another important theorem proving method conveniently based on Prolog-style
+% search, look at the Prolog Technology Theorem Prover \cite{stickel-pttp}.
+
+\section*{Упражнения}
+
+\begin{enumerate}
+
+\item Модифицируйте систему печати так, чтобы она учитывала ассоциативность
+операторов и не печатала избыточных скобок.
+% \item Modify the printer so that each operator has an associativity, used when
+% printing iterated cases of the operator to avoid excessive parentheses.
+
+\item Правила дифференцирования для $1 / g(x)$ и $f(x) / g(x)$  не корректны,
+когда $g(x) = 0$. На практике большинство коммерческих систем 
+компьютерной алгебры игнорирует этот факт. Напишите улучшенную версию
+{\tt differentiate}, которая возвращает не только производную, но также и список
+условий, которые должны удовлетворяться, чтобы производная считалась корректной.
+% \item The differentiation rules for inverses $1 / g(x)$ and quotients $f(x) /
+% g(x)$ are not valid when $g(x) = 0$. Several others for functions like $ln$ are
+% also true only under certain conditions. Actually most commercial computer
+% algebra systems ignore this fact. However, try to do better, by writing a new
+% version of the differentiator that not only produces the derivative but also a
+% list of conditions that must be assumed for the derivative to be valid.
+
+\item Запрограммируйте простую процедуру интегрирования.
+Достаточно реализовать основные правила интегрирования, хотя это
+не позволит взять любой интеграл. \footnote{Известны  
+алгоритмы, позволяющие интегрировать произвольное алгебраическое выражение 
+(не содержащее $\sin$, $\ln$ и пр.) --- подробности см.~\cite{davenport-integration}.}
+% \item Try programming a simple procedure for indefinite integration. In
+% general, it will not be able to do every integral, but try to make it
+% understand a few basic principles.\footnote{In fact there are algorithms that
+% can integrate all algebraic expressions (not involving $sin$, $ln$ etc.) ---
+% see \citeN{davenport-integration}.}
+
+\item Ознакомьтесь с документацией к библиотеке {\tt format} и попробуйте 
+реализовать форматированную печать с корректным разбиением на строки.
+% \item Read the documentation for the {\tt format} library, and try to implement
+% a printer that behaves better when the output is longer than one line.
+
+\item Что случится, если функции синтаксического анализатора {\tt term},
+{\tt atom} и прочие будут $\eta$-редуцированы удалением слова {\tt input}? 
+Что произойдёт, если {\tt precedence} будет последовательно $\eta$-редуцироваться
+с помощью удаления {\tt input}?
+% \item What happens if the parser functions like {\tt term}, {\tt atom} etc. are
+% all eta-reduced by deleting the word {\tt input}? What happens if
+% {\tt precedence} is consistently eta-reduced by deleting {\tt input}?
+
+\item Насколько хорошо анализатор с приоритетами, сгенерированный функцией
+ {\tt precedence}, обрабатывает различные операторы с одинаковым приоритетом?
+ Как можно улучшить его работу? Можете ли вы усовершенствовать его так, чтобы
+ допускалось смешение лево- и правоассоциативных операторов? Например, 
+ существует реальная необходимость трактовки вычитания как левоассоциативной
+ операции.
+% \item How well do precedence parsers generated by {\tt precedence} treat
+% distinct operators with the same precedence? How can the behaviour be improved?
+% Can you extend it to allow a mix of left and right associative operators? For
+% example, one really wants subtraction to associate to the left.
+
+\item Перепишите анализатор так, чтобы при ошибках разбора он возвращал
+информативные сообщения.
+% \item Rewrite the parser so that it gives helpful error messages when parsing
+% fails.
+
+\item 
+Представьте вещественное число с помощью функции, генерирующей его первые
+$n$~цифр в десятиричной системе. Сможете ли вы реализовать функцию сложения?
+% \item Try representing a real number by the function that generates the first
+% $n$ digits in a decimal expansion. Can you implement the addition function?
+
+\item (*) 
+Как можно сохранить представление чисел позиционным, чтобы при этом 
+основные операции стали вычислимыми?
+%% ISSUE: не вполне понятно, о чем речь, возможен неверный перевод -- LH
+% \item (*) How can you retain a positional representation while making the basic
+% operations computable?
+
+\item Реализуйте целочисленную арифметику увеличенной разрядности. Постройте алгоритм
+вычисления произведения сложности~$O(n^{log_2 3})$, 
+%% ISSUE: (??? времени памяти????), 
+где $n$~-- общее число цифр в аргументах.
+% \item Implement multiprecision integer arithmetic operations yourself. Make
+% your multiplication algorithm $O(n^{log_2 3})$ where $n$ is the number of
+% digits in the arguments.
+
+\item Пусть функция {\tt memo} определена и используется так, как в данном 
+пособии. Можно ли утверждать, что применение <<функций с памятью>> к произвольной 
+последовательности аргументов всегда даёт одинаковые результаты для одинаковых 
+аргументов? Другими словами, соответствуют ли такие функции математическому
+определению понятия функции, несмотря на использование в их реализации ссылок?
+% \item Using {\tt memo} as we have defined it, is it the case that whatever
+% series of arguments a function is applied to, it will always give the same
+% answer for the same argument? That is, are the functions true mathematical
+% functions despite the internal use of references?
+
+\item Реализуйте синтаксический анализ и вычисление вещественных выражений 
+с выдачей результата в функциональном представлении.
+% \item Write a parser-evaluator to read real-valued expressions and create the
+% functional representation for the answer.
+
+\item (*) Расширьте библиотеку вещественной арифметики, добавив поддержку 
+функций, например, $\exp$ и $\sin$.
+% \item (*) Extend the real arithmetic routines to some functions like $exp$ and
+% $sin$.
+
+\item Время, требуемое для выполнения нашей предварительной обработки формулы и 
+её приведения к негативной нормальной форме, может зависеть от длины входных 
+данных экспоненциально, если в них содержится
+множество вхождений операторов эквивалентности. Модифицируйте функции так,
+чтобы эта зависимость была линейной.
+% \item Our preprocessing and negation normal form process can take exponential
+% time in the length of the input in the case of many `if and only if's. Modify
+% it so that it is linear in this number.
+
+\item Измените преобразование {\em nnf\_p / nnf\_n} так, чтобы оно возвращало 
+Сколемовскую нормальную форму.\footnote{Сколемовская нормальная форма 
+рассматривается в большинстве курсов элементарной логики,
+например в~\cite{enderton-logic}. TODO: вариант книги на русском} 
+% \item Extend the initial transformation into negation normal form so that it
+% gives Skolem normal form.\footnote{Skolem normal form is covered in most
+% elementary logic books, e.g. \citeN{enderton-logic}.}
+
+\item (*) Реализуйте более эффективный алгоритм унификации, например, на 
+основе работы~\cite{martelli-montanari}.
+% \item (*) Implement a more efficient unification algorithm, e.g. following
+% \citeN{martelli-montanari}.
+
+\item (*) Реализуйте аналог Prolog Technology Theorem Prover~\cite{stickel-pttp}.
+% \item (*) Implement a version of the Prolog Technology Theorem Prover 
+% \cite{stickel-pttp}
+
+\end{enumerate}
+
+%%% Local Variables:
+%%% TeX-master: "all"
+%%% End:
+
