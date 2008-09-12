@@ -1,37 +1,44 @@
-let hd(h::t) = h;;
+let hd l = match l with
+    [] -> failwith "Empty list"
+  | h::_ ->h;;
 
-let tl(h::t) = t;;
+let tl l = match l with
+    [] -> failwith "Empty list"
+  | _::t -> t;;
 
 let rec length l = if l = [] then 0 else 1 + length(tl l);;
 
-let rec itlist f =
-     fun [] b -> b
-       | (h::t) b -> f h (itlist f t b);;
+let rec itlist f l b = match l with 
+  [] -> b
+  | (h::t) -> f h (itlist f t b);;
 
 let uncurry f(x,y) = f x y;;
 
-let K x y = x;;
+let k x y = x;;
 
-let C f x y = f y x;;
+let c f x y = f y x;;
 
-let o f g x = f(g x);;
-#infix "o";;
+(* o replaced with ++++ *)
+let ( ++++ ) f g x  = f(g x);;
 
 let explode s =
   let rec exap n l =
       if n < 0 then l else
-      exap (n - 1) ((sub_string s n 1)::l) in
-  exap (string_length s - 1) [];;
-
+      exap (n - 1) ((String.sub s n 1)::l) in
+  exap (String.length s - 1) [];;
 
 type term = Var of string
           | Const of string
           | Fn of string * (term list);;
 
-let rec assoc a ((x,y)::rest) = if a = x then y else assoc a rest;;
+(* check ? *)
+let rec assoc a ((x,y)::rest) = match a with
+    [] -> []
+  | _ -> if a = x then y else assoc a rest;;
 
 let infixes = ref ["+",10; "-",10; "*",20; "/",20];;
 
+(* OCaml checked *)
 let get_precedence s = assoc s (!infixes);;
 
 infixes := ("^",30)::(!infixes);;
