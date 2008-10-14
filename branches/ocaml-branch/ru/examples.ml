@@ -19,7 +19,7 @@ let k x y = x;;
 let c f x y = f y x;;
 
 (* o replaced with ++++ *)
-let ( ++++ ) f g x  = f(g x);;
+let (++++) f g x  = f(g x);;
 
 let explode s =
   let rec exap n l =
@@ -130,11 +130,11 @@ let rec dsimp =
 
 exception Noparse;;
 
-let prefix (||) parser1 parser2 input =
+let (||) parser1 parser2 input =
   try parser1 input
   with Noparse -> parser2 input;;
 
-let prefix (++) parser1 parser2 input =
+let (++) parser1 parser2 input =
   let result1,rest1 = parser1 input in
   let result2,rest2 = parser2 rest1 in
   (result1,result2),rest2;;
@@ -145,12 +145,12 @@ let rec many parser input =
       (result::results),rest
   with Noparse -> [],input;;
 
-let prefix (>>) parser treatment input =
+let (>>) parser treatment input =
   let result,rest = parser input in
   treatment(result),rest;;
 
-let some p =
-  fun [] -> raise Noparse
+let some p = function (l) -> match l with
+    [] -> raise Noparse
     | (h::t) -> if p h then (h,t) else raise Noparse;;
 
 let a tok = some (fun item -> item = tok);;
