@@ -56,7 +56,14 @@
 \RequirePackage{fancybox}
 \RequirePackage{amssymb}
 \RequirePackage{listings}
-\lstset{tabsize=2,language=ML}
+\lstset{tabsize=2,
+  language=Caml,
+  defaultdialect=[Objective]Caml,
+  extendedchars=\true{},
+  mathescape=\true{}% allows to use math symbols in listings - may be dangerous
+ }
+% mapping of symbol sequences to latex char
+\lstset{literate={->}{{$\to{}$}}1}
 
 %%%%% commands from original slides
 \newcommand{\nat}{\mbox{$\protect\Bbb N$}}

@@ -20,6 +20,15 @@
 \onelinecaptionstrue
 
 \usepackage{listings}
+%%customize listings package
+\lstset{tabsize=2,
+  language=Caml,
+  defaultdialect=[Objective]Caml,
+  extendedchars=\true{},
+  mathescape=\true{}% allows to use math symbols in listings - may be dangerous
+ }
+% mapping of symbol sequences to latex char
+\lstset{literate={->}{{$\to{}$}}1}
 
 %% TODO: use package t-bnf for pretty-printing BNF grammars. include
 %% class into the repository.
@@ -128,10 +137,6 @@
 \frenchspacing
 \righthyphenmin=2
 \sloppy
-
-%%customize listings package
-\lstset{tabsize=2,language=ML}
-
 
 \newtheorem{theorem}{Теорема}[chapter]
 \newtheorem{definition}[theorem]{Definition}
