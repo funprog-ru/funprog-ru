@@ -31,14 +31,13 @@ type term = Var of string
           | Const of string
           | Fn of string * (term list);;
 
-(* check ? *)
-let rec assoc a ((x,y)::rest) = match a with
-    [] -> []
-  | _ -> if a = x then y else assoc a rest;;
+let rec assoc a l = match l with
+    [] -> raise Not_found
+  | ((x,y)::rest) -> if a = x then y
+    else assoc a rest;;
 
 let infixes = ref ["+",10; "-",10; "*",20; "/",20];;
 
-(* OCaml checked *)
 let get_precedence s = assoc s (!infixes);;
 
 infixes := ("^",30)::(!infixes);;
@@ -47,6 +46,7 @@ let can f x = try f x; true with _ -> false;;
 
 let is_infix = can get_precedence;;
 
+(* OCaml checked *)
 let rec string_of_term prec =
   fun (Var s) -> s
     | (Const c) -> c
@@ -130,11 +130,11 @@ let rec dsimp =
 
 exception Noparse;;
 
-let prefix || parser1 parser2 input =
+let prefix (||) parser1 parser2 input =
   try parser1 input
   with Noparse -> parser2 input;;
 
-let prefix ++ parser1 parser2 input =
+let prefix (++) parser1 parser2 input =
   let result1,rest1 = parser1 input in
   let result2,rest2 = parser2 rest1 in
   (result1,result2),rest2;;
@@ -145,7 +145,7 @@ let rec many parser input =
       (result::results),rest
   with Noparse -> [],input;;
 
-let prefix >> parser treatment input =
+let prefix (>>) parser treatment input =
   let result,rest = parser input in
   treatment(result),rest;;
 
@@ -218,7 +218,7 @@ let rec atom input
        || term
               >> (fun h -> [h])) input;;
 
-let parser = fst o (term ++ finished >> fst) o lex;;
+let parser = fst (++++) (term (++) finished (>>) fst) (++++) lex;;
 
 let findmin l =
   itlist (fun (_,pr1 as p1) (_,pr2 as p2) -> if pr1 <= pr2 then p1 else p2)
