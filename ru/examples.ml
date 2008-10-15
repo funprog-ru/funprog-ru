@@ -1,78 +1,95 @@
+(* OCaml checked *)
 let hd l = match l with
     [] -> failwith "Empty list"
   | h::_ ->h;;
 
+(* OCaml checked *)
 let tl l = match l with
     [] -> failwith "Empty list"
   | _::t -> t;;
 
+(* OCaml checked *)
 let rec length l = if l = [] then 0 else 1 + length(tl l);;
 
+(* OCaml checked *)
 let rec itlist f l b = match l with 
   [] -> b
   | (h::t) -> f h (itlist f t b);;
 
+(* OCaml checked *)
 let uncurry f(x,y) = f x y;;
 
+(* OCaml checked *)
 let k x y = x;;
 
+(* OCaml checked *)
 let c f x y = f y x;;
 
 (* o replaced with ++++ *)
+(* OCaml checked *)
 let (++++) f g x  = f(g x);;
 
+(* OCaml checked *)
 let explode s =
   let rec exap n l =
       if n < 0 then l else
       exap (n - 1) ((String.sub s n 1)::l) in
   exap (String.length s - 1) [];;
 
+(* OCaml checked *)
 type term = Var of string
           | Const of string
           | Fn of string * (term list);;
 
+(* OCaml checked *)
 let rec assoc a l = match l with
     [] -> raise Not_found
   | ((x,y)::rest) -> if a = x then y
     else assoc a rest;;
 
+(* OCaml checked *)
 let infixes = ref ["+",10; "-",10; "*",20; "/",20];;
 
+(* OCaml checked *)
 let get_precedence s = assoc s (!infixes);;
 
+(* OCaml checked *)
 infixes := ("^",30)::(!infixes);;
 
+(* OCaml checked *)
 let can f x = try f x; true with _ -> false;;
 
+(* OCaml checked *)
 let is_infix = can get_precedence;;
 
 (* OCaml checked *)
-let rec string_of_term prec =
-  fun (Var s) -> s
-    | (Const c) -> c
-    | (Fn(f,args)) ->
-        if length args = 2 & is_infix f then
-          let prec' = get_precedence f in
-          let s1 = string_of_term prec' (hd args)
+let rec string_of_term prec = function (l) -> match l with
+    (Var s) -> s 
+  | (Const c) -> c
+  | (Fn(f,args)) ->
+      if length args = 2 & is_infix f then
+        let prec' = get_precedence f in
+        let s1 = string_of_term prec' (hd args)
+        and s2 = string_of_term prec' (hd(tl args)) in
+        let ss = s1^ " " ^ f ^ " " ^ s2 in
+        if prec' <= prec then "("^ss^")" else ss
+      else
+        f ^ "(" ^ (string_of_terms args) ^ ")"
+          
+(* OCaml checked *)
+and string_of_terms t = match t with
+    [] -> ""
+  | [t] -> string_of_term 0 t
+  | (h::t) -> (string_of_term 0 h)^ "," ^(string_of_terms t);;
 
-          and s2 = string_of_term prec' (hd(tl args)) in
-          let ss = s1^" "^f^" "^s2 in
-          if prec' <= prec then "("^ss^")" else ss
-        else
-          f^"("^(string_of_terms args)^")"
-
-and string_of_terms t =
-  match t with
-      [] -> ""
-    | [t] -> string_of_term 0 t
-    | (h::t) -> (string_of_term 0 h)^","^(string_of_terms t);;
-
+(* OCaml checked *)
 let t =
     Fn("-",[Fn("/",[Fn("sin",[Fn("+",[Var "x"; Var "y"])]);
                     Fn("cos",[Fn("-",[Var "x";
                                       Fn("exp",[Var "y"])])])]);
             Fn("ln",[Fn("+",[Const "1"; Var "x"])])]);;
 
+(* OCaml not checked *)
 #open "format";;
 
 let print_term s =
@@ -82,6 +99,7 @@ let print_term s =
 
 (* install_printer "print_term";; *)
 
+(* OCaml checked *)
 let rec differentiate x tm = match tm with
     Var y -> if y = x then Const "1" else Const "0"
   | Const c -> Const "0"
@@ -108,58 +126,70 @@ let rec differentiate x tm = match tm with
      (Fn("/",[Fn("sin",[t]); Fn("cos",[t])]))
 and chain x t u =  Fn("*",[differentiate x t; u]);;
 
-let simp =
-  fun (Fn("+",[Const "0"; t])) -> t
-    | (Fn("+",[t; Const "0"])) -> t
-    | (Fn("-",[t; Const "0"])) -> t
-    | (Fn("-",[Const "0"; t])) -> Fn("-",[t])
-    | (Fn("+",[t1; Fn("-",[t2])])) -> Fn("-",[t1; t2])
-    | (Fn("*",[Const "0"; t])) -> Const "0"
-    | (Fn("*",[t; Const "0"])) -> Const "0"
-    | (Fn("*",[Const "1"; t])) -> t
-    | (Fn("*",[t; Const "1"])) -> t
-    | (Fn("*",[Fn("-",[t1]); Fn("-",[t2])])) -> Fn("*",[t1; t2])
-    | (Fn("*",[Fn("-",[t1]); t2])) -> Fn("-",[Fn("*",[t1; t2])])
-    | (Fn("*",[t1; Fn("-",[t2])])) -> Fn("-",[Fn("*",[t1; t2])])
-    | (Fn("-",[Fn("-",[t])])) -> t
-    | t -> t;;
+(* OCaml checked *)
+let simp = function (l) -> match l with
+    (Fn("+",[Const "0"; t])) -> t
+  | (Fn("+",[t; Const "0"])) -> t
+  | (Fn("-",[t; Const "0"])) -> t
+  | (Fn("-",[Const "0"; t])) -> Fn("-",[t])
+  | (Fn("+",[t1; Fn("-",[t2])])) -> Fn("-",[t1; t2])
+  | (Fn("*",[Const "0"; t])) -> Const "0"
+  | (Fn("*",[t; Const "0"])) -> Const "0"
+  | (Fn("*",[Const "1"; t])) -> t
+  | (Fn("*",[t; Const "1"])) -> t
+  | (Fn("*",[Fn("-",[t1]); Fn("-",[t2])])) -> Fn("*",[t1; t2])
+  | (Fn("*",[Fn("-",[t1]); t2])) -> Fn("-",[Fn("*",[t1; t2])])
+  | (Fn("*",[t1; Fn("-",[t2])])) -> Fn("-",[Fn("*",[t1; t2])])
+  | (Fn("-",[Fn("-",[t])])) -> t
+  | t -> t;;
 
-let rec dsimp =
-  fun (Fn(fn,args)) -> simp(Fn(fn,map dsimp args))
-    | t -> simp t;;
+(* OCaml not checked *)
+let rec dsimp = function (l) -> match l with
+    Fn(fn,args) -> simp(Fn(fn,List:map dsimp args))
+  | t -> simp t;;
 
+(* OCaml checked *)
 exception Noparse;;
 
+(* OCaml checked *)
 let (||) parser1 parser2 input =
   try parser1 input
   with Noparse -> parser2 input;;
 
+(* OCaml checked *)
 let (++) parser1 parser2 input =
   let result1,rest1 = parser1 input in
   let result2,rest2 = parser2 rest1 in
   (result1,result2),rest2;;
 
+(* OCaml checked *)
 let rec many parser input =
   try let result,next = parser input in
       let results,rest = many parser next in
       (result::results),rest
   with Noparse -> [],input;;
 
+(* OCaml checked *)
 let (>>) parser treatment input =
   let result,rest = parser input in
   treatment(result),rest;;
 
+(* OCaml checked *)
 let some p = function (l) -> match l with
     [] -> raise Noparse
     | (h::t) -> if p h then (h,t) else raise Noparse;;
 
+(* OCaml checked *)
 let a tok = some (fun item -> item = tok);;
 
+(* OCaml checked *)
 let finished input =
   if input = [] then 0,input else raise Noparse;;
 
+(* OCaml checked *)
 type lexeme = Name of string | Num of string | Other of string;;
 
+(* OCaml checked *)
 let lex =
   let several p = many (some p) in
   let lowercase_letter s = "a" <= s & s <= "z" in
@@ -181,18 +211,22 @@ let lex =
   let alltokens = (tokens ++ finished) >> fst in
   fst o alltokens o explode;;
 
-let name =
-  fun (Name s::rest) -> s,rest
-    | _ -> raise Noparse;;
+(* OCaml checked *)
+let name = function (l) -> match l with
+    Name s::rest -> s,rest
+  | _ -> raise Noparse;;
 
-let numeral =
-  fun (Num s::rest) -> s,rest
-    | _ -> raise Noparse;;
+(* OCaml checked *)
+let numeral = function (l) -> match l with
+    Num s::rest -> s,rest
+  | _ -> raise Noparse;;
 
-let other =
-  fun (Other s::rest) -> s,rest
-    | _ -> raise Noparse;;
+(* OCaml checked *)
+let other = function (l) -> match l with
+    Other s::rest -> s,rest
+  | _ -> raise Noparse;;
 
+(* OCaml not checked *)
 let rec atom input
        = (name ++ a (Other "(") ++ termlist ++ a (Other ")")
               >> (fun (((name,_),args),_) -> Fn(name,args))
