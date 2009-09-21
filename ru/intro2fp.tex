@@ -38,6 +38,10 @@
 %%
 %%%\usepackage{jrh}
 
+\usepackage{makeidx}
+\makeindex
+
+
 \usepackage{alltt}
 \usepackage{proof}
 
@@ -210,9 +214,17 @@
 \input effect.tex
 \input examples.tex
 
-%%%\bibliographystyle{jrh}
-\bibliographystyle{plain}
+\part*{Приложения}
+\addcontentsline{toc}{part}{Приложения}
+\appendix
 
-\bibliography{all}
+\addcontentsline{toc}{chapter}{Литература}
+\bibliographystyle{plain}
+\bibliography{intro2fp}
+
+\vfill
+\pagebreak
+\addcontentsline{toc}{chapter}{Предметный указатель}
+\printindex
 
 \end{document}
