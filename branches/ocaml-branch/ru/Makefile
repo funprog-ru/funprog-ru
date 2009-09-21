@@ -1,19 +1,25 @@
 PDFLATEX = pdflatex
 
-all: all.pdf slides
+all: intro2fp.pdf slides
 
-all.pdf: all.tex preface.tex plan.tex intro.tex lamb.tex prog.tex types.tex ml.tex fml.tex	\
-	 proving.tex effect.tex examples.tex all.bbl
-	pdflatex all
-	while grep 'Label(s) may have changed' all.log > /dev/null 2>&1 ; do \
-		$(PDFLATEX) all ; \
+INTRO2FP_SOURCES = intro2fp.tex preface.tex plan.tex intro.tex lamb.tex prog.tex types.tex	\
+	 ml.tex fml.tex proving.tex effect.tex examples.tex
+
+BASE_NAME = intro2fp
+
+$(BASE_NAME).pdf: $(INTRO2FP_SOURCES) $(BASE_NAME).bbl
+	pdflatex $(BASE_NAME)
+	makeindex $(BASE_NAME)
+	pdflatex $(BASE_NAME)
+	while grep 'Label(s) may have changed' $(BASE_NAME).log > /dev/null 2>&1 ; do \
+		$(PDFLATEX) $(BASE_NAME) ; \
 	done 
 
-all.bbl: all.bib
-				 $(PDFLATEX) all
-				 bibtex all
+$(BASE_NAME).bbl: $(BASE_NAME).bib
+	$(PDFLATEX) $(BASE_NAME)
+	bibtex $(BASE_NAME)
 
-clean:; rm -f *.aux *.log all.bbl *.dvi all.blg *.toc all.pdf l[0-9]*.pdf 
+clean:; rm -f *.aux *.log $(BASE_NAME).bbl *.dvi $(BASE_NAME).blg *.toc $(BASE_NAME).pdf l[0-9]*.pdf 
 
 slides: l1.pdf l2.pdf l3.pdf l4.pdf l5.pdf l6.pdf l7.pdf l8.pdf l9.pdf l10.pdf l11.pdf l12.pdf
 
